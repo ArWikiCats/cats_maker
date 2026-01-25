@@ -2,7 +2,9 @@
 python3 core8/pwb.py mk_cats/mknew
 """
 
+import sys
 import functools
+from pathlib import Path
 
 from ..b18_new import (
     add_SubSub,
@@ -22,6 +24,10 @@ from .create_category_page import new_category
 from .members_helper import collect_category_members
 from .utils import filter_en
 from .utils.check_en import check_en_temps
+
+arwikicats_path = Path("D:/categories_bot/make2_new/ArWikiCats")
+if arwikicats_path.exists():
+    sys.path.insert(0, str(arwikicats_path.parent))
 
 try:
     from ArWikiCats import logger as cat_logger  # type: ignore
@@ -44,6 +50,7 @@ def ar_make_lab(title, **Kwargs):
     okay = filter_en.filter_cat(title)
 
     if not okay:
+        logger.debug(f'<<lightred>> {title} is not okay.')
         return ""
 
     if resolve_arabic_category_label:
@@ -51,6 +58,7 @@ def ar_make_lab(title, **Kwargs):
         logger.warning(f'<<lightgreen>> Resolved label for "{title}": "{label}"')
         return label
 
+    logger.debug("<<lightred>> ArWikiCats.resolve_arabic_category_label not available.")
     return ""
 
 
