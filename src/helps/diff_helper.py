@@ -1,6 +1,8 @@
 import difflib
 import logging
+
 from .printe_helper import make_str
+
 logger = logging.getLogger(__name__)
 
 

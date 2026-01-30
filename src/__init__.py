@@ -1,4 +1,5 @@
 try:
+    from .logging_config import setup_logging
     from .mk_cats import (
         ToMakeNewCat2222,
         ar_make_lab,
@@ -7,7 +8,7 @@ try:
         no_work,
         process_catagories,
     )
-    from .logging_config import setup_logging
+
     setup_logging()
 
 except ImportError:
