@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from ..helps.log import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 __all__ = [
     "logger",

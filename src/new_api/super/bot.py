@@ -6,16 +6,19 @@ from .super.bot import LOGIN_HELPS
 Exception:{'login': {'result': 'Failed', 'reason': 'You have made too many recent login attempts. Please wait 5 minutes before trying again.'}}
 
 """
+
+import logging
 import os
 from http.cookiejar import MozillaCookieJar
 
 import requests
 
 from ...config import settings
-from ...helps import logger
 from ..api_utils.user_agent import default_user_agent
 from .cookies_bot import del_cookies_file, get_file_name
 from .params_help import PARAMS_HELPS
+
+logger = logging.getLogger(__name__)
 
 # cookies = get_cookies(lang, family, username)
 seasons_by_lang = {}

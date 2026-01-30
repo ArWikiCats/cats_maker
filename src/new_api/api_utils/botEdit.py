@@ -1,15 +1,16 @@
-"""
+""" """
 
-"""
 #
 #
 import datetime
+import logging
 from functools import lru_cache
 
 import wikitextparser as wtp
 
 from ...config import settings
-from ...helps import logger
+
+logger = logging.getLogger(__name__)
 
 # ---
 edit_username = {1: "Mr.Ibrahembot"}

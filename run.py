@@ -1,5 +1,5 @@
-"""
-"""
+""" """
+
 import json
 import logging
 import sys
@@ -11,9 +11,12 @@ try:
     from new_all import work_bot as new_all
 except ImportError:
     new_all = None
+import logging
+
 from src.config import settings
-from src.helps.log import logger
 from src.mk_cats import create_categories_from_list
+
+logger = logging.getLogger(__name__)
 
 # Enable ask mode by default - now done via settings
 settings.bot.ask = True

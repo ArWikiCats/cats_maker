@@ -1,16 +1,14 @@
 #!/usr/bin/python3
-"""
-
-
-
-"""
+""" """
 import functools
+import logging
 
-from ..helps import logger
 from ..new_api.page import MainPage, SuperMainPage
 from ..temp import main_make_temp_no_title
 from ..utils.skip_cats import skip_encats
 from . import categorytext
+
+logger = logging.getLogger(__name__)
 
 
 @functools.lru_cache

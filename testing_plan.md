@@ -236,7 +236,6 @@ tests/
 ### 3.7 helps ⭐ (أولوية متوسطة / Medium Priority)
 
 **الاختبارات المطلوبة:**
-- [x] اختبار LoggerWrap مع مستويات تسجيل مختلفة ✅ (test_log.py)
 - [x] اختبار تنسيق النصوص الملونة ✅ (test_printe_helper.py)
 - [x] اختبار showDiff() لعرض الفروق ✅ (test_log.py)
 - [x] اختبار تعطيل/تفعيل المسجل ✅ (test_log.py)

@@ -1,13 +1,14 @@
 #!/usr/bin/python3
-"""
-"""
+""" """
 import functools
+import logging
 from urllib.parse import urlencode
 
 import requests
 
 from ..config import settings
-from ..helps import logger
+
+logger = logging.getLogger(__name__)
 
 
 @functools.lru_cache(maxsize=1)

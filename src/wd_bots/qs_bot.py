@@ -6,6 +6,7 @@ This module provides functions for working with the QuickStatements API.
 """
 
 import functools
+import logging
 import time
 from datetime import datetime
 from pathlib import Path
@@ -14,7 +15,8 @@ import requests
 
 from ..config import settings
 from ..new_api.useraccount import qs_token, qs_tokenbot
-from .utils import logger
+
+logger = logging.getLogger(__name__)
 
 Dir = Path(__file__).parent.parent
 menet = datetime.now().strftime("%Y-%b-%d  %H:%M:%S")

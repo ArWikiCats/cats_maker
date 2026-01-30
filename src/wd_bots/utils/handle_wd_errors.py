@@ -1,8 +1,10 @@
-"""
+""" """
 
-"""
+import logging
+
 from ...config import settings
-from ...helps import logger
+
+logger = logging.getLogger(__name__)
 
 
 class WD_ERRORS_HANDLER:

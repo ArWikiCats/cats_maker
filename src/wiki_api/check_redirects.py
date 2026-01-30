@@ -1,5 +1,8 @@
-from ..helps import logger
+import logging
+
 from ..new_api.page import NEW_API, SuperNEW_API
+
+logger = logging.getLogger(__name__)
 
 
 def _load_new_api(lang) -> SuperNEW_API:

@@ -3,14 +3,17 @@
 !
 """
 import json
+import logging
 import re
 
 from ..config import settings
 from .qs_bot import QS_line, QS_New_API
-from .utils import lag_bot, logger
+from .utils import lag_bot
 from .utils.out_json import outbot_json, outbot_json_bot
 from .wd_login_wrap import log_in_wikidata
 from .wd_newapi_bot import WD_API
+
+logger = logging.getLogger(__name__)
 
 Main_User = {1: ""}
 Save_2020_wd = {1: False}

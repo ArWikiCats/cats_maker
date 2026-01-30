@@ -2,8 +2,8 @@
 python3 core8/pwb.py mk_cats/mknew
 """
 
+import logging
 import sys
-import functools
 from pathlib import Path
 
 from ..b18_new import (
@@ -14,7 +14,6 @@ from ..b18_new import (
     validate_categories_for_new_cat,
 )
 from ..config import settings
-from ..helps import logger
 from ..new_api.page import MainPage
 from ..wd_bots import to_wd
 from ..wd_bots.wd_api_bot import Get_Sitelinks_From_wikidata
@@ -30,12 +29,11 @@ if arwikicats_path.exists():
     sys.path.insert(0, str(arwikicats_path.parent))
 
 try:
-    from ArWikiCats import logger as cat_logger  # type: ignore
-    from ArWikiCats import resolve_arabic_category_label
-
-    cat_logger.setLevel("ERROR")
+    from ArWikiCats import resolve_arabic_category_label  # type: ignore
 except ImportError:
     resolve_arabic_category_label = None
+
+logging.getLogger("ArWikiCats").setLevel(logging.ERROR)
 
 DONE_D = []
 NewCat_Done = {}
@@ -45,17 +43,19 @@ Already_Created = []
 wiki_site_ar = {"family": "wikipedia", "code": "ar"}
 wiki_site_en = {"family": "wikipedia", "code": "en"}
 
+logger = logging.getLogger(__name__)
+
 
 def ar_make_lab(title, **Kwargs):
     okay = filter_en.filter_cat(title)
 
     if not okay:
-        logger.debug(f'<<lightred>> {title} is not okay.')
+        logger.debug(f"<<lightred>> {title} is not okay.")
         return ""
 
     if resolve_arabic_category_label:
         label = resolve_arabic_category_label(title)
-        logger.warning(f'<<lightgreen>> Resolved label for "{title}": "{label}"')
+        # logger.warning(f'<<lightgreen>> Resolved label for "{title}": "{label}"')
         return label
 
     logger.debug("<<lightred>> ArWikiCats.resolve_arabic_category_label not available.")

@@ -1,6 +1,5 @@
-"""
+""" """
 
-"""
 from ..config import settings
 
 # ---

@@ -1,11 +1,12 @@
 #!/usr/bin/python3
-"""
+""" """
 
-"""
+import logging
 
-from ...helps import logger
 from ...utils.skip_cats import NO_Templates_lower, skip_encats
 from ...wiki_api import find_LCN
+
+logger = logging.getLogger(__name__)
 
 
 def check_en_temps(en_title) -> bool:

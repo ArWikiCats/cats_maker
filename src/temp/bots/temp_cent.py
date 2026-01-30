@@ -4,10 +4,12 @@
 from .temp_cent import Make_Cent_temp
 
 """
+import logging
 import re
 
-from ...helps import logger
 from .load_data import Baco_centries, cacaca
+
+logger = logging.getLogger(__name__)
 
 
 def Make_Cent_temp(title):

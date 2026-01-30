@@ -3,11 +3,13 @@
 from .bot import CategoryDepth
 
 """
+
 import copy
+import logging
 
 from tqdm import tqdm
 
-from ....helps import logger
+logger = logging.getLogger(__name__)
 
 ns_list = {
     "0": "",

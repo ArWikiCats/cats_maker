@@ -11,10 +11,13 @@ Responsibilities:
 - Returning a clean, final list of category members
 """
 
+import logging
+
 from ..b18_new import MakeLitApiWay, get_listenpageTitle, get_SubSub_value
 from ..config import settings
-from ..helps import logger
 from ..wiki_api.check_redirects import remove_redirect_pages
+
+logger = logging.getLogger(__name__)
 
 
 def gather_members_from_sql(ar_title: str, en_page_title: str) -> list:

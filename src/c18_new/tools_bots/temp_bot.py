@@ -3,10 +3,13 @@
 from ..tools_bots.temp_bot import templatequery, templatequerymulti
 
 """
+
+import logging
 from collections import defaultdict
 
 from ...wiki_api import find_LCN, get_cache_L_C_N, set_cache_L_C_N
-from ..log import logger
+
+logger = logging.getLogger(__name__)
 
 templatequery_cache = defaultdict(dict)
 

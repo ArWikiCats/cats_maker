@@ -1,11 +1,11 @@
-"""
+""" """
 
-"""
+import logging
 import sys
 
 from SPARQLWrapper import JSON, SPARQLWrapper
 
-from ..helps import logger
+logger = logging.getLogger(__name__)
 
 
 def get_query_data(query):

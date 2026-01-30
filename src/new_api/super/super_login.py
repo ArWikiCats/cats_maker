@@ -14,14 +14,16 @@ Exception:{'login': {'result': 'Failed', 'reason': 'You have made too many recen
 
 """
 import copy
+import logging
 import time
 import urllib.parse
 
 from ...config import settings
-from ...helps import logger
 from ..api_utils.user_agent import default_user_agent
 from .bot import LOGIN_HELPS
 from .handel_errors import HANDEL_ERRORS
+
+logger = logging.getLogger(__name__)
 
 ar_lag = {1: 3}
 urls_prints = {"all": 0}

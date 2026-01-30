@@ -3,11 +3,14 @@
 from .super.S_API.bot import BOTS_APIS
 
 """
+
+import logging
 import sys
 
-from ....helps import logger
 from ...api_utils.ask_bot import ASK_BOT
 from ..handel_errors import HANDEL_ERRORS
+
+logger = logging.getLogger(__name__)
 
 yes_answer = ["y", "a", "", "Y", "A", "all", "aaa"]
 file_name = "bot_api.py"

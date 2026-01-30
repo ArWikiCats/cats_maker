@@ -9,10 +9,12 @@ https://doc.wikimedia.org/Wikibase/master/js/rest-api/#/items/getItem
 """
 
 import functools
+import logging
 
 from ..config import settings
-from ..helps import logger
 from . import NewHimoAPIBot
+
+logger = logging.getLogger(__name__)
 
 wd_cach = {}
 

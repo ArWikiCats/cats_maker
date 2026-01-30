@@ -1,15 +1,17 @@
-"""
-"""
+""" """
+
 import datetime
+import logging
 
 # ---
 import time
 from collections.abc import KeysView
 from datetime import timedelta
 
-from ....helps import logger
 from ...api_utils.lang_codes import change_codes
 from .bot import BOTS_APIS
+
+logger = logging.getLogger(__name__)
 
 
 class NEW_API(BOTS_APIS):

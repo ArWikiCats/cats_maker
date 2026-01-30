@@ -1,16 +1,16 @@
 #!/usr/bin/python3
-"""
-
-"""
+""" """
 
 import functools
 import json
+import logging
 import time
 from datetime import datetime
 
 from ..config import settings
-from ..helps import logger
 from . import NewHimoAPIBot
+
+logger = logging.getLogger(__name__)
 
 menet = datetime.now().strftime("%Y-%b-%d  %H:%M:%S")
 

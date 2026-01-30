@@ -1,9 +1,8 @@
 #!/usr/bin/python3
-"""
-
-"""
+""" """
 import functools
 import json
+import logging
 import os
 import stat
 from datetime import datetime
@@ -11,7 +10,8 @@ from pathlib import Path
 
 from ..api_sql import GET_SQL, sql_new_title_ns
 from ..config import settings
-from ..helps import logger
+
+logger = logging.getLogger(__name__)
 
 Dir = Path(__file__).parent.parent.parent
 filename_json = Dir / "textfiles/Dont_add_to_pages.json"

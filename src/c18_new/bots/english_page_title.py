@@ -3,12 +3,14 @@ Usage:
 from ..bots.english_page_title import get_english_page_title
 """
 
+import logging
 import re
 
 from ...config import settings
 from ...wd_bots import Get_Sitelinks_from_qid, Get_Sitelinks_From_wikidata
 from ...wiki_api import find_LCN, get_cache_L_C_N, set_cache_L_C_N
-from ..log import logger
+
+logger = logging.getLogger(__name__)
 
 
 def extract_wikidata_qid(text):

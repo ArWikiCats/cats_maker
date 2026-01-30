@@ -4,6 +4,8 @@ from .super.cookies_bot import get_cookies
 # cookies = get_cookies(lang, family, username)
 
 """
+
+import logging
 import os
 import stat
 from datetime import datetime, timedelta
@@ -11,7 +13,8 @@ from functools import lru_cache
 from pathlib import Path
 
 from ...config import settings
-from ...helps import logger
+
+logger = logging.getLogger(__name__)
 
 statgroup = stat.S_IRWXU | stat.S_IRWXG
 tool = os.getenv("HOME")

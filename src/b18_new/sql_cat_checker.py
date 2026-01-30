@@ -1,11 +1,12 @@
 #!/usr/bin/python3
-"""
+""" """
+import logging
 
-"""
 from ..config import settings
-from ..helps import logger
 from ..utils.skip_cats import global_False_entemps
 from ..wiki_api import himoBOT2
+
+logger = logging.getLogger(__name__)
 
 NO_Templates_ar = [
     "تصنيف ويكيبيديا",

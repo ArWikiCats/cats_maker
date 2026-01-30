@@ -1,14 +1,14 @@
 #!/usr/bin/python3
-"""
-
-"""
+""" """
 import functools
+import logging
 import os
 import sys
 import time
 
-from ..helps import logger
 from . import mysql_client
+
+logger = logging.getLogger(__name__)
 
 ns_text_tab_ar = {
     "0": "",

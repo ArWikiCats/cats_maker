@@ -1,6 +1,5 @@
-"""
+""" """
 
-"""
 # ---
 from ..config import settings
 from ..new_api import LoginWrap, User_tables_bot

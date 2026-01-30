@@ -8,10 +8,12 @@ https://doc.wikimedia.org/Wikibase/master/js/rest-api/#/items/getItem
 
 
 """
+import logging
 from functools import lru_cache
 
-from ..helps import logger
 from ..wiki_api import submitAPI
+
+logger = logging.getLogger(__name__)
 
 
 def submitWikidataParams(params):

@@ -1,10 +1,13 @@
 #!/usr/bin/python3
 """ """
 
-from ..c18_new.log import logger
+import logging
+
 from ..config import settings
 from ..wiki_api import get_cache_L_C_N, set_cache_L_C_N
 from . import submitAPI
+
+logger = logging.getLogger(__name__)
 
 API_n_CALLS = {1: 0}
 

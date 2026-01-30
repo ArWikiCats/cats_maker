@@ -1,14 +1,16 @@
-"""
+""" """
 
-"""
-# ---
+import logging
 import time
 
 from ..config import settings
-from ..helps import logger
 from .bot_wd import WD_Functions
 from .utils import lag_bot
+
+# ---
 from .utils.handle_wd_errors import WD_ERRORS_HANDLER
+
+logger = logging.getLogger(__name__)
 
 
 class WD_API(WD_Functions, WD_ERRORS_HANDLER):

@@ -1,6 +1,6 @@
 import difflib
 import logging
-from typing import Optional, Union
+from typing import Union
 
 from .printe_helper import make_str
 
@@ -8,16 +8,12 @@ from .printe_helper import make_str
 class LoggerWrap:
     """Project-scoped logger with colorized helpers."""
 
-    def __init__(self, name: str, disable_log: bool = False, level: int = logging.DEBUG) -> None:
+    def __init__(self, name: str, level: int = logging.DEBUG) -> None:
         """Initialize the wrapped logger and optionally disable output."""
         self._logger = logging.getLogger(name)
 
         # Prevent leaking to root logger
         self._logger.propagate = False
-
-        if disable_log:
-            self._logger.disabled = True
-            return
 
         if not self._logger.handlers:
             self._logger.setLevel(level)
@@ -107,9 +103,11 @@ class LoggerWrap:
                 self._logger.warning(make_str(line))
 
 
-logger = LoggerWrap(__name__)
+def getLogger(name: str, level: int = logging.DEBUG) -> LoggerWrap:
+    """Get a LoggerWrap instance for the specified name."""
+    return LoggerWrap(name, level=level)
+
 
 __all__ = [
-    "logger",
-    "LoggerWrap",
+    "getLogger",
 ]

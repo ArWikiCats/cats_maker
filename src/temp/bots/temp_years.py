@@ -2,10 +2,12 @@
 """
 !
 """
+import logging
 import re
 
-from ...helps import logger
 from .load_data import cacaca, years_Baco
+
+logger = logging.getLogger(__name__)
 
 
 def Make_years_temp(title, tex, return_title=False):

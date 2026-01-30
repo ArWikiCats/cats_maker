@@ -1,9 +1,12 @@
 #!/usr/bin/python3
 """ """
+import logging
+
 from ...config import settings
 from ...new_api.page import CatDepth
 from ...wiki_api import find_LCN
-from ..log import logger
+
+logger = logging.getLogger(__name__)
 
 
 def get_ar_list_title_from_en_list(enlist, wiki="en"):

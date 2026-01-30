@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-"""
+""" """
 from . import page
 from .api_utils import botEdit
 from .super.login_wrap import LoginWrap

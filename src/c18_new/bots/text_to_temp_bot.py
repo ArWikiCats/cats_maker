@@ -10,12 +10,14 @@ added = text_to_temp_bot.find_doc_and_add(Final_Categories, title)
 if page has ({{#استدعاء:شريط|شريط) replace ({{توثيق}}) by ({{توثيق شريط}})
 
 """
+import logging
 import re
 
 import wikitextparser as wtp
 
 from ...new_api.page import MainPage
-from ..log import logger
+
+logger = logging.getLogger(__name__)
 
 tosearch_and_replace = [
     "{{توثيق شريط}}",

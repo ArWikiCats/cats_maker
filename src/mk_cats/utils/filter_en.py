@@ -1,10 +1,10 @@
-"""
+""" """
 
-"""
+import logging
 import re
 from functools import lru_cache
 
-from ...helps import logger
+logger = logging.getLogger(__name__)
 
 BBlcak = [
     "Disambiguation",

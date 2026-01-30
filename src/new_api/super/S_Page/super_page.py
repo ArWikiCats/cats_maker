@@ -1,16 +1,18 @@
-"""
+""" """
 
-"""
+import logging
+
 import wikitextparser as wtp
 
 from ....config import settings
-from ....helps import logger
 from ...api_utils import botEdit
 from ...api_utils.ask_bot import ASK_BOT
 from ...api_utils.lang_codes import change_codes
 from .ar_err import find_edit_error
 from .bot import PAGE_APIS
 from .data import CategoriesData, Content, LinksData, Meta, RevisionsData, TemplateData
+
+logger = logging.getLogger(__name__)
 
 
 class MainPage(PAGE_APIS, ASK_BOT):

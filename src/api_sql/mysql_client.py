@@ -1,15 +1,14 @@
 #!/usr/bin/python3
-"""
-
-"""
+""" """
 import functools
+import logging
 from pathlib import Path
 from typing import Any
 
 import pymysql
 from pymysql.cursors import DictCursor
 
-from ..helps import logger
+logger = logging.getLogger(__name__)
 
 
 @functools.lru_cache(maxsize=1)

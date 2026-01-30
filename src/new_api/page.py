@@ -1,6 +1,5 @@
-"""
+""" """
 
-"""
 from .api_utils import lang_codes
 from .api_utils.user_agent import default_user_agent
 from .super.login_wrap import LoginWrap

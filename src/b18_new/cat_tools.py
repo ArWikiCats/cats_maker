@@ -2,10 +2,13 @@
 """
 from .cat_tools import get_SubSub_value
 """
+import logging
+
 from ..config import settings
-from ..helps import logger
 from ..utils.skip_cats import global_False_entemps as NO_Templates
 from ..wiki_api import get_cache_L_C_N
+
+logger = logging.getLogger(__name__)
 
 SubSub = {}
 # ---
