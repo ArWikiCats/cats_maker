@@ -11,7 +11,6 @@ try:
     from new_all import work_bot as new_all
 except ImportError:
     new_all = None
-import logging
 
 from src.config import settings
 from src.mk_cats import create_categories_from_list
@@ -22,8 +21,8 @@ logger = logging.getLogger(__name__)
 settings.bot.ask = True
 settings.debug = True
 
-# base_logger.set_level("ERROR")
-logger.set_level("DEBUG" if settings.debug else "INFO")
+# base_logger.setLevel("ERROR")
+logger.setLevel("DEBUG" if settings.debug else "INFO")
 
 new_all_tab = {1: False}
 
