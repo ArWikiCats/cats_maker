@@ -7,6 +7,9 @@ try:
         no_work,
         process_catagories,
     )
+    from .logging_config import setup_logging
+    setup_logging()
+
 except ImportError:
     # Skip imports when running as a standalone package (e.g., during testing)
     print("ImportError in cats_maker_new/src/__init__.py")
