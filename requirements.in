@@ -7,3 +7,4 @@ sqlite_utils
 requests
 pytest
 pytest-mock
+colorlog

@@ -1,4 +1,5 @@
 try:
+    from .logging_config import setup_logging
     from .mk_cats import (
         ToMakeNewCat2222,
         ar_make_lab,
@@ -7,6 +8,9 @@ try:
         no_work,
         process_catagories,
     )
+
+    setup_logging()
+
 except ImportError:
     # Skip imports when running as a standalone package (e.g., during testing)
     print("ImportError in cats_maker_new/src/__init__.py")

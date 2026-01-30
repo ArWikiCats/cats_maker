@@ -84,24 +84,6 @@ class LoggerWrap:
         """Log at an arbitrary level with formatted content."""
         self._logger.log(level, make_str(msg), *args, **kwargs)
 
-    def showDiff(self, oldtext: str, newtext: str) -> None:
-        """Show the difference between two text strings using the logger."""
-
-        diff = difflib.unified_diff(
-            oldtext.splitlines(),
-            newtext.splitlines(),
-            lineterm="",
-            fromfile="Old Text",
-            tofile="New Text",
-        )
-        for line in diff:
-            if line.startswith("+") and not line.startswith("+++"):
-                self._logger.warning(make_str(f"<<lightgreen>>{line}<<default>>"))
-            elif line.startswith("-") and not line.startswith("---"):
-                self._logger.warning(make_str(f"<<lightred>>{line}<<default>>"))
-            else:
-                self._logger.warning(make_str(line))
-
 
 def getLogger(name: str, level: int = logging.DEBUG) -> LoggerWrap:
     """Get a LoggerWrap instance for the specified name."""
