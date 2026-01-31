@@ -54,7 +54,7 @@ def log_to_file(data, filename):
             json.dump(data, f, ensure_ascii=False)
             logger.info(f"<<green>> wrote to {filename}")
     except PermissionError:
-        logger.info(f"<<red>> PermissionError writing to {filename}")
+        logger.error(f"<<red>> PermissionError writing to {filename}")
         delete = True
     except Exception as e:
         logger.warning(f"<<red>> Error writing to {filename}: {e}")
