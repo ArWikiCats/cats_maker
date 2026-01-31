@@ -3,7 +3,7 @@
 import logging
 
 from ...config import settings
-from ...new_api.page1 import CatDepth
+from ...new_api.pagenew import load_main_api
 from ...wiki_api import find_LCN
 
 logger = logging.getLogger(__name__)
@@ -50,9 +50,8 @@ def en_category_members(enpageTitle, wiki="en"):
     # ---
     namespace_ids = [0, 14, 100]
     # ---
-    cat_members = CatDepth(
-        enpageTitle, sitecode=wiki, family="wikipedia", depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[]
-    )
+    api = load_main_api(wiki)
+    cat_members = api.CatDepth(enpageTitle, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
     # ---
     en_titles = []
     # ---

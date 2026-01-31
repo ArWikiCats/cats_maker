@@ -1,16 +1,16 @@
 #!/usr/bin/python3
 """ """
-from ..new_api.page1 import MainPage
+from ..new_api.pagenew import load_main_api
 from ..temp import main_make_temp_no_title
 from ..wd_bots.wd_api_bot import Get_P373_API
-from ..wiki_api import himoBOT2
 from .categorytext_data import LocalLanguageLinks, category_mapping
 from .utils import portal_en_to_ar_lower
 
 
 def get_page_link_data(title: str, sitecode: str, ns: int = 100) -> list:
     # ---
-    page = MainPage(title, sitecode)
+    api = load_main_api(sitecode)
+    page = api.MainPage(title)
     # ---
     json1 = page.page_links()
     # ---

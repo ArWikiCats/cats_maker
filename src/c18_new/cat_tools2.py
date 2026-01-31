@@ -8,7 +8,7 @@
 import logging
 
 from ..config import settings
-from ..new_api.page1 import CatDepth
+from ..new_api.pagenew import load_main_api
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +28,8 @@ def Categorized_Page_Generator(enpageTitle, typee):
     # ---
     NN_cat_member = []
     # ---
-    cat_member = CatDepth(
-        enpageTitle, sitecode=settings.EEn_site.code, family="wikipedia", depth=0, ns=nss, with_lang="ar"
-    )
+    api = load_main_api(settings.EEn_site.code)
+    cat_member = api.CatDepth(enpageTitle, depth=0, ns=nss, with_lang="ar")
     # ---
     for title in cat_member:
         if int(cat_member[title]["ns"]) in tatone_ns:

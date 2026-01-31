@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 """ """
-import functools
 import logging
-
-from ..new_api.page1 import MainPage, SuperMainPage
+from ..new_api.pagenew import load_main_api
 from ..temp import main_make_temp_no_title
 from ..utils.skip_cats import skip_encats
 from . import categorytext
@@ -11,17 +9,12 @@ from . import categorytext
 logger = logging.getLogger(__name__)
 
 
-@functools.lru_cache
-def _load_page(title) -> SuperMainPage:
-    page = MainPage(title, "ar")
-    return page
-
-
 def page_put(title, new_text, msg):
     """
     used in tests
     """
-    page = _load_page(title)
+    api = load_main_api("ar")
+    page = api.MainPage(title)
 
     text = page.get_text()
     # ---
@@ -42,7 +35,7 @@ def page_put(title, new_text, msg):
     return save
 
 
-def create_Page(text: str, page: SuperMainPage) -> bool:
+def create_Page(text: str, page) -> bool:
     """
     used in tests
     """
@@ -141,7 +134,8 @@ def make_category(categories, enca, title, qid, family=""):
     text = text + caia
     text += f"\n\n[[en:{enca}]]"
 
-    page = MainPage(title, "ar")
+    api = load_main_api("ar")
+    page = api.MainPage(title)
     # ---
     if page.get_text() or page.exists():
         return False

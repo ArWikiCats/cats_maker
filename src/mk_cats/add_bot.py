@@ -3,12 +3,10 @@
 import functools
 import logging
 import time
-from typing import Literal
-
 from ..c18_new.bots.text_to_temp_bot import add_text_to_template
 from ..c18_new.dontadd import Dont_add_to_pages_def
 from ..c18_new.tools_bots.sort_bot import sort_categories
-from ..new_api.page1 import MainPage, SuperMainPage
+from ..new_api.pagenew import load_main_api
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +22,11 @@ def add_text_to_articles(final_categories, newtext):
 
 
 @functools.lru_cache(maxsize=1024)
-def _get_page(page_title) -> SuperMainPage | Literal[False]:
+def _get_page(page_title):
     # ---
-    page = MainPage(page_title, "ar")
+    api = load_main_api("ar")
+    page = api.MainPage(page_title)
+    # ---
     text = page.get_text()
     # ---
     if not text:

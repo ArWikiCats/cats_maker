@@ -19,6 +19,9 @@ config.read(f"{project}/confs/user.ini")
 username = config["DEFAULT"].get("botusername", "")
 password = config["DEFAULT"].get("botpassword", "")
 
+qs_token = config["DEFAULT"].get("qs_token", "")
+qs_tokenbot = config["DEFAULT"].get("qs_tokenbot", "")
+
 
 @functools.lru_cache(maxsize=1024)
 def load_main_api(lang="ar") -> ALL_APIS:
@@ -39,4 +42,6 @@ __all__ = [
     'MainPage',
     'NEW_API',
     'CatDepth',
+    'qs_token',
+    'qs_tokenbot',
 ]

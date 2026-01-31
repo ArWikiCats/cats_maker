@@ -15,7 +15,7 @@ import re
 
 import wikitextparser as wtp
 
-from ...new_api.page1 import MainPage
+from ...new_api.pagenew import load_main_api
 
 logger = logging.getLogger(__name__)
 
@@ -205,7 +205,9 @@ def find_doc_and_add(Final_Categories, title, create=False):
     # ---
     doc_title = f"{title}/شرح"
     # ---
-    page = MainPage(doc_title, "ar", family="wikipedia")
+    api = load_main_api("ar")
+    page = api.MainPage(doc_title)
+    # ---
     text = page.get_text()
     # ---
     if not text and not create:

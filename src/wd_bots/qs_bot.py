@@ -14,7 +14,7 @@ from pathlib import Path
 import requests
 
 from ..config import settings
-from ..new_api.useraccount import qs_token, qs_tokenbot
+from ..new_api.pagenew import qs_token, qs_tokenbot
 
 logger = logging.getLogger(__name__)
 
