@@ -186,3 +186,14 @@ def setup_logging(
         file_handler.setFormatter(file_formatter)
         file_handler.setLevel(numeric_level)
         project_logger.addHandler(file_handler)
+
+    if log_file:
+        log_file2 = log_file + ".err"
+        file_formatter = logging.Formatter(
+            fmt="%(asctime)s - %(name)s - %(levelname)-8s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+        file_handler = logging.FileHandler(log_file2, mode="a", encoding="utf-8")
+        file_handler.setFormatter(file_formatter)
+        file_handler.setLevel(logging.WARNING)
+        project_logger.addHandler(file_handler)
