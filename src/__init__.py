@@ -9,7 +9,7 @@ try:
         process_catagories,
     )
 
-    setup_logging()
+    setup_logging(level="DEBUG", name="src")
 
 except ImportError:
     # Skip imports when running as a standalone package (e.g., during testing)

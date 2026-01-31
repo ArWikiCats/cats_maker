@@ -5,6 +5,7 @@ Logging configuration with colored output.
 import functools
 import logging
 import re
+import os
 import sys
 
 import colorlog
@@ -123,12 +124,14 @@ def wrap_color_messages(format_message):
 
 
 def setup_logging(
-    level: str = "WARNING",
+    level: str = "INFO",
+    name: str = "cats_maker_new",
+    log_file: str | None = None,
 ) -> None:
     """
     Configure logging for the entire project namespace only.
     """
-    project_logger = logging.getLogger("cats_maker_new")
+    project_logger = logging.getLogger(name)
 
     if project_logger.handlers:
         return
@@ -157,3 +160,17 @@ def setup_logging(
     handler.propagate = False
 
     project_logger.addHandler(handler)
+
+    # Optional file handler (no colors)
+    if not log_file:
+        log_file = os.getenv("CATS_MAKER_LOG_FILE", None)
+
+    if log_file:
+        file_formatter = logging.Formatter(
+            fmt="%(asctime)s - %(name)s - %(levelname)-8s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+        file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
+        file_handler.setFormatter(file_formatter)
+        file_handler.setLevel(numeric_level)
+        project_logger.addHandler(file_handler)

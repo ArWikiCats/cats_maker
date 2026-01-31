@@ -33,7 +33,16 @@ try:
 except ImportError:
     resolve_arabic_category_label = None
 
-logging.getLogger("ArWikiCats").setLevel(logging.ERROR)
+
+def set_project_log_level(name, level: int) -> None:
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+
+    for handler in logger.handlers:
+        handler.setLevel(level)
+
+
+set_project_log_level("ArWikiCats", logging.ERROR)
 
 DONE_D = []
 NewCat_Done = {}

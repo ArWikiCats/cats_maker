@@ -16,6 +16,9 @@ import os
 import sys
 from dataclasses import dataclass, field
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def _safe_int(value: str, default: int) -> int:
