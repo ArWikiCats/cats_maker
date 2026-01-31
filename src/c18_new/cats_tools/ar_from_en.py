@@ -67,7 +67,7 @@ def make_ar_list_from_en_cat(encat):
         logger.info("<<lightblue>> No encat")
         return False
     # ---
-    logger.info(f'<<lightgreen>>* make_ar_list_from_en_cat: cat:"{encat}" ')
+    logger.info(f'<<lightgreen>>* : cat:"{encat}" ')
     # count = 0
     encat = clean_category_input(encat)
     # ---
@@ -89,9 +89,9 @@ def make_ar_list_from_en_cat(encat):
     listenpageTitle = list(set(listenpageTitle2))
     # ---
     if len(listenpageTitle) == 0:
-        logger.info("<<lightblue>>make_ar_list_from_en_cat No cats listenpageTitle = [] ")
+        logger.info("<<lightblue>> No cats listenpageTitle = [] ")
     # ---
-    logger.info(f"<<lightblue>> end of make_ar_list_from_en_cat, lenth:{len(listenpageTitle)}")
+    logger.info(f"<<lightblue>> end of , lenth:{len(listenpageTitle)}")
     return listenpageTitle
 
 
@@ -123,7 +123,7 @@ def Get_ar_list_from_en_list(enlist):
                         new_ar_list.append(arpagetitle)
                         en_done.append(p_w.replace("_", " "))
     # ---
-    logger.info(f"<<lightyellow>> Get_ar_list_from_en_list, <<lightblue>>lenth of new_ar_list:{len(new_ar_list)}")
+    logger.info(f"<<lightyellow>> , <<lightblue>>lenth of new_ar_list:{len(new_ar_list)}")
     # ---
     new_ar_list = list(set(new_ar_list))
     # ---

@@ -234,7 +234,7 @@ def Get_Items_API_From_Qids(qids, props="", sitefilter=""):
     if sitefilter:
         params["sitefilter"] = sitefilter
     # ---
-    logger.info(f"<<purple>> Get_Items_API_From_Qids: {len(qids)=}")
+    logger.info(f"<<purple>> : {len(qids)=}")
     # ---
     json1 = submitWikidataParams(params)
     # ---

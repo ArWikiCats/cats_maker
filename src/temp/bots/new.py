@@ -57,7 +57,7 @@ class TemplatesMaker:
     # ====== الدوال الرئيسية ======
     @classmethod
     def Make_Elff_temp(cls, title):
-        logger.info(f"<<lightblue>> Make_Elff_temp :{title} ")
+        logger.info(f"<<lightblue>> :{title} ")
         title = re.sub(r"الألفية الأولى", "الألفية 1", title)
         title = re.sub(r"الألفية الثانية", "الألفية 2", title)
         title = re.sub(r"الألفية الثالثة", "الألفية 3", title)

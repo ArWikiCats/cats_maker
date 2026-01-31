@@ -28,7 +28,7 @@ def load_db_config(db: str, host: str) -> dict[str, Any]:
 
 def _sql_connect_pymysql(query: str, db: str = "", host: str = "", values: tuple = None) -> list:
     # ---
-    logger.debug("start _sql_connect_pymysql:")
+    logger.debug("start :")
     # ---
     params = None
     # ---

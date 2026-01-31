@@ -87,7 +87,7 @@ def Make_sql(queries, wiki="") -> list:
     logger.info(queries)
     # ---
     start_time = datetime.now().strftime("%Y-%b-%d  %H:%M:%S")
-    logger.debug(f'<<yellow>> API/sql_py Make_sql 1 db:"{dbs_p}". {start_time}')
+    logger.debug(f'<<yellow>> API/sql_py 1 db:"{dbs_p}". {start_time}')
     # ---
     en_results = make_sql_connect(queries, host=host, db=dbs_p) or []
     # ---
@@ -98,7 +98,7 @@ def Make_sql(queries, wiki="") -> list:
     # ---
     delta = time.perf_counter() - start
     # ---
-    logger.debug(f'API/sql_py Make_sql len(encats) = "{len(encats)}", in {delta} seconds')
+    logger.debug(f'API/sql_py len(encats) = "{len(encats)}", in {delta} seconds')
     # ---
     encats.sort()
     # ---
@@ -148,7 +148,7 @@ def fetch_encat_titles(encatTitle: str) -> list:
 
 def find_sql(enpageTitle):
     # ---
-    logger.info(f"find_sql, enpageTitle:'{enpageTitle}'")
+    logger.info(f", enpageTitle:'{enpageTitle}'")
     # ---
     if not wiki_sql.GET_SQL():
         return []

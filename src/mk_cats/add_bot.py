@@ -55,7 +55,7 @@ def add_to_page(page_title, arcat):
     # ---
     Dont_add_to_pages = Dont_add_to_pages_def()
     # ---
-    logger.info(f"add_to_page page_title:{page_title} , cat:{arcat}")
+    logger.info(f" page_title:{page_title} , cat:{arcat}")
     # ---
     start = time.perf_counter()
     # ---
@@ -118,7 +118,7 @@ def add_to_final_list(final_list, title, callback=None):
         return
     # ---
     for n, page in enumerate(final_list, start=1):
-        logger.info(f"<<yellow>> add_to_final_list cat:{title} page:{page} n:{n}/{len(final_list)}")
+        logger.info(f"<<yellow>> cat:{title} page:{page} n:{n}/{len(final_list)}")
         save = add_to_page(page, title)
         if save and callback:
             try:

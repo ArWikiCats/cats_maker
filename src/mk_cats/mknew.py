@@ -294,7 +294,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
 
 
 def process_catagories(cat, arlab, num, lenth, callback=None):
-    logger.debug(f"*process_catagories: <<lightred>> {num}/{lenth} cat: {cat}, arlab: {arlab}")
+    logger.debug(f"*: <<lightred>> {num}/{lenth} cat: {cat}, arlab: {arlab}")
 
     ma_table = make_ar(cat, arlab, callback=callback)
 
@@ -303,7 +303,7 @@ def process_catagories(cat, arlab, num, lenth, callback=None):
             break
 
         logger.debug("===========================")
-        logger.debug(f"**process_catagories: range: {i} of {settings.range_limit}: for {len(ma_table)} cats.")
+        logger.debug(f"**: range: {i} of {settings.range_limit}: for {len(ma_table)} cats.")
         logger.debug("===========================")
 
         enriched_titles = []

@@ -94,7 +94,7 @@ def MakeLitApiWay(enpageTitle, Type="cat"):
     if not gent_faso_list:
         gent_faso_list = get_ar_list_from_cat(encat, code="en", typee=Type)
     # ---
-    logger.info(f" MakeLitApi:  Way lenth : {len(gent_faso_list)}")
+    logger.info(f" MakeLitApi: Way lenth : {len(gent_faso_list)}")
     if len(gent_faso_list) == 0:
         logger.info(f'<<lightblue>> MakeLit ApiWay: No cats gent_faso_list == ["{len(gent_faso_list)}"] ')
         return False

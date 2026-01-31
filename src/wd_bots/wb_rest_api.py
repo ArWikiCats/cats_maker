@@ -95,13 +95,13 @@ def Get_one_qid_info(qid, only=None):
 
 def Get_item_infos(qids):
     # ---
-    logger.info(f"Get_item_infos {len(qids)=}")
+    logger.info(f" {len(qids)=}")
     # ---
     table = {}
     # ---
     for qid in qids:
         # ---
-        logger.info(f"Get_item_infos work for one qid: {qid}")
+        logger.info(f" work for one qid: {qid}")
         # ---
         table[qid] = Get_one_qid_info(qid)
     # ---

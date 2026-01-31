@@ -132,7 +132,7 @@ def outbot_json_bot(err):
     elif err_code == "unresolved-redirect":
         # ---
         # {'code': 'unresolved-redirect', 'info': 'The given entity ID refers to a redirect, which is not supported in this context.', 'messages': [{'name': 'wikibase-api-unresolved-redirect', 'parameters': [], 'html': {'*': 'يشير معرِّف الكائن المحدد إلى تحويلة، وهذا غير مدعوم في السياق الحالي.'}}], '*': 'See https://www.wikidata.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/postorius/lists/mediawiki-api-announce.lists.wikimedia.org/&gt; for notice of API deprecations and breaking changes.'}
-        logger.debug("<<lightred>>    - unresolved-redirect")
+        logger.debug("<<lightred>> - unresolved-redirect")
         return "unresolved-redirect"
         # ---
     elif err_code == "failed-save":
@@ -142,7 +142,7 @@ def outbot_json_bot(err):
             time.sleep(5)
             return "reagain"
         # ---
-        logger.debug(f'<<lightred>>    - "{err_code}" ')
+        logger.debug(f'<<lightred>> - "{err_code}" ')
         logger.debug(text)
         return False
     elif err_code == "no-external-page":
@@ -165,14 +165,14 @@ def outbot_json_bot(err):
             "servedby": "mw2289",
         }
         # ---
-        logger.debug(f'<<lightred>>    - "{err_code}" ')
+        logger.debug(f'<<lightred>> - "{err_code}" ')
         logger.debug(text)
         return False
         # ---
     else:
         # ---
         if "wikibase-api-invalid-json" in text:
-            logger.debug('<<lightred>>    - "wikibase-api-invalid-json" ')
+            logger.debug('<<lightred>> - "wikibase-api-invalid-json" ')
             logger.debug(text)
             return "wikibase-api-invalid-json"
         # ---

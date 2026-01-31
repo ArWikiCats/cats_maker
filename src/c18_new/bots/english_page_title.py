@@ -94,7 +94,7 @@ def english_page_link_from_api(link, firstsite_code, second_site_code, text=""):
     cac = get_cache_L_C_N(tubb)
     # ---
     if cac:
-        logger.debug(f'>> _cache LCN tubb: "{link}":  = {second_site_code}:{cac}')
+        logger.debug(f'>> _cache LCN tubb: "{link}": = {second_site_code}:{cac}')
         return cac
     # ---
     logger.debug(f">> english_page_link {firstsite_code}:{link}")
@@ -200,7 +200,7 @@ def get_en_link_from_ar_text(title, site, sitetarget):
         EngInterwiki = sitelinks.get(sitetarget) or sitelinks.get(sitetarget2) or ""
     # ---
     if EngInterwiki:
-        logger.debug(f"<<lightblue>> himoBOT2.py, get_en_link_from_ar_text {EngInterwiki}")
+        logger.debug(f"<<lightblue>> himoBOT2.py, {EngInterwiki}")
     # ---
     return EngInterwiki
 

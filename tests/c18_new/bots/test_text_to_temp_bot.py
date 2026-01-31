@@ -5,6 +5,7 @@ This module tests functions for adding text/categories to template pages.
 """
 
 import re
+
 import pytest
 
 from src.c18_new.bots.text_to_temp_bot import (
@@ -170,7 +171,7 @@ class TestFindDocAndAdd:
         result = find_doc_and_add("[[تصنيف:علوم]]", "قالب:اختبار/مختبر")
         assert result is False
 
-    @pytest.mark.skip(reason="functools._lru_cache_wrapper object at 0x00000203511426C0> does not have the attribute 'MainPage")
+    @pytest.mark.skip(reason="_lru_cache_wrapper does not have the attribute 'MainPage")
     def test_returns_false_for_nonexistent_page(self, mocker):
         """Test that False is returned for nonexistent page"""
         mock_page = mocker.MagicMock()

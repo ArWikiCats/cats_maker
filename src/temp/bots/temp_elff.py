@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def Make_Elff_temp(title):
-    logger.info(f" Make_Elff_temp :{title} ", "blue")
+    logger.info(f" :{title} ", "blue")
 
     title = re.sub(r"الألفية الأولى", "الألفية 1", title)
     title = re.sub(r"الألفية الثانية", "الألفية 2", title)
@@ -42,7 +42,7 @@ def Make_Elff_temp(title):
             if bld == title:
                 bld = ""
             bld = bld.strip()
-            logger.info(f'Make_Elff_temp : elffs:"{elffs}",bef:"{bef}",In:"{In}",bld:"{bld}"')
+            logger.info(f' : elffs:"{elffs}",bef:"{bef}",In:"{In}",bld:"{bld}"')
 
             temp = f"{xdx}بلد الألفية {elffs}"
             if not texx:
@@ -70,7 +70,7 @@ def Make_Elff_temp(title):
         logger.info(" no Caas")
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
-    logger.info(f' Make_Elff_temp:{title} , tex:"{teg}"', "blue")
+    logger.info(f' :{title} , tex:"{teg}"', "blue")
     t_1 = f"تصنيف:{teg}الألفية"
     ttt = t_1 + r"\s*(\d|الأولى|الثانية|الثالثة|الرابعة|)\s*(في |)(.*|)$"
     logger.info(f'ttt:"{ttt}" ')

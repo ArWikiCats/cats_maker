@@ -101,7 +101,7 @@ def make_sleep_def():
         # ---
         fain = FFa_lag[1]
         # ---
-        logger.debug(f"<<lightpurple>> bot.py make_sleep_def: {fain=}")
+        logger.debug(f"<<lightpurple>> bot.py : {fain=}")
         # ---
         FFa_lag[2] = FFa_lag[1]
         # ---
@@ -121,7 +121,7 @@ def make_sleep_def():
             fain = 4
     # ---
     if newsleep[1] != fain:
-        logger.debug(f"change newsleep from {newsleep[1]} to {fain}, <<lightpurple>>  max lag:{FFa_lag[1]}.")
+        logger.debug(f"change newsleep from {newsleep[1]} to {fain}, <<lightpurple>> max lag:{FFa_lag[1]}.")
         newsleep[1] = fain
 
 

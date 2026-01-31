@@ -71,7 +71,7 @@ def wwdesc(NewDesc, qid, i, fixlang, ask="", tage=""):
     langes = list(NewDesc.keys())
     # ---
     if len(langes) == 2 and "en-gb" in langes and "en-ca" in langes:
-        logger.info("wwdesc: only en-gb and en-ca, Skipp... ")
+        logger.info(": only en-gb and en-ca, Skipp... ")
         return
     # ---
     # dlangs = ','.join(queries_list)
@@ -96,7 +96,7 @@ def wwdesc(NewDesc, qid, i, fixlang, ask="", tage=""):
     skipplang = []
     # ---
     if queries_list == [] and fixlang == []:
-        logger.info("  *** no addedlangs")
+        logger.info(" *** no addedlangs")
         return
     # ---
     value = ""
@@ -169,16 +169,16 @@ def work_api_desc(NewDesc, qid, fixlang=[]):
         lang = list(NewDesc.keys())[0]
         # ---
         if lang in lang_to_skip:
-            logger.info(f'work_api_desc:"{qid}" only en-gb and en-ca, Skipp... ')
+            logger.info(f':"{qid}" only en-gb and en-ca, Skipp... ')
             return
         # ---
         onedesc = NewDesc[lang]["value"]
-        logger.info(f'work_api_desc:"{qid}" only one desc"{lang}:{onedesc}"')
+        logger.info(f':"{qid}" only one desc"{lang}:{onedesc}"')
         get_wd_api_bot().Des_API(qid, onedesc, lang)
         return
     # ---
     elif len(langes) == 2 and langes[0] in lang_to_skip and langes[1] in lang_to_skip:
-        logger.info(f'work_api_desc:"{qid}" only en-gb and en-ca, Skipp... ')
+        logger.info(f':"{qid}" only en-gb and en-ca, Skipp... ')
         return
     # ---
     for fix in fixlang:

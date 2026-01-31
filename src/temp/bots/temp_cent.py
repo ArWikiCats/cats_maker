@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def Make_Cent_temp(title):
-    logger.info(f" Make_Cent_temp :{title} ", "blue")
+    logger.info(f" :{title} ", "blue")
     Caa = False
     tex = ""
     title = re.sub(r"_", " ", title)

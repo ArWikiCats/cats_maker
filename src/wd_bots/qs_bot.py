@@ -74,7 +74,7 @@ def QS_New_API(data2):
     if not r2:
         return False
     # ---
-    logger.debug(f"QS_New_API: {str(r2.text)}")
+    logger.debug(f": {str(r2.text)}")
 
 
 def QS_line(line, user="Mr. Ibrahem"):

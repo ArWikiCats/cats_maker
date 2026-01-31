@@ -68,7 +68,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
             langx = lang
         # ---
         if table["username"].find("bot") == -1 and family == "wikipedia":
-            logger.info(f"add_User_tables: {family=}, {table['username']=}")
+            logger.info(f": {family=}, {table['username']=}")
         # ---
         if family != "" and table["username"] != "" and table["password"] != "":
             # ---
@@ -263,7 +263,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
 
     def make_new_session(self) -> None:
         # ---
-        logger.debug(f"make_new_session:({self.lang}, {self.family}, {self.username})")
+        logger.debug(f":({self.lang}, {self.family}, {self.username})")
         # ---
         seasons_by_lang[self.sea_key] = requests.Session()
         # ---
@@ -347,7 +347,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
 
         except Exception as e:
             self.log_error("Exception", u_action, params=params)
-            logger.warning(f"{botname} {self.lang}.{self.family} raw_request exception for action '{u_action}': {e}")
+            logger.warning(f"{botname} {self.lang}.{self.family} exception for action '{u_action}': {e}")
         # ---
         self._handle_server_error(req0, u_action, params=params)
         # ---
@@ -411,7 +411,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
 
     def get_rest_result(self, url) -> dict:
         # ---
-        logger.debug("get_rest_result:")
+        logger.debug(":")
         # ---
         if not seasons_by_lang.get(self.sea_key):
             self.make_new_session()
@@ -425,7 +425,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
                 )
             # ---
         except Exception as e:
-            logger.warning(f"{botname} {self.lang}.{self.family} get_rest_result exception for url '{url}': {e}")
+            logger.warning(f"{botname} {self.lang}.{self.family} exception for url '{url}': {e}")
             return {}
         # ---
         result = {}

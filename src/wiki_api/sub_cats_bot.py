@@ -52,7 +52,7 @@ def sub_cats_query(enlink, sitecode, ctype=""):
     # ---
     API_n_CALLS[1] += 1
     # ---
-    logger.info(f"<<lightblue>> API_n_CALLS {API_n_CALLS[1]} sub_cats_query for {sitecode}:{enlink}")
+    logger.info(f"<<lightblue>> API_n_CALLS {API_n_CALLS[1]} for {sitecode}:{enlink}")
     # ---
     api = submitAPI(params, sitecode, "wikipedia", printurl=False) or {}
     # ---

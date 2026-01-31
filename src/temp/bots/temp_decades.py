@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def MakedecadesTemp(title):
     Caa = False
-    logger.info(f" MakedecadesTemp :{title} ", "blue")
+    logger.info(f" :{title} ", "blue")
     tex = ""
     title = re.sub(r"_", " ", title)
 
@@ -71,10 +71,10 @@ def MakedecadesTemp(title):
         p_2 = f"تصنيف:{texx}عقد"
         if title.startswith(p_2):
             tex = texx
-            logger.info(f' MakedecadesTemp:{title} , texx:"{texx}"', "blue")
+            logger.info(f' :{title} , texx:"{texx}"', "blue")
 
     if Caa:
-        logger.info(f' Caa: MakedecadesTemp:{title} , tex:"{tex}"', "blue")
+        logger.info(f' Caa: :{title} , tex:"{tex}"', "blue")
         t_1 = f"تصنيف:{tex}عقد "
         ttt = t_1 + r"(\d+)\s*(في |)(.*|)$"
 

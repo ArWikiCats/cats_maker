@@ -117,7 +117,7 @@ def sparql_generator_url(quary, printq=False, add_date=True, key="", geterror=Fa
                     if result[vv]["value"] not in qdict[iid][vv]:
                         qdict[iid][vv].append(result[vv]["value"])
     # ---
-    logger.info(f"#sparql_generator_url:<<lightgreen>> {len(qlist)} items found. {menet}")
+    logger.info(f"#:<<lightgreen>> {len(qlist)} items found. {menet}")
     # ---
     if returndict:
         return qdict

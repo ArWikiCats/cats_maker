@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def Make_years_temp(title, tex, return_title=False):
-    logger.info(f' Make_years_temp:{title} , tex:"{tex}"', "blue")
+    logger.info(f' :{title} , tex:"{tex}"', "blue")
     if title.find("ق م") != -1 or title.find("ق.م") != -1:
         if return_title:
             return "", ""
@@ -27,7 +27,7 @@ def Make_years_temp(title, tex, return_title=False):
         ye = ""
     Y, YY = "", ""
     template = f"{cacaca[tex]}بلد"
-    logger.info(f" Make_years_temp:{title} , ye:{ye}, tex:{tex}", "blue")
+    logger.info(f" :{title} , ye:{ye}, tex:{tex}", "blue")
 
     if ye in years_Baco:
         logger.info(f"ye in years_Baco {years_Baco[ye]}")

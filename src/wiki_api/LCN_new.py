@@ -103,7 +103,7 @@ class WikiApiHandler:
 
         count = self._increment_api_call()
 
-        logger.info(f"<<lightblue>> API CALL {count}: find_page_data for ({self.family}:{page_title}), prop: {props}")
+        logger.info(f"<<lightblue>> API CALL {count}: for ({self.family}:{page_title}), prop: {props}")
 
         logger.debug(f" for page {site_code}:{page_title}")
 
@@ -226,7 +226,7 @@ class WikiApiHandler:
 
         count = self._increment_api_call()
 
-        logger.info(f"<<lightblue>> API CALL {count}: find_non_hidden_categories for {site_code}:{page_title}")
+        logger.info(f"<<lightblue>> API CALL {count}: for {site_code}:{page_title}")
 
         # Submit the API request
         api_response = submitAPI(params, site_code, self.family)

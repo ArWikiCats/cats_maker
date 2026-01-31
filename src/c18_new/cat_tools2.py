@@ -20,7 +20,7 @@ if settings.category.stubs:
 
 def Categorized_Page_Generator(enpageTitle, typee):
     # ---
-    logger.info(f"Categorized_Page_Generator, enpageTitle:{enpageTitle}")
+    logger.info(f", enpageTitle:{enpageTitle}")
     # ---
     nss = "all"
     if typee == "cat":

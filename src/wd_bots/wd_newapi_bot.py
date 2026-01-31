@@ -65,7 +65,7 @@ class WD_API(WD_Functions, WD_ERRORS_HANDLER):
         if error_code == "maxlag" and max_retry < 4:
             self.lag_work(error)
             # ---
-            logger.debug(f"<<purple>>post_to_newapi: <<red>> lag_work: {max_retry=}")
+            logger.debug(f"<<purple>>: <<red>> lag_work: {max_retry=}")
             # ---
             return self.post_to_newapi(params=params, tage=tage, editgroups=editgroups, max_retry=max_retry + 1)
         # ---
@@ -73,7 +73,7 @@ class WD_API(WD_Functions, WD_ERRORS_HANDLER):
             # ---
             er = self.handle_err_wd(error, function="", params=params)
             # ---
-            logger.debug(f"<<purple>>post_to_newapi: <<red>> handle_err_wd: {er}")
+            logger.debug(f"<<purple>>: <<red>> handle_err_wd: {er}")
             # return er
         # ---
         success = results.get("success", 0)

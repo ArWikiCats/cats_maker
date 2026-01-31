@@ -27,14 +27,14 @@ class BOTS_APIS(HANDEL_ERRORS, ASK_BOT):
     def Add_To_Bottom(self, text, summary, title, poss="Head|Bottom"):
         # ---
         if not title.strip():
-            logger.debug('** Add_To_Bottom ..  title == ""')
+            logger.debug('** .. title == ""')
             return False
         # ---
         if not text.strip():
-            logger.debug('** Add_To_Bottom ..  text == ""')
+            logger.debug('** .. text == ""')
             return False
         # ---
-        logger.debug(f"** Add_To_Bottom .. [[{title}]] ")
+        logger.debug(f"** .. [[{title}]] ")
         # ---
         user = self.username or getattr(self, "user_login", "")
         # ---
@@ -73,7 +73,7 @@ class BOTS_APIS(HANDEL_ERRORS, ASK_BOT):
         result = data.get("result", "")
         # ---
         if result == "Success":
-            logger.warning(f"<<lightgreen>>** True. Add_To_Bottom title:({title})")
+            logger.warning(f"<<lightgreen>>** True. title:({title})")
             return True
         # ---
         error = results.get("error", {})
@@ -88,7 +88,7 @@ class BOTS_APIS(HANDEL_ERRORS, ASK_BOT):
 
     def move(self, old_title, to, reason="", noredirect=False, movesubpages=False, return_dict=False):
         # ---
-        logger.debug(f"<<lightyellow>> def move [[{old_title}]] to [[{to}]] ")
+        logger.debug(f"<<lightyellow>> def [[{old_title}]] to [[{to}]] ")
         # ---
         params = {
             "action": "move",
@@ -175,7 +175,7 @@ class BOTS_APIS(HANDEL_ERRORS, ASK_BOT):
         # ---
         if error:
             if error_code == "ratelimited":
-                logger.debug("<<red>> move ratelimited:")
+                logger.debug("<<red>> ratelimited:")
                 return self.move(
                     old_title,
                     to,
@@ -243,7 +243,7 @@ class BOTS_APIS(HANDEL_ERRORS, ASK_BOT):
 
     def upload_by_file(self, file_name, text, file_path, comment="", ignorewarnings=False):
         # ---
-        logger.debug(f"<<lightyellow>> def upload_by_file. {file_name=}")
+        logger.debug(f"<<lightyellow>> def . {file_name=}")
         # ---
         if file_name.startswith("File:"):
             file_name = file_name.replace("File:", "")

@@ -49,7 +49,7 @@ def work22(q, topic, translations):
 
 
 def mainfromQuarry(topic, Quarry, translations):
-    # logger.info( '*<<lightyellow>> mainfromQuarry:' )
+    # logger.info( '*<<lightyellow>> :' )
     # Quarry = 'SELECT ?item WHERE { ?item wdt:P31 wd:Q17633526.}'
     json = sparql_generator_url(Quarry)
     lenth = len(json)
@@ -58,5 +58,5 @@ def mainfromQuarry(topic, Quarry, translations):
     for item in json:
         num += 1
         q = "item" in item and item["item"].split("/entity/")[1]
-        logger.info(f'<<lightyellow>>*mainfromQuarry: {num}/{lenth} topic:"{topic}", q:"{q}".')
+        logger.info(f'<<lightyellow>>*: {num}/{lenth} topic:"{topic}", q:"{q}".')
         work22(q, topic, translations)

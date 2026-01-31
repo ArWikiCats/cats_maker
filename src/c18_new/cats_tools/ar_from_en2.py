@@ -39,14 +39,14 @@ def get_ar_list_title_from_en_list(enlist, wiki="en"):
                         new_ar_list.append(arpagetitle)
                         en_done.append(arpagetitle.replace("_", " "))
     # ---
-    logger.info(f"<<lightyellow>> get_ar_list_title_from_en_list, <<lightblue>>lenth of new_ar_list:{len(new_ar_list)}")
+    logger.info(f"<<lightyellow>> , <<lightblue>>lenth of new_ar_list:{len(new_ar_list)}")
     # ---
     return new_ar_list
 
 
 def en_category_members(enpageTitle, wiki="en"):
     # ---
-    logger.info(f"<<lightyellow>> en_category_members from category: {enpageTitle} <<default>>")
+    logger.info(f"<<lightyellow>> from category: {enpageTitle} <<default>>")
     # ---
     namespace_ids = [0, 14, 100]
     # ---

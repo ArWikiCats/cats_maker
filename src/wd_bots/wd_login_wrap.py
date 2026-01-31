@@ -2,9 +2,10 @@
 
 # ---
 import functools
+
 from ..config import settings
 from ..new_api import LoginWrap
-from ..new_api.pagenew import username, password
+from ..new_api.pagenew import password, username
 
 User_tables_bot = {
     "username": username,

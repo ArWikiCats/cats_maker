@@ -146,7 +146,7 @@ def makejson(property, numeric):
 
 
 def Make_New_item(artitle, entitle, family=""):
-    logger.debug(f'<<lightgreen>>* Make_New_item:ar:"{artitle}", english:"{entitle}".')
+    logger.debug(f'<<lightgreen>>* :ar:"{artitle}", english:"{entitle}".')
 
     enwiki = "enwiki"
     arwiki = "arwiki"

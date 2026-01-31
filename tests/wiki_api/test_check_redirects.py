@@ -26,7 +26,9 @@ class TestLoadNonRedirects:
         result = load_non_redirects("en", ["Page1", "Page2", "Page3"])
 
         assert result == ["Page1", "Page2"]
-        mock_api.NEW_API.Find_pages_exists_or_not.assert_called_once_with(["Page1", "Page2", "Page3"], get_redirect=True)
+        mock_api.NEW_API.Find_pages_exists_or_not.assert_called_once_with(
+            ["Page1", "Page2", "Page3"], get_redirect=True
+        )
 
     def test_filters_out_redirect_key(self, mocker):
         """Test that 'redirect' key is filtered out from results"""

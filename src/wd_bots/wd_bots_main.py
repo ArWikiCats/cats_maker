@@ -53,14 +53,14 @@ class NewHimoAPIBot:
             wiki = f"{wiki}wiki"
         # ---
         if enlink:
-            logger.debug(f' **Sitelink_API: enlink:"{ensite}:{enlink}" {wiki}:{title}')
+            logger.debug(f' **: enlink:"{ensite}:{enlink}" {wiki}:{title}')
         else:
-            logger.debug(f' **Sitelink_API: Qid:"{Qid}" {wiki}:{title}')
+            logger.debug(f' **: Qid:"{Qid}" {wiki}:{title}')
         # ---
         # save the edit
         # ---
         if Qid.strip() == "" and enlink == "":
-            logger.debug(f'<<lightred>> **Sitelink_API: False: Qid == "" {wiki}:{title}.')
+            logger.debug(f'<<lightred>> **: False: Qid == "" {wiki}:{title}.')
             return False
         # ---
         paramse = {
@@ -110,11 +110,11 @@ class NewHimoAPIBot:
             return ""
         # ---
         if not Qid:
-            logger.debug("Labels_API Qid == '' ")
+            logger.debug(" Qid == '' ")
             return False
         # ---
         if label == "" and not remove:
-            logger.debug("Labels_API label == '' and remove = False ")
+            logger.debug(" label == '' and remove = False ")
             return False
         # ---
         # save the edit
@@ -132,7 +132,7 @@ class NewHimoAPIBot:
         )
         # ---
         if not r4:
-            logger.debug("Labels_API r4 == {} ")
+            logger.debug(" r4 == {} ")
             return False
         # ---
         text = str(r4)
@@ -178,7 +178,7 @@ class NewHimoAPIBot:
             return ""
         # ---
         if not desc.strip():
-            logger.debug("<<red>> Des_API desc is empty.")
+            logger.debug("<<red>> desc is empty.")
             return
         # ---
         # save the edit
@@ -229,7 +229,7 @@ class NewHimoAPIBot:
         if lag_bot.bad_lag(nowait):
             return ""
         # ---
-        logger.debug(f"<<lightblue>> bot.New_Mult_Des_2:q:{q}")
+        logger.debug(f"<<lightblue>> bot.:q:{q}")
         # ---
         if not Save_2020_wd[1] and (ask is True or settings.bot.ask):
             logger.debug(f"<<lightyellow>> summary:{summary}")
@@ -337,7 +337,7 @@ class NewHimoAPIBot:
             if cf is True:
                 if "entity" in r4 and "id" in r4["entity"]:
                     Qid = r4["entity"]["id"]
-                    logger.debug(f'<<lightgreen>> bot.py New_API: returnid:"{Qid}" ')
+                    logger.debug(f'<<lightgreen>> bot.py : returnid:"{Qid}" ')
             return Qid
         # ---
         return str(r4)

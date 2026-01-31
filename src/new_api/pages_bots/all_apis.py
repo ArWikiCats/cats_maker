@@ -55,7 +55,7 @@ class ALL_APIS:
         # ---
         login_bot = Login(self.lang, family=self.family)
         # ---
-        logger.debug(f"### <<purple>> _login make new bot for ({self.lang}.{self.family}.org|{self.username})")
+        logger.debug(f"### <<purple>> make new bot for ({self.lang}.{self.family}.org|{self.username})")
         # ---
         user_tables = {
             self.family: {

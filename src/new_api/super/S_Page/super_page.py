@@ -604,7 +604,7 @@ class MainPage(PAGE_APIS, ASK_BOT):
         if not self.meta.Exists:
             self.get_text()
         if not self.meta.Exists:
-            logger.debug(f'page "{self.title}" not exists in {self.lang}:{self.family}')
+            logger.debug(f'page "{self.title}" not in {self.lang}:{self.family}')
         return self.meta.Exists
 
     def namespace(self):
@@ -726,7 +726,7 @@ class MainPage(PAGE_APIS, ASK_BOT):
         data = self.post_params(params, addtoken=True)
         # ---
         if not data:
-            logger.debug("<<lightred>> ** purge error. ")
+            logger.debug("<<lightred>> ** error. ")
             return False
         # ---
         title2 = self.title
