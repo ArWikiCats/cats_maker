@@ -234,9 +234,7 @@ class NewHimoAPIBot:
         if not Save_2020_wd[1] and (ask is True or settings.bot.ask):
             logger.debug(f"<<lightyellow>> summary:{summary}")
             # ---
-            sa = ask_put(
-                f'<<lightyellow>> New_Mult_Des_2 "{q}" <<lightgreen>> (Yes or No ?)<<default>> ,{Main_User[1]} '
-            )
+            sa = ask_put(f'<<lightyellow>> "{q}" <<lightgreen>> (Yes or No ?)<<default>> ,{Main_User[1]} ')
             if not sa:
                 return False
             # ---
