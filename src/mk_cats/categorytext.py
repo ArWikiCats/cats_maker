@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """ """
-from ..new_api.page import MainPage
+from ..new_api.page1 import MainPage
 from ..temp import main_make_temp_no_title
 from ..wd_bots.wd_api_bot import Get_P373_API
 from ..wiki_api import himoBOT2

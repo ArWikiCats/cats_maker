@@ -14,7 +14,7 @@ from ..b18_new import (
     validate_categories_for_new_cat,
 )
 from ..config import settings
-from ..new_api.page import MainPage
+from ..new_api.pagenew import load_main_api
 from ..wd_bots import to_wd
 from ..wd_bots.wd_api_bot import Get_Sitelinks_From_wikidata
 from ..wiki_api import find_Page_Cat_without_hidden
@@ -98,8 +98,9 @@ def scan_ar_title(title):
 def check_if_artitle_exists(test_title):
     if not test_title.startswith("تصنيف:"):
         test_title = f"تصنيف:{test_title}"
-
-    page = MainPage(test_title, wiki_site_ar["code"], family="wikipedia")
+    # ---
+    api = load_main_api(wiki_site_ar["code"])
+    page = api.MainPage(test_title)
     # ---
     if page.exists():
         logger.debug(f"<<lightred>>* category:{test_title} already exists in arwiki.")
