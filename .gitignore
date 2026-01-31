@@ -14,5 +14,5 @@ htmlcov/
 *.egg-info/
 __pycache__/
 .env
-logger.log
 *.env
+/BOTS_LOGS

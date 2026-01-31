@@ -124,7 +124,7 @@ def wrap_color_messages(format_message):
 
 
 def prepare_log_file(log_file, project_logger):
-    log_file = Path(log_file).expanduser().as_posix()
+    log_file = Path(log_file).expanduser()
     try:
         log_file.parent.mkdir(parents=True, exist_ok=True)
     except Exception as e:
@@ -188,7 +188,7 @@ def setup_logging(
         project_logger.addHandler(file_handler)
 
     if log_file:
-        log_file2 = log_file + ".err"
+        log_file2 = log_file.with_suffix(".err")
         file_formatter = logging.Formatter(
             fmt="%(asctime)s - %(name)s - %(levelname)-8s - %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
