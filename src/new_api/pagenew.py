@@ -5,7 +5,7 @@ import configparser
 import functools
 import os
 
-from .pages_bots.all_apis import ALL_APIS
+from .super.all_apis import ALL_APIS
 
 project = "/data/project/himo"
 # ---
@@ -18,15 +18,12 @@ config.read(f"{project}/confs/user.ini")
 username = config["DEFAULT"].get("botusername", "")
 password = config["DEFAULT"].get("botpassword", "")
 
-qs_token = config["DEFAULT"].get("qs_token", "")
-qs_tokenbot = config["DEFAULT"].get("qs_tokenbot", "")
-
 
 @functools.lru_cache(maxsize=1024)
-def load_main_api(lang="ar") -> ALL_APIS:
+def load_main_api(lang="ar", family="wikipedia") -> ALL_APIS:
     return ALL_APIS(
         lang=lang,
-        family="wikipedia",
+        family=family,
         username=username,
         password=password,
     )
@@ -41,6 +38,4 @@ __all__ = [
     "MainPage",
     "NEW_API",
     "CatDepth",
-    "qs_token",
-    "qs_tokenbot",
 ]

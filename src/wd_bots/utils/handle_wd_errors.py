@@ -81,6 +81,3 @@ class WD_ERRORS_HANDLER:
         # ---
         params["data"] = {}
         logger.debug(f"<<lightred>>{function} ERROR: <<defaut>>info: {err_info}, {params=}")
-        # ---
-        if settings.debug_config.raise_errors:
-            raise Exception(error)

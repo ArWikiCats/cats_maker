@@ -93,21 +93,6 @@ def Get_one_qid_info(qid, only=None):
     return main_table
 
 
-def Get_item_infos(qids):
-    # ---
-    logger.info(f" {len(qids)=}")
-    # ---
-    table = {}
-    # ---
-    for qid in qids:
-        # ---
-        logger.info(f" work for one qid: {qid}")
-        # ---
-        table[qid] = Get_one_qid_info(qid)
-    # ---
-    return table
-
-
 def Get_P373(qid):
     # ---
     infos = Get_one_qid_info(qid)

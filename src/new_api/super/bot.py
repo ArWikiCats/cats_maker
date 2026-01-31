@@ -310,9 +310,6 @@ class LOGIN_HELPS(PARAMS_HELPS):
         # ---
         if not self.user_table_done:
             logger.debug("<<green>> user_table_done == False!")
-            # do error
-            if settings.debug_config.raise_errors:
-                raise Exception("user_table_done == False!")
         # ---
         if self.family == "mdwiki":
             timeout = 60

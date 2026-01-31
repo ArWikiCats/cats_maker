@@ -4,15 +4,11 @@ from .super.handel_errors import HANDEL_ERRORS
 """
 
 import logging
-
-from ...config import settings
-
 logger = logging.getLogger(__name__)
 
 
 class HANDEL_ERRORS:
     def __init__(self):
-        # logger.debug("class HANDEL_ERRORS:")
         pass
 
     def handel_err(self, error: dict, function: str = "", params: dict = None, do_error: bool = True):
@@ -88,6 +84,3 @@ class HANDEL_ERRORS:
             params["data"] = {}
             params["text"] = {}
             logger.error(f"<<lightred>>{function} ERROR: <<defaut>>info: {err_info}, {params=}")
-        # ---
-        if settings.debug_config.raise_errors:
-            raise Exception(error)

@@ -7,7 +7,6 @@ This module tests Wikidata REST API functions.
 import pytest
 
 from src.wd_bots.wb_rest_api import (
-    Get_item_infos,
     Get_one_qid_info,
     Get_P373,
     get_rest_result,
@@ -123,41 +122,6 @@ class TestGetOneQidInfo:
 
         call_args = mock_get.call_args[0][0]
         assert "/labels" in call_args
-
-
-class TestGetItemInfos:
-    """Tests for Get_item_infos function"""
-
-    def test_returns_dict(self, mocker):
-        """Test that function returns a dict"""
-        mocker.patch(
-            "src.wd_bots.wb_rest_api.Get_one_qid_info", return_value={"labels": {}, "sitelinks": {}, "qid": "Q123"}
-        )
-
-        result = Get_item_infos(["Q123"])
-
-        assert isinstance(result, dict)
-
-    def test_processes_each_qid(self, mocker):
-        """Test that each QID is processed"""
-        mock_get = mocker.patch(
-            "src.wd_bots.wb_rest_api.Get_one_qid_info", return_value={"labels": {}, "sitelinks": {}, "qid": "Q123"}
-        )
-
-        Get_item_infos(["Q123", "Q456", "Q789"])
-
-        assert mock_get.call_count == 3
-
-    def test_keys_are_qids(self, mocker):
-        """Test that result keys are QIDs"""
-        mocker.patch(
-            "src.wd_bots.wb_rest_api.Get_one_qid_info", return_value={"labels": {}, "sitelinks": {}, "qid": "Q123"}
-        )
-
-        result = Get_item_infos(["Q123", "Q456"])
-
-        assert "Q123" in result
-        assert "Q456" in result
 
 
 class TestGetP373:

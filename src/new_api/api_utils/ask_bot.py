@@ -6,16 +6,11 @@ from ...api_utils import ASK_BOT
 
 import difflib
 import logging
-
 from ...config import settings
-
-logger = logging.getLogger(__name__)
+from ...helps.printe_helper import make_str
 
 yes_answer = ["y", "a", "", "Y", "A", "all", "aaa"]
-
 Save_or_Ask = {}
-
-from ...helps.printe_helper import make_str
 
 logger = logging.getLogger(__name__)
 

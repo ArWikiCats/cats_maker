@@ -2,13 +2,12 @@
 
 import logging
 from collections.abc import KeysView
-from ...api_utils import change_codes
-from .bot import BOTS_APIS
+from ..api_utils import change_codes
 
 logger = logging.getLogger(__name__)
 
 
-class NEW_API(BOTS_APIS):
+class NEW_API:
     def __init__(self, login_bot, lang):
         self.login_bot = login_bot
         self.user_login = login_bot.user_login
@@ -107,3 +106,22 @@ class NEW_API(BOTS_APIS):
         result = [titles[i : i + chunk_size] for i in range(0, len(titles), chunk_size)]
         # ---
         return result
+
+    def merge_all_jsons_deep(self, all_jsons, json1):
+        def deep_merge(a, b):
+            if isinstance(a, dict) and isinstance(b, dict):
+                for k, v in b.items():
+                    if k in a:
+                        a[k] = deep_merge(a[k], v)
+                    else:
+                        a[k] = v
+                return a
+            elif isinstance(a, list) and isinstance(b, list):
+                return a + b
+            else:
+                return b
+
+        if not isinstance(all_jsons, dict):
+            all_jsons = {}
+
+        return deep_merge(all_jsons, json1)

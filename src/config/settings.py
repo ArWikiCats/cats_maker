@@ -94,12 +94,10 @@ class DebugConfig:
 
     Attributes:
         print_url: Print API URLs for debugging
-        raise_errors: Raise exceptions instead of handling them
         do_post: Force POST requests for debugging
     """
 
     print_url: bool = False
-    raise_errors: bool = False
     do_post: bool = False
 
 
@@ -375,8 +373,6 @@ class Settings:
             # Debug config
             if arg_name == "printurl":
                 self.debug_config.print_url = True
-            if arg_name == "raise":
-                self.debug_config.raise_errors = True
             if arg_name == "dopost":
                 self.debug_config.do_post = True
 
