@@ -16,6 +16,7 @@ class TestLoadNonRedirects:
     def test_returns_non_redirect_pages(self, mocker):
         """Test that load_non_redirects returns only non-redirect pages"""
         mock_api = mocker.MagicMock()
+        mock_api.NEW_API = mocker.MagicMock()
         mock_api.NEW_API.Find_pages_exists_or_not.return_value = {
             "Page1": True,
             "Page2": True,
