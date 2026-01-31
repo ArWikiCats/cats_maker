@@ -67,7 +67,7 @@ def add_to_page(page_title, arcat):
     # ---
     susu = f"بوت [[مستخدم:Mr.Ibrahembot/التصانیف المعادلة|التصانيف المعادلة]]: +([[{arcat}]])"
     # ---
-    page = _get_page(page_title, "ar")
+    page = _get_page(page_title)
     # ---
     if not page:
         logger.info(f"<<lightred>> _get_page() failed for {page_title=}, {arcat=}")

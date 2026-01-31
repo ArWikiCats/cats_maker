@@ -47,6 +47,7 @@ def create_Page(text: str, page: SuperMainPage) -> bool:
     used in tests
     """
     new_cat = page.Create(text=text, summary="بوت:إنشاء تصنيف.")
+
     return new_cat
 
 
@@ -146,12 +147,12 @@ def make_category(categories, enca, title, qid, family=""):
         return False
     # ---
     new_cat = create_Page(text, page)
-
+    # ---
     if new_cat is not False:
-        text = add_text_to_cat(text, categories, enca, title, qid, family="")
-
+        text = add_text_to_cat(text, categories, enca, title, qid)
+    # ---
     logger.warning(f"<<lightgreen>> New_Cat: {new_cat}")
-
+    # ---
     return new_cat
 
 
@@ -161,12 +162,10 @@ def new_category(enca, title, categories, qid, family=""):
     if not title or title == "n":
         logger.debug('<<lightred>> not title or title != "n"')
 
-    New_Cat = make_category(categories, enca, title, qid, family=family)
+    new_cat = make_category(categories, enca, title, qid, family=family)
 
-    susu = f"بوت: [[مستخدم:Mr.Ibrahembot/التصانیف المعادلة|التصانيف المعادلة]]:+ 1 ([[{title}]])"
-
-    if New_Cat is False or New_Cat is not True:
-        logger.debug("no1: New_Cat is False")
+    if new_cat is False or new_cat is not True:
+        logger.debug("no1: new_cat is False")
         logger.debug("return False")
         return False
 

@@ -13,3 +13,6 @@ mk_cats/desktop.ini
 htmlcov/
 *.egg-info/
 __pycache__/
+.env
+*.env
+/BOTS_LOGS
