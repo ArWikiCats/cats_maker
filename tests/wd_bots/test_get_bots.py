@@ -7,13 +7,11 @@ This module tests Wikidata API functions.
 import pytest
 
 from src.wd_bots.get_bots import (
-    Get_Claim_API,
     Get_infos_wikidata,
     Get_Item_API_From_Qid,
     Get_item_descriptions_or_labels,
     Get_Items_API_From_Qids,
     Get_P373_API,
-    Get_Property_API,
     Get_Sitelinks_from_qid,
     Get_Sitelinks_From_wikidata,
     format_labels_descriptions,
@@ -281,52 +279,3 @@ class TestGetP373API:
         result = Get_P373_API("Q123")
 
         assert result == "Test Category"
-
-
-class TestGetPropertyAPI:
-    """Tests for Get_Property_API function"""
-
-    def test_returns_empty_list_on_no_response(self, mocker):
-        """Test that function returns empty list when API returns None"""
-        mocker.patch("src.wd_bots.get_bots.submitAPI", return_value=None)
-
-        result = Get_Property_API(q="Q123", p="P31")
-
-        assert result == []
-
-    def test_extracts_property_values(self, mocker):
-        """Test that function extracts property values from claims"""
-        mock_response = {"claims": {"P31": [{"mainsnak": {"datavalue": {"value": {"id": "Q5"}}}}]}}
-        mocker.patch("src.wd_bots.get_bots.submitAPI", return_value=mock_response)
-
-        result = Get_Property_API(q="Q123", p="P31")
-
-        assert "Q5" in result
-
-
-class TestGetClaimAPI:
-    """Tests for Get_Claim_API function"""
-
-    def test_returns_empty_string_when_no_claims(self, mocker):
-        """Test that function returns empty string when no claims found"""
-        mocker.patch("src.wd_bots.get_bots.Get_Property_API", return_value=[])
-
-        result = Get_Claim_API(q="Q123", p="P31")
-
-        assert result == ""
-
-    def test_returns_first_claim_by_default(self, mocker):
-        """Test that function returns first claim by default"""
-        mocker.patch("src.wd_bots.get_bots.Get_Property_API", return_value=["Q5", "Q6", "Q7"])
-
-        result = Get_Claim_API(q="Q123", p="P31")
-
-        assert result == "Q5"
-
-    def test_returns_all_claims_when_requested(self, mocker):
-        """Test that function returns all claims when return_claims is True"""
-        mocker.patch("src.wd_bots.get_bots.Get_Property_API", return_value=["Q5", "Q6", "Q7"])
-
-        result = Get_Claim_API(q="Q123", p="P31", return_claims=True)
-
-        assert result == ["Q5", "Q6", "Q7"]

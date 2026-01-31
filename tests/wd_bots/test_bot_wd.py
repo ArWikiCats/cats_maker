@@ -4,8 +4,6 @@ Tests for src/wd_bots/bot_wd.py
 This module tests the WD_Functions class.
 """
 
-import pytest
-
 from src.wd_bots.bot_wd import (
     WD_Functions,
 )
@@ -84,37 +82,3 @@ class TestWDFunctions:
         result = wd.Get_item_descriptions_or_labels(mock_post_continue, "Q123")
 
         assert result == {}
-
-    def test_get_property_api(self, mocker):
-        """Test Get_Property_API method"""
-        wd = WD_Functions()
-
-        mock_post_continue = mocker.MagicMock(
-            return_value={"claims": {"P31": [{"mainsnak": {"datavalue": {"value": {"id": "Q5"}}}}]}}
-        )
-
-        result = wd.Get_Property_API(mock_post_continue, q="Q123", p="P31")
-
-        assert "Q5" in result
-
-    def test_get_property_api_no_response(self, mocker):
-        """Test Get_Property_API with no response"""
-        wd = WD_Functions()
-
-        mock_post_continue = mocker.MagicMock(return_value=None)
-
-        result = wd.Get_Property_API(mock_post_continue, q="Q123", p="P31")
-
-        assert result == []
-
-    def test_get_property_api_with_sites_and_titles(self, mocker):
-        """Test Get_Property_API with sites and titles parameters"""
-        wd = WD_Functions()
-
-        mock_post_continue = mocker.MagicMock(return_value=None)
-
-        wd.Get_Property_API(mock_post_continue, q="", p="P31", sites="enwiki", titles="Test")
-
-        call_args = mock_post_continue.call_args[0][0]
-        assert call_args["sites"] == "enwiki"
-        assert call_args["titles"] == "Test"

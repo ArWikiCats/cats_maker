@@ -1,11 +1,9 @@
 from .get_bots import (
-    Get_Claim_API,
     Get_infos_wikidata,
     Get_Item_API_From_Qid,
     Get_item_descriptions_or_labels,
     Get_Items_API_From_Qids,
     Get_P373_API,
-    Get_Property_API,
     Get_Sitelinks_from_qid,
     Get_Sitelinks_From_wikidata,
 )
@@ -21,7 +19,5 @@ __all__ = [
     "Get_infos_wikidata",
     "Get_Sitelinks_from_qid",
     "Get_Item_API_From_Qid",
-    "Get_Claim_API",
-    "Get_Property_API",
     "Get_Items_API_From_Qids",
 ]

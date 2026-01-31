@@ -9,7 +9,7 @@ import re
 from ..config import settings
 from .qs_bot import QS_line, QS_New_API
 from .utils import lag_bot
-from .utils.out_json import outbot_json, outbot_json_bot
+from .utils.out_json import outbot_json
 from .wd_login_wrap import log_in_wikidata
 from .wd_newapi_bot import WD_API
 
@@ -40,7 +40,6 @@ class NewHimoAPIBot:
         # ---
         self.get_rest_result = self.wdapi_new.get_rest_result
         # ---
-        self.outbot_json_bot = outbot_json_bot
         self.outbot_json = outbot_json
         self.session_post = self.wdapi_new.post_to_newapi
 

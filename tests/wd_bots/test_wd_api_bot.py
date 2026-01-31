@@ -7,13 +7,11 @@ This module tests the Wikidata API bot imports/re-exports.
 import pytest
 
 from src.wd_bots.wd_api_bot import (
-    Get_Claim_API,
     Get_infos_wikidata,
     Get_Item_API_From_Qid,
     Get_item_descriptions_or_labels,
     Get_Items_API_From_Qids,
     Get_P373_API,
-    Get_Property_API,
     Get_Sitelinks_from_qid,
     Get_Sitelinks_From_wikidata,
     sparql_generator_big_results,
@@ -69,16 +67,6 @@ class TestWdApiImports:
         """Test that Get_Item_API_From_Qid is imported"""
         assert Get_Item_API_From_Qid is not None
         assert callable(Get_Item_API_From_Qid)
-
-    def test_get_claim_api_imported(self):
-        """Test that Get_Claim_API is imported"""
-        assert Get_Claim_API is not None
-        assert callable(Get_Claim_API)
-
-    def test_get_property_api_imported(self):
-        """Test that Get_Property_API is imported"""
-        assert Get_Property_API is not None
-        assert callable(Get_Property_API)
 
     def test_get_items_api_from_qids_imported(self):
         """Test that Get_Items_API_From_Qids is imported"""
