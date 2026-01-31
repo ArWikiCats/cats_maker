@@ -8,7 +8,7 @@ import time
 from collections.abc import KeysView
 from datetime import timedelta
 
-from ...api_utils.lang_codes import change_codes
+from ...api_utils import change_codes
 from .bot import BOTS_APIS
 
 logger = logging.getLogger(__name__)

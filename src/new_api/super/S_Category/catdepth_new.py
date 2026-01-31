@@ -4,7 +4,6 @@ import logging
 import time
 from functools import lru_cache
 
-from ....config import settings
 from .bot import CategoryDepth
 
 logger = logging.getLogger(__name__)

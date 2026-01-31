@@ -19,7 +19,7 @@ import time
 import urllib.parse
 
 from ...config import settings
-from ..api_utils.user_agent import default_user_agent
+from ..api_utils import default_user_agent
 from .bot import LOGIN_HELPS
 from .handel_errors import HANDEL_ERRORS
 
