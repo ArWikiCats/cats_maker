@@ -3,16 +3,106 @@
 import logging
 
 import wikitextparser as wtp
+from dataclasses import dataclass, field
 
 from ....config import settings
-from ...api_utils import botEdit
-from ...api_utils.ask_bot import ASK_BOT
-from ...api_utils.lang_codes import change_codes
-from .ar_err import find_edit_error
-from .bot import PAGE_APIS
-from .data import CategoriesData, Content, LinksData, Meta, RevisionsData, TemplateData
+from ...api_utils import bot_May_Edit
+from ...api_utils import ASK_BOT
+from ...api_utils import change_codes
+
+from ..handel_errors import HANDEL_ERRORS
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class Content:
+    # text: str = ""
+    # newtext: str = ""
+    text_html: str = ""
+    summary: str = ""
+    words: int = 0
+    length: int = 0
+
+
+@dataclass
+class Meta:
+    is_Disambig: bool = False
+    can_be_edit: bool = False
+    # ns: int = 0
+    userinfo: dict = field(default_factory=dict)
+    create_data: dict = field(default_factory=dict)
+    info: dict = field(default_factory=lambda: {"done": False})
+    username: str = ""
+    Exists: str = ""
+    is_redirect: str = ""
+    flagged: str = ""
+    wikibase_item: str = ""
+
+
+@dataclass
+class RevisionsData:
+    revid: str = ""
+    newrevid: str = ""
+    pageid: str = ""
+    timestamp: str = ""
+    revisions: list = field(default_factory=list)
+    touched: str = ""
+
+
+@dataclass
+class LinksData:
+    back_links: list = field(default_factory=list)
+    extlinks: list = field(default_factory=list)
+    iwlinks: list = field(default_factory=list)
+    links_here: list = field(default_factory=list)
+    links: list = field(default_factory=list)
+    links2: list = field(default_factory=list)
+
+
+@dataclass
+class CategoriesData:
+    categories: dict = field(default_factory=dict)
+    hidden_categories: dict = field(default_factory=dict)
+    all_categories_with_hidden: dict = field(default_factory=dict)
+
+
+@dataclass
+class TemplateData:
+    templates: dict = field(default_factory=dict)
+    templates_API: dict = field(default_factory=dict)
+
+
+def find_edit_error(old, new):
+    # Define the dictionary of conversion phrases
+    conversion_phrases = {
+        "#تحويل [[",
+    }
+    for phrase in conversion_phrases:
+        if phrase in old and phrase not in new:
+            print(f"ar_err.py found ({phrase}) in old but not in new. return True")
+            return True
+
+    return False
+
+
+class PAGE_APIS(HANDEL_ERRORS):
+    def __init__(self, login_bot):
+        # print("class PAGE_APIS:")
+        self.login_bot = login_bot
+        # ---
+        self.user_login = login_bot.user_login
+        # ---
+        self.title = getattr(self, "title", "")
+        # ---
+        super().__init__()
+
+    def post_continue(
+        self, params, action, _p_="pages", p_empty=None, Max=500000, first=False, _p_2="", _p_2_empty=None
+    ):
+        return self.login_bot.post_continue(
+            params, action, _p_=_p_, p_empty=p_empty, Max=Max, first=first, _p_2=_p_2, _p_2_empty=_p_2_empty
+        )
 
 
 class MainPage(PAGE_APIS, ASK_BOT):
@@ -485,58 +575,6 @@ class MainPage(PAGE_APIS, ASK_BOT):
         # ---
         return self.langlinks
 
-    def get_templates_API(self):
-        # ---
-        if not self.meta.info["done"]:
-            self.get_infos()
-        # ---
-        return self.template_data.templates_API
-
-    def get_links_here(self):
-        # ---
-        if not self.meta.info["done"]:
-            self.get_infos()
-        # ---
-        return self.links_data.links_here
-
-    def get_wiki_links_from_text(self):
-        if not self.text:
-            self.text = self.get_text()
-        # ---
-        parsed = wtp.parse(self.text)
-        wikilinks = parsed.wikilinks
-        # ---
-        # logger.debug(f'wikilinks:{str(wikilinks)}')
-        # ---
-        # for x in wikilinks:
-        #     print(x.title)
-        # ---
-        return wikilinks
-
-    def Get_tags(self, tag=""):
-        if not self.text:
-            self.text = self.get_text()
-        # ---
-        self.text = self.text.replace("<ref>", '<ref name="ss">', 1)
-        # ---
-        parsed = wtp.parse(self.text)
-        tags = parsed.get_tags()
-        # ---
-        # logger.debug(f'tags:{str(tags)}')
-        # ---
-        if not tag:
-            return tags
-        # ---
-        new_tags = []
-        # ---
-        for x in tags:
-            if x.name == tag:
-                new_tags.append(x)
-        # ---
-        # return tags if tag == '' else [x for x in tags if x.name == tag]
-        # ---
-        return new_tags
-
     def can_edit(self, script="", delay=0):
         # ---
         if self.family != "wikipedia":
@@ -545,26 +583,11 @@ class MainPage(PAGE_APIS, ASK_BOT):
         if not self.text:
             self.text = self.get_text()
         # ---
-        self.meta.can_be_edit = botEdit.bot_May_Edit(
+        self.meta.can_be_edit = bot_May_Edit(
             text=self.text, title_page=self.title, botjob=script, page=self, delay=delay
         )
         # ---
         return self.meta.can_be_edit
-
-    def is_flagged(self):
-        # ---
-        """
-        Returns whether the page is flagged for review or quality control.
-
-        If the page text has not been loaded, it is retrieved before checking the flagged status.
-
-        Returns:
-            bool: True if the page is flagged, False otherwise.
-        """
-        if not self.text:
-            self.text = self.get_text()
-        # ---
-        return self.meta.flagged
 
     def get_create_data(self):
         """
@@ -586,20 +609,6 @@ class MainPage(PAGE_APIS, ASK_BOT):
             self.get_text()
         return self.revisions_data.timestamp
 
-    def get_newrevid(self):
-        # newrevid is only populated on successful edit/create responses.
-        if not self.revisions_data.newrevid:
-            # Ensure we at least have the current revid loaded.
-            if not self.revisions_data.revid:
-                self.get_text()
-        # Fallback to current revid if no newrevid exists.
-        return self.revisions_data.newrevid or self.revisions_data.revid
-
-    def get_revid(self):
-        if not self.revisions_data.revid:
-            self.get_text()
-        return self.revisions_data.revid
-
     def exists(self):
         if not self.meta.Exists:
             self.get_text()
@@ -611,11 +620,6 @@ class MainPage(PAGE_APIS, ASK_BOT):
         if self.ns is False:
             self.get_text()
         return self.ns
-
-    def get_user(self):
-        if not self.user:
-            self.get_text()
-        return self.user
 
     def save(self, newtext="", summary="", nocreate=1, minor="0", tags="", nodiff=False, ASK=False):
         """
@@ -714,41 +718,6 @@ class MainPage(PAGE_APIS, ASK_BOT):
         # ---
         return False
 
-    def purge(self):
-        # ---
-        params = {
-            "action": "purge",
-            "forcelinkupdate": 1,
-            "forcerecursivelinkupdate": 1,
-            "titles": self.title,
-        }
-        # ---
-        data = self.post_params(params, addtoken=True)
-        # ---
-        if not data:
-            logger.debug("<<lightred>> ** error. ")
-            return False
-        # ---
-        title2 = self.title
-        # ---
-        #  'normalized': [{'from': 'وب:ملعب', 'to': 'ويكيبيديا:ملعب'}]}
-        # ---
-        for x in data.get("normalized", []):
-            # logger.debug(f"normalized from {x['from']} to {x['to']}")
-            if x["from"] == self.title:
-                title2 = x["to"]
-                break
-        # ---
-        for t in data.get("purge", []):
-            # t = [{'ns': 4, 'title': 'ويكيبيديا:ملعب', 'purged': '', 'linkupdate': ''}]
-            ti = t["title"]
-            if title2 == ti and "purged" in t:
-                return True
-            if "missing" in t:
-                logger.debug(f"page \"{t['title']}\" missing")
-                return "missing"
-        return False
-
     def Create(self, text="", summary="", nodiff="", noask=False) -> bool:
         # ---
         """
@@ -822,34 +791,6 @@ class MainPage(PAGE_APIS, ASK_BOT):
             # ---
         return False
 
-    def page_backlinks(self, ns=0):
-        params = {
-            "action": "query",
-            "maxlag": "3",
-            # "prop": "info",
-            "generator": "backlinks",
-            # "redirects": 1,
-            # 'gblfilterredir': 'redirects',
-            "gbltitle": self.title,
-            "gblnamespace": ns,
-            "gbllimit": "max",
-            "formatversion": "2",
-            "gblredirect": 1,
-        }
-        # ---
-        # x = { 'batchcomplete': True, 'limits': { 'backlinks': 2500 }, 'query': { 'redirects': [{ 'from': 'فريدريش زيمرمان', 'to': 'فريدريش تسيمرمان' }], 'pages': [{ 'pageid': 2941285, 'ns': 0, 'title': 'فولفغانغ شويبله' }, { 'pageid': 4783977, 'ns': 0, 'title': 'وزارة الشؤون الرقمية والنقل' }, { 'pageid': 5218323, 'ns': 0, 'title': 'فريدريش تسيمرمان' }, { 'pageid': 6662649, 'ns': 0, 'title': 'غونتر كراوزه' }] } }
-        # ---
-        # data = self.post_params(params)
-        # pages = data.get("query", {}).get("pages", [])
-        # ---
-        pages = self.post_continue(params, "query", _p_="pages", p_empty=[])
-        # ---
-        back_links = [x for x in pages if x["title"] != self.title]
-        # ---
-        self.links_data.back_links = back_links
-        # ---
-        return self.links_data.back_links
-
     def page_links(self):
         params = {
             "action": "parse",
@@ -867,63 +808,3 @@ class MainPage(PAGE_APIS, ASK_BOT):
         self.links_data.links2 = data
         # ---
         return self.links_data.links2
-
-    def page_links_query(self, plnamespace="*"):
-        params = {
-            "action": "query",
-            "prop": "links",
-            "formatversion": "2",
-            "titles": self.title,
-            "plnamespace": plnamespace,
-            "pllimit": "max",
-            "converttitles": 1,
-        }
-        # data = self.post_params(params)
-        # data = data.get('query', {}).get('links', [])
-        # ---
-        data = self.post_continue(params, "query", _p_="links", p_empty=[])
-        # ---
-        # [{'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True}, {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}]
-        # ---
-        self.links_data.links = data
-        # ---
-        return self.links_data.links
-
-    def get_revisions(self, rvprops=[]):
-        # ---
-        rvprop = [
-            "comment",
-            "timestamp",
-            "user",
-            # "content",
-            "ids",
-        ]
-        # ---
-        for x in rvprops:
-            if x not in rvprop:
-                rvprop.append(x)
-        # ---
-        params = {
-            "action": "query",
-            "format": "json",
-            "prop": "revisions",
-            "titles": self.title,
-            "utf8": 1,
-            "formatversion": "2",
-            "rvdir": "newer",
-            "rvslots": "*",
-            "rvlimit": "max",
-            # "rvprop": "comment|timestamp|user|content|ids",
-            "rvprop": "|".join(rvprop),
-        }
-        # ---
-        _revisions = self.post_continue(params, "query", _p_="pages", p_empty=[])
-        # ---
-        revisions = []
-        # ---
-        for x in _revisions:
-            revisions.extend(x["revisions"])
-        # ---
-        self.revisions_data.revisions = revisions
-        # ---
-        return revisions
