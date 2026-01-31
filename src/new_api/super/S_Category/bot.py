@@ -121,10 +121,6 @@ class CategoryDepth:
         self.ns = str(self.ns)
         self.nslist = kwargs.get("nslist") or []
 
-    def Login_to_wiki(self):
-        self.log_to_wiki_1()
-        return
-
     def params_work(self, params):
         t_props = ["revisions"] if not self.no_gcmsort else []
         # ---
