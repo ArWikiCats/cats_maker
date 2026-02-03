@@ -147,7 +147,7 @@ def setup_logging(
     if project_logger.handlers:
         return
 
-    numeric_level = getattr(logging, level.upper(), logging.INFO)
+    numeric_level = getattr(logging, level.upper(), logging.INFO) if isinstance(level, str) else level
     project_logger.setLevel(numeric_level)
     project_logger.propagate = False
 
@@ -162,39 +162,34 @@ def setup_logging(
         },
     )
 
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(formatter)
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(formatter)
     # message colorizer
     formatter.formatMessage = wrap_color_messages(formatter.formatMessage)
 
-    handler.setLevel(numeric_level)
-    handler.propagate = False
+    console_handler.setLevel(numeric_level)
 
-    project_logger.addHandler(handler)
+    project_logger.addHandler(console_handler)
 
     # Optional file handler (no colors)
     if not log_file:
         log_file = os.getenv("CATS_MAKER_LOG_FILE", None)
-        if log_file:
-            log_file = prepare_log_file(log_file, project_logger)
 
     if log_file:
-        file_formatter = logging.Formatter(
-            fmt="%(asctime)s - %(name)s - %(levelname)-8s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
-        file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
-        file_handler.setFormatter(file_formatter)
-        file_handler.setLevel(numeric_level)
-        project_logger.addHandler(file_handler)
+        log_file = prepare_log_file(log_file, project_logger)
+        setup_file_handler(project_logger, log_file, numeric_level)
 
-    if log_file:
+        # Separate error log file
         log_file2 = log_file.with_suffix(".err")
-        file_formatter = logging.Formatter(
-            fmt="%(asctime)s - %(name)s - %(levelname)-8s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
-        file_handler = logging.FileHandler(log_file2, mode="a", encoding="utf-8")
-        file_handler.setFormatter(file_formatter)
-        file_handler.setLevel(logging.WARNING)
-        project_logger.addHandler(file_handler)
+        setup_file_handler(project_logger, log_file2, logging.WARNING)
+
+
+def setup_file_handler(project_logger, log_file, level):
+    file_formatter = logging.Formatter(
+        fmt="%(asctime)s - %(name)s - %(levelname)-8s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
+    file_handler.setFormatter(file_formatter)
+    file_handler.setLevel(level)
+    project_logger.addHandler(file_handler)
