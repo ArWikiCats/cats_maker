@@ -523,11 +523,11 @@ class TestCategoryConfig:
     """Tests for CategoryConfig dataclass."""
 
     def test_default_min_members(self):
-        """Test default min_members is 5."""
+        """Test default min_members is 10."""
         from src.config.settings import CategoryConfig
 
         config = CategoryConfig()
-        assert config.min_members == 5
+        assert config.min_members == 10  # Default value
 
     def test_custom_min_members(self):
         """Test custom min_members can be set."""
@@ -583,4 +583,4 @@ class TestMinMembersEnvVar:
         from src.config.settings import Settings
 
         s = Settings()
-        assert s.category.min_members == 5
+        assert s.category.min_members == 10  # Default value

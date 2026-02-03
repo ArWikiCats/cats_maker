@@ -150,7 +150,7 @@ class CategoryConfig:
     test_mode: bool = False
     work_fr: bool = False
     descqs: bool = False
-    min_members: int = 5
+    min_members: int = 10
 
 
 @dataclass
