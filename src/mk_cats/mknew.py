@@ -62,13 +62,22 @@ def ar_make_lab(title, **Kwargs):
         logger.debug(f"<<lightred>> {title} is not okay.")
         return ""
 
-    if resolve_arabic_category_label:
-        label = resolve_arabic_category_label(title)
-        # logger.warning(f'<<lightgreen>> Resolved label for "{title}": "{label}"')
-        return label
+    if not resolve_arabic_category_label:
+        logger.debug("<<lightred>> ArWikiCats.resolve_arabic_category_label not available.")
+        return ""
 
-    logger.debug("<<lightred>> ArWikiCats.resolve_arabic_category_label not available.")
-    return ""
+    label = resolve_arabic_category_label(title)
+    # logger.warning(f'<<lightgreen>> Resolved label for "{title}": "{label}"')
+
+    if not label:
+        logger.debug(f'<<lightred>> No label found for "{title}".')
+        return ""
+
+    if "ذكور" in label:
+        logger.error(f'<<lightred>> label "{label}" has "ذكور".')
+        return ""
+
+    return label
 
 
 def scan_ar_title(title):
