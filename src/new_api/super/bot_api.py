@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class NEW_API:
-    def __init__(self, login_bot, lang):
+    def __init__(self, login_bot, lang, family="wikipedia"):
         self.login_bot = login_bot
         self.user_login = login_bot.user_login
         self.username = getattr(self, "username", "")
