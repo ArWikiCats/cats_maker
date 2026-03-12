@@ -35,10 +35,13 @@ def get_ar_list(arcat, us_sql=True):
     ar_cat2 = arcat.replace(" ", "_").replace("تصنيف:", "")
     ar_cat2 = escape_string(ar_cat2)
     # ---
-    qia_ar = f"""select page_title, page_namespace
-        from page, categorylinks
-        where cl_from = page_id
-        and cl_to = "{ar_cat2}"
+    qia_ar = f"""
+    select page_title, page_namespace
+        from page
+        join categorylinks on cl_from = page_id
+        join linktarget on cl_target_id = lt_id
+        where lt_title = "{ar_cat2}"
+        and lt_namespace = 14
     """
     # ---
     ar_list = []
@@ -68,13 +71,15 @@ def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
         nss = "14"
     # ---
     en_qua = f"""
-        select DISTINCT ll_title
-            from page p1,categorylinks cla, langlinks
-            where p1.page_id = ll_from
-            and p1.page_namespace in ({nss})
-            and cla.cl_to = "{encat2}"
-            and ll_lang = 'ar'
-            and cla.cl_from = p1.page_id
+        SELECT DISTINCT ll_title
+            FROM page p1
+            JOIN categorylinks cla ON cla.cl_from = p1.page_id
+            JOIN linktarget lt ON cla.cl_target_id = lt.lt_id
+            JOIN langlinks ON p1.page_id = ll_from
+            WHERE p1.page_namespace IN ({nss})
+            AND lt.lt_namespace = 14
+            AND lt.lt_title = '{encat2}'
+            AND ll_lang = 'ar'
     """
     # ---
     if us_sql is True and GET_SQL():
