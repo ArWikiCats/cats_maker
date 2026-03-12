@@ -38,12 +38,15 @@ def fetch_arcat_titles(arcatTitle):
         SELECT page_title, page_namespace
         FROM page
         JOIN categorylinks
+        JOIN linktarget ON cl_target_id = lt_id
         JOIN langlinks
-        WHERE cl_to = "{arcatTitle}"
+        WHERE lt_title = "{arcatTitle}"
+        AND lt_namespace = 14
         AND cl_from = page_id
         AND page_id = ll_from
         AND ll_lang = "en"
-        GROUP BY page_title ;"""
+        GROUP BY page_title
+        """
     # ---
     host, dbs_p = wiki_sql.make_labsdb_dbs_p("ar")
     # ---
@@ -137,9 +140,18 @@ def fetch_encat_titles(encatTitle: str) -> list:
     # ---
     item = escape_string(item)
     # ---
-    queries = f"""SELECT ll_title , page_namespace  FROM page JOIN categorylinks JOIN langlinks
-        WHERE cl_to = "{item}" AND cl_from=page_id AND page_id =ll_from AND ll_lang = "ar"
-        GROUP BY ll_title ;"""
+    queries = f"""
+        SELECT ll_title, page_namespace
+        FROM page
+        JOIN categorylinks
+        JOIN linktarget ON cl_target_id = lt_id
+        JOIN langlinks
+        WHERE lt_title = "{item}"
+        AND lt_namespace = 14
+        AND cl_from = page_id
+        AND page_id = ll_from
+        AND ll_lang = "ar"
+        GROUP BY ll_title"""
     # ---
     encats = Make_sql(queries)
     # ---

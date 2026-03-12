@@ -126,6 +126,9 @@ def wrap_color_messages(format_message):
 
 def prepare_log_file(log_file, project_logger):
     log_file = Path(log_file).expanduser()
+    if "$HOME" in log_file:
+        log_file = log_file.replace("$HOME", os.getenv("HOME", ""))
+        
     try:
         log_file.parent.mkdir(parents=True, exist_ok=True)
     except Exception as e:
