@@ -69,54 +69,54 @@ class TestScanArTitle:
         from src.mk_cats import mknew
 
         # Add title to Already_Created
-        mknew.Already_Created.clear()
-        mknew.Already_Created.append("تصنيف:علوم")
+        mknew._already_created.clear()
+        mknew._already_created.append("تصنيف:علوم")
 
         result = mknew.scan_ar_title("تصنيف:علوم")
 
         assert result is False
 
         # Cleanup
-        mknew.Already_Created.clear()
+        mknew._already_created.clear()
 
     def test_returns_true_for_new_title(self, mocker):
         """Test that scan_ar_title returns True for new titles."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         result = mknew.scan_ar_title("تصنيف:جديد")
 
         assert result is True
 
         # Cleanup
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
     def test_tracks_title_in_newcat_done(self, mocker):
         """Test that scan_ar_title tracks title in NewCat_Done."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         mknew.scan_ar_title("تصنيف:اختبار")
 
-        assert "تصنيف:اختبار" in mknew.NewCat_Done
+        assert "تصنيف:اختبار" in mknew._new_cat_done
 
         # Cleanup
-        mknew.NewCat_Done.clear()
+        mknew._new_cat_done.clear()
 
     def test_returns_false_for_duplicate_without_subsub(self, mocker):
         """Test that scan_ar_title returns False for duplicate without SubSub."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         # First call - should return True
         result1 = mknew.scan_ar_title("تصنيف:مكرر")
@@ -127,7 +127,7 @@ class TestScanArTitle:
         assert result2 is False
 
         # Cleanup
-        mknew.NewCat_Done.clear()
+        mknew._new_cat_done.clear()
 
 
 class TestMakeAr:
@@ -154,8 +154,8 @@ class TestMakeAr:
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         # Mock all external calls
         mocker.patch.object(mknew, "scan_ar_title", return_value=False)
@@ -165,16 +165,16 @@ class TestMakeAr:
         assert result == []
 
         # Cleanup
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
     def test_returns_empty_when_ar_exists_in_wikidata(self, mocker):
         """Test that make_ar returns empty when Arabic link exists in Wikidata."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
@@ -188,8 +188,8 @@ class TestMakeAr:
         assert result == []
 
         # Cleanup
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
 
 class TestProcessCatagories:
@@ -269,22 +269,22 @@ class TestOneCat:
         from src.mk_cats import mknew
 
         # Clear and add to DONE_D
-        mknew.DONE_D.clear()
-        mknew.DONE_D.append("Category:Duplicate")
+        mknew._done_d.clear()
+        mknew._done_d.append("Category:Duplicate")
 
         result = mknew.one_cat("Category:Duplicate", 1, 1)
 
         assert result is False
 
         # Cleanup
-        mknew.DONE_D.clear()
+        mknew._done_d.clear()
 
     def test_returns_false_when_no_label(self, mocker):
         """Test that one_cat returns False when no Arabic label is found."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.DONE_D.clear()
+        mknew._done_d.clear()
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="")
 
@@ -293,14 +293,14 @@ class TestOneCat:
         assert result is False
 
         # Cleanup
-        mknew.DONE_D.clear()
+        mknew._done_d.clear()
 
     def test_returns_false_when_check_en_temps_fails(self, mocker):
         """Test that one_cat returns False when check_en_temps fails."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.DONE_D.clear()
+        mknew._done_d.clear()
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="علوم")
         mocker.patch("src.mk_cats.mknew.check_en_temps", return_value=False)
@@ -310,14 +310,14 @@ class TestOneCat:
         assert result is False
 
         # Cleanup
-        mknew.DONE_D.clear()
+        mknew._done_d.clear()
 
     def test_returns_false_when_no_en_list(self, mocker):
         """Test that one_cat returns False when no English list."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.DONE_D.clear()
+        mknew._done_d.clear()
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="علوم")
         mocker.patch("src.mk_cats.mknew.check_en_temps", return_value=True)
@@ -328,14 +328,14 @@ class TestOneCat:
         assert result is False
 
         # Cleanup
-        mknew.DONE_D.clear()
+        mknew._done_d.clear()
 
     def test_uses_sugust_when_no_label(self, mocker):
         """Test that one_cat uses sugust parameter when no label found."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.DONE_D.clear()
+        mknew._done_d.clear()
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="")
         mocker.patch("src.mk_cats.mknew.check_en_temps", return_value=True)
@@ -349,7 +349,7 @@ class TestOneCat:
         assert args[1] == "علوم مقترحة"
 
         # Cleanup
-        mknew.DONE_D.clear()
+        mknew._done_d.clear()
 
 
 class TestCreateCategoriesFromList:
@@ -429,8 +429,8 @@ class TestMakeArMinMembers:
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
@@ -446,16 +446,16 @@ class TestMakeArMinMembers:
         assert result == []
 
         # Cleanup
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
     def test_proceeds_when_at_min_members(self, mocker):
         """Test that make_ar proceeds when members equals min_members."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
@@ -482,16 +482,16 @@ class TestMakeArMinMembers:
         mock_new_category.assert_called_once()
 
         # Cleanup
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
     def test_proceeds_when_above_min_members(self, mocker):
         """Test that make_ar proceeds when members above min_members."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
@@ -518,16 +518,16 @@ class TestMakeArMinMembers:
         mock_new_category.assert_called_once()
 
         # Cleanup
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
     def test_custom_min_members_value(self, mocker):
         """Test that make_ar respects custom min_members value."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
@@ -547,16 +547,16 @@ class TestMakeArMinMembers:
         assert result == []
 
         # Cleanup
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
     def test_min_members_zero_allows_any(self, mocker):
         """Test that min_members of 0 allows any number of members."""
         from src.mk_cats import mknew
 
         # Clear state
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
@@ -580,5 +580,5 @@ class TestMakeArMinMembers:
         mock_new_category.assert_called_once()
 
         # Cleanup
-        mknew.Already_Created.clear()
-        mknew.NewCat_Done.clear()
+        mknew._already_created.clear()
+        mknew._new_cat_done.clear()
