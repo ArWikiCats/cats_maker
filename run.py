@@ -7,11 +7,17 @@ import sys
 
 import requests
 
-try:
-    sys.path.append("D:/categories_bot/make2_new")
-    from new_all import work_bot as new_all
-except ImportError:
-    new_all = None
+# Optional external integration - configure via environment variable
+new_all = None
+external_path = os.getenv("CATS_MAKER_EXTERNAL_PATH")
+if external_path:
+    try:
+        sys.path.append(external_path)
+        from new_all import work_bot as new_all
+    except ImportError:
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Failed to import new_all from {external_path}")
+        new_all = None
 
 from src.config import settings
 from src.mk_cats import create_categories_from_list
