@@ -380,11 +380,11 @@ def one_cat(en_title, num, lenth, sugust="", uselabs=False, callback=None):
         logger.warning("<<lightred>> en_title is empty. return")
         return False
 
-    if en_title in DONE_D:
-        logger.warning(f'en_title:"{en_title}" in DONE_D ')
+    if en_title in _done_d:
+        logger.warning(f'en_title:"{en_title}" in _done_d ')
         return False
 
-    DONE_D.append(en_title)
+    _done_d.append(en_title)
     labb = ar_make_lab(en_title)
 
     logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}, {labb=}")
