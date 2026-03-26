@@ -3,7 +3,6 @@
 import functools
 import logging
 import os
-import sys
 import time
 
 from . import mysql_client
@@ -61,12 +60,12 @@ ns_text_tab_en = {
 @functools.lru_cache(maxsize=1)
 def GET_SQL() -> bool:
     """Check if running in production environment with SQL access.
-    
+
     Returns:
         bool: True if APP_ENV is set to "production", False otherwise.
     """
     app_env = os.getenv("APP_ENV", "")
-    
+
     return app_env == "production"
 
 
