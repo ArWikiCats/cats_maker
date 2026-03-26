@@ -24,9 +24,12 @@ from .members_helper import collect_category_members
 from .utils import filter_en
 from .utils.check_en import check_en_temps
 
-arwikicats_path = Path("D:/categories_bot/make2_new/ArWikiCats")
-if arwikicats_path.exists():
-    sys.path.insert(0, str(arwikicats_path.parent))
+# Optional ArWikiCats integration - configure via environment variable
+arwikicats_path = os.getenv("ARWIKICATS_PATH", "D:/categories_bot/make2_new/ArWikiCats")
+if arwikicats_path:
+    arwikicats_path = Path(arwikicats_path)
+    if arwikicats_path.exists():
+        sys.path.insert(0, str(arwikicats_path.parent))
 
 try:
     from ArWikiCats import resolve_arabic_category_label  # type: ignore
