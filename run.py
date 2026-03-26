@@ -4,19 +4,24 @@ import json
 import logging
 import os
 import sys
-
+from pathlib import Path
 import requests
 from src.config import settings
 from src.mk_cats import create_categories_from_list
 
+logger = logging.getLogger(__name__)
+
+# Optional external integration - configure via environment variable
+new_all = None
+external_path = os.getenv("CATS_MAKER_EXTERNAL_PATH", "D:/categories_bot/make2_new")
+if external_path and Path(external_path).exists():
+    sys.path.append(external_path)
+
 try:
-    sys.path.append("D:/categories_bot/make2_new")
     from new_all import work_bot as new_all
 except ImportError:
+    logger.warning("Failed to import new_all")
     new_all = None
-
-
-logger = logging.getLogger(__name__)
 
 # Enable ask mode by default - now done via settings
 settings.bot.ask = True
