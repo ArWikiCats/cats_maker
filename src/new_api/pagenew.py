@@ -1,22 +1,17 @@
 # ---
 """ """
 # ---
-import configparser
 import functools
 import os
 
+from dotenv import load_dotenv
+
 from .super.all_apis import ALL_APIS
 
-project = "/data/project/himo"
-# ---
-if not os.path.isdir(project):
-    project = "I:/core/bots/core1"
-# ---
-config = configparser.ConfigParser()
-config.read(f"{project}/confs/user.ini")
+load_dotenv()
 
-username = config["DEFAULT"].get("botusername", "")
-password = config["DEFAULT"].get("botpassword", "")
+username = os.getenv("WIKIPEDIA_BOT_USERNAME", "")
+password = os.getenv("WIKIPEDIA_BOT_PASSWORD", "")
 
 
 @functools.lru_cache(maxsize=1024)
