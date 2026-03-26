@@ -45,14 +45,16 @@ class TestGetArList:
         mock_api.assert_called_once()
 
     def test_replaces_spaces_with_underscores(self, mocker):
-        """Test that spaces are replaced with underscores"""
+        """Test that spaces are replaced with underscores in parameter"""
         mocker.patch("src.b18_new.sql_cat.GET_SQL", return_value=True)
         mock_sql = mocker.patch("src.b18_new.sql_cat.sql_new_title_ns", return_value=[])
 
         get_ar_list("تصنيف:علوم الحاسوب", us_sql=True)
 
-        call_args = mock_sql.call_args[0][0]
-        assert "علوم_الحاسوب" in call_args
+        # Check that the parameter is passed correctly (with underscores)
+        call_kwargs = mock_sql.call_args[1]
+        assert "values" in call_kwargs
+        assert "علوم_الحاسوب" in call_kwargs["values"][0]
 
 
 class TestGetArListFromEn:

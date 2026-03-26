@@ -5,8 +5,6 @@ import re
 import time
 from datetime import datetime
 
-from pymysql.converters import escape_string
-
 from . import wiki_sql
 from .mysql_client import make_sql_connect
 from .wiki_sql import ns_text_tab_ar
@@ -32,25 +30,25 @@ def fetch_arcat_titles(arcatTitle):
     arcatTitle = re.sub(r" ", "_", arcatTitle)
     logger.debug(f"arcatTitle : {arcatTitle}")
     # ---
-    arcatTitle = escape_string(arcatTitle)
-    # ---
-    ar_queries = f"""
+    # Use parameterized query to prevent SQL injection
+    ar_queries = """
         SELECT page_title, page_namespace
         FROM page
         JOIN categorylinks
         JOIN linktarget ON cl_target_id = lt_id
         JOIN langlinks
-        WHERE lt_title = "{arcatTitle}"
+        WHERE lt_title = %s
         AND lt_namespace = 14
         AND cl_from = page_id
         AND page_id = ll_from
-        AND ll_lang = "en"
+        AND ll_lang = "ar"
         GROUP BY page_title
         """
     # ---
     host, dbs_p = wiki_sql.make_labsdb_dbs_p("ar")
     # ---
-    ar_results = make_sql_connect(ar_queries, db=dbs_p, host=host) or []
+    # Pass category as parameter to prevent SQL injection
+    ar_results = make_sql_connect(ar_queries, db=dbs_p, host=host, values=(arcatTitle,)) or []
     # ---
     arcats = []
     # ---
@@ -74,7 +72,7 @@ def fetch_arcat_titles(arcatTitle):
     return arcats
 
 
-def Make_sql(queries, wiki="") -> list:
+def Make_sql(queries, wiki="", values=None) -> list:
     encats = []
     # ---
     start = time.perf_counter()
@@ -92,7 +90,7 @@ def Make_sql(queries, wiki="") -> list:
     start_time = datetime.now().strftime("%Y-%b-%d  %H:%M:%S")
     logger.debug(f'<<yellow>> API/sql_py 1 db:"{dbs_p}". {start_time}')
     # ---
-    en_results = make_sql_connect(queries, host=host, db=dbs_p) or []
+    en_results = make_sql_connect(queries, host=host, db=dbs_p, values=values) or []
     # ---
     for raw in en_results:
         tit = decode_bytes(raw[0])
@@ -138,22 +136,22 @@ def fetch_encat_titles(encatTitle: str) -> list:
     item = str(encatTitle).replace("category:", "").replace("Category:", "").replace(" ", "_")
     item = item.replace("[[en:", "").replace("]]", "")
     # ---
-    item = escape_string(item)
-    # ---
-    queries = f"""
+    # Use parameterized query to prevent SQL injection
+    queries = """
         SELECT ll_title, page_namespace
         FROM page
         JOIN categorylinks
         JOIN linktarget ON cl_target_id = lt_id
         JOIN langlinks
-        WHERE lt_title = "{item}"
+        WHERE lt_title = %s
         AND lt_namespace = 14
         AND cl_from = page_id
         AND page_id = ll_from
         AND ll_lang = "ar"
         GROUP BY ll_title"""
     # ---
-    encats = Make_sql(queries)
+    # Pass category as parameter to prevent SQL injection
+    encats = Make_sql(queries, values=(item,))
     # ---
     return encats
 

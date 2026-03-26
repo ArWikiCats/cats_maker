@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """ """
 import logging
+from typing import NamedTuple, Optional
 
 from ..new_api.pagenew import load_main_api
 from ..temp import main_make_temp_no_title
@@ -8,6 +9,19 @@ from ..utils.skip_cats import skip_encats
 from . import categorytext
 
 logger = logging.getLogger(__name__)
+
+
+class CategoryResult(NamedTuple):
+    """Result of a category operation.
+    
+    Attributes:
+        success: Whether the operation succeeded
+        page_title: The title of the created/modified page (if any)
+        error_message: Error message if operation failed (if any)
+    """
+    success: bool
+    page_title: Optional[str] = None
+    error_message: Optional[str] = None
 
 
 def page_put(title, new_text, msg):
@@ -114,14 +128,26 @@ def add_text_to_cat(text, categories, enca, title, qid, family=""):
     return new_text
 
 
-def make_category(categories, enca, title, qid, family=""):
+def make_category(categories, enca, title, qid, family="") -> CategoryResult:
+    """Create a new category page.
+    
+    Args:
+        categories: List of parent categories
+        enca: English category name
+        title: Arabic category title
+        qid: Wikidata QID
+        family: Wiki family (default: "wikipedia")
+        
+    Returns:
+        CategoryResult with success status and page title
+    """
     if enca in skip_encats:
         logger.debug(f"<<lightred>> enca: {enca} in skip_encats")
-        return False
+        return CategoryResult(False, None, "Category in skip list")
 
     if not title.startswith("تصنيف:"):
         logger.debug(f'<<lightreed>> title: {title} not start with "تصنيف:"')
-        return False
+        return CategoryResult(False, None, "Invalid title prefix")
 
     caia = ""
 
@@ -139,29 +165,42 @@ def make_category(categories, enca, title, qid, family=""):
     page = api.MainPage(title)
     # ---
     if page.get_text() or page.exists():
-        return False
+        return CategoryResult(False, None, "Page already exists")
     # ---
     new_cat = create_Page(text, page)
     # ---
-    if new_cat is not False:
+    if new_cat:
         text = add_text_to_cat(text, categories, enca, title, qid)
+        logger.info(f"<<lightgreen>> New_Cat: {title}")
+        return CategoryResult(True, title, None)
     # ---
-    logger.warning(f"<<lightgreen>> New_Cat: {new_cat}")
-    # ---
-    return new_cat
+    logger.warning(f"<<lightgreen>> New_Cat failed: {title}")
+    return CategoryResult(False, None, "Failed to create page")
 
 
-def new_category(enca, title, categories, qid, family=""):
+def new_category(enca, title, categories, qid, family="") -> CategoryResult:
+    """Create a new category and return result.
+    
+    Args:
+        enca: English category name
+        title: Arabic category title
+        categories: List of parent categories
+        qid: Wikidata QID
+        family: Wiki family
+        
+    Returns:
+        CategoryResult with success status
+    """
     logger.debug(f'<<lightgreen>>* make ar cat:"{title}", for english:"{enca}". ')
 
     if not title or title == "n":
         logger.debug('<<lightred>> not title or title != "n"')
+        return CategoryResult(False, None, "Invalid title")
 
-    new_cat = make_category(categories, enca, title, qid, family=family)
+    result = make_category(categories, enca, title, qid, family=family)
 
-    if new_cat is False or new_cat is not True:
-        logger.debug("no1: new_cat is False")
-        logger.debug("return False")
-        return False
+    if not result.success:
+        logger.debug(f"new_category failed: {result.error_message}")
+        return result
 
-    return True
+    return result

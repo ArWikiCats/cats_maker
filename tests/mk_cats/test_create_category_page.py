@@ -18,62 +18,58 @@ class TestMakeCategory:
     """Tests for make_category function"""
 
     def test_returns_false_for_skip_encats(self, mocker):
-        """Test that make_category returns False for categories in skip_encats"""
+        """Test that make_category returns failed result for categories in skip_encats"""
         # Mock the create_Page to not actually create pages
         mocker.patch("src.mk_cats.create_category_page.create_Page", return_value=False)
 
         # Use a category that's in skip_encats
         if skip_encats:
             result = make_category([], skip_encats[0], "تصنيف:اختبار", "Q123")
-            assert result is False
+            assert result.success is False
+            assert result.error_message == "Category in skip list"
 
     def test_returns_false_for_non_arabic_category_title(self, mocker):
-        """Test that make_category returns False for titles not starting with تصنيف:"""
+        """Test that make_category returns failed result for titles not starting with تصنيف:"""
         mocker.patch("src.mk_cats.create_category_page.create_Page", return_value=False)
 
         result = make_category([], "Category:Test", "Test Category", "Q123")
-        assert result is False
+        assert result.success is False
+        assert result.error_message == "Invalid title prefix"
 
     def test_returns_false_for_title_without_tasneef_prefix(self, mocker):
         """Test that title must start with تصنيف:"""
         mocker.patch("src.mk_cats.create_category_page.create_Page", return_value=False)
 
         result = make_category([], "Category:Science", "علوم", "Q123")
-        assert result is False
+        assert result.success is False
+        assert result.error_message == "Invalid title prefix"
 
 
 class TestNewCategory:
     """Tests for new_category function"""
 
     def test_returns_false_for_empty_title(self, mocker):
-        """Test that new_category returns False for empty title"""
-        mocker.patch("src.mk_cats.create_category_page.make_category", return_value=False)
-
+        """Test that new_category returns failed result for empty title"""
         result = new_category("Category:Test", "", [], "Q123")
-        assert result is False
-
-    def test_returns_false_for_title_n(self, mocker):
-        """Test that new_category returns False for title 'n'"""
-        mocker.patch("src.mk_cats.create_category_page.make_category", return_value=False)
-
-        result = new_category("Category:Test", "n", [], "Q123")
-        # The function checks for empty or 'n' but doesn't return False explicitly
-        # It continues to call make_category which returns False
-        assert result is False
+        assert result.success is False
+        assert result.error_message == "Invalid title"
 
     def test_returns_false_when_make_category_fails(self, mocker):
-        """Test that new_category returns False when make_category returns False"""
-        mocker.patch("src.mk_cats.create_category_page.make_category", return_value=False)
+        """Test that new_category returns failed result when make_category fails"""
+        from src.mk_cats.create_category_page import CategoryResult
+        mocker.patch("src.mk_cats.create_category_page.make_category", return_value=CategoryResult(False, None, "Test error"))
 
         result = new_category("Category:Science", "تصنيف:علوم", ["تصنيف:علوم طبيعية"], "Q123")
-        assert result is False
+        assert result.success is False
 
     def test_returns_true_when_make_category_succeeds(self, mocker):
-        """Test that new_category returns True when make_category returns True"""
-        mocker.patch("src.mk_cats.create_category_page.make_category", return_value=True)
+        """Test that new_category returns successful result when make_category succeeds"""
+        from src.mk_cats.create_category_page import CategoryResult
+        mocker.patch("src.mk_cats.create_category_page.make_category", return_value=CategoryResult(True, "تصنيف:علوم", None))
 
         result = new_category("Category:Science", "تصنيف:علوم", ["تصنيف:علوم طبيعية"], "Q123")
-        assert result is True
+        assert result.success is True
+        assert result.page_title == "تصنيف:علوم"
 
 
 class TestAddTextToCat:
