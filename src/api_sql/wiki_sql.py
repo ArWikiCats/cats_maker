@@ -3,7 +3,6 @@
 import functools
 import logging
 import os
-import sys
 import time
 
 from . import mysql_client
@@ -60,13 +59,14 @@ ns_text_tab_en = {
 
 @functools.lru_cache(maxsize=1)
 def GET_SQL() -> bool:
-    dir1 = "/mnt/nfs/labstore-secondary-tools-project/"
-    dir2 = "/data/project/"
+    """Check if running in production environment with SQL access.
 
-    if not os.path.isdir(dir1) and not os.path.isdir(dir2) or os.path.isdir("I:/core/bots"):
-        return False
+    Returns:
+        bool: True if APP_ENV is set to "production", False otherwise.
+    """
+    app_env = os.getenv("APP_ENV", "")
 
-    return True
+    return app_env == "production"
 
 
 def add_nstext_to_title(title, ns, lang="ar"):
