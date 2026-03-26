@@ -29,7 +29,7 @@
    - [ ] Install `python-dotenv` — add it to `requirements.txt`
    - [ ] Create a `.env.example` file with placeholder values:
      ```
-     BOT_USERNAME=your_bot_username
+     WIKIPEDIA_BOT_USERNAME=your_bot_username
      BOT_PASSWORD=your_bot_password
      PROJECT_PATH=/data/project/himo
      ```
@@ -46,7 +46,7 @@
      from dotenv import load_dotenv
 
      load_dotenv()
-     username = os.getenv("BOT_USERNAME", "")
+     username = os.getenv("WIKIPEDIA_BOT_USERNAME", "")
      password = os.getenv("BOT_PASSWORD", "")
      ```
 

@@ -10,7 +10,7 @@ from .super.all_apis import ALL_APIS
 
 load_dotenv()
 
-username = os.getenv("BOT_USERNAME", "")
+username = os.getenv("WIKIPEDIA_BOT_USERNAME", "")
 password = os.getenv("BOT_PASSWORD", "")
 
 
