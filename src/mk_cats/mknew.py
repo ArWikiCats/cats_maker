@@ -81,7 +81,7 @@ def get_processing_state():
     }
 
 
-def ar_make_lab(title, **Kwargs):
+def ar_make_lab(title, **Kwargs) -> str:
     okay = filter_en.filter_cat(title)
 
     if not okay:
@@ -335,7 +335,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     )
 
 
-def process_catagories(cat, arlab, num, lenth, callback=None):
+def process_catagories(cat, arlab, num, lenth, callback=None) -> None:
     logger.debug(f"*: <<lightred>> {num}/{lenth} cat: {cat}, arlab: {arlab}")
 
     ma_table = make_ar(cat, arlab, callback=callback)
@@ -414,7 +414,7 @@ def one_cat(en_title, num, lenth, sugust="", uselabs=False, callback=None):
     return process_catagories(en_title, labb, num, lenth, callback=callback)
 
 
-def create_categories_from_list(liste, uselabs=False, callback=None):
+def create_categories_from_list(liste, uselabs=False, callback=None) -> None:
     lenth = len(liste)
 
     for num, en_title in enumerate(liste, 1):
