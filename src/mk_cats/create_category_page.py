@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class CategoryResult(NamedTuple):
     """Result of a category operation.
-    
+
     Attributes:
         success: Whether the operation succeeded
         page_title: The title of the created/modified page (if any)
@@ -130,14 +130,14 @@ def add_text_to_cat(text, categories, enca, title, qid, family=""):
 
 def make_category(categories, enca, title, qid, family="") -> CategoryResult:
     """Create a new category page.
-    
+
     Args:
         categories: List of parent categories
         enca: English category name
         title: Arabic category title
         qid: Wikidata QID
         family: Wiki family (default: "wikipedia")
-        
+
     Returns:
         CategoryResult with success status and page title
     """
@@ -180,14 +180,14 @@ def make_category(categories, enca, title, qid, family="") -> CategoryResult:
 
 def new_category(enca, title, categories, qid, family="") -> CategoryResult:
     """Create a new category and return result.
-    
+
     Args:
         enca: English category name
         title: Arabic category title
         categories: List of parent categories
         qid: Wikidata QID
         family: Wiki family
-        
+
     Returns:
         CategoryResult with success status
     """

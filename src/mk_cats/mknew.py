@@ -54,7 +54,7 @@ _done_d: list = []
 _new_cat_done: dict = {}
 _already_created: list = []
 
-# Wiki site configurations (moved from hardcoded globals)
+# TODO: move it to the settings file!
 WIKI_SITE_AR = {"family": "wikipedia", "code": "ar"}
 WIKI_SITE_EN = {"family": "wikipedia", "code": "en"}
 
@@ -325,7 +325,13 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
 
     # Finalize: add members, update SubSub, log to Wikidata
     return _finalize_category_creation(
-        created_category.page_title, ar_title, en_page_title, qid, members, en_cats_of_new_cat, callback
+        created_category.page_title,
+        ar_title,
+        en_page_title,
+        qid,
+        members,
+        en_cats_of_new_cat,
+        callback,
     )
 
 
