@@ -179,7 +179,7 @@ def sql_new(queries, wiki="", values=[]):
     return rows
 
 
-def sql_new_title_ns(queries, wiki="", t1="page_title", t2="page_namespace"):
+def sql_new_title_ns(queries, wiki="", t1="page_title", t2="page_namespace", values=None):
     """Generate a list of new titles based on SQL query results.
 
     This function processes the results of SQL queries to create a list of
@@ -206,7 +206,7 @@ def sql_new_title_ns(queries, wiki="", t1="page_title", t2="page_namespace"):
     if lang.endswith("wiki"):
         lang = lang[:-4]
     # ---
-    rows = sql_new(queries, wiki=wiki)
+    rows = sql_new(queries, wiki=wiki, values=values)
     # ---
     if not t1:
         t1 = "page_title"

@@ -8,6 +8,13 @@ from typing import Any
 import pymysql
 from pymysql.cursors import DictCursor
 
+from ..exceptions import (
+    DatabaseError,
+    DatabaseConnectionError,
+    DatabaseFetchError,
+    QueryExecutionError,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,6 +34,22 @@ def load_db_config(db: str, host: str) -> dict[str, Any]:
 
 
 def _sql_connect_pymysql(query: str, db: str = "", host: str = "", values: tuple = None) -> list:
+    """Execute a SQL query and return results.
+
+    Args:
+        query: SQL query to execute
+        db: Database name
+        host: Database host
+        values: Parameters for parameterized queries
+
+    Returns:
+        List of result rows
+
+    Raises:
+        DatabaseConnectionError: If connection to database fails
+        QueryExecutionError: If query execution fails
+        DatabaseFetchError: If fetching results fails
+    """
     # ---
     logger.debug("start :")
     # ---
@@ -41,28 +64,28 @@ def _sql_connect_pymysql(query: str, db: str = "", host: str = "", values: tuple
     # ---
     try:
         connection = pymysql.connect(**DB_CONFIG)
-    except Exception as e:
-        logger.exception(e)
-        return []
+    except pymysql.Error as e:
+        logger.error(f"Database connection failed: {e}")
+        raise DatabaseConnectionError(f"Failed to connect to database: {e}") from e
     # ---
     with connection as conn, conn.cursor() as cursor:
         # ---
-        # skip sql errors
+        # Execute query with parameters
         try:
             cursor.execute(query, params)
 
-        except Exception as e:
-            logger.exception(e)
-            return []
+        except pymysql.Error as e:
+            logger.error(f"Query execution failed: {e}")
+            raise QueryExecutionError(f"Failed to execute query: {e}") from e
         # ---
         results = []
         # ---
         try:
             results = cursor.fetchall()
 
-        except Exception as e:
-            logger.exception(e)
-            return []
+        except pymysql.Error as e:
+            logger.error(f"Failed to fetch results: {e}")
+            raise DatabaseFetchError(f"Failed to fetch query results: {e}") from e
         # ---
         # yield from cursor
         return results
@@ -93,7 +116,26 @@ def decode_bytes_in_list(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return decoded_rows
 
 
-def make_sql_connect(query: str, db: str = "", host: str = "", values=None):
+def make_sql_connect(
+    query: str,
+    db: str = "",
+    host: str = "",
+    values=None,
+    silent: bool = True,
+):
+    """Execute a SQL query and return decoded results.
+
+    Args:
+        query: SQL query to execute
+        db: Database name
+        host: Database host
+        values: Parameters for parameterized queries
+        silent: If True, catch database errors and return empty list (legacy behavior).
+               If False, raise exceptions on error.
+
+    Returns:
+        List of decoded result rows, or empty list on error if silent=True
+    """
     # ---
     if not query:
         logger.debug("query == ''")
@@ -101,7 +143,13 @@ def make_sql_connect(query: str, db: str = "", host: str = "", values=None):
     # ---
     logger.debug("<<lightyellow>> newsql::")
     # ---
-    rows = _sql_connect_pymysql(query, db=db, host=host, values=values)
+    try:
+        rows = _sql_connect_pymysql(query, db=db, host=host, values=values)
+    except DatabaseError as e:
+        logger.error(f"Database error: {e}")
+        if silent:
+            return []
+        raise
     # ---
     rows = decode_bytes_in_list(rows)
     # ---
