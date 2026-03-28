@@ -47,15 +47,17 @@ class TestFetchArcatTitles:
         assert "تصنيف:" not in call_args
 
     def test_replaces_spaces_with_underscores(self, mocker):
-        """Test that spaces are replaced with underscores"""
+        """Test that spaces are replaced with underscores in parameter"""
         mocker.patch("src.api_sql.sql_bot.wiki_sql.GET_SQL", return_value=True)
         mocker.patch("src.api_sql.sql_bot.wiki_sql.make_labsdb_dbs_p", return_value=("host", "db"))
         mock_connect = mocker.patch("src.api_sql.sql_bot.make_sql_connect", return_value=[])
 
         fetch_arcat_titles("علوم الحاسوب")
 
-        call_args = mock_connect.call_args[0][0]
-        assert "علوم_الحاسوب" in call_args
+        # Check that the parameter is passed correctly (with underscores)
+        call_kwargs = mock_connect.call_args[1]
+        assert "values" in call_kwargs
+        assert "علوم_الحاسوب" in call_kwargs["values"][0]
 
 
 class TestMakeSql:

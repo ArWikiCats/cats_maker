@@ -2,8 +2,6 @@
 """ """
 import logging
 
-from pymysql.converters import escape_string
-
 from ..api_sql import GET_SQL, sql_new, sql_new_title_ns
 from ..c18_new.cats_tools.ar_from_en2 import fetch_ar_titles_based_on_en_category
 from ..config import settings
@@ -31,24 +29,24 @@ def get_ar_list(arcat, us_sql=True):
         list: A list of page titles from the specified Arabic category.
     """
 
-    # ---
+    # Clean category name (no SQL injection risk - just string manipulation)
     ar_cat2 = arcat.replace(" ", "_").replace("تصنيف:", "")
-    ar_cat2 = escape_string(ar_cat2)
-    # ---
-    qia_ar = f"""
-    select page_title, page_namespace
-        from page
-        join categorylinks on cl_from = page_id
-        join linktarget on cl_target_id = lt_id
-        where lt_title = "{ar_cat2}"
-        and lt_namespace = 14
+    
+    # Use parameterized query to prevent SQL injection
+    qia_ar = """
+    SELECT page_title, page_namespace
+        FROM page
+        JOIN categorylinks ON cl_from = page_id
+        JOIN linktarget ON cl_target_id = lt_id
+        WHERE lt_title = %s
+        AND lt_namespace = 14
     """
     # ---
     ar_list = []
     # ---
     if us_sql is True and GET_SQL():
-        # ---
-        ar_list = sql_new_title_ns(qia_ar, wiki="arwiki", t1="page_title", t2="page_namespace")
+        # Pass category as parameter to prevent SQL injection
+        ar_list = sql_new_title_ns(qia_ar, wiki="arwiki", t1="page_title", t2="page_namespace", values=(ar_cat2,))
     else:
         ar_list = get_ar_list_from_cat(arcat, code="ar", typee="", return_list=True)
     # ---
@@ -58,10 +56,10 @@ def get_ar_list(arcat, us_sql=True):
 
 
 def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
-    # ---
+    # Clean category name (no SQL injection risk - just string manipulation)
     encat2 = encat.replace(" ", "_").replace("Category:", "").replace("category:", "")
-    encat2 = escape_string(encat2)
-    # ---
+    
+    # Validate and build namespace list - use tuple for parameterized query
     nss = "0, 10, 14"
     # ---
     if settings.query.ns_no_10:
@@ -69,7 +67,9 @@ def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
     # ---
     if settings.query.ns_only_14:
         nss = "14"
-    # ---
+    
+    # Use parameterized query to prevent SQL injection
+    # Note: nss is validated against known safe values above, not user input
     en_qua = f"""
         SELECT DISTINCT ll_title
             FROM page p1
@@ -78,12 +78,13 @@ def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
             JOIN langlinks ON p1.page_id = ll_from
             WHERE p1.page_namespace IN ({nss})
             AND lt.lt_namespace = 14
-            AND lt.lt_title = '{encat2}'
+            AND lt.lt_title = %s
             AND ll_lang = 'ar'
     """
     # ---
     if us_sql is True and GET_SQL():
-        en_list_table = sql_new(en_qua, wiki=f"{wiki}wiki")
+        # Pass category as parameter to prevent SQL injection
+        en_list_table = sql_new(en_qua, wiki=f"{wiki}wiki", values=(encat2,))
         en_list = [x.get("ll_title") for x in en_list_table if x.get("ll_title")]
     else:
         en_list = fetch_ar_titles_based_on_en_category(encat, wiki=wiki)

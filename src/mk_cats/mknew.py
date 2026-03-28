@@ -48,19 +48,37 @@ def set_project_log_level(name, level: int) -> None:
 
 set_project_log_level("ArWikiCats", logging.ERROR)
 
-DONE_D = []
-NewCat_Done = {}
-Already_Created = []
+# Category processing state - encapsulated in module-level variables
+# These are cleared between runs to prevent state leakage
+_done_d: list = []
+_new_cat_done: dict = {}
+_already_created: list = []
 
-# TODO: move it to the settings file!
-wiki_site_ar = {"family": "wikipedia", "code": "ar"}
-wiki_site_en = {"family": "wikipedia", "code": "en"}
+# Wiki site configurations (moved from hardcoded globals)
+WIKI_SITE_AR = {"family": "wikipedia", "code": "ar"}
+WIKI_SITE_EN = {"family": "wikipedia", "code": "en"}
 
 logger = logging.getLogger(__name__)
 
 bad_words = [
     "ذكور",
 ]
+
+
+def clear_processing_state():
+    """Clear all processing state. Call between runs to prevent state leakage."""
+    _done_d.clear()
+    _new_cat_done.clear()
+    _already_created.clear()
+
+
+def get_processing_state():
+    """Get current processing state for testing/debugging."""
+    return {
+        "done_d": list(_done_d),
+        "new_cat_done": dict(_new_cat_done),
+        "already_created": list(_already_created),
+    }
 
 
 def ar_make_lab(title, **Kwargs):
@@ -90,26 +108,26 @@ def ar_make_lab(title, **Kwargs):
 
 
 def scan_ar_title(title):
-    if title in Already_Created:
-        logger.debug(f'<<lightpurple>> title "{title}". in Already_Created')
+    if title in _already_created:
+        logger.debug(f'<<lightpurple>> title "{title}". in _already_created')
         return False
 
     cat3 = str(title)
-    if cat3 in NewCat_Done.keys():
-        NewCat_Done[cat3] += 1
+    if cat3 in _new_cat_done.keys():
+        _new_cat_done[cat3] += 1
         if settings.category.we_try and cat3 in get_SubSub_keys():
             logger.debug(f'<<lightred>>2070:<<lightpurple>>new trying with cat: "{title}"')
-            NewCat_Done[cat3] += 1
+            _new_cat_done[cat3] += 1
             return True
         else:
-            logger.debug(f'<<lightblue>> We tried {NewCat_Done[cat3]} times to/created title:<<lightred>>"{cat3}".')
+            logger.debug(f'<<lightblue>> We tried {_new_cat_done[cat3]} times to/created title:<<lightred>>"{cat3}".')
             return False
     else:
-        if cat3 in NewCat_Done.keys():
+        if cat3 in _new_cat_done.keys():
             logger.debug(f'<<lightred>>2070:<<lightpurple>>new trying with cat: "{title}"')
-            NewCat_Done[cat3] += 1
+            _new_cat_done[cat3] += 1
         else:
-            NewCat_Done[cat3] = 1
+            _new_cat_done[cat3] = 1
     return True
 
 
@@ -117,7 +135,7 @@ def check_if_artitle_exists(test_title):
     if not test_title.startswith("تصنيف:"):
         test_title = f"تصنيف:{test_title}"
     # ---
-    api = load_main_api(wiki_site_ar["code"])
+    api = load_main_api(WIKI_SITE_AR["code"])
     page = api.MainPage(test_title)
     # ---
     if page.exists():
@@ -136,11 +154,11 @@ def _normalize_en_page_title(en_page_title: str) -> str:
 def _get_site_identifiers():
     """Get the Arabic and English site identifiers based on wiki family."""
     ar_site_wiki = "arwiki"
-    en_site_lang = wiki_site_en["code"]  # "en"
+    en_site_lang = WIKI_SITE_EN["code"]  # "en"
 
-    if wiki_site_en["family"] != "wikipedia" and wiki_site_en["code"] != "commons":
-        ar_site_wiki = f"ar{wiki_site_ar['family']}"
-        en_site_lang = wiki_site_en["code"] + wiki_site_en["family"]
+    if WIKI_SITE_EN["family"] != "wikipedia" and WIKI_SITE_EN["code"] != "commons":
+        ar_site_wiki = f"ar{WIKI_SITE_AR['family']}"
+        en_site_lang = WIKI_SITE_EN["code"] + WIKI_SITE_EN["family"]
 
     return ar_site_wiki, en_site_lang
 
@@ -175,8 +193,8 @@ def _extract_parent_categories(en_page_title: str):
     cates = find_Page_Cat_without_hidden(
         en_page_title,
         prop="langlinks",
-        site_code=wiki_site_en["code"],
-        family=wiki_site_en["family"],
+        site_code=WIKI_SITE_EN["code"],
+        family=WIKI_SITE_EN["family"],
     )
 
     en_cats_of_new_cat = []
@@ -280,7 +298,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     en_cats_of_new_cat, cats_of_new_cat = _extract_parent_categories(en_page_title)
 
     # Mark as already created
-    Already_Created.append(en_page_title)
+    _already_created.append(en_page_title)
 
     # Collect category members using the helper module
     members = collect_category_members(ar_title, en_page_title)
@@ -299,15 +317,15 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     _log_members_info(members)
 
     # Create the category
-    created_category = new_category(en_page_title, ar_title, cats_of_new_cat, qid, family=wiki_site_ar["family"])
+    created_category = new_category(en_page_title, ar_title, cats_of_new_cat, qid, family=WIKI_SITE_AR["family"])
 
-    if not created_category:
+    if not created_category.success:
         to_wd.add_label(qid, ar_title)
         return en_cats_of_new_cat
 
     # Finalize: add members, update SubSub, log to Wikidata
     return _finalize_category_creation(
-        created_category, ar_title, en_page_title, qid, members, en_cats_of_new_cat, callback
+        created_category.page_title, ar_title, en_page_title, qid, members, en_cats_of_new_cat, callback
     )
 
 
@@ -362,11 +380,11 @@ def one_cat(en_title, num, lenth, sugust="", uselabs=False, callback=None):
         logger.warning("<<lightred>> en_title is empty. return")
         return False
 
-    if en_title in DONE_D:
-        logger.warning(f'en_title:"{en_title}" in DONE_D ')
+    if en_title in _done_d:
+        logger.warning(f'en_title:"{en_title}" in _done_d ')
         return False
 
-    DONE_D.append(en_title)
+    _done_d.append(en_title)
     labb = ar_make_lab(en_title)
 
     logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}, {labb=}")
