@@ -160,7 +160,4 @@ __all__ = [
     "make_sql_connect",
     "decode_value",
     "decode_bytes_in_list",
-    "DatabaseConnectionError",
-    "QueryExecutionError",
-    "DatabaseFetchError",
 ]
