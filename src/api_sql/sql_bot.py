@@ -5,6 +5,8 @@ import re
 import time
 from datetime import datetime
 
+from ..helps.functions_timer import function_timer
+
 from . import wiki_sql
 from .mysql_client import make_sql_connect
 from .wiki_sql import ns_text_tab_ar
@@ -71,11 +73,10 @@ def fetch_arcat_titles(arcatTitle):
     # ---
     return arcats
 
+
 @function_timer("Make_sql")
 def Make_sql(queries, wiki="", values=None) -> list:
     encats = []
-    # ---
-    start = time.perf_counter()
     # ---
     if not wiki_sql.GET_SQL():
         return []
@@ -97,24 +98,20 @@ def Make_sql(queries, wiki="", values=None) -> list:
         tit = re.sub(r" ", "_", tit)
         encats.append(tit)
     # ---
-    delta = time.perf_counter() - start
-    # ---
     logger.debug(f'len(encats) = "{len(encats)}"')
-    logger.debug(f'Make_sql done in {delta} seconds')
     # ---
     encats.sort()
     # ---
     return encats
 
 
+@function_timer("get_exclusive_category_titles")
 def get_exclusive_category_titles(encatTitle, arcatTitle) -> list:
     # ---
     logger.debug(f"<<yellow>> sql . MySQLdb_finder {encatTitle}: ")
     # ---
     if not wiki_sql.GET_SQL():
         return []
-    # ---
-    start = time.perf_counter()
     # ---
     encats = fetch_encat_titles(encatTitle)
     # ---
@@ -124,11 +121,7 @@ def get_exclusive_category_titles(encatTitle, arcatTitle) -> list:
     # ---
     final_cat = [x for x in encats if x not in arcats]
     # ---
-    delta = time.perf_counter() - start
-    # ---
-    logger.info(
-        f'sql_bot.py: get_exclusive_category_titles len(final_cat) = "{len(final_cat)}", in {delta:.2f} seconds'
-    )
+    logger.info(f'sql_bot.py: get_exclusive_category_titles len(final_cat) = "{len(final_cat)}"')
     # ---
     return final_cat
 

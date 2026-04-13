@@ -155,7 +155,7 @@ def make_labsdb_dbs_p(wiki):
     # ---
     return host, dbs_p
 
-
+@function_timer("sql_new")
 def sql_new(queries, wiki="", values=[]):
     # ---
     logger.debug(f"wiki_sql.py wiki '{wiki}'")
