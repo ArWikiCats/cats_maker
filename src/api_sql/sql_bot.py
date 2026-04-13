@@ -2,11 +2,10 @@
 
 import logging
 import re
-import time
-from datetime import datetime
 
+from ..helps.functions_timer import function_timer
 from . import wiki_sql
-from .mysql_client import make_sql_connect
+from .mysql_client import make_sql_connect_silent
 from .wiki_sql import ns_text_tab_ar
 
 logger = logging.getLogger(__name__)
@@ -48,17 +47,13 @@ def fetch_arcat_titles(arcatTitle):
     host, dbs_p = wiki_sql.make_labsdb_dbs_p("ar")
     # ---
     # Pass category as parameter to prevent SQL injection
-    ar_results = make_sql_connect(ar_queries, db=dbs_p, host=host, values=(arcatTitle,)) or []
+    ar_results = make_sql_connect_silent(ar_queries, db=dbs_p, host=host, values=(arcatTitle,)) or []
     # ---
     arcats = []
     # ---
-    if not ar_results or len(ar_results) == 0:
-        return arcats
-    # ---
     for ra in ar_results:
         # ---
-        title = ra["page_title"]
-        title = re.sub(r" ", "_", title)
+        title = re.sub(r" ", "_", ra["page_title"])
         # ---
         ns = ra["page_namespace"]
         # ---
@@ -72,48 +67,13 @@ def fetch_arcat_titles(arcatTitle):
     return arcats
 
 
-def Make_sql(queries, wiki="", values=None) -> list:
-    encats = []
-    # ---
-    start = time.perf_counter()
-    # ---
-    if not wiki_sql.GET_SQL():
-        return []
-    # ---
-    if not wiki:
-        wiki = "enwiki"
-    # ---
-    host, dbs_p = wiki_sql.make_labsdb_dbs_p(wiki)
-    # ---
-    logger.info(queries)
-    # ---
-    start_time = datetime.now().strftime("%Y-%b-%d  %H:%M:%S")
-    logger.debug(f'<<yellow>> API/sql_py 1 db:"{dbs_p}". {start_time}')
-    # ---
-    en_results = make_sql_connect(queries, host=host, db=dbs_p, values=values) or []
-    # ---
-    for raw in en_results:
-        tit = decode_bytes(raw[0])
-        tit = re.sub(r" ", "_", tit)
-        encats.append(tit)
-    # ---
-    delta = time.perf_counter() - start
-    # ---
-    logger.debug(f'API/sql_py len(encats) = "{len(encats)}", in {delta} seconds')
-    # ---
-    encats.sort()
-    # ---
-    return encats
-
-
+@function_timer
 def get_exclusive_category_titles(encatTitle, arcatTitle) -> list:
     # ---
     logger.debug(f"<<yellow>> sql . MySQLdb_finder {encatTitle}: ")
     # ---
     if not wiki_sql.GET_SQL():
         return []
-    # ---
-    start = time.perf_counter()
     # ---
     encats = fetch_encat_titles(encatTitle)
     # ---
@@ -123,20 +83,16 @@ def get_exclusive_category_titles(encatTitle, arcatTitle) -> list:
     # ---
     final_cat = [x for x in encats if x not in arcats]
     # ---
-    delta = time.perf_counter() - start
-    # ---
-    logger.info(
-        f'sql_bot.py: get_exclusive_category_titles len(final_cat) = "{len(final_cat)}", in {delta:.2f} seconds'
-    )
+    logger.info(f'sql_bot.py: len(final_cat) = "{len(final_cat)}"')
     # ---
     return final_cat
 
 
+@function_timer
 def fetch_encat_titles(encatTitle: str) -> list:
     item = str(encatTitle).replace("category:", "").replace("Category:", "").replace(" ", "_")
     item = item.replace("[[en:", "").replace("]]", "")
     # ---
-    # Use parameterized query to prevent SQL injection
     queries = """
         SELECT ll_title, page_namespace
         FROM page
@@ -148,10 +104,28 @@ def fetch_encat_titles(encatTitle: str) -> list:
         AND cl_from = page_id
         AND page_id = ll_from
         AND ll_lang = "ar"
-        GROUP BY ll_title"""
+        GROUP BY ll_title
+    """
     # ---
-    # Pass category as parameter to prevent SQL injection
-    encats = Make_sql(queries, values=(item,))
+    encats = []
+    # ---
+    if not wiki_sql.GET_SQL():
+        return []
+    # ---
+    host, dbs_p = wiki_sql.make_labsdb_dbs_p("enwiki")
+    # ---
+    logger.info(queries)
+    # ---
+    logger.debug(f'<<yellow>> db:"{dbs_p=}". {host=}')
+    # ---
+    en_results = make_sql_connect_silent(queries, host=host, db=dbs_p, values=(item,))
+    # ---
+    for raw in en_results:
+        encats.append(raw["ll_title"])
+    # ---
+    logger.debug(f'len(encats) = "{len(encats)}"')
+    # ---
+    encats.sort()
     # ---
     return encats
 
@@ -180,6 +154,6 @@ def find_sql(enpageTitle):
         listenpageTitle.append(pages)
         # ---
         if numbrr < 30:
-            logger.info("<<lightgreen>> Adding " + pages + " to fa lists from en category. <<default>>")
+            logger.info(f"<<lightgreen>> Adding {pages} to fa lists from en category.")
     # ---
     return listenpageTitle

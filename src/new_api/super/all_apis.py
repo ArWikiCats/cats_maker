@@ -13,9 +13,7 @@ new_api = main_api.NEW_API()
 import functools
 import logging
 
-from . import bot_api
-from . import catdepth_new
-from . import super_page
+from . import bot_api, catdepth_new, super_page
 from .super_login import Login
 
 logger = logging.getLogger(__name__)
@@ -26,7 +24,7 @@ def _login(lang, family, username) -> Login:
     # ---
     login_bot = Login(lang, family=family)
     # ---
-    logger.info(f"### <<purple>> _login make new bot for ({lang}.{family}.org|{username})")
+    logger.info(f"### <<purple>> make new bot for ({lang}.{family}.org|{username})")
     # ---
     return login_bot
 

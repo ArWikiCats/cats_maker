@@ -4,10 +4,7 @@ Tests for src/api_sql/sql_bot.py
 This module tests SQL query functions for Wikipedia databases.
 """
 
-import pytest
-
 from src.api_sql.sql_bot import (
-    Make_sql,
     fetch_arcat_titles,
     find_sql,
     get_exclusive_category_titles,
@@ -38,7 +35,7 @@ class TestFetchArcatTitles:
         """Test that تصنيف: prefix is stripped"""
         mocker.patch("src.api_sql.sql_bot.wiki_sql.GET_SQL", return_value=True)
         mocker.patch("src.api_sql.sql_bot.wiki_sql.make_labsdb_dbs_p", return_value=("host", "db"))
-        mock_connect = mocker.patch("src.api_sql.sql_bot.make_sql_connect", return_value=[])
+        mock_connect = mocker.patch("src.api_sql.sql_bot.make_sql_connect_silent", return_value=[])
 
         fetch_arcat_titles("تصنيف:علوم")
 
@@ -50,7 +47,7 @@ class TestFetchArcatTitles:
         """Test that spaces are replaced with underscores in parameter"""
         mocker.patch("src.api_sql.sql_bot.wiki_sql.GET_SQL", return_value=True)
         mocker.patch("src.api_sql.sql_bot.wiki_sql.make_labsdb_dbs_p", return_value=("host", "db"))
-        mock_connect = mocker.patch("src.api_sql.sql_bot.make_sql_connect", return_value=[])
+        mock_connect = mocker.patch("src.api_sql.sql_bot.make_sql_connect_silent", return_value=[])
 
         fetch_arcat_titles("علوم الحاسوب")
 
@@ -58,44 +55,6 @@ class TestFetchArcatTitles:
         call_kwargs = mock_connect.call_args[1]
         assert "values" in call_kwargs
         assert "علوم_الحاسوب" in call_kwargs["values"][0]
-
-
-class TestMakeSql:
-    """Tests for Make_sql function"""
-
-    def test_returns_empty_list_when_sql_disabled(self, mocker):
-        """Test that empty list is returned when SQL is disabled"""
-        mocker.patch("src.api_sql.sql_bot.wiki_sql.GET_SQL", return_value=False)
-
-        result = Make_sql("SELECT * FROM page")
-        assert result == []
-
-    def test_defaults_to_enwiki(self, mocker):
-        """Test that default wiki is enwiki"""
-        mocker.patch("src.api_sql.sql_bot.wiki_sql.GET_SQL", return_value=True)
-        mock_make_labs = mocker.patch("src.api_sql.sql_bot.wiki_sql.make_labsdb_dbs_p", return_value=("host", "db"))
-        mocker.patch("src.api_sql.sql_bot.make_sql_connect", return_value=[])
-
-        Make_sql("SELECT * FROM page")
-
-        mock_make_labs.assert_called_with("enwiki")
-
-    def test_sorts_results(self, mocker):
-        """Test that results are sorted"""
-        mocker.patch("src.api_sql.sql_bot.wiki_sql.GET_SQL", return_value=True)
-        mocker.patch("src.api_sql.sql_bot.wiki_sql.make_labsdb_dbs_p", return_value=("host", "db"))
-        mocker.patch(
-            "src.api_sql.sql_bot.make_sql_connect",
-            return_value=[
-                (b"Zebra",),
-                (b"Apple",),
-                (b"Mango",),
-            ],
-        )
-
-        result = Make_sql("SELECT * FROM page")
-
-        assert result == sorted(result)
 
 
 class TestGetExclusiveCategoryTitles:
@@ -116,7 +75,7 @@ class TestGetExclusiveCategoryTitles:
         # Mock fetch_encat_titles indirectly through Make_sql
         mocker.patch("src.api_sql.sql_bot.wiki_sql.make_labsdb_dbs_p", return_value=("host", "db"))
         mocker.patch(
-            "src.api_sql.sql_bot.make_sql_connect",
+            "src.api_sql.sql_bot.make_sql_connect_silent",
             return_value=[
                 {"ll_title": b"Page1"},
                 {"ll_title": b"Page2"},

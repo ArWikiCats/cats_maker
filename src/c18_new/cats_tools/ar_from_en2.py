@@ -35,7 +35,7 @@ def get_ar_list_title_from_en_list(enlist, wiki="en"):
                     if "langlinks" in new_list[p_w] and "ar" in new_list[p_w]["langlinks"]:
                         arpagetitle = new_list[p_w]["langlinks"]["ar"]
                         # ---
-                        logger.debug(f"<<lightblue>>Adding {arpagetitle} to ar lists {p_w}<<default>>")
+                        logger.debug(f"<<lightblue>>Adding {arpagetitle} to ar lists {p_w}")
                         new_ar_list.append(arpagetitle)
                         en_done.append(arpagetitle.replace("_", " "))
     # ---
@@ -46,7 +46,7 @@ def get_ar_list_title_from_en_list(enlist, wiki="en"):
 
 def en_category_members(enpageTitle, wiki="en"):
     # ---
-    logger.info(f"<<lightyellow>> from category: {enpageTitle} <<default>>")
+    logger.info(f"<<lightyellow>> from category: {enpageTitle}")
     # ---
     namespace_ids = [0, 14, 100]
     # ---

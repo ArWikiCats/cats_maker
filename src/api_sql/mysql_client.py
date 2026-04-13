@@ -9,8 +9,8 @@ import pymysql
 from pymysql.cursors import DictCursor
 
 from ..exceptions import (
-    DatabaseError,
     DatabaseConnectionError,
+    DatabaseError,
     DatabaseFetchError,
     QueryExecutionError,
 )
@@ -116,12 +116,11 @@ def decode_bytes_in_list(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return decoded_rows
 
 
-def make_sql_connect(
+def make_sql_connect_silent(
     query: str,
     db: str = "",
     host: str = "",
     values=None,
-    silent: bool = True,
 ):
     """Execute a SQL query and return decoded results.
 
@@ -130,8 +129,6 @@ def make_sql_connect(
         db: Database name
         host: Database host
         values: Parameters for parameterized queries
-        silent: If True, catch database errors and return empty list (legacy behavior).
-               If False, raise exceptions on error.
 
     Returns:
         List of decoded result rows, or empty list on error if silent=True
@@ -147,9 +144,7 @@ def make_sql_connect(
         rows = _sql_connect_pymysql(query, db=db, host=host, values=values)
     except DatabaseError as e:
         logger.error(f"Database error: {e}")
-        if silent:
-            return []
-        raise
+        return []
     # ---
     rows = decode_bytes_in_list(rows)
     # ---
@@ -157,7 +152,7 @@ def make_sql_connect(
 
 
 __all__ = [
-    "make_sql_connect",
+    "make_sql_connect_silent",
     "decode_value",
     "decode_bytes_in_list",
 ]

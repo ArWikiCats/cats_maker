@@ -19,6 +19,7 @@ class CategoryResult(NamedTuple):
         page_title: The title of the created/modified page (if any)
         error_message: Error message if operation failed (if any)
     """
+
     success: bool
     page_title: Optional[str] = None
     error_message: Optional[str] = None
@@ -200,7 +201,7 @@ def new_category(enca, title, categories, qid, family="") -> CategoryResult:
     result = make_category(categories, enca, title, qid, family=family)
 
     if not result.success:
-        logger.debug(f"new_category failed: {result.error_message}")
+        logger.debug(f" failed: {result.error_message}")
         return result
 
     return result

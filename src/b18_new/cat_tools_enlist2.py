@@ -139,7 +139,7 @@ def MakeLitApiWay(enpageTitle, Type="cat"):
                 if arpagetitle is False:
                     logger.debug("arpagetitle is False")
                 else:
-                    logger.debug("<<lightblue>>Adding " + arpagetitle + " to fapage lists " + p_w + "<<default>>")
+                    logger.debug(f"<<lightblue>>Adding {arpagetitle} to fapage lists {p_w}")
                     listenpageTitle.append(arpagetitle)
         # ---
     # if not listenpageTitle:

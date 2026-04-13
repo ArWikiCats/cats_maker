@@ -454,7 +454,10 @@ class TestMakeArMinMembers:
         mock_settings.category.min_members = 5
         mock_settings.range_limit = 5
         from src.mk_cats.create_category_page import CategoryResult
-        mock_new_category = mocker.patch("src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None))
+
+        mock_new_category = mocker.patch(
+            "src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
+        )
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
         mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
@@ -490,7 +493,10 @@ class TestMakeArMinMembers:
         mock_settings.category.min_members = 5
         mock_settings.range_limit = 5
         from src.mk_cats.create_category_page import CategoryResult
-        mock_new_category = mocker.patch("src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None))
+
+        mock_new_category = mocker.patch(
+            "src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
+        )
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
         mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
@@ -552,7 +558,10 @@ class TestMakeArMinMembers:
         mock_settings.category.min_members = 0  # Allow any
         mock_settings.range_limit = 5
         from src.mk_cats.create_category_page import CategoryResult
-        mock_new_category = mocker.patch("src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None))
+
+        mock_new_category = mocker.patch(
+            "src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
+        )
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
         mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)

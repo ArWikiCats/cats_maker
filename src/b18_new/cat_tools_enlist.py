@@ -19,7 +19,7 @@ def extract_fan_page_titles(enpageTitle) -> list:
         cat2 = enpageTitle.replace("Category:", "").replace("category:", "").strip()
         fapages = get_exclusive_category_titles(cat2, "") or []
 
-    logger.info(f"<<lightgreen>>Adding {len(fapages)} pages to fapage lists<<default>>")
+    logger.info(f"<<lightgreen>>Adding {len(fapages)} pages to fapage lists")
     return fapages
 
 

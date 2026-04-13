@@ -5,6 +5,7 @@ import logging
 import os
 import time
 
+from ..helps.functions_timer import function_timer
 from . import mysql_client
 
 logger = logging.getLogger(__name__)
@@ -109,7 +110,7 @@ def add_nstext_to_title(title, ns, lang="ar"):
     return new_title
 
 
-def make_labsdb_dbs_p(wiki):
+def make_labsdb_dbs_p(wiki: str):
     """Generate host and database name for a given wiki.
 
     This function takes a wiki name as input, processes it to conform to
@@ -124,10 +125,8 @@ def make_labsdb_dbs_p(wiki):
     Returns:
         tuple: A tuple containing the host string and the database name string.
     """
-    # host, dbs_p = make_labsdb_dbs_p('ar')
     # ---
-    if wiki.endswith("wiki"):
-        wiki = wiki[:-4]
+    wiki = wiki.removesuffix("wiki")
     # ---
     wiki = wiki.replace("-", "_")
     # ---
@@ -156,6 +155,7 @@ def make_labsdb_dbs_p(wiki):
     return host, dbs_p
 
 
+@function_timer
 def sql_new(queries, wiki="", values=[]):
     # ---
     logger.debug(f"wiki_sql.py wiki '{wiki}'")
@@ -168,13 +168,9 @@ def sql_new(queries, wiki="", values=[]):
         logger.info("no GET_SQL()")
         return []
     # ---
-    start = time.perf_counter()
+    rows = mysql_client.make_sql_connect_silent(queries, db=dbs_p, host=host, values=values)
     # ---
-    rows = mysql_client.make_sql_connect(queries, db=dbs_p, host=host, values=values)
-    # ---
-    delta = time.perf_counter() - start
-    # ---
-    logger.info(f'wiki_sql.py len(encats) = "{len(rows)}", in {delta:.2f} seconds')
+    logger.info(f'wiki_sql.py len(encats) = "{len(rows)}"')
     # ---
     return rows
 

@@ -118,7 +118,7 @@ def Get_ar_list_from_en_list(enlist):
                     # ---
                     if arpagetitle:
                         # ---
-                        logger.debug(f"<<lightblue>>Adding {arpagetitle} to ar lists {p_w}<<default>>")
+                        logger.debug(f"<<lightblue>>Adding {arpagetitle} to ar lists {p_w}")
                         # ---
                         new_ar_list.append(arpagetitle)
                         en_done.append(p_w.replace("_", " "))

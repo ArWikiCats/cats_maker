@@ -6,6 +6,7 @@ from ...api_utils import ASK_BOT
 
 import difflib
 import logging
+
 from ...config import settings
 from ...helps.printe_helper import make_str
 
@@ -27,9 +28,9 @@ def showDiff(oldtext: str, newtext: str) -> None:
     )
     for line in diff:
         if line.startswith("+") and not line.startswith("+++"):
-            logger.warning(make_str(f"<<lightgreen>>{line}<<default>>"))
+            logger.warning(make_str(f"<<lightgreen>>{line}"))
         elif line.startswith("-") and not line.startswith("---"):
-            logger.warning(make_str(f"<<lightred>>{line}<<default>>"))
+            logger.warning(make_str(f"<<lightred>>{line}"))
         else:
             logger.warning(make_str(line))
 

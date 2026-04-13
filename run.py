@@ -5,7 +5,9 @@ import logging
 import os
 import sys
 from pathlib import Path
+
 import requests
+
 from src.config import settings
 from src.mk_cats import create_categories_from_list
 
@@ -18,7 +20,7 @@ if external_path and Path(external_path).exists():
     sys.path.append(external_path)
 
 try:
-    from new_all import work_bot as new_all
+    from new_all import work_bot as new_all  # type: ignore
 except ImportError:
     logger.warning("Failed to import new_all")
     new_all = None

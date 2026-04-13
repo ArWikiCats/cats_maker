@@ -57,7 +57,10 @@ class TestNewCategory:
     def test_returns_false_when_make_category_fails(self, mocker):
         """Test that new_category returns failed result when make_category fails"""
         from src.mk_cats.create_category_page import CategoryResult
-        mocker.patch("src.mk_cats.create_category_page.make_category", return_value=CategoryResult(False, None, "Test error"))
+
+        mocker.patch(
+            "src.mk_cats.create_category_page.make_category", return_value=CategoryResult(False, None, "Test error")
+        )
 
         result = new_category("Category:Science", "تصنيف:علوم", ["تصنيف:علوم طبيعية"], "Q123")
         assert result.success is False
@@ -65,7 +68,10 @@ class TestNewCategory:
     def test_returns_true_when_make_category_succeeds(self, mocker):
         """Test that new_category returns successful result when make_category succeeds"""
         from src.mk_cats.create_category_page import CategoryResult
-        mocker.patch("src.mk_cats.create_category_page.make_category", return_value=CategoryResult(True, "تصنيف:علوم", None))
+
+        mocker.patch(
+            "src.mk_cats.create_category_page.make_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
+        )
 
         result = new_category("Category:Science", "تصنيف:علوم", ["تصنيف:علوم طبيعية"], "Q123")
         assert result.success is True
