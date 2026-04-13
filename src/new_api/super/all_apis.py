@@ -24,7 +24,7 @@ def _login(lang, family, username) -> Login:
     # ---
     login_bot = Login(lang, family=family)
     # ---
-    logger.info(f"### <<purple>> _login make new bot for ({lang}.{family}.org|{username})")
+    logger.info(f"### <<purple>> make new bot for ({lang}.{family}.org|{username})")
     # ---
     return login_bot
 
