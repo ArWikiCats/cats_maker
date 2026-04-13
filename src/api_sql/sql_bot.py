@@ -74,7 +74,7 @@ def fetch_arcat_titles(arcatTitle):
     return arcats
 
 
-@function_timer("Make_sql")
+@function_timer
 def Make_sql(queries, wiki="", values=None) -> list:
     encats = []
     # ---
@@ -105,7 +105,7 @@ def Make_sql(queries, wiki="", values=None) -> list:
     return encats
 
 
-@function_timer("get_exclusive_category_titles")
+@function_timer
 def get_exclusive_category_titles(encatTitle, arcatTitle) -> list:
     # ---
     logger.debug(f"<<yellow>> sql . MySQLdb_finder {encatTitle}: ")

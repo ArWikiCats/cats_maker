@@ -18,7 +18,7 @@ if external_path and Path(external_path).exists():
     sys.path.append(external_path)
 
 try:
-    from new_all import work_bot as new_all
+    from new_all import work_bot as new_all  # type: ignore
 except ImportError:
     logger.warning("Failed to import new_all")
     new_all = None

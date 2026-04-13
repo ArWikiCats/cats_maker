@@ -5,6 +5,8 @@ import time
 import copy
 from tqdm import tqdm
 from functools import lru_cache
+
+from ...helps.functions_timer import function_timer
 logger = logging.getLogger(__name__)
 
 SITECODE = "en"
@@ -404,6 +406,7 @@ def args_group(title, kwargs):
     return args2
 
 
+@function_timer
 def subcatquery(login_bot, title, sitecode=SITECODE, family=FAMILY, **kwargs):
     # ---
     print_s = kwargs.get("print_s", True)
@@ -419,8 +422,6 @@ def subcatquery(login_bot, title, sitecode=SITECODE, family=FAMILY, **kwargs):
             f"<<lightyellow>> catdepth_new.py sub cat query for {sitecode}:{title}, depth:{args2['depth']}, ns:{args2['ns']}, onlyns:{args2['onlyns']}"
         )
     # ---
-    start = time.perf_counter()
-    # ---
     bot = CategoryDepth(login_bot, title, **kwargs)
     # ---
     result = bot.subcatquery_()
@@ -428,13 +429,11 @@ def subcatquery(login_bot, title, sitecode=SITECODE, family=FAMILY, **kwargs):
     if get_revids:
         result = bot.get_revids()
     # ---
-    delta = time.perf_counter() - start
-    # ---
     if print_s:
         lenpages = bot.get_len_pages()
         # ---
         logger.debug(
-            f"<<lightblue>>catdepth_new.py: find {len(result)} pages({args2['ns']}) in {sitecode}:{title}, depth:{args2['depth']} in {delta:.2f} seconds | {lenpages=}"
+            f"<<lightblue>> find {len(result)} pages({args2['ns']}) in {sitecode}:{title}, depth:{args2['depth']} | {lenpages=}"
         )
     # ---
     return result

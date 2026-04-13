@@ -2,7 +2,8 @@
 """ """
 import functools
 import logging
-import time
+
+from ..helps.functions_timer import function_timer
 
 from ..c18_new.bots.text_to_temp_bot import add_text_to_template
 from ..c18_new.dontadd import Dont_add_to_pages_def
@@ -51,13 +52,12 @@ def _get_page(page_title):
     return page
 
 
+@function_timer
 def add_to_page(page_title, arcat):
     # ---
     Dont_add_to_pages = Dont_add_to_pages_def()
     # ---
     logger.info(f" page_title:{page_title} , cat:{arcat}")
-    # ---
-    start = time.perf_counter()
     # ---
     if page_title in Dont_add_to_pages:
         logger.info(f"<<lightred>> page_title:{page_title} in [[تصنيف:صفحات لا تقبل التصنيف المعادل]]")
@@ -100,9 +100,6 @@ def add_to_page(page_title, arcat):
     if not save:
         logger.error(f"<<lightred>> page.save() failed for {page_title=}, {arcat=}")
         return False
-    # ---
-    delta = time.perf_counter() - start
-    logger.info(f"add_bot.py done in {delta:.2f} seconds")
     # ---
     return True
 

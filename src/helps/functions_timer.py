@@ -5,18 +5,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def function_timer(name):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            start_time = time.perf_counter()
+def function_timer(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
 
-            result = func(*args, **kwargs)
+        result = func(*args, **kwargs)
 
-            delta = time.perf_counter() - start_time
+        delta = time.perf_counter() - start_time
 
-            logger.debug(f'{name} done in {delta:.4f} seconds')
+        logger.debug(f'{func.__name__} done in {delta:.4f} seconds')
 
-            return result
-        return wrapper
-    return decorator
+        return result
+    return wrapper

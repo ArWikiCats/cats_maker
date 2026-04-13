@@ -5,6 +5,8 @@ import logging
 import os
 import time
 
+from ..helps.functions_timer import function_timer
+
 from . import mysql_client
 
 logger = logging.getLogger(__name__)
@@ -155,7 +157,7 @@ def make_labsdb_dbs_p(wiki):
     # ---
     return host, dbs_p
 
-@function_timer("sql_new")
+@function_timer
 def sql_new(queries, wiki="", values=[]):
     # ---
     logger.debug(f"wiki_sql.py wiki '{wiki}'")
@@ -168,13 +170,9 @@ def sql_new(queries, wiki="", values=[]):
         logger.info("no GET_SQL()")
         return []
     # ---
-    start = time.perf_counter()
-    # ---
     rows = mysql_client.make_sql_connect(queries, db=dbs_p, host=host, values=values)
     # ---
-    delta = time.perf_counter() - start
-    # ---
-    logger.info(f'wiki_sql.py len(encats) = "{len(rows)}", in {delta:.2f} seconds')
+    logger.info(f'wiki_sql.py len(encats) = "{len(rows)}"')
     # ---
     return rows
 
