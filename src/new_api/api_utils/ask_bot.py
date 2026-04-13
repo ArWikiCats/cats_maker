@@ -28,9 +28,9 @@ def showDiff(oldtext: str, newtext: str) -> None:
     )
     for line in diff:
         if line.startswith("+") and not line.startswith("+++"):
-            logger.warning(make_str(f"<<lightgreen>>{line}<<default>>"))
+            logger.warning(make_str(f"<<lightgreen>>{line}"))
         elif line.startswith("-") and not line.startswith("---"):
-            logger.warning(make_str(f"<<lightred>>{line}<<default>>"))
+            logger.warning(make_str(f"<<lightred>>{line}"))
         else:
             logger.warning(make_str(line))
 

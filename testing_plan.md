@@ -59,7 +59,7 @@ def mock_wikidata_api(mocker):
 @pytest.fixture
 def mock_database(mocker):
     """Mock database connections"""
-    return mocker.patch('src.api_sql.mysql_client.make_sql_connect')
+    return mocker.patch('src.api_sql.mysql_client.make_sql_connect_silent')
 ```
 
 ---
@@ -505,7 +505,7 @@ def mock_database(mocker):
     mock_conn.cursor.return_value = mock_cursor
 
     mocker.patch(
-        'src.api_sql.mysql_client.make_sql_connect',
+        'src.api_sql.mysql_client.make_sql_connect_silent',
         return_value=mock_conn
     )
 

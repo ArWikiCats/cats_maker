@@ -137,7 +137,7 @@ create_categories_from_list(liste, uselabs, callback)
 
 9. **api_sql/** - قاعدة البيانات / Database operations
    - wiki_sql.py: sql_new(), sql_new_title_ns()
-   - mysql_client.py: make_sql_connect()
+   - mysql_client.py: make_sql_connect_silent()
 
 10. **helps/** - أدوات مساعدة / Helper utilities
     - log.py: LoggerWrap

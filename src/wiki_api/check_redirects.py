@@ -17,5 +17,5 @@ def load_non_redirects(lang: str, page_titles: list) -> list:
 def remove_redirect_pages(lang: str, page_titles: list) -> list:
     """Remove redirect pages from a list of page titles."""
     non_redirects = load_non_redirects(lang, page_titles)
-    logger.info(f"<<lightgreen>> Removed {len(page_titles) - len(non_redirects)} redirect pages.<<default>>")
+    logger.info(f"<<lightgreen>> Removed {len(page_titles) - len(non_redirects)} redirect pages.")
     return non_redirects

@@ -110,7 +110,7 @@ def add_nstext_to_title(title, ns, lang="ar"):
     return new_title
 
 
-def make_labsdb_dbs_p(wiki):
+def make_labsdb_dbs_p(wiki: str):
     """Generate host and database name for a given wiki.
 
     This function takes a wiki name as input, processes it to conform to
@@ -125,10 +125,8 @@ def make_labsdb_dbs_p(wiki):
     Returns:
         tuple: A tuple containing the host string and the database name string.
     """
-    # host, dbs_p = make_labsdb_dbs_p('ar')
     # ---
-    if wiki.endswith("wiki"):
-        wiki = wiki[:-4]
+    wiki = wiki.removesuffix("wiki")
     # ---
     wiki = wiki.replace("-", "_")
     # ---
@@ -170,7 +168,7 @@ def sql_new(queries, wiki="", values=[]):
         logger.info("no GET_SQL()")
         return []
     # ---
-    rows = mysql_client.make_sql_connect(queries, db=dbs_p, host=host, values=values)
+    rows = mysql_client.make_sql_connect_silent(queries, db=dbs_p, host=host, values=values)
     # ---
     logger.info(f'wiki_sql.py len(encats) = "{len(rows)}"')
     # ---

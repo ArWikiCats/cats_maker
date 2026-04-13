@@ -35,7 +35,7 @@ class TestFetchArcatTitles:
         """Test that تصنيف: prefix is stripped"""
         mocker.patch("src.api_sql.sql_bot.wiki_sql.GET_SQL", return_value=True)
         mocker.patch("src.api_sql.sql_bot.wiki_sql.make_labsdb_dbs_p", return_value=("host", "db"))
-        mock_connect = mocker.patch("src.api_sql.sql_bot.make_sql_connect", return_value=[])
+        mock_connect = mocker.patch("src.api_sql.sql_bot.make_sql_connect_silent", return_value=[])
 
         fetch_arcat_titles("تصنيف:علوم")
 
@@ -47,7 +47,7 @@ class TestFetchArcatTitles:
         """Test that spaces are replaced with underscores in parameter"""
         mocker.patch("src.api_sql.sql_bot.wiki_sql.GET_SQL", return_value=True)
         mocker.patch("src.api_sql.sql_bot.wiki_sql.make_labsdb_dbs_p", return_value=("host", "db"))
-        mock_connect = mocker.patch("src.api_sql.sql_bot.make_sql_connect", return_value=[])
+        mock_connect = mocker.patch("src.api_sql.sql_bot.make_sql_connect_silent", return_value=[])
 
         fetch_arcat_titles("علوم الحاسوب")
 
@@ -75,7 +75,7 @@ class TestGetExclusiveCategoryTitles:
         # Mock fetch_encat_titles indirectly through Make_sql
         mocker.patch("src.api_sql.sql_bot.wiki_sql.make_labsdb_dbs_p", return_value=("host", "db"))
         mocker.patch(
-            "src.api_sql.sql_bot.make_sql_connect",
+            "src.api_sql.sql_bot.make_sql_connect_silent",
             return_value=[
                 {"ll_title": b"Page1"},
                 {"ll_title": b"Page2"},

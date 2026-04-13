@@ -2,12 +2,10 @@
 
 import logging
 import re
-import time
-from datetime import datetime
 
 from ..helps.functions_timer import function_timer
 from . import wiki_sql
-from .mysql_client import make_sql_connect
+from .mysql_client import make_sql_connect_silent
 from .wiki_sql import ns_text_tab_ar
 
 logger = logging.getLogger(__name__)
@@ -49,17 +47,13 @@ def fetch_arcat_titles(arcatTitle):
     host, dbs_p = wiki_sql.make_labsdb_dbs_p("ar")
     # ---
     # Pass category as parameter to prevent SQL injection
-    ar_results = make_sql_connect(ar_queries, db=dbs_p, host=host, values=(arcatTitle,)) or []
+    ar_results = make_sql_connect_silent(ar_queries, db=dbs_p, host=host, values=(arcatTitle,)) or []
     # ---
     arcats = []
     # ---
-    if not ar_results or len(ar_results) == 0:
-        return arcats
-    # ---
     for ra in ar_results:
         # ---
-        title = ra["page_title"]
-        title = re.sub(r" ", "_", title)
+        title = re.sub(r" ", "_", ra["page_title"])
         # ---
         ns = ra["page_namespace"]
         # ---
@@ -99,7 +93,6 @@ def fetch_encat_titles(encatTitle: str) -> list:
     item = str(encatTitle).replace("category:", "").replace("Category:", "").replace(" ", "_")
     item = item.replace("[[en:", "").replace("]]", "")
     # ---
-    # Use parameterized query to prevent SQL injection
     queries = """
         SELECT ll_title, page_namespace
         FROM page
@@ -111,7 +104,8 @@ def fetch_encat_titles(encatTitle: str) -> list:
         AND cl_from = page_id
         AND page_id = ll_from
         AND ll_lang = "ar"
-        GROUP BY ll_title"""
+        GROUP BY ll_title
+    """
     # ---
     encats = []
     # ---
@@ -122,15 +116,12 @@ def fetch_encat_titles(encatTitle: str) -> list:
     # ---
     logger.info(queries)
     # ---
-    start_time = datetime.now().strftime("%Y-%b-%d  %H:%M:%S")
-    logger.debug(f'<<yellow>> db:"{dbs_p}". {start_time}')
+    logger.debug(f'<<yellow>> db:"{dbs_p=}". {host=}')
     # ---
-    en_results = make_sql_connect(queries, host=host, db=dbs_p, values=(item,)) or []
+    en_results = make_sql_connect_silent(queries, host=host, db=dbs_p, values=(item,))
     # ---
     for raw in en_results:
-        tit = decode_bytes(raw[0])
-        tit = re.sub(r" ", "_", tit)
-        encats.append(tit)
+        encats.append(raw["ll_title"])
     # ---
     logger.debug(f'len(encats) = "{len(encats)}"')
     # ---
@@ -163,6 +154,6 @@ def find_sql(enpageTitle):
         listenpageTitle.append(pages)
         # ---
         if numbrr < 30:
-            logger.info("<<lightgreen>> Adding " + pages + " to fa lists from en category. <<default>>")
+            logger.info(f"<<lightgreen>> Adding {pages} to fa lists from en category.")
     # ---
     return listenpageTitle
