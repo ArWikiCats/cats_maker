@@ -653,8 +653,8 @@ ruff check src/
 
 ## الوثائق ذات الصلة
 
--   **[refactoring_plan.md](refactoring_plan.md)**: وثائق تقنية مفصلة حول بنية الكود، تدفق التنفيذ، والتحسينات المخططة
--   **[testing_plan.md](testing_plan.md)**: استراتيجية الاختبار الشاملة، أهداف تغطية الاختبار، وأمثلة الاختبار
+-   **[refactoring_plan.md](docs/refactoring_plan.md)**: وثائق تقنية مفصلة حول بنية الكود، تدفق التنفيذ، والتحسينات المخططة
+-   **[testing_plan.md](docs/testing_plan.md)**: استراتيجية الاختبار الشاملة، أهداف تغطية الاختبار، وأمثلة الاختبار
 -   **[Wikidata API](https://www.wikidata.org/wiki/Wikidata:Data_access)**: وثائق الوصول إلى بيانات ويكي بيانات
 -   **[MediaWiki API](https://www.mediawiki.org/wiki/API:Main_page)**: مرجع Wikipedia API
 

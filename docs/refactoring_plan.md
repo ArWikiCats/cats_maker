@@ -1,4 +1,5 @@
 # خطة إعادة الهيكلة
+
 ## Refactoring Plan
 
 ## نظرة عامة / Overview
@@ -14,9 +15,10 @@ This plan contains technical details for refactoring the project, including exec
 ### 1.1 نقطة الدخول الرئيسية / Main Entry Point
 
 **الدالة الأساسية:** `create_categories_from_list(liste, uselabs=False, callback=None)`
-- **الموقع / Location:** `src/mk_cats/mknew.py`
-- **الاسم القديم / Legacy name:** `ToMakeNewCat2222`
-- **الوصف:** نقطة الدخول الأساسية لمعالجة قائمة من التصنيفات الإنجليزية وإنشاء نظائرها العربية
+
+-   **الموقع / Location:** `src/mk_cats/mknew.py`
+-   **الاسم القديم / Legacy name:** `ToMakeNewCat2222`
+-   **الوصف:** نقطة الدخول الأساسية لمعالجة قائمة من التصنيفات الإنجليزية وإنشاء نظائرها العربية
 
 ### 1.2 تسلسل التنفيذ الكامل / Complete Execution Sequence
 
@@ -92,52 +94,61 @@ create_categories_from_list(liste, uselabs, callback)
 ### 1.3 الوحدات المشاركة في التدفق / Modules Involved in Flow
 
 1. **run.py** - نقطة الدخول / Entry point
-   - قراءة المعاملات من sys.argv
-   - جلب البيانات من Quarry أو مباشرة
-   - استدعاء create_categories_from_list()
+
+    - قراءة المعاملات من sys.argv
+    - جلب البيانات من Quarry أو مباشرة
+    - استدعاء create_categories_from_list()
 
 2. **mk_cats/mknew.py** - المنطق الرئيسي / Main logic
-   - create_categories_from_list() - نقطة البداية
-   - one_cat() - معالجة تصنيف واحد
-   - process_catagories() - المعالجة المتكررة
-   - make_ar() - إنشاء التصنيف العربي
-   - ar_make_lab() - إنشاء التسمية
+
+    - create_categories_from_list() - نقطة البداية
+    - one_cat() - معالجة تصنيف واحد
+    - process_catagories() - المعالجة المتكررة
+    - make_ar() - إنشاء التصنيف العربي
+    - ar_make_lab() - إنشاء التسمية
 
 3. **mk_cats/create_category_page.py** - إنشاء الصفحات
-   - new_category() - إنشاء صفحة التصنيف
-   - make_category() - المنطق الأساسي للإنشاء
+
+    - new_category() - إنشاء صفحة التصنيف
+    - make_category() - المنطق الأساسي للإنشاء
 
 4. **mk_cats/categorytext.py** - توليد النصوص
-   - generate_category_text() - توليد نص التصنيف
-   - generate_portal_content() - بوابات
-   - fetch_commons_category() - جلب P373 من Wikidata
+
+    - generate_category_text() - توليد نص التصنيف
+    - generate_portal_content() - بوابات
+    - fetch_commons_category() - جلب P373 من Wikidata
 
 5. **b18_new/** - معالجة التصنيفات والروابط / Category and link processing
-   - LCN_new.py: find_LCN(), find_Page_Cat_without_hidden()
-   - cat_tools.py: add_SubSub(), get_SubSub_value()
-   - cat_tools_enlist.py: get_listenpageTitle()
-   - cat_tools_enlist2.py: MakeLitApiWay()
-   - add_bot.py: add_to_final_list()
-   - sql_cat.py: get_ar_list_from_en(), make_ar_list_newcat2()
+
+    - LCN_new.py: find_LCN(), find_Page_Cat_without_hidden()
+    - cat_tools.py: add_SubSub(), get_SubSub_value()
+    - cat_tools_enlist.py: get_listenpageTitle()
+    - cat_tools_enlist2.py: MakeLitApiWay()
+    - add_bot.py: add_to_final_list()
+    - sql_cat.py: get_ar_list_from_en(), make_ar_list_newcat2()
 
 6. **c18_new/** - أدوات التصنيفات / Category tools
-   - bots/english_page_title.py
-   - bots/filter_cat.py
-   - bots/text_to_temp_bot.py
-   - cats_tools/ar_from_en.py
-   - tools_bots/sql_bot.py
+
+    - bots/english_page_title.py
+    - bots/filter_cat.py
+    - bots/text_to_temp_bot.py
+    - cats_tools/ar_from_en.py
+    - tools_bots/sql_bot.py
 
 7. **wd_bots/** - تكامل ويكي بيانات / Wikidata integration
-   - wd_api_bot.py: Get_Sitelinks_From_wikidata()
-   - to_wd.py: Log_to_wikidata()
-   - get_bots.py: Wikidata queries
+
+    - wd_api_bot.py: Get_Sitelinks_From_wikidata()
+    - to_wd.py: Log_to_wikidata()
+    - get_bots.py: Wikidata queries
 
 8. **wiki_api/** - استدعاءات API / API calls
-   - himoBOT2.py: page_put(), get_page_info_from_wikipedia()
+
+    - himoBOT2.py: page_put(), get_page_info_from_wikipedia()
 
 9. **api_sql/** - قاعدة البيانات / Database operations
-   - wiki_sql.py: sql_new(), sql_new_title_ns()
-   - mysql_client.py: make_sql_connect_silent()
+
+    - wiki_sql.py: sql_new(), sql_new_title_ns()
+    - mysql_client.py: make_sql_connect_silent()
 
 10. **helps/** - أدوات مساعدة / Helper utilities
     - log.py: LoggerWrap
@@ -225,13 +236,15 @@ English Category Name
 ### 3.1 فصل المنطق / Separation of Concerns
 
 #### مشاكل حالية / Current Issues:
-- خلط منطق الأعمال مع استدعاءات API
-- تبعيات دائرية بين الوحدات
-- صعوبة الاختبار بسبب الاعتماديات المباشرة
+
+-   خلط منطق الأعمال مع استدعاءات API
+-   تبعيات دائرية بين الوحدات
+-   صعوبة الاختبار بسبب الاعتماديات المباشرة
 
 #### الحلول المقترحة / Proposed Solutions:
 
 **1. إنشاء طبقة Data Access منفصلة:**
+
 ```python
 # src/data_access/wikipedia_repository.py
 class WikipediaRepository:
@@ -255,6 +268,7 @@ class WikidataRepository:
 ```
 
 **2. استخدام Dependency Injection:**
+
 ```python
 # Before
 def make_ar(en_page_title, ar_title, callback=None):
@@ -268,6 +282,7 @@ def make_ar(en_page_title, ar_title, wikidata_repo, callback=None):
 ```
 
 **3. فصل المنطق عن I/O:**
+
 ```python
 # src/mk_cats/business_logic/category_processor.py
 class CategoryProcessor:
@@ -285,13 +300,15 @@ class CategoryProcessor:
 ### 3.2 معالجة الأخطاء / Error Handling
 
 #### مشاكل حالية / Current Issues:
-- معالجة أخطاء غير متناسقة
-- بعض الأخطاء يتم تجاهلها
-- صعوبة تتبع الأخطاء
+
+-   معالجة أخطاء غير متناسقة
+-   بعض الأخطاء يتم تجاهلها
+-   صعوبة تتبع الأخطاء
 
 #### الحلول المقترحة / Proposed Solutions:
 
 **1. استثناءات مخصصة:**
+
 ```python
 # src/exceptions.py
 class CatsMakerException(Exception):
@@ -316,6 +333,7 @@ class CategoryNotFoundError(CatsMakerException):
 ```
 
 **2. معالج أخطاء موحد:**
+
 ```python
 # src/error_handler.py
 class ErrorHandler:
@@ -335,13 +353,15 @@ class ErrorHandler:
 ### 3.3 التخزين المؤقت / Caching
 
 #### مشاكل حالية / Current Issues:
-- تخزين مؤقت غير متناسق
-- بعض الاستدعاءات المتكررة لا تستخدم cache
-- صعوبة إدارة ال cache
+
+-   تخزين مؤقت غير متناسق
+-   بعض الاستدعاءات المتكررة لا تستخدم cache
+-   صعوبة إدارة ال cache
 
 #### الحلول المقترحة / Proposed Solutions:
 
 **1. نظام تخزين مؤقت موحد:**
+
 ```python
 # src/cache/cache_manager.py
 from functools import lru_cache
@@ -376,13 +396,15 @@ def get_sitelinks(qid: str) -> dict:
 ### 3.4 التكوين / Configuration
 
 #### مشاكل حالية / Current Issues:
-- إعدادات مبعثرة في الكود
-- قيم ثابتة hardcoded
-- صعوبة تغيير الإعدادات
+
+-   إعدادات مبعثرة في الكود
+-   قيم ثابتة hardcoded
+-   صعوبة تغيير الإعدادات
 
 #### الحلول المقترحة / Proposed Solutions:
 
 **1. ملف تكوين مركزي:**
+
 ```python
 # config/settings.py
 from dataclasses import dataclass
@@ -423,6 +445,7 @@ settings = Settings()
 ```
 
 **2. تحميل من ملفات بيئة:**
+
 ```python
 # .env
 WIKIPEDIA_AR_CODE=ar
@@ -435,13 +458,15 @@ DEBUG=false
 ### 3.5 التوثيق / Documentation
 
 #### مشاكل حالية / Current Issues:
-- بعض الدوال بدون docstrings
-- توثيق غير متناسق
-- نقص الأمثلة
+
+-   بعض الدوال بدون docstrings
+-   توثيق غير متناسق
+-   نقص الأمثلة
 
 #### الحلول المقترحة / Proposed Solutions:
 
 **1. معيار توثيق موحد:**
+
 ```python
 def create_categories_from_list(liste: list[str], uselabs: bool = False, callback: Optional[callable] = None) -> None:
     """
@@ -480,17 +505,22 @@ def create_categories_from_list(liste: list[str], uselabs: bool = False, callbac
 ```
 
 **2. توثيق البنية:**
+
 ```markdown
 # docs/architecture.md
+
 # البنية المعمارية للمشروع / Project Architecture
 
 ## نظرة عامة / Overview
+
 ...
 
 ## الوحدات / Modules
+
 ...
 
 ## تدفق البيانات / Data Flow
+
 ...
 ```
 
@@ -499,6 +529,7 @@ def create_categories_from_list(liste: list[str], uselabs: bool = False, callbac
 #### نقاط التحسين / Optimization Points:
 
 **1. Batch Processing:**
+
 ```python
 # Before: معالجة فردية
 for qid in qids:
@@ -512,6 +543,7 @@ for i in range(0, len(qids), batch_size):
 ```
 
 **2. Async/Await للعمليات المتوازية:**
+
 ```python
 import asyncio
 
@@ -523,6 +555,7 @@ async def process_categories_async(categories: list[str]):
 ```
 
 **3. تحسين استعلامات SQL:**
+
 ```python
 # Before: استعلامات متعددة
 for title in titles:
@@ -587,36 +620,40 @@ pylint src/
 
 ### 5.1 التحسينات المطلوبة / Required Improvements
 
-- [ ] فصل منطق الأعمال عن I/O
-- [ ] إنشاء طبقة repository منفصلة
-- [ ] توحيد معالجة الأخطاء
-- [ ] نظام تخزين مؤقت موحد
-- [x] ملف تكوين مركزي
-- [ ] إضافة type hints
-- [ ] توثيق شامل لجميع الدوال
-- [ ] تحسين الأداء (batch, async)
-- [ ] إزالة الكود المكرر
-- [ ] تحسين أسماء المتغيرات
+-   [ ] فصل منطق الأعمال عن I/O
+-   [ ] إنشاء طبقة repository منفصلة
+-   [ ] توحيد معالجة الأخطاء
+-   [ ] نظام تخزين مؤقت موحد
+-   [x] ملف تكوين مركزي
+-   [ ] إضافة type hints
+-   [ ] توثيق شامل لجميع الدوال
+-   [ ] تحسين الأداء (batch, async)
+-   [ ] إزالة الكود المكرر
+-   [ ] تحسين أسماء المتغيرات
 
 ### 5.2 الفوائد المتوقعة / Expected Benefits
 
 ✅ **قابلية الاختبار / Testability**
-- سهولة كتابة unit tests
-- سهولة mocking للتبعيات
+
+-   سهولة كتابة unit tests
+-   سهولة mocking للتبعيات
 
 ✅ **قابلية الصيانة / Maintainability**
-- كود أوضح وأسهل للفهم
-- سهولة إضافة ميزات جديدة
+
+-   كود أوضح وأسهل للفهم
+-   سهولة إضافة ميزات جديدة
 
 ✅ **الأداء / Performance**
-- تقليل الاستدعاءات المتكررة
-- معالجة دفعات
-- عمليات متوازية
+
+-   تقليل الاستدعاءات المتكررة
+-   معالجة دفعات
+-   عمليات متوازية
 
 ✅ **الموثوقية / Reliability**
-- معالجة أخطاء أفضل
-- تتبع أفضل للمشاكل
-- استرداد من الأخطاء
+
+-   معالجة أخطاء أفضل
+-   تتبع أفضل للمشاكل
+-   استرداد من الأخطاء
 
 ---
 

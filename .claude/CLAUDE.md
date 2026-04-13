@@ -44,39 +44,41 @@ run.py (CLI args) → config/settings.py (dataclass config) → mk_cats/mknew.py
 
 ## Key Modules
 
-- `src/config/settings.py`: Centralized dataclass-based configuration. All settings accessed via `from src.config import settings`
-- `src/mk_cats/mknew.py`: Core functions - `create_categories_from_list()`, `ar_make_lab()`
-- `src/mk_cats/members_helper.py`: Member collection from SQL, API, and SubSub sources
-- `src/wd_bots/`: Wikidata API integration
-- `src/wiki_api/`: MediaWiki API calls
+-   `src/config/settings.py`: Centralized dataclass-based configuration. All settings accessed via `from src.config import settings`
+-   `src/mk_cats/mknew.py`: Core functions - `create_categories_from_list()`, `ar_make_lab()`
+-   `src/mk_cats/members_helper.py`: Member collection from SQL, API, and SubSub sources
+-   `src/wd_bots/`: Wikidata API integration
+-   `src/wiki_api/`: MediaWiki API calls
 
 ## Configuration
 
 Settings are dataclasses in `src/config/settings.py`:
-- `WikipediaConfig`: language codes, user agent, timeout
-- `WikidataConfig`: endpoints, maxlag
-- `DatabaseConfig`: SQL connection settings
-- `CategoryConfig`: min_members (default: 10), stubs, we_try mode
-- `BotConfig`: ask confirmation, diff display
+
+-   `WikipediaConfig`: language codes, user agent, timeout
+-   `WikidataConfig`: endpoints, maxlag
+-   `DatabaseConfig`: SQL connection settings
+-   `CategoryConfig`: min_members (default: 10), stubs, we_try mode
+-   `BotConfig`: ask confirmation, diff display
 
 Runtime config via CLI args (processed in `settings._process_argv()`):
-- `-range:<n>`, `-depth:<n>`, `-minmembers:<n>`
-- `-nosql`, `DEBUG`, `testwikidata`, `ask`
+
+-   `-range:<n>`, `-depth:<n>`, `-minmembers:<n>`
+-   `-nosql`, `DEBUG`, `testwikidata`, `ask`
 
 ## Code Style
 
-- Line length: 120 characters
-- Formatters: Black, isort (black profile), ruff
-- Target: Python 3.10+ (tested on 3.13)
-- Test framework: pytest with pytest-mock
+-   Line length: 120 characters
+-   Formatters: Black, isort (black profile), ruff
+-   Target: Python 3.10+ (tested on 3.13)
+-   Test framework: pytest with pytest-mock
 
 ## Testing Conventions
 
-- Tests in `tests/` mirror `src/` structure
-- Shared fixtures in `tests/conftest.py`
-- Mock all external API calls (Wikipedia, Wikidata, SQL)
-- Test markers: `unit`, `integration`, `network`, `slow`, `skip2`
-- Default pytest excludes `network` and `skip2` tests
+-   Tests in `tests/` mirror `src/` structure
+-   Shared fixtures in `tests/conftest.py`
+-   Mock all external API calls (Wikipedia, Wikidata, SQL)
+-   Test markers: `unit`, `integration`, `network`, `slow`, `skip2`
+-   Default pytest excludes `network` and `skip2` tests
 
 ## Important Patterns
 
@@ -95,7 +97,7 @@ create_categories_from_list(["Category:Science"], callback=my_callback)
 
 ## Special Considerations
 
-- Arabic text handling: ensure proper Unicode/RTL support
-- Wikipedia bot policies: respect rate limits, use bot accounts
-- Blacklists in `src/utils/skip_cats.py`: always check before processing categories
-- SQL database access is optional (Wikimedia Tool Labs)
+-   Arabic text handling: ensure proper Unicode/RTL support
+-   Wikipedia bot policies: respect rate limits, use bot accounts
+-   Blacklists in `src/utils/skip_cats.py`: always check before processing categories
+-   SQL database access is optional (Wikimedia Tool Labs)

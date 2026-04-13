@@ -4,16 +4,16 @@ A Python automation tool for creating Arabic Wikipedia categories from their Eng
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Project Structure](#project-structure)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [Related Documentation](#related-documentation)
+-   [Overview](#overview)
+-   [Features](#features)
+-   [Architecture](#architecture)
+-   [Installation](#installation)
+-   [Usage](#usage)
+-   [Configuration](#configuration)
+-   [Project Structure](#project-structure)
+-   [Testing](#testing)
+-   [Contributing](#contributing)
+-   [Related Documentation](#related-documentation)
 
 ## Overview
 
@@ -31,26 +31,29 @@ The project uses a centralized dataclass-based configuration system and supports
 ## Features
 
 ### Core Functionality
-- **Category Translation**: Automatically resolves Arabic category labels from English categories using Wikidata sitelinks and the [ArWikiCats](https://github.com/MrIbrahem/ArWikiCats) library
-- **Category Creation**: Creates new Arabic Wikipedia category pages with proper formatting
-- **Template Generation**: Generates navigation templates for categories (centuries, decades, years, millennia)
-- **Portal Integration**: Automatically adds relevant portal links to categories based on topic detection
-- **Wikidata Integration**: Creates and updates Wikidata sitelinks for newly created categories
+
+-   **Category Translation**: Automatically resolves Arabic category labels from English categories using Wikidata sitelinks and the [ArWikiCats](https://github.com/MrIbrahem/ArWikiCats) library
+-   **Category Creation**: Creates new Arabic Wikipedia category pages with proper formatting
+-   **Template Generation**: Generates navigation templates for categories (centuries, decades, years, millennia)
+-   **Portal Integration**: Automatically adds relevant portal links to categories based on topic detection
+-   **Wikidata Integration**: Creates and updates Wikidata sitelinks for newly created categories
 
 ### Data Sources
-- **Wikidata API**: Retrieves sitelinks, labels, descriptions, and properties
-- **Wikipedia API**: Queries page information, categories, and langlinks
-- **SQL Database**: Supports Wikimedia Tool Labs SQL databases for efficient queries
-- **Quarry Integration**: Fetches category lists from Quarry queries
+
+-   **Wikidata API**: Retrieves sitelinks, labels, descriptions, and properties
+-   **Wikipedia API**: Queries page information, categories, and langlinks
+-   **SQL Database**: Supports Wikimedia Tool Labs SQL databases for efficient queries
+-   **Quarry Integration**: Fetches category lists from Quarry queries
 
 ### Processing Features
-- **Batch Processing**: Processes multiple categories in a single run
-- **Recursive Processing**: Discovers and processes subcategories
-- **Duplicate Detection**: Tracks processed categories to avoid duplicates
-- **Error Handling**: Robust error handling with logging
-- **Caching**: In-memory caching for API responses
-- **Redirect Filtering**: Automatically filters redirect pages from member lists
-- **Minimum Members Threshold**: Configurable minimum member count before creating categories
+
+-   **Batch Processing**: Processes multiple categories in a single run
+-   **Recursive Processing**: Discovers and processes subcategories
+-   **Duplicate Detection**: Tracks processed categories to avoid duplicates
+-   **Error Handling**: Robust error handling with logging
+-   **Caching**: In-memory caching for API responses
+-   **Redirect Filtering**: Automatically filters redirect pages from member lists
+-   **Minimum Members Threshold**: Configurable minimum member count before creating categories
 
 ## Architecture
 
@@ -152,40 +155,42 @@ English Category Name
 
 ### Prerequisites
 
-- Python 3.10 or higher
-- pip (Python package manager)
-- Access to Wikipedia API (for actual operations)
-- (Optional) Access to Wikimedia Tool Labs for SQL queries
+-   Python 3.10 or higher
+-   pip (Python package manager)
+-   Access to Wikipedia API (for actual operations)
+-   (Optional) Access to Wikimedia Tool Labs for SQL queries
 
 ### Setup
 
 1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/MrIbrahem/cats_maker_new.git
-   cd cats_maker_new
-   ```
+
+    ```bash
+    git clone https://github.com/MrIbrahem/cats_maker_new.git
+    cd cats_maker_new
+    ```
 
 2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.in
-   ```
+
+    ```bash
+    pip install -r requirements.in
+    ```
 
 3. **Install optional dependencies (for full functionality):**
-   ```bash
-   # For Arabic category label resolution
-   pip install ArWikiCats
-   ```
+    ```bash
+    # For Arabic category label resolution
+    pip install ArWikiCats
+    ```
 
 ### Dependencies
 
-- `wikitextparser>=0.55.7` - Wiki text parsing
-- `tqdm>=4.67.1` - Progress bars
-- `SPARQLWrapper>=2.0.0` - SPARQL queries
-- `pymysql` - MySQL database connections
-- `jsonlines` - JSONL file handling
-- `sqlite_utils` - SQLite utilities
-- `pytest` - Testing framework
-- `pytest-mock` - Test mocking
+-   `wikitextparser>=0.55.7` - Wiki text parsing
+-   `tqdm>=4.67.1` - Progress bars
+-   `SPARQLWrapper>=2.0.0` - SPARQL queries
+-   `pymysql` - MySQL database connections
+-   `jsonlines` - JSONL file handling
+-   `sqlite_utils` - SQLite utilities
+-   `pytest` - Testing framework
+-   `pytest-mock` - Test mocking
 
 ## Usage
 
@@ -206,73 +211,73 @@ python run.py DEBUG -encat:Mathematics
 
 #### Category Processing
 
-| Argument | Description | Example |
-|----------|-------------|---------|
-| `encat:<name>` | Process a single English category | `encat:Science` |
-| `quarry:<id>` | Fetch categories from Quarry query | `quarry:357357` |
-| `-range:<n>` | Set range limit for processing (default: 5) | `-range:10` |
-| `-We_Try` | Enable retry mode for failed categories | `-We_Try` |
-| `-nowetry` | Disable retry mode | `-nowetry` |
-| `-minmembers:<n>` | Minimum members required to create category (default: 5) | `-minmembers:3` |
-| `-stubs` | Process stub categories | `-stubs` |
-| `-dontMakeNewCat` | Disable new category creation | `-dontMakeNewCat` |
-| `-uselabels` | Use Wikidata labels for category names | `-uselabels` |
+| Argument          | Description                                              | Example           |
+| ----------------- | -------------------------------------------------------- | ----------------- |
+| `encat:<name>`    | Process a single English category                        | `encat:Science`   |
+| `quarry:<id>`     | Fetch categories from Quarry query                       | `quarry:357357`   |
+| `-range:<n>`      | Set range limit for processing (default: 5)              | `-range:10`       |
+| `-We_Try`         | Enable retry mode for failed categories                  | `-We_Try`         |
+| `-nowetry`        | Disable retry mode                                       | `-nowetry`        |
+| `-minmembers:<n>` | Minimum members required to create category (default: 5) | `-minmembers:3`   |
+| `-stubs`          | Process stub categories                                  | `-stubs`          |
+| `-dontMakeNewCat` | Disable new category creation                            | `-dontMakeNewCat` |
+| `-uselabels`      | Use Wikidata labels for category names                   | `-uselabels`      |
 
 #### Debug and Logging
 
-| Argument | Description | Example |
-|----------|-------------|---------|
-| `DEBUG` or `-debug` | Enable debug logging | `DEBUG` |
-| `printurl` | Print API URLs for debugging | `printurl` |
-| `printdata` | Print API data for debugging | `printdata` |
-| `printtext` | Print text output for debugging | `printtext` |
-| `printresult` | Print results for debugging | `printresult` |
-| `raise` | Raise exceptions instead of handling them | `raise` |
+| Argument            | Description                               | Example       |
+| ------------------- | ----------------------------------------- | ------------- |
+| `DEBUG` or `-debug` | Enable debug logging                      | `DEBUG`       |
+| `printurl`          | Print API URLs for debugging              | `printurl`    |
+| `printdata`         | Print API data for debugging              | `printdata`   |
+| `printtext`         | Print text output for debugging           | `printtext`   |
+| `printresult`       | Print results for debugging               | `printresult` |
+| `raise`             | Raise exceptions instead of handling them | `raise`       |
 
 #### Database and SQL
 
-| Argument | Description | Example |
-|----------|-------------|---------|
+| Argument | Description                | Example  |
+| -------- | -------------------------- | -------- |
 | `-nosql` | Disable SQL database usage | `-nosql` |
-| `usesql` | Enable SQL database usage | `usesql` |
+| `usesql` | Enable SQL database usage  | `usesql` |
 
 #### Wikidata
 
-| Argument | Description | Example |
-|----------|-------------|---------|
-| `testwikidata` | Use Wikidata test environment | `testwikidata` |
-| `maxlag2` | Set Wikidata maxlag to 1 | `maxlag2` |
-| `descqs` | Use QuickStatements for descriptions | `descqs` |
+| Argument       | Description                          | Example        |
+| -------------- | ------------------------------------ | -------------- |
+| `testwikidata` | Use Wikidata test environment        | `testwikidata` |
+| `maxlag2`      | Set Wikidata maxlag to 1             | `maxlag2`      |
+| `descqs`       | Use QuickStatements for descriptions | `descqs`       |
 
 #### Bot Behavior
 
-| Argument | Description | Example |
-|----------|-------------|---------|
-| `ask` | Ask for confirmation before making changes | `ask` |
-| `nodiff` | Don't show diff when asking for confirmation | `nodiff` |
-| `diff` | Force show diff when asking for confirmation | `diff` |
-| `nofa` | Disable false edit detection | `nofa` |
-| `botedit` | Force bot edit (bypass nobots check) | `botedit` |
-| `nologin` | Disable login assertion | `nologin` |
+| Argument  | Description                                  | Example   |
+| --------- | -------------------------------------------- | --------- |
+| `ask`     | Ask for confirmation before making changes   | `ask`     |
+| `nodiff`  | Don't show diff when asking for confirmation | `nodiff`  |
+| `diff`    | Force show diff when asking for confirmation | `diff`    |
+| `nofa`    | Disable false edit detection                 | `nofa`    |
+| `botedit` | Force bot edit (bypass nobots check)         | `botedit` |
+| `nologin` | Disable login assertion                      | `nologin` |
 
 #### Site Configuration
 
-| Argument | Description | Example |
-|----------|-------------|---------|
-| `-commons` | Use Commons instead of Wikipedia | `-commons` |
-| `-family:<name>` | Custom wiki family (wikiquote, wikisource) | `-family:wikiquote` |
-| `-uselang:<code>` | Custom language code for source site | `-uselang:de` |
-| `-slang:<code>` | Secondary language for fallback | `-slang:fr` |
+| Argument          | Description                                | Example             |
+| ----------------- | ------------------------------------------ | ------------------- |
+| `-commons`        | Use Commons instead of Wikipedia           | `-commons`          |
+| `-family:<name>`  | Custom wiki family (wikiquote, wikisource) | `-family:wikiquote` |
+| `-uselang:<code>` | Custom language code for source site       | `-uselang:de`       |
+| `-slang:<code>`   | Secondary language for fallback            | `-slang:fr`         |
 
 #### Query Parameters
 
-| Argument | Description | Example |
-|----------|-------------|---------|
-| `-offset:<n>` | Starting offset for queries | `-offset:100` |
-| `depth:<n>` | Depth limit for category traversal (default: 0) | `depth:3` |
-| `-to:<n>` | Upper limit for results | `-to:500` |
-| `nons10` | Exclude namespace 10 from results | `nons10` |
-| `ns:14` | Only include namespace 14 in results | `ns:14` |
+| Argument      | Description                                     | Example       |
+| ------------- | ----------------------------------------------- | ------------- |
+| `-offset:<n>` | Starting offset for queries                     | `-offset:100` |
+| `depth:<n>`   | Depth limit for category traversal (default: 0) | `depth:3`     |
+| `-to:<n>`     | Upper limit for results                         | `-to:500`     |
+| `nons10`      | Exclude namespace 10 from results               | `nons10`      |
+| `ns:14`       | Only include namespace 14 in results            | `ns:14`       |
 
 ### Programmatic Usage
 
@@ -314,14 +319,14 @@ Configuration is managed through the `src/config/settings.py` module, which prov
 
 The configuration system uses the following dataclasses:
 
-- **WikipediaConfig**: Wikipedia API settings (language codes, user agent, timeout)
-- **WikidataConfig**: Wikidata API settings (endpoints, timeout, maxlag)
-- **DatabaseConfig**: Database connection settings (host, port, use_sql)
-- **DebugConfig**: Debug and logging options (print_url, print_data, raise_errors)
-- **BotConfig**: Bot behavior settings (ask, no_diff, force_edit)
-- **CategoryConfig**: Category processing settings (stubs, min_members, we_try)
-- **QueryConfig**: Query parameters (offset, depth, to_limit)
-- **SiteConfig**: Alternative site settings (use_commons, custom_family)
+-   **WikipediaConfig**: Wikipedia API settings (language codes, user agent, timeout)
+-   **WikidataConfig**: Wikidata API settings (endpoints, timeout, maxlag)
+-   **DatabaseConfig**: Database connection settings (host, port, use_sql)
+-   **DebugConfig**: Debug and logging options (print_url, print_data, raise_errors)
+-   **BotConfig**: Bot behavior settings (ask, no_diff, force_edit)
+-   **CategoryConfig**: Category processing settings (stubs, min_members, we_try)
+-   **QueryConfig**: Query parameters (offset, depth, to_limit)
+-   **SiteConfig**: Alternative site settings (use_commons, custom_family)
 
 ### Usage
 
@@ -359,53 +364,53 @@ print(settings.debug)  # False
 
 #### Wikipedia Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `WIKIPEDIA_AR_CODE` | Arabic Wikipedia language code | `ar` |
-| `WIKIPEDIA_EN_CODE` | English Wikipedia language code | `en` |
-| `WIKIPEDIA_AR_FAMILY` | Arabic Wikipedia family | `wikipedia` |
-| `WIKIPEDIA_EN_FAMILY` | English Wikipedia family | `wikipedia` |
-| `WIKIPEDIA_USER_AGENT` | User agent string for API requests | `Himo bot/1.0 (https://himo.toolforge.org/; tools.himo@toolforge.org)` |
-| `WIKIPEDIA_TIMEOUT` | Default timeout for API requests (seconds) | `10` |
+| Variable               | Description                                | Default                                                                |
+| ---------------------- | ------------------------------------------ | ---------------------------------------------------------------------- |
+| `WIKIPEDIA_AR_CODE`    | Arabic Wikipedia language code             | `ar`                                                                   |
+| `WIKIPEDIA_EN_CODE`    | English Wikipedia language code            | `en`                                                                   |
+| `WIKIPEDIA_AR_FAMILY`  | Arabic Wikipedia family                    | `wikipedia`                                                            |
+| `WIKIPEDIA_EN_FAMILY`  | English Wikipedia family                   | `wikipedia`                                                            |
+| `WIKIPEDIA_USER_AGENT` | User agent string for API requests         | `Himo bot/1.0 (https://himo.toolforge.org/; tools.himo@toolforge.org)` |
+| `WIKIPEDIA_TIMEOUT`    | Default timeout for API requests (seconds) | `10`                                                                   |
 
 #### Wikidata Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `WIKIDATA_ENDPOINT` | Wikidata API endpoint URL | `https://www.wikidata.org/w/api.php` |
-| `WIKIDATA_SPARQL_ENDPOINT` | SPARQL query endpoint URL | `https://query.wikidata.org/sparql` |
-| `WIKIDATA_TIMEOUT` | Default timeout for Wikidata requests (seconds) | `30` |
-| `WIKIDATA_MAXLAG` | Maximum lag for Wikidata API requests | `5` |
+| Variable                   | Description                                     | Default                              |
+| -------------------------- | ----------------------------------------------- | ------------------------------------ |
+| `WIKIDATA_ENDPOINT`        | Wikidata API endpoint URL                       | `https://www.wikidata.org/w/api.php` |
+| `WIKIDATA_SPARQL_ENDPOINT` | SPARQL query endpoint URL                       | `https://query.wikidata.org/sparql`  |
+| `WIKIDATA_TIMEOUT`         | Default timeout for Wikidata requests (seconds) | `30`                                 |
+| `WIKIDATA_MAXLAG`          | Maximum lag for Wikidata API requests           | `5`                                  |
 
 #### Database Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_HOST` | Database host (optional) | `None` |
-| `DATABASE_PORT` | Database port | `3306` |
-| `DATABASE_USE_SQL` | Whether to use SQL database for queries | `True` |
+| Variable           | Description                             | Default |
+| ------------------ | --------------------------------------- | ------- |
+| `DATABASE_HOST`    | Database host (optional)                | `None`  |
+| `DATABASE_PORT`    | Database port                           | `3306`  |
+| `DATABASE_USE_SQL` | Whether to use SQL database for queries | `True`  |
 
 #### Category Configuration
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MIN_MEMBERS` | Minimum members required to create a category | `5` |
+| Variable      | Description                                   | Default |
+| ------------- | --------------------------------------------- | ------- |
+| `MIN_MEMBERS` | Minimum members required to create a category | `5`     |
 
 #### Global Settings
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `RANGE_LIMIT` | Maximum number of iterations for category processing | `5` |
-| `DEBUG` | Enable debug mode | `False` |
-| `LOG_LEVEL` | Logging level (DEBUG, INFO, WARNING, ERROR) | `INFO` |
+| Variable      | Description                                          | Default |
+| ------------- | ---------------------------------------------------- | ------- |
+| `RANGE_LIMIT` | Maximum number of iterations for category processing | `5`     |
+| `DEBUG`       | Enable debug mode                                    | `False` |
+| `LOG_LEVEL`   | Logging level (DEBUG, INFO, WARNING, ERROR)          | `INFO`  |
 
 ### Blacklists
 
 The project maintains several blacklists to skip certain categories:
 
-- **English category blacklist**: Categories to skip entirely
-- **Template blacklist**: Templates to exclude from processing
-- **Name blacklist**: Specific names to avoid
+-   **English category blacklist**: Categories to skip entirely
+-   **Template blacklist**: Templates to exclude from processing
+-   **Name blacklist**: Specific names to avoid
 
 ## Project Structure
 
@@ -523,37 +528,37 @@ pytest -m "not network"
 
 The test suite covers:
 
-- **Unit Tests**: Individual function testing with mocked dependencies
-- **Integration Tests**: End-to-end workflow testing
-- **Fixture Tests**: Reusable test data and mock configurations
+-   **Unit Tests**: Individual function testing with mocked dependencies
+-   **Integration Tests**: End-to-end workflow testing
+-   **Fixture Tests**: Reusable test data and mock configurations
 
 ### Test Coverage
 
 Current test coverage includes approximately **880+ tests** covering:
 
-| Module | Description | Status |
-|--------|-------------|--------|
-| api_sql | Database query functions | ✅ |
-| b18_new | Category processing and links | ✅ |
-| c18_new | Category tools and conversions | ✅ |
-| config | Settings and configuration | ✅ |
-| helps | Logging and utilities | ✅ |
-| mk_cats | Core category creation | ✅ |
-| utils | Skip lists and blacklists | ✅ |
-| wd_bots | Wikidata integration | ✅ |
-| wiki_api | Wikipedia API calls | ✅ |
-| temp | Template generation | ✅ |
-| integration | End-to-end tests | ✅ |
+| Module      | Description                    | Status |
+| ----------- | ------------------------------ | ------ |
+| api_sql     | Database query functions       | ✅     |
+| b18_new     | Category processing and links  | ✅     |
+| c18_new     | Category tools and conversions | ✅     |
+| config      | Settings and configuration     | ✅     |
+| helps       | Logging and utilities          | ✅     |
+| mk_cats     | Core category creation         | ✅     |
+| utils       | Skip lists and blacklists      | ✅     |
+| wd_bots     | Wikidata integration           | ✅     |
+| wiki_api    | Wikipedia API calls            | ✅     |
+| temp        | Template generation            | ✅     |
+| integration | End-to-end tests               | ✅     |
 
 ### Test Markers
 
 The test suite uses the following pytest markers:
 
-- `unit`: Unit tests (fast, isolated)
-- `integration`: Integration tests (may require mocking)
-- `network`: Tests requiring network access (skipped by default in CI)
-- `slow`: Slow-running tests
-- `skip2`: Tests to skip temporarily
+-   `unit`: Unit tests (fast, isolated)
+-   `integration`: Integration tests (may require mocking)
+-   `network`: Tests requiring network access (skipped by default in CI)
+-   `slow`: Slow-running tests
+-   `skip2`: Tests to skip temporarily
 
 ### Writing Tests
 
@@ -598,9 +603,10 @@ class TestArMakeLab:
 ### Code Style
 
 This project uses:
-- **Black** for code formatting (line length: 120)
-- **isort** for import sorting
-- **ruff** for linting
+
+-   **Black** for code formatting (line length: 120)
+-   **isort** for import sorting
+-   **ruff** for linting
 
 ```bash
 # Format code
@@ -615,16 +621,16 @@ ruff check src/
 
 ### Commit Guidelines
 
-- Write clear, descriptive commit messages
-- Reference issues when applicable
-- Keep commits focused and atomic
+-   Write clear, descriptive commit messages
+-   Reference issues when applicable
+-   Keep commits focused and atomic
 
 ## Related Documentation
 
-- **[refactoring_plan.md](refactoring_plan.md)**: Detailed technical documentation about the codebase architecture, execution flow, and planned improvements
-- **[testing_plan.md](testing_plan.md)**: Comprehensive testing strategy, test coverage goals, and test examples
-- **[Wikidata API](https://www.wikidata.org/wiki/Wikidata:Data_access)**: Wikidata data access documentation
-- **[MediaWiki API](https://www.mediawiki.org/wiki/API:Main_page)**: Wikipedia API reference
+-   **[refactoring_plan.md](refactoring_plan.md)**: Detailed technical documentation about the codebase architecture, execution flow, and planned improvements
+-   **[testing_plan.md](testing_plan.md)**: Comprehensive testing strategy, test coverage goals, and test examples
+-   **[Wikidata API](https://www.wikidata.org/wiki/Wikidata:Data_access)**: Wikidata data access documentation
+-   **[MediaWiki API](https://www.mediawiki.org/wiki/API:Main_page)**: Wikipedia API reference
 
 ## License
 
@@ -632,6 +638,6 @@ This project is open source. See repository for license details.
 
 ## Acknowledgments
 
-- Arabic Wikipedia community
-- Wikidata project
-- [ArWikiCats](https://github.com/MrIbrahem/ArWikiCats) project
+-   Arabic Wikipedia community
+-   Wikidata project
+-   [ArWikiCats](https://github.com/MrIbrahem/ArWikiCats) project
