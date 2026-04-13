@@ -6,11 +6,12 @@ import functools
 import json
 import logging
 import re
+
+from ..new_api.pagenew import password, username
+from ..new_api.super.super_login import Login
 from .utils import lag_bot
 from .utils.out_json import outbot_json
 from .wd_newapi_bot import WD_API
-from ..new_api.pagenew import password, username
-from ..new_api.super.super_login import Login
 
 logger = logging.getLogger(__name__)
 

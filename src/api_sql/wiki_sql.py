@@ -6,7 +6,6 @@ import os
 import time
 
 from ..helps.functions_timer import function_timer
-
 from . import mysql_client
 
 logger = logging.getLogger(__name__)
@@ -156,6 +155,7 @@ def make_labsdb_dbs_p(wiki):
     dbs_p = f"{dbs}_p"
     # ---
     return host, dbs_p
+
 
 @function_timer
 def sql_new(queries, wiki="", values=[]):

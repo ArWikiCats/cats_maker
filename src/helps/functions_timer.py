@@ -1,6 +1,6 @@
-import time
 import functools
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,8 @@ def function_timer(func):
 
         delta = time.perf_counter() - start_time
 
-        logger.debug(f'{func.__name__} done in {delta:.4f} seconds')
+        logger.debug(f"{func.__name__} done in {delta:.4f} seconds")
 
         return result
+
     return wrapper

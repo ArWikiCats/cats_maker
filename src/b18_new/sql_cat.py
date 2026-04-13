@@ -31,7 +31,7 @@ def get_ar_list(arcat, us_sql=True):
 
     # Clean category name (no SQL injection risk - just string manipulation)
     ar_cat2 = arcat.replace(" ", "_").replace("تصنيف:", "")
-    
+
     # Use parameterized query to prevent SQL injection
     qia_ar = """
     SELECT page_title, page_namespace
@@ -58,7 +58,7 @@ def get_ar_list(arcat, us_sql=True):
 def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
     # Clean category name (no SQL injection risk - just string manipulation)
     encat2 = encat.replace(" ", "_").replace("Category:", "").replace("category:", "")
-    
+
     # Validate and build namespace list - use tuple for parameterized query
     nss = "0, 10, 14"
     # ---
@@ -67,7 +67,7 @@ def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
     # ---
     if settings.query.ns_only_14:
         nss = "14"
-    
+
     # Use parameterized query to prevent SQL injection
     # Note: nss is validated against known safe values above, not user input
     en_qua = f"""

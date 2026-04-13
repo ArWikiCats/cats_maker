@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 """ """
-from . import super_login
-from . import bot_api
-from . import catdepth_new
-from . import super_page
+from . import bot_api, catdepth_new, super_login, super_page
 
 __all__ = [
     "bot_api",

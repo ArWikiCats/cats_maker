@@ -1,15 +1,12 @@
 """ """
 
 import logging
-
-import wikitextparser as wtp
 from dataclasses import dataclass, field
 
-from ...config import settings
-from ..api_utils import bot_May_Edit
-from ..api_utils import ASK_BOT
-from ..api_utils import change_codes
+import wikitextparser as wtp
 
+from ...config import settings
+from ..api_utils import ASK_BOT, bot_May_Edit, change_codes
 from .handel_errors import HANDEL_ERRORS
 
 logger = logging.getLogger(__name__)

@@ -5,7 +5,9 @@ import logging
 import os
 import sys
 from pathlib import Path
+
 import requests
+
 from src.config import settings
 from src.mk_cats import create_categories_from_list
 

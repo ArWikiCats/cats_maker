@@ -6,7 +6,6 @@ import time
 from datetime import datetime
 
 from ..helps.functions_timer import function_timer
-
 from . import wiki_sql
 from .mysql_client import make_sql_connect
 from .wiki_sql import ns_text_tab_ar

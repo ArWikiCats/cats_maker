@@ -9,8 +9,8 @@ import pymysql
 from pymysql.cursors import DictCursor
 
 from ..exceptions import (
-    DatabaseError,
     DatabaseConnectionError,
+    DatabaseError,
     DatabaseFetchError,
     QueryExecutionError,
 )

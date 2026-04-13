@@ -19,6 +19,7 @@ class CategoryResult(NamedTuple):
         page_title: The title of the created/modified page (if any)
         error_message: Error message if operation failed (if any)
     """
+
     success: bool
     page_title: Optional[str] = None
     error_message: Optional[str] = None
