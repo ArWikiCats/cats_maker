@@ -83,7 +83,7 @@ def get_exclusive_category_titles(encatTitle, arcatTitle) -> list:
     # ---
     final_cat = [x for x in encats if x not in arcats]
     # ---
-    logger.info(f'sql_bot.py: get_exclusive_category_titles len(final_cat) = "{len(final_cat)}"')
+    logger.info(f'sql_bot.py: len(final_cat) = "{len(final_cat)}"')
     # ---
     return final_cat
 
