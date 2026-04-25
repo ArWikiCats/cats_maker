@@ -11,7 +11,6 @@ Usage:
 
 """
 
-# ---
 import sqlite_utils
 
 
@@ -57,20 +56,20 @@ class LiteDB:
         return self.db[table_name].rows
 
     def select(self, table_name, args):
-        # ---
+
         where_conditions = []
         params = []
-        # ---
+
         for k, v in args.items():
             where_conditions.append(f"{k} = ?")
             params.append(v)
-        # ---
+
         where = " and ".join(where_conditions)
         # where = " and ".join([f"{k} = '{v}'" for k, v in args.items()])
         lista = []
-        # ---
+
         # for row in self.db[table_name].rows_where(where):
         for row in self.db[table_name].rows_where(where, params):
             lista.append(row)
-        # ---
+
         return lista

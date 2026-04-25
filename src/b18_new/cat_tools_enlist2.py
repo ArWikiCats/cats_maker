@@ -30,24 +30,23 @@ def get_ar_list_from_cat(cat, code="ar", typee="cat", return_list=True):
         list: A list of keys representing the members of the specified category.
     """
 
-    # ---
     lista = []
-    # ---
+
     if cat.startswith("Category:"):
         cat = cat.replace("Category:", "")
-    # ---
+
     if cat.startswith("تصنيف:"):
         cat = cat.replace("تصنيف:", "")
-    # ---
+
     ctype = "subcat" if typee == "cat" else "page" if typee == "page" else ""
-    # ---
+
     subcategories_result = sub_cats_query("Category:" + cat, code, ctype=ctype)
-    # ---
+
     categorymembers = subcategories_result.get("categorymembers", {}) if subcategories_result else {}
-    # ---
+
     if categorymembers:
         lista = list(categorymembers)
-    # ---
+
     return lista
 
 
@@ -71,50 +70,50 @@ def MakeLitApiWay(enpageTitle, Type="cat"):
     """
 
     listenpageTitle = []
-    # ---
+
     encat = enpageTitle
     if not encat:
         logger.info("<<lightblue>> No enpageTitle")
         return False
-    # ---
+
     logger.info("<<lightgreen>>* MakeLit ApiWay: ")
     # count = 0
     # encat = encat.replace('[[', '').replace(']]', '').replace('Category:', '').replace('category:', '').strip()
     encat = encat.replace("[[", "").replace("]]", "").replace("Category:", "").replace("category:", "").strip()
-    # ---
+
     gent_faso_list = Categorized_Page_Generator(encat, Type)
-    # ---
+
     UUX = get_arpage_inside_encat("Category:" + encat)
-    # ---
+
     if UUX:
         logger.info("arpage inside_encat: " + (",a: ".join(UUX)))
         for x in UUX:
             gent_faso_list.append(x.replace("_", " "))
-    # ---
+
     if not gent_faso_list:
         gent_faso_list = get_ar_list_from_cat(encat, code="en", typee=Type)
-    # ---
+
     logger.info(f" MakeLitApi: Way lenth : {len(gent_faso_list)}")
     if len(gent_faso_list) == 0:
         logger.info(f'<<lightblue>> MakeLit ApiWay: No cats gent_faso_list == ["{len(gent_faso_list)}"] ')
         return False
-    # ---
+
     for i in range(0, len(gent_faso_list), 50):
         liste = gent_faso_list[i : i + 50]
-        # ---
+
         gent_listu = "|".join(liste)
-        # ---
+
         if not gent_listu:
             continue
-        # ---
+
         if gent_listu.startswith("|"):
             gent_listu = gent_listu[len("|") :]
-        # ---
+
         gent_sasa = find_LCN(gent_listu, prop="langlinks", first_site_code=settings.EEn_site.code)
-        # ---
+
         if gent_sasa:
             for p_w in gent_sasa:
-                # ---
+
                 arpagetitle = False
                 # if p_w in gent_sasa:
                 # if (p_w in gent_sasa) and ('langlinks' in gent_sasa[p_w]) and ("ar" in gent_sasa[p_w]):
@@ -127,7 +126,7 @@ def MakeLitApiWay(enpageTitle, Type="cat"):
                     logger.debug(gent_sasa[p_w]["langlinks"]["ar"])
                 else:
                     tubb22 = (p_w, settings.EEn_site.code, "ar", "en_links")
-                    # ---
+
                     if get_cache_L_C_N(tubb22):
                         logger.debug(
                             '>> 2019:get_cache_L_C_N tubb22: "{}":  = {}:{}'.format(
@@ -141,10 +140,10 @@ def MakeLitApiWay(enpageTitle, Type="cat"):
                 else:
                     logger.debug(f"<<lightblue>>Adding {arpagetitle} to fapage lists {p_w}")
                     listenpageTitle.append(arpagetitle)
-        # ---
+
     # if not listenpageTitle:
     if len(listenpageTitle) == 0:
         logger.info(f'<<lightblue>> MakeLit ApiWay : No cats listenpageTitle == ["{len(listenpageTitle)}"] ')
         return False
-    # ---
+
     return listenpageTitle

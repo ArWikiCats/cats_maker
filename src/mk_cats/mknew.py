@@ -132,14 +132,14 @@ def scan_ar_title(title):
 def check_if_artitle_exists(test_title):
     if not test_title.startswith("تصنيف:"):
         test_title = f"تصنيف:{test_title}"
-    # ---
+
     api = load_main_api(WIKI_SITE_AR["code"])
     page = api.MainPage(test_title)
-    # ---
+
     if page.exists():
         logger.debug(f"<<lightred>>* category:{test_title} already exists in arwiki.")
         return False
-    # ---
+
     return True
 
 

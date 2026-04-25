@@ -67,7 +67,7 @@ def add_to_text_temps(text, Final_Categories):
         if text.find(x) != -1:
             text = text.replace(x, x + "\n" + Final_Categories)
             return text
-    # ---
+
     return text
 
 
@@ -88,10 +88,10 @@ def add_to_doc_page(text, Final_Categories):
     for x in Final_Categories.split("\n"):
         if not x.strip():
             continue
-        # ---
+
         x2 = x.strip().split("|")[0].strip()
         x3 = x2.strip().split("]]")[0].strip()
-        # ---
+
         if text.find(x2 + "|") == -1 and text.find(x3 + "]]") == -1:
             cats2.append(x)
     # ----
@@ -114,34 +114,34 @@ def add_to_doc_page(text, Final_Categories):
         return new_text2
     # ----
     parsed = wtp.parse(text)
-    # ---
+
     target_temps = [
         "ملعب آخر",
         "sandbox other",
         "ملعب أخر",
     ]
-    # ---
+
     temp_done = False
-    # ---
+
     for template in parsed.templates:
-        # ---
+
         if not template:
             continue
-        # ---
+
         template_name = str(template.normal_name()).strip().lower()
-        # ---
+
         if template_name in target_temps:
             args_2 = template.get_arg("2")
-            # ---
+
             if args_2 and args_2.value:
                 args_2.value += "\n" + Final_Categories
             else:
                 template.set_arg("2", Final_Categories + "\n")
-            # ---
+
             temp_done = True
-            # ---
+
             break
-    # ---
+
     if temp_done:
         new_text = parsed.string
     elif text.find("</includeonly>") != -1:
@@ -149,36 +149,36 @@ def add_to_doc_page(text, Final_Categories):
     else:
         temp_new = "<includeonly>{{ملعب آخر||\n" + Final_Categories + "}}</includeonly>"
         new_text = text + "\n" + temp_new
-    # ---
+
     return new_text
 
 
 def add_direct(text, Final_Categories):
-    # ---
+
     if text.find("{{توثيق") != -1:
         num = text.find("{{توثيق")
         text = text[:num] + Final_Categories + "\n" + text[num:]
-    # ---
+
     elif text.find("{{توثيق شريط}}") != -1:
         num = text.find("{{توثيق شريط}}")
         text = text[:num] + Final_Categories + "\n" + text[num:]
-    # ---
+
     elif text.find("{{توثيق}}") != -1:
         num = text.find("{{توثيق}}")
         text = text[:num] + Final_Categories + "\n" + text[num:]
-    # ---
+
     elif text.find("{{خيارات طي قالب تصفح}}") != -1:
         num = text.find("{{خيارات طي قالب تصفح}}")
         text = text[:num] + Final_Categories + "\n" + text[num:]
-    # ---
+
     elif text.find("{{خيار طوي قالب}}") != -1:
         num = text.find("{{خيار طوي قالب}}")
         text = text[:num] + Final_Categories + "\n" + text[num:]
-    # ---
+
     elif text.find("{{collapsible option}}") != -1:
         num = text.find("{{collapsible option}}")
         text = text[:num] + Final_Categories + "\n" + text[num:]
-    # ---
+
     else:
         # if page.namespace() == 10:
         # text += '\n' + Final_Categories
@@ -190,58 +190,58 @@ def add_direct(text, Final_Categories):
             text,
             flags=re.DOTALL,
         )
-    # ---
+
     if text.find(Final_Categories.strip()) == -1:
         text += f"\n<noinclude>{Final_Categories}</noinclude>"
-    # ---
+
     return text
 
 
 def find_doc_and_add(Final_Categories, title, create=False):
-    # ---
+
     if any(x in title for x in ["/ملعب", "/مختبر"]):
         logger.info(f"Skipping {title=}")
         return False
-    # ---
+
     doc_title = f"{title}/شرح"
-    # ---
+
     api = load_main_api("ar")
     page = api.MainPage(doc_title)
-    # ---
+
     text = page.get_text()
-    # ---
+
     if not text and not create:
         logger.info(f' text = "" {doc_title=}')
         return False
-    # ---
+
     if page.isRedirect():
         return False
-    # ---
+
     if page.isDisambiguation():
         return False
-    # ---
+
     if not page.exists() and not create:
         logger.info(f" not exists {doc_title=}")
         return False
-    # ---
+
     page_edit = page.can_edit(script="cat")
-    # ---
+
     if not page_edit:
         return False
-    # ---
+
     new_text = add_to_doc_page(text, Final_Categories)
-    # ---
+
     fi = "، ".join(Final_Categories.split("\n")).strip()
-    # ---
+
     fi = fi.replace("[[تصنيف:", "[[:تصنيف:")
-    # ---
+
     sumary = f"بوت [[مستخدم:Mr.Ibrahembot/التصانیف المعادلة|التصانيف المعادلة]]: +({fi})"
-    # ---
+
     if new_text != text:
         save = page.save(new_text, summary=sumary, nocreate=not create)
         if save:
             return True
-    # ---
+
     return False
 
 
@@ -256,17 +256,17 @@ def add_text_to_template(text, Final_Categories, title):
     Returns:
         str: The text with the final categories added.
     """
-    # ---
+
     logger.info("page.namespace() == 10 ")
-    # ---
+
     if title.endswith("/شرح"):
         text = add_to_doc_page(text, Final_Categories)
         return text
-        # ---
+
     elif any(x in text for x in tosearch_and_replace):
         text = add_to_text_temps(text, Final_Categories)
         return text
-        # ---
+
     elif any(x in text for x in to_search):
         text = add_direct(text, Final_Categories)
         return text
@@ -274,7 +274,7 @@ def add_text_to_template(text, Final_Categories, title):
         added = find_doc_and_add(Final_Categories, title, create=True)
         if added:
             return text
-    # ---
+
     text = add_direct(text, Final_Categories)
-    # ---
+
     return text

@@ -91,19 +91,18 @@ def add_nstext_to_title(title, ns, lang="ar"):
             title if ns is "0".
     """
 
-    # ---
     new_title = title
-    # ---
+
     if str(ns) == "0":
         return new_title
-    # ---
+
     ns_text = ns_text_tab_ar.get(str(ns))
     if lang != "ar":
         ns_text = ns_text_tab_en.get(str(ns))
-    # ---
+
     if not ns_text:
         logger.debug(f"no ns_text for {str(ns)}")
-    # ---
+
     if title and ns:
         new_title = f"{ns_text}:{title}"
     # ----
@@ -125,53 +124,53 @@ def make_labsdb_dbs_p(wiki: str):
     Returns:
         tuple: A tuple containing the host string and the database name string.
     """
-    # ---
+
     wiki = wiki.removesuffix("wiki")
-    # ---
+
     wiki = wiki.replace("-", "_")
-    # ---
+
     databases = {
         "wikidata": "wikidatawiki",
         "be-x-old": "be_x_old",
         "be_tarask": "be_x_old",
         "be-tarask": "be_x_old",
     }
-    # ---
+
     wiki = databases.get(wiki, wiki)
-    # ---
+
     valid_ends = [
         "wiktionary",
     ]
-    # ---
+
     if not (any((wiki.endswith(x)) for x in valid_ends)) and wiki.find("wiki") == -1:
         wiki = f"{wiki}wiki"
-    # ---
+
     dbs = wiki
-    # ---
+
     host = f"{wiki}.analytics.db.svc.wikimedia.cloud"
-    # ---
+
     dbs_p = f"{dbs}_p"
-    # ---
+
     return host, dbs_p
 
 
 @function_timer
 def sql_new(queries, wiki="", values=[]):
-    # ---
+
     logger.debug(f"wiki_sql.py wiki '{wiki}'")
-    # ---
+
     host, dbs_p = make_labsdb_dbs_p(wiki)
-    # ---
+
     logger.info(queries)
-    # ---
+
     if not GET_SQL():
         logger.info("no GET_SQL()")
         return []
-    # ---
+
     rows = mysql_client.make_sql_connect_silent(queries, db=dbs_p, host=host, values=values)
-    # ---
+
     logger.info(f'wiki_sql.py len(encats) = "{len(rows)}"')
-    # ---
+
     return rows
 
 
@@ -196,34 +195,33 @@ def sql_new_title_ns(queries, wiki="", t1="page_title", t2="page_namespace", val
         list: A list of new titles generated from the SQL query results.
     """
 
-    # ---
     lang = wiki
-    # ---
+
     if lang.endswith("wiki"):
         lang = lang[:-4]
-    # ---
+
     rows = sql_new(queries, wiki=wiki, values=values)
-    # ---
+
     if not t1:
         t1 = "page_title"
     if not t2:
         t2 = "page_namespace"
-    # ---
+
     newlist = []
-    # ---
+
     for row in rows:
         title = row.get(t1)
         ns = row.get(t2)
-        # ---
+
         new_title = title
-        # ---
+
         if title and ns:
             new_title = add_nstext_to_title(title, ns, lang=lang)
-        # ---
+
         if new_title:
             newlist.append(new_title)
         else:
             logger.debug(f"xa {str(row)}")
             newlist.append(row)
-    # ---
+
     return newlist

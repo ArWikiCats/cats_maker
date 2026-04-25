@@ -33,21 +33,21 @@ def page_put(title, new_text, msg):
     page = api.MainPage(title)
 
     text = page.get_text()
-    # ---
+
     if not text:
         logger.info(' text = "" ')
         return False
-    # ---
+
     if not page.exists():
         return False
-    # ---
+
     page_edit = page.can_edit(script="cat")
-    # ---
+
     if not page_edit:
         return False
-    # ---
+
     save = page.save(newtext=new_text, summary=msg, nocreate=1)
-    # ---
+
     return save
 
 
@@ -84,7 +84,7 @@ def add_text_to_cat(text, categories, enca, title, qid, family=""):
         new_text += f"\n{caca}"
 
         save = page_put(title, new_text, msg)
-        # ---
+
         if save:
             text = new_text
 
@@ -164,17 +164,17 @@ def make_category(categories, enca, title, qid, family="") -> CategoryResult:
 
     api = load_main_api("ar")
     page = api.MainPage(title)
-    # ---
+
     if page.get_text() or page.exists():
         return CategoryResult(False, None, "Page already exists")
-    # ---
+
     new_cat = create_Page(text, page)
-    # ---
+
     if new_cat:
         text = add_text_to_cat(text, categories, enca, title, qid)
         logger.info(f"<<lightgreen>> New_Cat: {title}")
         return CategoryResult(True, title, None)
-    # ---
+
     logger.warning(f"<<lightgreen>> New_Cat failed: {title}")
     return CategoryResult(False, None, "Failed to create page")
 

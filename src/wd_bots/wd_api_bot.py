@@ -29,46 +29,46 @@ def format_labels_descriptions(labels):
 
 
 def Get_infos_wikidata(params):
-    # ---
+
     table = {"labels": {}, "sitelinks": {}, "q": ""}
-    # ---
+
     json1 = submitWikidataParams(params)
-    # ---
+
     if not json1:
         return table
-    # ---
+
     success = json1.get("success", False)
     if not success or success != 1:
         return table
-    # ---
+
     entities = json1.get("entities", {})
-    # ---
+
     if "-1" in entities:
         return table
-    # ---
+
     props = params["props"].split("|")
-    # ---
+
     for q, qprop in entities.items():
         table["q"] = q
-        # ---
+
         table["labels"] = format_labels_descriptions(qprop.get("labels", {}))
-        # ---
+
         table["sitelinks"] = format_sitelinks(qprop.get("sitelinks", {}))
-        # ---
+
         for x in props:
             if x in qprop and x not in table:
                 table[x] = qprop[x]
-    # ---
+
     return table
 
 
 @lru_cache(maxsize=5000)
 def Get_Sitelinks_From_wikidata(site, title, ssite="", ids="", props="", add_props=None, return_main_table=False):
-    # ---
+
     sitewiki = site
     if site.find("wiki") == -1:
         sitewiki = f"{site}wiki"
-    # ---
+
     params = {
         "action": "wbgetentities",
         "props": "sitelinks",
@@ -80,37 +80,37 @@ def Get_Sitelinks_From_wikidata(site, title, ssite="", ids="", props="", add_pro
         # "tllimit": "max",
         # "tltemplates": "Template:Category redirect",
     }
-    # ---
+
     if props:
         params["props"] = props
-    # ---
+
     if isinstance(add_props, (list, tuple)):
         for x in add_props:
             if x not in params["props"]:
                 params["props"] += f"|{x}"
-    # ---
+
     if ids:
         params["ids"] = ids
         del params["sites"]
         del params["titles"]
-    # ---
+
     table = Get_infos_wikidata(params)
-    # ---
+
     if return_main_table:
         return table
-    # ---
+
     if table:
         table["site"] = sitewiki
-    # ---
+
     ssite2 = ssite
     if not ssite.endswith("wiki"):
         ssite2 += "wiki"
-    # ---
+
     if ssite:
         sitelinks = table.get("sitelinks", {})
         result = sitelinks.get(ssite) or sitelinks.get(ssite2) or ""
         return result
-    # ---
+
     return table
 
 
@@ -139,35 +139,35 @@ def Get_P373_API(q, titles="", sites=""):
     """
 
     # url =https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q805&utf8=1&property=P31&format=json
-    # ---
+
     P = "P373"
-    # ---
+
     params = {
         "action": "wbgetentities",
         "props": "sitelinks|claims",
         "ids": q,
     }
-    # ---
+
     if q == "" and titles and sites:
         del params["ids"]
         # params["ids"] = ids
         params["sites"] = sites
         params["titles"] = titles
-    # ---
+
     json1 = submitWikidataParams(params) or {}
-    # ---
+
     mainvalue = ""
-    # ---
+
     if not json1:
         return ""
-    # ---
+
     entities = json1.get("entities", {})
     for jj in entities:
         commonswiki = entities[jj].get("sitelinks", {}).get("commonswiki", {}).get("title", "")
         if commonswiki:
             mainvalue = commonswiki.replace("Category:", "")
             return mainvalue
-        # ---
+
         claims = entities[jj].get("claims", {}).get(P, {})
         for claim in claims:
             datavalue = claim.get("mainsnak", {}).get("datavalue", {})
@@ -176,5 +176,5 @@ def Get_P373_API(q, titles="", sites=""):
             if _type == "string" and value:
                 logger.info(value)
                 return value
-    # ---
+
     return mainvalue

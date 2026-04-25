@@ -41,17 +41,17 @@ def get_ar_list(arcat, us_sql=True):
         WHERE lt_title = %s
         AND lt_namespace = 14
     """
-    # ---
+
     ar_list = []
-    # ---
+
     if us_sql is True and GET_SQL():
         # Pass category as parameter to prevent SQL injection
         ar_list = sql_new_title_ns(qia_ar, wiki="arwiki", t1="page_title", t2="page_namespace", values=(ar_cat2,))
     else:
         ar_list = get_ar_list_from_cat(arcat, code="ar", typee="", return_list=True)
-    # ---
+
     logger.info(f"<<lightgreen>> lenth ar_list:{len(ar_list)}")
-    # ---
+
     return ar_list
 
 
@@ -61,10 +61,10 @@ def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
 
     # Validate and build namespace list - use tuple for parameterized query
     nss = "0, 10, 14"
-    # ---
+
     if settings.query.ns_no_10:
         nss = "0, 14"
-    # ---
+
     if settings.query.ns_only_14:
         nss = "14"
 
@@ -81,40 +81,40 @@ def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
             AND lt.lt_title = %s
             AND ll_lang = 'ar'
     """
-    # ---
+
     if us_sql is True and GET_SQL():
         # Pass category as parameter to prevent SQL injection
         en_list_table = sql_new(en_qua, wiki=f"{wiki}wiki", values=(encat2,))
         en_list = [x.get("ll_title") for x in en_list_table if x.get("ll_title")]
     else:
         en_list = fetch_ar_titles_based_on_en_category(encat, wiki=wiki)
-    # ---
+
     en_list = [x.replace("_", " ") for x in en_list]
-    # ---
+
     return en_list
 
 
 def do_sql(encat, arcat, us_sql=True, wiki="en"):
-    # ---
+
     ar_list = get_ar_list(arcat, us_sql=us_sql)
-    # ---
+
     en_list = get_ar_list_from_en(encat, us_sql=us_sql, wiki=wiki)
-    # ---
+
     arlist_from_en = [x for x in en_list if x not in ar_list]
-    # ---
+
     logger.info(f"<<lightgreen>> lenth arlist_from_en:{len(arlist_from_en)}")
-    # ---
+
     return arlist_from_en
 
 
 def make_ar_list_newcat2(arcat, encat, us_sql=False, wiki="en"):
-    # ---
+
     encat = encat.replace("Category:Category:", "Category:")
     encat = encat.replace("category:", "").replace("Category:", "").replace("Catégorie:", "")
     encat = encat.replace("_", " ")
-    # ---
+
     arcat = arcat.replace("تصنيف:تصنيف:", "").replace("تصنيف:", "").replace("_", " ")
-    # ---
+
     result = do_sql(encat, arcat, us_sql=us_sql, wiki=wiki)
-    # ---
+
     return result

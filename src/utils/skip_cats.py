@@ -2,7 +2,6 @@
 
 from ..config import settings
 
-# ---
 skip_encats = [
     "Category:Invasions of Israel",
 ]
@@ -24,7 +23,7 @@ global_False_entemps = [
     "Stub Category",  # تصنيف بذرة
     # 'container category',      #تصنيف حاوية
 ]
-# ---
+
 if settings.category.stubs:
     global_False_entemps.remove("Hiddencat")
     global_False_entemps.remove("WPSS-cat")

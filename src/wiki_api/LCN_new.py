@@ -27,11 +27,11 @@ class WikiApiHandler:
         # Configuration
         self.family = family
         self.en_site_config = {"code": default_en_site_code, "family": family}
-        # ---
+
         # State variables (previously global)
-        # ---
+
         self.cache: Dict[Tuple, Any] = {}
-        # ---
+
         self.arpage_inside_en_cat: Dict[str, List[str]] = {}
         self.page_is_redirect: Dict[str, List[str]] = {}
         self.deleted: List[str] = []

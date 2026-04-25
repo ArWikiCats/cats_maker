@@ -20,7 +20,7 @@ def add_label(qid, ar_title) -> None:
 
 
 def makejson(property, numeric):
-    # ---
+
     if numeric:
         numeric = numeric.replace("Q", "")
         Q = f"Q{numeric}"

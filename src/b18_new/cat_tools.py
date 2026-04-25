@@ -11,10 +11,10 @@ from ..wiki_api import get_cache_L_C_N
 logger = logging.getLogger(__name__)
 
 SubSub = {}
-# ---
+
 # Define a blacklist for templates and names
 templateblacklist = NO_Templates
-# ---
+
 nameblcklist = [
     "Current events",  # حدث جاري
     "Articles with",
@@ -28,7 +28,7 @@ nameblcklist = [
     "stubs",  # بذرة
     "Nicknames",
 ]
-# ---
+
 if settings.category.stubs:
     nameblcklist.remove("stubs")
 
@@ -62,35 +62,35 @@ def add_SubSub(List, hhh):
 
 def work_in_one_cat(cat, tabcat, en_site_code, pagetitle, en_cate_list):
     Cat_pass = True
-    # ---
+
     ar_cat_for_cat = tabcat.get("ar")
-    # ---
+
     if not ar_cat_for_cat:
         tupl = (cat, en_site_code, "ar", "en_links")
         daaa = get_cache_L_C_N(tupl)
         if daaa:
             logger.info(f'\t<<lightpurple>> New way for "{cat}" find "{daaa}"')
             ar_cat_for_cat = daaa
-    # ---
+
     if not ar_cat_for_cat:
-        # ---
+
         logger.debug("\tno ar title...")
-        # ---
+
         if cat not in SubSub:
             SubSub[cat] = []
         SubSub[cat].append(pagetitle)
-        # ---
+
         return en_cate_list
-    # ---
+
     if ar_cat_for_cat:
-        # ---
+
         logger.debug(f"\tfind ar_cat_for_cat: {ar_cat_for_cat}")
-        # ---
+
         for item in nameblcklist:
             if cat.lower().find(item.lower()) != -1:
                 logger.debug(f"\tfind item {item} in cat.")
                 Cat_pass = False
-        # ---
+
         temples = tabcat.get("templates")
         if temples:
             for temp in temples:
@@ -99,8 +99,8 @@ def work_in_one_cat(cat, tabcat, en_site_code, pagetitle, en_cate_list):
                         logger.debug(f'\tfind black temp "{temp}" in cat.')
                         Cat_pass = False
                         return en_cate_list
-        # ---
+
         if Cat_pass:
             en_cate_list.append(ar_cat_for_cat)
-    # ---
+
     return en_cate_list
