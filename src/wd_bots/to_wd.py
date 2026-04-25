@@ -61,7 +61,7 @@ def Make_New_item(artitle, entitle, family=""):
 
     summary = f"Bot: New item from [[w:en:{entitle}|{enwiki}]]/[[w:ar:{artitle}|{arwiki}]]."
 
-    new_item_id = get_wd_api_bot().New_API(data, summary, returnid=True, nowait=True, tage="newitems")
+    new_item_id = get_wd_api_bot().create_new_item(data, summary, returnid=True, nowait=True, tage="newitems")
 
     if new_item_id and new_item_id.startswith("Q"):
         return True

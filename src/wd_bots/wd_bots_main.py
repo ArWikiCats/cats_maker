@@ -250,7 +250,17 @@ class NewHimoAPIBot:
         self.outbot_json = outbot_json
         self.session_post = self.wdapi_new.post_to_newapi
 
-    def Sitelink_API(self, Qid, title, wiki, enlink="", ensite="", nowait=False, returnid=False, return_text=False):
+    def Sitelink_API(
+        self,
+        Qid,
+        title,
+        wiki,
+        enlink="",
+        ensite="",
+        nowait=False,
+        returnid=False,
+        return_text=False,
+    ):
 
         if lag_bot.bad_lag(nowait):
             return ""
@@ -309,7 +319,17 @@ class NewHimoAPIBot:
         return d
 
     def Labels_API(
-        self, Qid, label, lang, ret, Or_Alii=False, change_des=False, number=0, nowait=False, tage="", remove=False
+        self,
+        Qid,
+        label,
+        lang,
+        ret,
+        Or_Alii=False,
+        change_des=False,
+        number=0,
+        nowait=False,
+        tage="",
+        remove=False,
     ):
 
         if lag_bot.bad_lag(nowait):
@@ -357,7 +377,15 @@ class NewHimoAPIBot:
         if d == "warn":
             logger.warning(str(r4))
 
-    def New_API(self, data2, summary, RRE=0, returnid=False, nowait=False, tage=""):
+    def create_new_item(
+        self,
+        data2,
+        summary,
+        RRE=0,
+        returnid=False,
+        nowait=False,
+        tage="",
+    ):
         """Create a new item in the API with the provided data and summary.
 
         This function sends a request to create a new item in the API using the
@@ -402,7 +430,7 @@ class NewHimoAPIBot:
 
         cf = outbot_json(r4, fi=summary, NoWait=nowait)
         if cf == "reagain" and RRE == 0:
-            return self.New_API(data2, summary, RRE=1, returnid=returnid, nowait=nowait, tage=tage)
+            return self.create_new_item(data2, summary, RRE=1, returnid=returnid, nowait=nowait, tage=tage)
 
         if cf == "warn":
             logger.warning(str(r4))
