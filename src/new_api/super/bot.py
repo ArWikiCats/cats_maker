@@ -1,9 +1,4 @@
 """
-(_handle_server_error|add_User_tables|get_login_result|get_logintoken|get_rest_result|log_error|log_in|log_to_wiki_1|loged_in|make_new_r3_token|make_new_session|post_it|post_it_parse_data|raw_request)
-
-from .super.bot import LOGIN_HELPS
-
-Exception:{'login': {'result': 'Failed', 'reason': 'You have made too many recent login attempts. Please wait 5 minutes before trying again.'}}
 
 """
 
@@ -20,21 +15,16 @@ from .params_help import PARAMS_HELPS
 
 logger = logging.getLogger(__name__)
 
-# cookies = get_cookies(lang, family, username)
 seasons_by_lang = {}
 users_by_lang = {}
 logins_count = {1: 0}
 
-botname = "new_api"
-
 
 class LOGIN_HELPS(PARAMS_HELPS):
     def __init__(self) -> None:
-        # logger.debug("class LOGIN_HELPS:")
         self.cookie_jar = False
         self.session = requests.Session()
         # ---
-        # check if self has username before writeself.username = ""
         self.username = getattr(self, "username", "")
         self.family = getattr(self, "family", "")
         self.lang = getattr(self, "lang", "")
@@ -56,7 +46,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
     def log_error(self, result, action, params=None) -> None:
         if result not in ["success", 200]:
             logger.error(
-                f"{botname}/page.py: {self.lang}.{self.family}.org user:{self.username}, action:{action}, result:{result}"
+                f"page.py: {self.lang}.{self.family}.org user:{self.username}, action:{action}, result:{result}"
             )
 
     def add_User_tables(self, family, table, lang="") -> None:
@@ -109,9 +99,9 @@ class LOGIN_HELPS(PARAMS_HELPS):
 
         Bot_passwords = self.password.find("@") != -1
         logins_count[1] += 1
-        logger.debug(f"<<{color}>> {botname}/page.py: Log_to_wiki {self.endpoint} count:{logins_count[1]}")
+        logger.debug(f"<<{color}>> page.py: Log_to_wiki {self.endpoint} count:{logins_count[1]}")
         logger.debug(
-            f"{botname}/page.py: log to {self.lang}.{self.family}.org user:{self.username}, ({Bot_passwords=})"
+            f"page.py: log to {self.lang}.{self.family}.org user:{self.username}, ({Bot_passwords=})"
         )
 
         logintoken = self.get_logintoken()
@@ -135,7 +125,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
             "type": "login",
         }
 
-        # WARNING: /data/project/himo/core/bots/{botname}/page.py:101: UserWarning: Exception:502 Server Error: Server Hangup for url: https://ar.wikipedia.org/w/api.php
+        # WARNING: /data/project/himo/core/bots/page.py:101: UserWarning: Exception:502 Server Error: Server Hangup for url: https://ar.wikipedia.org/w/api.php
 
         try:
             r11 = seasons_by_lang[self.sea_key].request("POST", self.endpoint, data=r1_params, headers=self.headers)
@@ -144,7 +134,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
             # ---
             if not str(r11.status_code).startswith("2"):
                 logger.debug(
-                    f"<<red>> {botname} {r11.status_code} Server Error: Server Hangup for url: {self.endpoint}"
+                    f"<<red>>  {r11.status_code} Server Error: Server Hangup for url: {self.endpoint}"
                 )
             # ---
         except Exception as e:
@@ -180,7 +170,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
         try:
             req = seasons_by_lang[self.sea_key].request("POST", self.endpoint, data=r2_params, headers=self.headers)
         except Exception as e:
-            logger.warning(f"{botname} {self.lang}.{self.family} login request exception: {e}")
+            logger.warning(f" {self.lang}.{self.family} login request exception: {e}")
             return False
         # ---
         r22 = {}
@@ -190,7 +180,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
                 r22 = req.json()
             except Exception as e:
                 logger.warning(
-                    f"{botname} {self.lang}.{self.family} error parsing login response: {e} - response: {getattr(req, 'text', '')}"
+                    f" {self.lang}.{self.family} error parsing login response: {e} - response: {getattr(req, 'text', '')}"
                 )
                 logger.debug(req.text)
                 return False
@@ -230,7 +220,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
         try:
             req = seasons_by_lang[self.sea_key].request("POST", self.endpoint, data=params, headers=self.headers)
         except Exception as e:
-            logger.warning(f"{botname} {self.lang}.{self.family} userinfo request exception: {e}")
+            logger.warning(f" {self.lang}.{self.family} userinfo request exception: {e}")
             self.log_error("failed", "userinfo")
             return False
         # ---
@@ -240,7 +230,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
                 json1 = req.json()
             except Exception as e:
                 logger.warning(
-                    f"{botname} {self.lang}.{self.family} error parsing userinfo response: {e} - response: {getattr(req, 'text', '')}"
+                    f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {getattr(req, 'text', '')}"
                 )
                 logger.debug(req.text)
                 return False
@@ -301,7 +291,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
             # ---
             if not str(req0.status_code).startswith("2"):
                 logger.debug(
-                    f"<<red>> {botname} {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}"
+                    f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}"
                 )
 
     def raw_request(self, params, files=None, timeout=30):
@@ -344,7 +334,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
 
         except Exception as e:
             self.log_error("Exception", u_action, params=params)
-            logger.warning(f"{botname} {self.lang}.{self.family} exception for action '{u_action}': {e}")
+            logger.warning(f" {self.lang}.{self.family} exception for action '{u_action}': {e}")
         # ---
         self._handle_server_error(req0, u_action, params=params)
         # ---
@@ -405,33 +395,3 @@ class LOGIN_HELPS(PARAMS_HELPS):
                 return self.post_it_parse_data(params, files, timeout, relogin=True)
         # ---
         return data
-
-    def get_rest_result(self, url) -> dict:
-        # ---
-        logger.debug(":")
-        # ---
-        if not seasons_by_lang.get(self.sea_key):
-            self.make_new_session()
-        # ---
-        try:
-            req0 = seasons_by_lang[self.sea_key].request("GET", url, headers=self.headers)
-            # ---
-            if not str(req0.status_code).startswith("2"):
-                logger.debug(
-                    f"<<red>> {botname} {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}"
-                )
-            # ---
-        except Exception as e:
-            logger.warning(f"{botname} {self.lang}.{self.family} exception for url '{url}': {e}")
-            return {}
-        # ---
-        result = {}
-        # ---
-        try:
-            result = req0.json()
-        except Exception as e:
-            logger.debug(req0.text)
-            logger.warning(f"{botname} {self.lang}.{self.family} error parsing rest response for url '{url}': {e}")
-            return {}
-        # ---
-        return result

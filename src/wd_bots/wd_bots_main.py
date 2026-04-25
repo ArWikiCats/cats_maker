@@ -119,10 +119,6 @@ class WD_API:
         params["data"] = {}
         logger.debug(f"<<lightred>>{function} ERROR: <<defaut>>info: {err_info}, {params=}")
 
-    def get_rest_result(self, url) -> dict:
-        # ---
-        return self.login_bot.get_rest_result(url)
-
     def post_params(self, params, Type="get", addtoken=False, GET_CSRF=True, files=None, do_error=False, max_retry=0):
         # ---
         return self.login_bot.post_params(
@@ -251,8 +247,6 @@ class NewHimoAPIBot:
         self.login_bot = log_in_wikidata(www=www)
         # ---
         self.wdapi_new = WD_API(self.login_bot, Mr_or_bot=Mr_or_bot)
-        # ---
-        self.get_rest_result = self.wdapi_new.get_rest_result
         # ---
         self.outbot_json = outbot_json
         self.session_post = self.wdapi_new.post_to_newapi

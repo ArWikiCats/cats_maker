@@ -42,18 +42,6 @@ class TestWDAPI:
         # Should have methods from WD_ERRORS_HANDLER
         assert hasattr(api, "handle_err_wd")
 
-    def test_get_rest_result_delegates(self, mocker):
-        """Test that get_rest_result delegates to login_bot"""
-        mock_login = mocker.MagicMock()
-        mock_login.user_login = "testuser"
-        mock_login.get_rest_result.return_value = {"test": "data"}
-
-        api = WD_API(mock_login)
-        result = api.get_rest_result("https://example.com")
-
-        mock_login.get_rest_result.assert_called_with("https://example.com")
-        assert result == {"test": "data"}
-
     def test_post_params_delegates(self, mocker):
         """Test that post_params delegates to login_bot"""
         mock_login = mocker.MagicMock()
