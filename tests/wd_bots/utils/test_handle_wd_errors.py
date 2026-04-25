@@ -5,7 +5,7 @@ This module tests Wikidata error handling functions.
 from unittest.mock import MagicMock
 
 import pytest
-from src.wd_bots.wd_newapi_bot import WD_API
+from src.wd_bots.wd_bots_main import WD_API
 
 
 @pytest.fixture

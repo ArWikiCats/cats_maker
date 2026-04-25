@@ -6,9 +6,7 @@ This module tests the WD_API class.
 
 import pytest
 
-from src.wd_bots.wd_newapi_bot import (
-    WD_API,
-)
+from src.wd_bots.wd_bots_main import WD_API
 
 
 class TestWDAPI:
