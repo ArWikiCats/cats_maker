@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from ...config import settings
 from ..api_utils import ASK_BOT, bot_May_Edit, change_codes
 from .handel_errors import HANDEL_ERRORS
+from .super_login import Login
 
 logger = logging.getLogger(__name__)
 
@@ -82,8 +83,7 @@ def find_edit_error(old, new):
 
 
 class PAGE_APIS(HANDEL_ERRORS):
-    def __init__(self, login_bot):
-        # print("class PAGE_APIS:")
+    def __init__(self, login_bot: Login):
         self.login_bot = login_bot
 
         self.user_login = login_bot.user_login
@@ -92,33 +92,11 @@ class PAGE_APIS(HANDEL_ERRORS):
 
         super().__init__()
 
-    def post_continue(
-        self,
-        params,
-        action,
-        _p_="pages",
-        p_empty=None,
-        Max=500000,
-        first=False,
-        _p_2="",
-        _p_2_empty=None,
-    ):
-        return self.login_bot.post_continue(
-            params,
-            action,
-            _p_=_p_,
-            p_empty=p_empty,
-            Max=Max,
-            first=first,
-            _p_2=_p_2,
-            _p_2_empty=_p_2_empty,
-        )
-
 
 class MainPage(PAGE_APIS, ASK_BOT):
     def __init__(
         self,
-        login_bot,
+        login_bot: Login,
         title,
         lang,
         family="wikipedia",
@@ -746,7 +724,7 @@ class MainPage(PAGE_APIS, ASK_BOT):
         # data = self.post_params(params)
         # data = data.get('parse', {}).get('links', [])
 
-        data = self.post_continue(params, "parse", _p_="links", p_empty=[])
+        data = self.login_bot.post_continue(params, "parse", _p_="links", p_empty=[])
 
         # [{'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True}, {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}]
 

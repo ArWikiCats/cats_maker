@@ -61,7 +61,13 @@ class Login(LOGIN_HELPS, HANDEL_ERRORS):
             urls_prints["all"] += 1
             logger.debug(f"c: {urls_prints[self.url_o_print]}/{urls_prints['all']}\t {self.url_o_print}")
 
-    def make_response(self, params, files=None, timeout=30, do_error=True):
+    def make_response(
+        self,
+        params,
+        files=None,
+        timeout=30,
+        do_error=True,
+    ):
         """
         Make a POST request to the API endpoint.
         """
@@ -93,10 +99,32 @@ class Login(LOGIN_HELPS, HANDEL_ERRORS):
 
         return params
 
-    def post(self, params, Type="get", addtoken=False, CSRF=True, files=None):
-        return self.post_params(params, Type=Type, addtoken=addtoken, GET_CSRF=CSRF, files=files)
+    def post(
+        self,
+        params,
+        Type="get",
+        addtoken=False,
+        CSRF=True,
+        files=None,
+    ):
+        return self.post_params(
+            params,
+            Type=Type,
+            addtoken=addtoken,
+            GET_CSRF=CSRF,
+            files=files,
+        )
 
-    def post_params(self, params, Type="get", addtoken=False, GET_CSRF=True, files=None, do_error=False, max_retry=0):
+    def post_params(
+        self,
+        params,
+        Type="get",
+        addtoken=False,
+        GET_CSRF=True,
+        files=None,
+        do_error=False,
+        max_retry=0,
+    ):
         """
         Make a POST request to the API endpoint with authentication token.
         """
@@ -159,7 +187,15 @@ class Login(LOGIN_HELPS, HANDEL_ERRORS):
         return data
 
     def post_continue(
-        self, params, action, _p_="pages", p_empty=None, Max=500000, first=False, _p_2="", _p_2_empty=None
+        self,
+        params,
+        action,
+        _p_="pages",
+        p_empty=None,
+        Max=500000,
+        first=False,
+        _p_2="",
+        _p_2_empty=None,
     ):
         logger.debug("_______________________")
         logger.debug(f", start. {action=}, {_p_=}")

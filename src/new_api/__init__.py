@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """ """
 from .api_utils import botEdit
-from .pagenew import load_main_api, password, username
+from .pagenew import load_main_api
 from .super.super_login import Login
 
 __all__ = [
