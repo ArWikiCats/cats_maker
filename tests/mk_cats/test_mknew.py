@@ -461,7 +461,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
         mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
-        mocker.patch("src.mk_cats.mknew.to_wd.Log_to_wikidata")
+        mocker.patch("src.mk_cats.mknew.Log_to_wikidata")
 
         result = mknew.make_ar("Category:Science", "علوم")
 
@@ -500,7 +500,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
         mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
-        mocker.patch("src.mk_cats.mknew.to_wd.Log_to_wikidata")
+        mocker.patch("src.mk_cats.mknew.Log_to_wikidata")
 
         result = mknew.make_ar("Category:Science", "علوم")
 
@@ -565,7 +565,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
         mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
-        mocker.patch("src.mk_cats.mknew.to_wd.Log_to_wikidata")
+        mocker.patch("src.mk_cats.mknew.Log_to_wikidata")
 
         result = mknew.make_ar("Category:Science", "علوم")
 
