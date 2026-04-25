@@ -93,17 +93,37 @@ class PAGE_APIS(HANDEL_ERRORS):
         super().__init__()
 
     def post_continue(
-        self, params, action, _p_="pages", p_empty=None, Max=500000, first=False, _p_2="", _p_2_empty=None
+        self,
+        params,
+        action,
+        _p_="pages",
+        p_empty=None,
+        Max=500000,
+        first=False,
+        _p_2="",
+        _p_2_empty=None,
     ):
         return self.login_bot.post_continue(
-            params, action, _p_=_p_, p_empty=p_empty, Max=Max, first=first, _p_2=_p_2, _p_2_empty=_p_2_empty
+            params,
+            action,
+            _p_=_p_,
+            p_empty=p_empty,
+            Max=Max,
+            first=first,
+            _p_2=_p_2,
+            _p_2_empty=_p_2_empty,
         )
 
 
 class MainPage(PAGE_APIS, ASK_BOT):
-    def __init__(self, login_bot, title, lang, family="wikipedia"):
+    def __init__(
+        self,
+        login_bot,
+        title,
+        lang,
+        family="wikipedia",
+    ):
         # print(f"class MainPage: {lang=}")
-
         """
         Initializes a MainPage instance for interacting with a MediaWiki page.
 
@@ -144,7 +164,6 @@ class MainPage(PAGE_APIS, ASK_BOT):
     def false_edit(self):
         # self.newtext
         # self.text
-
         """
         Determines if a proposed edit should be considered erroneous and aborted.
 

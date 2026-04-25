@@ -22,7 +22,7 @@ User_tables_bot = {
 
 
 @functools.lru_cache(maxsize=1)
-def log_in_wikidata(www="www") -> Login[str]:
+def log_in_wikidata(www="www") -> Login:
     username = User_tables_bot.get("username")
     login_bot = Login(www, family="wikidata")
     logger.debug(f"### <<purple>> make new bot for ({www}.wikidata.org|{username})")
