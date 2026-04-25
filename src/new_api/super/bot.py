@@ -1,6 +1,4 @@
-"""
-
-"""
+""" """
 
 import logging
 import os
@@ -100,9 +98,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
         Bot_passwords = self.password.find("@") != -1
         logins_count[1] += 1
         logger.debug(f"<<{color}>> page.py: Log_to_wiki {self.endpoint} count:{logins_count[1]}")
-        logger.debug(
-            f"page.py: log to {self.lang}.{self.family}.org user:{self.username}, ({Bot_passwords=})"
-        )
+        logger.debug(f"page.py: log to {self.lang}.{self.family}.org user:{self.username}, ({Bot_passwords=})")
 
         logintoken = self.get_logintoken()
 
@@ -133,9 +129,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
             self.log_error(r11.status_code, "logintoken")
             # ---
             if not str(r11.status_code).startswith("2"):
-                logger.debug(
-                    f"<<red>>  {r11.status_code} Server Error: Server Hangup for url: {self.endpoint}"
-                )
+                logger.debug(f"<<red>>  {r11.status_code} Server Error: Server Hangup for url: {self.endpoint}")
             # ---
         except Exception as e:
             logger.warning(f"<<red>> Error getting login token: {e}")
@@ -290,9 +284,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
             self.log_error(req0.status_code, action, params=params)
             # ---
             if not str(req0.status_code).startswith("2"):
-                logger.debug(
-                    f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}"
-                )
+                logger.debug(f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}")
 
     def raw_request(self, params, files=None, timeout=30):
         # ---
