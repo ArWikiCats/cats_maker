@@ -30,17 +30,28 @@ class Login(LOGIN_HELPS, HANDEL_ERRORS):
         self.endpoint = f"https://{self.lang}.{self.family}.org/w/api.php"
         super().__init__()
 
+    def filter_params(self, params):
+        """
+        Filter out unnecessary parameters.
+        """
+        params["format"] = "json"
+        params["utf8"] = 1
+
+        if params["action"] in ["query"]:
+            if "bot" in params:
+                del params["bot"]
+            if "summary" in params:
+                del params["summary"]
+
+        params.setdefault("formatversion", "1")
+
+        return params
+
     def add_users(self, Users_tables, lang=""):
         if Users_tables:
             for family, user_tab in Users_tables.items():
                 self.user_login = user_tab.get("username")
                 self.add_User_tables(family, user_tab, lang=lang)
-
-    def Log_to_wiki(self):
-        """
-        Log in to the wiki.
-        """
-        return True
 
     def p_url(self, params):
         """
@@ -78,42 +89,18 @@ class Login(LOGIN_HELPS, HANDEL_ERRORS):
         if params.get("list") == "querypage":
             timeout = 60
         req = self.post_it(params, files, timeout)
+
         if req:
             data = self.parse_data(req)
+
         error = data.get("error", {})
+
         if error != {}:
             er = self.handel_err(error, "", params=params, do_error=do_error)
             if do_error:
                 return er
+
         return data
-
-    def filter_params(self, params):
-        """
-        Filter out unnecessary parameters.
-        """
-        if params["action"] in ["query"]:
-            if "bot" in params:
-                del params["bot"]
-            if "summary" in params:
-                del params["summary"]
-
-        return params
-
-    def post(
-        self,
-        params,
-        Type="get",
-        addtoken=False,
-        CSRF=True,
-        files=None,
-    ):
-        return self.post_params(
-            params,
-            Type=Type,
-            addtoken=addtoken,
-            GET_CSRF=CSRF,
-            files=files,
-        )
 
     def post_params(
         self,
@@ -128,24 +115,6 @@ class Login(LOGIN_HELPS, HANDEL_ERRORS):
         """
         Make a POST request to the API endpoint with authentication token.
         """
-        params["format"] = "json"
-        params["utf8"] = 1
-        wb_actions = [
-            "wbcreateclaim",
-            "wbcreateredirect",
-            "wbeditentity",
-            "wbmergeitems",
-            "wbremoveclaims",
-            "wbsetaliases",
-            "wbsetdescription",
-            "wbsetqualifier",
-            "wbsetsitelink",
-            "edit",
-        ]
-        action = params["action"]
-        to_add_action = action in wb_actions or action.startswith("wbcreate") or action.startswith("wbset")
-        if self.family == "wikidata" and to_add_action:
-            params["maxlag"] = ar_lag[1]
         if not self.r3_token:
             self.r3_token = self.make_new_r3_token()
 
@@ -156,33 +125,48 @@ class Login(LOGIN_HELPS, HANDEL_ERRORS):
 
         params = self.filter_params(params)
 
-        params.setdefault("formatversion", "1")
-
         data = self.make_response(params, files=files, do_error=do_error)
 
         if not data:
             logger.debug("<<red>> super_login(post): not data. return {}.")
             return {}
+
         error = data.get("error", {})
+
         if error != {}:
-            Invalid = error.get("info", "")
-            error_code = error.get("code", "")
-            if do_error:
-                logger.debug(f"<<red>> super_login(post): error: {error}")
-            if Invalid == "Invalid CSRF token.":
-                logger.debug(f'<<red>> ** error "Invalid CSRF token.".\n{self.r3_token} ')
-                if GET_CSRF:
-                    self.r3_token = self.make_new_r3_token()
-                    return self.post_params(params, Type=Type, addtoken=addtoken, GET_CSRF=False)
-            error_code = error.get("code", "")
-            if error_code == "maxlag" and max_retry < 4:
-                lage = int(error.get("lag", "0"))
-                logger.debug(params)
-                logger.debug(f"<<purple>>: <<red>> {lage=} {max_retry=}, sleep: {lage + 1}")
-                time.sleep(lage + 1)
-                ar_lag[1] = lage + 1
-                params["maxlag"] = ar_lag[1]
-                return self.post_params(params, Type=Type, addtoken=addtoken, max_retry=max_retry + 1)
+            return self.error_do(data, GET_CSRF, params, Type, addtoken, max_retry)
+
+        return data
+
+    def error_do(self, data, GET_CSRF, params, Type, addtoken, max_retry):
+        error = data.get("error", {})
+
+        Invalid = error.get("info", "")
+        error_code = error.get("code", "")
+
+        logger.debug(f"<<red>> super_login(post): error: {error}")
+
+        if Invalid == "Invalid CSRF token.":
+            logger.debug(f'<<red>> ** error "Invalid CSRF token.".\n{self.r3_token} ')
+            if GET_CSRF:
+                self.r3_token = None
+                return self.post_params(params, Type=Type, addtoken=addtoken, GET_CSRF=False)
+
+        error_code = error.get("code", "")
+
+        if error_code == "maxlag" and max_retry < 4:
+            lage = int(error.get("lag", "0"))
+            logger.debug(params)
+            logger.debug(f"<<purple>>: <<red>> {lage=} {max_retry=}, sleep: {lage + 1}")
+            time.sleep(lage + 1)
+            ar_lag[1] = lage + 1
+            params["maxlag"] = ar_lag[1]
+            return self.post_params(
+                params,
+                Type=Type,
+                addtoken=addtoken,
+                max_retry=max_retry + 1,
+            )
 
         return data
 

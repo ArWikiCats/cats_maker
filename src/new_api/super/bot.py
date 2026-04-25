@@ -104,7 +104,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
 
         Bot_passwords = self.password.find("@") != -1
         logins_count[1] += 1
-        logger.debug(f"<<{color}>> page.py: Log_to_wiki {self.endpoint} count:{logins_count[1]}")
+        logger.debug(f"<<{color}>> {self.endpoint} count:{logins_count[1]}")
         logger.debug(f"page.py: log to {self.lang}.{self.family}.org user:{self.username}, ({Bot_passwords=})")
 
         logintoken = self.get_logintoken()
