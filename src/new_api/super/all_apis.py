@@ -1,15 +1,5 @@
-"""
-from newapi.all_apis import ALL_APIS
+""" """
 
-from newapi import ALL_APIS
-
-main_api = ALL_APIS(lang='en', family='wikipedia', username='your_username', password='your_password')
-page = main_api.MainPage('Main Page Title')
-cat_members = main_api.CatDepth('Category Title')
-new_api = main_api.NEW_API()
-"""
-
-# ---
 import functools
 import logging
 
@@ -21,11 +11,8 @@ logger = logging.getLogger(__name__)
 
 @functools.lru_cache(maxsize=1024)
 def _login(lang, family, username) -> Login:
-    # ---
     login_bot = Login(lang, family=family)
-    # ---
     logger.info(f"### <<purple>> make new bot for ({lang}.{family}.org|{username})")
-    # ---
     return login_bot
 
 
@@ -55,7 +42,6 @@ class ALL_APIS:
         return catdepth_new.subcatquery(self.login_bot, title, sitecode=self.lang, family=self.family, **kwargs)
 
     def NEW_API(self, *args, **kwargs) -> bot_api.NEW_API:
-        # ---
         return bot_api.NEW_API(self.login_bot, lang=self.lang)
 
     def _login(self) -> Login:
@@ -66,9 +52,7 @@ class ALL_APIS:
                 "password": self.password,
             }
         }
-        # ---
         bot.add_users(user_tables, lang=self.lang)
-        # ---
         return bot
 
 

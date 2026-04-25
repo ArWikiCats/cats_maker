@@ -14,11 +14,9 @@ class NEW_API:
         self.user_login = login_bot.user_login
         self.username = getattr(self, "username", "")
         self.lang = change_codes.get(lang) or lang
-        # ---
         super().__init__()
 
     def post_params(self, params, Type="get", addtoken=False, GET_CSRF=True, files=None, do_error=False, max_retry=0):
-        # ---
         return self.login_bot.post_params(
             params, Type=Type, addtoken=addtoken, GET_CSRF=GET_CSRF, files=files, do_error=do_error, max_retry=max_retry
         )
@@ -31,15 +29,10 @@ class NEW_API:
         )
 
     def Find_pages_exists_or_not(self, liste, get_redirect=False):
-        # ---
         done = 0
-        # ---
         all_jsons = {}
-        # ---
         for titles in self.chunk_titles(liste, chunk_size=50):
-            # ---
             done += len(titles)
-            # ---
             params = {
                 "action": "query",
                 "titles": "|".join(titles),
@@ -48,40 +41,26 @@ class NEW_API:
                 "formatversion": 2,
             }
             json1 = self.post_params(params)
-            # ---
             if not json1:
                 logger.debug("<<lightred>> error when ")
                 continue
-            # ---
             all_jsons = self.merge_all_jsons_deep(all_jsons, json1)
-        # ---
         redirects = 0
         missing = 0
         exists = 0
-        # ---
         query_table = all_jsons.get("query", {})
-        # ---
         normalz = query_table.get("normalized", [])
         normalized = {red["to"]: red["from"] for red in normalz}
-        # ---
         query_pages = query_table.get("pages", [])
-        # ---
         table = {}
-        # ---
         for kk in query_pages:
-            # ---
             if isinstance(query_pages, dict):
                 kk = query_pages[kk]
-            # ---
             tit = kk.get("title", "")
-            # ---
             if not tit:
                 continue
-            # ---
             tit = normalized.get(tit, tit)
-            # ---
             table[tit] = True
-            # ---
             if "missing" in kk:
                 table[tit] = False
                 missing += 1
@@ -90,22 +69,17 @@ class NEW_API:
                 redirects += 1
             else:
                 exists += 1
-        # ---
         logger.debug(f" : missing:{missing}, exists: {exists}, redirects: {redirects}")
-        # ---
         return table
 
     def chunk_titles(self, titles, chunk_size=50):
-        # ---
         if isinstance(titles, dict):
             titles = list(titles.keys())
 
         elif isinstance(titles, KeysView):
             # TypeError: 'dict_keys' object is not subscriptable
             titles = list(titles)
-        # ---
         result = [titles[i : i + chunk_size] for i in range(0, len(titles), chunk_size)]
-        # ---
         return result
 
     def merge_all_jsons_deep(self, all_jsons, json1):
