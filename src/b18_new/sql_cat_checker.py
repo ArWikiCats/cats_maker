@@ -3,8 +3,8 @@
 import logging
 
 from ..config import settings
-from ..utils.skip_cats import global_False_entemps
-from ..wiki_api import himoBOT2
+from ..utils import global_False_entemps
+from ..wiki_api import get_page_info_from_wikipedia
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ def check_category_status(wiki, arcat, encat):
     arcat2 = f"تصنيف:{arcat}"
     encat2 = f"Category:{encat}"
 
-    ioio_en = himoBOT2.get_page_info_from_wikipedia(wiki, encat2)
+    ioio_en = get_page_info_from_wikipedia(wiki, encat2)
 
     if ioio_en:
 
@@ -67,7 +67,7 @@ def check_arabic_category_status(arcat, encat):
     encat2 = f"Category:{encat}"
 
     # فحص التصنيف العربي
-    ioio_ar = himoBOT2.get_page_info_from_wikipedia("ar", arcat2)
+    ioio_ar = get_page_info_from_wikipedia("ar", arcat2)
 
     if not ioio_ar:
         logger.info(f"<<lightred>> not ioio_ar:({arcat2})")

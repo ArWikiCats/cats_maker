@@ -200,7 +200,7 @@ def get_en_link_from_ar_text(title, site, sitetarget):
         EngInterwiki = sitelinks.get(sitetarget) or sitelinks.get(sitetarget2) or ""
 
     if EngInterwiki:
-        logger.debug(f"<<lightblue>> himoBOT2.py, {EngInterwiki}")
+        logger.debug(f"<<lightblue>> {EngInterwiki}")
 
     return EngInterwiki
 

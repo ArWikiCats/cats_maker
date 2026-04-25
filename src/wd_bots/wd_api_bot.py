@@ -63,7 +63,15 @@ def Get_infos_wikidata(params):
 
 
 @lru_cache(maxsize=5000)
-def Get_Sitelinks_From_wikidata(site, title, ssite="", ids="", props="", add_props=None, return_main_table=False):
+def Get_Sitelinks_From_wikidata(
+    site,
+    title,
+    ssite="",
+    ids="",
+    props="",
+    add_props=None,
+    return_main_table=False,
+):
 
     sitewiki = site
     if site.find("wiki") == -1:

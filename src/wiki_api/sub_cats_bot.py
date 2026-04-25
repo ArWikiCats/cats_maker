@@ -17,9 +17,6 @@ def sub_cats_query(enlink, sitecode, ctype=""):
     if not enlink:
         return False
 
-    # إيجاد categorymembers والتصانيف الفرعية لتصنيف
-    # العمق 0
-
     tup = (enlink, sitecode, "sub_cats_query")
 
     if get_cache_L_C_N(tup):

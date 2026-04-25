@@ -14,7 +14,7 @@ def get_page_info_from_wikipedia(
     title,
     findtemp="",
 ):
-    logger.debug(f'himoBOT2. for "{sitecode}:{title}"')
+    logger.debug(f'for "{sitecode}:{title}"')
 
     if sitecode.endswith("wiki"):
         sitecode = sitecode[:-4]

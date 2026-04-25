@@ -73,7 +73,7 @@ class TestWDAPI:
 
         api = WD_API(mock_login)
         data = {"action": "wbeditentity"}
-        result = api.filter_data(data, "", "")
+        result = api.filter_data(data)
 
         assert result["format"] == "json"
         assert result["utf8"] == 1

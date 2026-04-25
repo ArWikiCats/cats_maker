@@ -24,15 +24,10 @@ User_tables_bot = {
 
 @functools.lru_cache(maxsize=1)
 def log_in_wikidata(www="www"):
-
     username = User_tables_bot.get("username")
-
     login_bot = Login(www, family="wikidata")
-
     logger.debug(f"### <<purple>> make new bot for ({www}.wikidata.org|{username})")
-
     login_bot.add_users({"wikidata": User_tables_bot}, lang=www)
-
     return login_bot
 
 
@@ -48,7 +43,12 @@ class WD_API:
 
         logger.warning(f"<<lightgreen>> WD_API: {Mr_or_bot}, {self.usernamex=} \n")
 
-    def handle_err_wd(self, error: dict, function: str = "", params: dict = None):
+    def handle_err_wd(
+        self,
+        error: dict,
+        function: str = "",
+        params: dict = None,
+    ):
         """Handle errors related to the specified function.
 
         This method processes an error dictionary returned from an API call,
@@ -125,18 +125,34 @@ class WD_API:
         )
 
     def post_continue(
-        self, params, action, _p_="pages", p_empty=None, Max=500000, first=False, _p_2="", _p_2_empty=None
+        self,
+        params,
+        action,
+        _p_="pages",
+        p_empty=None,
+        Max=500000,
+        first=False,
+        _p_2="",
+        _p_2_empty=None,
     ):
         return self.login_bot.post_continue(
             params, action, _p_=_p_, p_empty=p_empty, Max=Max, first=first, _p_2=_p_2, _p_2_empty=_p_2_empty
         )
 
-    def post_to_newapi(self, params={}, data={}, tage="", editgroups="", max_retry=0, **kwargs):
+    def post_to_newapi(
+        self,
+        params={},
+        data={},
+        tage="",
+        editgroups="",
+        max_retry=0,
+        **kwargs,
+    ):
 
         if not params and data:
             params = data
 
-        params = self.filter_data(params, tage=tage, editgroups=editgroups)
+        params = self.filter_data(params)
 
         results = self.post_params(params, do_error=False)
 
@@ -175,7 +191,7 @@ class WD_API:
 
         return results
 
-    def filter_data(self, data, editgroups, tage):
+    def filter_data(self, data):
 
         lag_bot.do_lag()
 
@@ -210,31 +226,6 @@ class WD_API:
         lag_bot.find_lag(err)
 
         return "reagain"
-
-    def _pages_with_prop(self, post_continue, pwppropname="unlinkedwikibase_id", pwplimit=None, Max=None):
-
-        params = {
-            "action": "query",
-            "format": "json",
-            "list": "pageswithprop",
-            "utf8": 1,
-            "formatversion": "2",
-            "pwplimit": "max",
-            "pwppropname": "unlinkedwikibase_id",
-            "pwpprop": "title|value",
-        }
-
-        if pwplimit and pwplimit.isdigit():
-            params["pwplimit"] = pwplimit
-
-        if pwppropname != "":
-            params["pwppropname"] = pwppropname
-
-        results = post_continue(params, "query", _p_="pageswithprop", p_empty=[], Max=Max)
-
-        logger.debug(f"pageswithprop len(results) = {len(results)}")
-
-        return results
 
     def format_labels_descriptions(self, labels):
         return {x["language"]: x["value"] for _, x in labels.items()}
