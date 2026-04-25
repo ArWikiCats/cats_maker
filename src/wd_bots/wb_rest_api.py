@@ -12,7 +12,7 @@ import functools
 import logging
 
 from ..config import settings
-from . import NewHimoAPIBot
+from .wd_bots_main import NewHimoAPIBot
 
 logger = logging.getLogger(__name__)
 

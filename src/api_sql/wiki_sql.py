@@ -5,7 +5,7 @@ import logging
 import os
 import time
 
-from ..helps.functions_timer import function_timer
+from ..helps import function_timer
 from . import mysql_client
 
 logger = logging.getLogger(__name__)

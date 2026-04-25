@@ -3,10 +3,9 @@
 import logging
 import re
 
-from ..helps.functions_timer import function_timer
-from . import wiki_sql
+from ..helps import function_timer
+from .wiki_sql import GET_SQL, make_labsdb_dbs_p, ns_text_tab_ar
 from .mysql_client import make_sql_connect_silent
-from .wiki_sql import ns_text_tab_ar
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,7 @@ def fetch_arcat_titles(arcatTitle):
     if not arcatTitle:
         return []
     # ---
-    if not wiki_sql.GET_SQL():
+    if not GET_SQL():
         return []
     # ---
     arcatTitle = re.sub(r"تصنيف:", "", arcatTitle)
@@ -44,7 +43,7 @@ def fetch_arcat_titles(arcatTitle):
         GROUP BY page_title
         """
     # ---
-    host, dbs_p = wiki_sql.make_labsdb_dbs_p("ar")
+    host, dbs_p = make_labsdb_dbs_p("ar")
     # ---
     # Pass category as parameter to prevent SQL injection
     ar_results = make_sql_connect_silent(ar_queries, db=dbs_p, host=host, values=(arcatTitle,)) or []
@@ -72,7 +71,7 @@ def get_exclusive_category_titles(encatTitle, arcatTitle) -> list:
     # ---
     logger.debug(f"<<yellow>> sql . MySQLdb_finder {encatTitle}: ")
     # ---
-    if not wiki_sql.GET_SQL():
+    if not GET_SQL():
         return []
     # ---
     encats = fetch_encat_titles(encatTitle)
@@ -109,10 +108,10 @@ def fetch_encat_titles(encatTitle: str) -> list:
     # ---
     encats = []
     # ---
-    if not wiki_sql.GET_SQL():
+    if not GET_SQL():
         return []
     # ---
-    host, dbs_p = wiki_sql.make_labsdb_dbs_p("enwiki")
+    host, dbs_p = make_labsdb_dbs_p("enwiki")
     # ---
     logger.info(queries)
     # ---
@@ -134,7 +133,7 @@ def find_sql(enpageTitle):
     # ---
     logger.info(f", enpageTitle:'{enpageTitle}'")
     # ---
-    if not wiki_sql.GET_SQL():
+    if not GET_SQL():
         return []
     # ---
     fapages = get_exclusive_category_titles(enpageTitle, "")
