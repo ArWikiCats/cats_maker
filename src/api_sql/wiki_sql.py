@@ -105,7 +105,7 @@ def add_nstext_to_title(title, ns, lang="ar"):
 
     if title and ns:
         new_title = f"{ns_text}:{title}"
-    # ----
+
     return new_title
 
 

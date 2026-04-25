@@ -62,7 +62,7 @@ pre_text = """{{صفحة توثيق فرعية}}
 
 
 def add_to_text_temps(text, Final_Categories):
-    # ----
+
     for x in tosearch_and_replace:
         if text.find(x) != -1:
             text = text.replace(x, x + "\n" + Final_Categories)
@@ -72,19 +72,19 @@ def add_to_text_temps(text, Final_Categories):
 
 
 def add_to_doc_page(text, Final_Categories):
-    # ----
+
     if text == "":
         return pre_text + "\n" + Final_Categories + "\n}}</includeonly>"
-    # ----
+
     text2 = add_to_text_temps(text, Final_Categories)
-    # ----
+
     if text2 != text:
         return text2
-    # ----
+
     Final_Categories = Final_Categories.strip()
-    # ----
+
     cats2 = []
-    # ----
+
     for x in Final_Categories.split("\n"):
         if not x.strip():
             continue
@@ -94,25 +94,25 @@ def add_to_doc_page(text, Final_Categories):
 
         if text.find(x2 + "|") == -1 and text.find(x3 + "]]") == -1:
             cats2.append(x)
-    # ----
+
     if not cats2:
         return text
-    # ----
+
     Final_Categories = "\n".join(cats2)
-    # ----
+
     patern = r"<includeonly>[\s\n]+\[\[تصنيف\:"
-    # ----
+
     find_all = re.search(patern, text, re.M | re.I)
-    # ----
+
     new_text2 = text
-    # ----
+
     if find_all:
         text_string = find_all.group()
         new_text2 = text.replace(text_string, f"<includeonly>\n{Final_Categories}\n[[تصنيف:", 1)
-    # ----
+
     if new_text2 != text:
         return new_text2
-    # ----
+
     parsed = wtp.parse(text)
 
     target_temps = [
