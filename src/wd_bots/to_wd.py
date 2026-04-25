@@ -68,12 +68,12 @@ def Make_New_item(artitle, entitle, family=""):
     return False
 
 
-def Log_to_wikidata(ar, enca, qid):
+def Log_to_wikidata(ar, enca, qid) -> None:
     if qid:
         get_wd_api_bot().Sitelink_API(qid, ar, "arwiki", nowait=True)
         get_wd_api_bot().Labels_API(qid, ar, "ar", False, nowait=True, tage="catelabels")
+        return
 
-    else:
-        cd = get_wd_api_bot().Sitelink_API("", ar, "arwiki", enlink=enca, ensite="enwiki", nowait=True)
-        if cd is not True:
-            Make_New_item(ar, enca, family="wikipedia")
+    cd = get_wd_api_bot().Sitelink_API("", ar, "arwiki", enlink=enca, ensite="enwiki", nowait=True)
+    if cd is not True:
+        Make_New_item(ar, enca, family="wikipedia")

@@ -1,6 +1,6 @@
 import logging
 
-from ..new_api.pagenew import load_main_api
+from ..new_api import load_main_api
 
 logger = logging.getLogger(__name__)
 

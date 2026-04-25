@@ -15,14 +15,13 @@ from ..b18_new import (
     validate_categories_for_new_cat,
 )
 from ..config import settings
-from ..new_api.pagenew import load_main_api
-from ..wd_bots import Get_Sitelinks_From_wikidata, to_wd
+from ..new_api import load_main_api
+from ..wd_bots import Get_Sitelinks_From_wikidata, Log_to_wikidata, add_label
 from ..wiki_api import find_Page_Cat_without_hidden
 from .add_bot import add_to_final_list
 from .create_category_page import new_category
 from .members_helper import collect_category_members
-from .utils import filter_en
-from .utils.check_en import check_en_temps
+from .utils import check_en_temps, filter_en
 
 # Optional ArWikiCats integration - configure via environment variable
 arwikicats_path = os.getenv("ARWIKICATS_PATH", "D:/categories_bot/make2_new/ArWikiCats")
@@ -247,7 +246,7 @@ def _finalize_category_creation(
         if listen:
             add_to_final_list(listen, ar_title, callback=callback)
 
-    to_wd.Log_to_wikidata(ar_title, en_page_title, qid)
+    Log_to_wikidata(ar_title, en_page_title, qid)
 
     return en_cats_of_new_cat
 
@@ -325,7 +324,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     created_category = new_category(en_page_title, ar_title, cats_of_new_cat, qid, family=WIKI_SITE_AR["family"])
 
     if not created_category.success:
-        to_wd.add_label(qid, ar_title)
+        add_label(qid, ar_title)
         return en_cats_of_new_cat
 
     # Finalize: add members, update SubSub, log to Wikidata

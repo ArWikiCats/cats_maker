@@ -3,7 +3,7 @@
 import logging
 
 from ...config import settings
-from ...new_api.pagenew import load_main_api
+from ...new_api import load_main_api
 from ...wiki_api import find_LCN
 
 logger = logging.getLogger(__name__)
