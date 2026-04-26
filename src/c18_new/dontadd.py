@@ -138,8 +138,3 @@ def Dont_add_to_pages_def():
         data = get_pages_nocat()
 
     return data
-
-
-if __name__ == "__main__":
-    u = Dont_add_to_pages_def()
-    logger.info(f"len Dont_add_to_pages : {len(u)}")
