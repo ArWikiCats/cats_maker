@@ -45,7 +45,7 @@ class CategoryComparator:
             return []
 
         # Normalize inputs
-        ar_title_clean = self.normalize_category_title(ar_category, r"تصنيف:")
+        ar_title_clean = self.normalize_category_title(ar_category, "تصنيف:")
         en_title_clean = self.normalize_category_title(en_category, r"(\[\[en:)|(category:)|(\]\])")
 
         if not ar_title_clean or not en_title_clean:

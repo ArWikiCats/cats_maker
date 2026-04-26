@@ -51,8 +51,10 @@ def _normalise_category_title(title: str, prefix_pattern: str) -> str:
     """Strip a category prefix and normalise spaces to underscores."""
     if not title:
         return title
-    title = re.sub(prefix_pattern, "", title, flags=re.IGNORECASE)
-    return title.replace(" ", "_")
+    # Remove prefix case-insensitively
+    cleaned = re.sub(prefix_pattern, "", title, flags=re.IGNORECASE)
+    # Replace spaces with underscores for consistency
+    return cleaned.replace(" ", "_")
 
 
 # ---------------------------------------------------------------------------
@@ -63,7 +65,7 @@ def _normalise_category_title(title: str, prefix_pattern: str) -> str:
 @function_timer
 def _fetch_ar_titles(ar_category: str) -> list[str]:
     """Return Arabic-wiki page titles that are in *ar_category* and have an en langlink."""
-    title = _normalise_category_title(ar_category, r"تصنيف:")
+    title = _normalise_category_title(ar_category, "تصنيف:")
     if not title:
         return []
 

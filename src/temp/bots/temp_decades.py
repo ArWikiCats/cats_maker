@@ -22,7 +22,7 @@ def MakedecadesTemp(title):
     for texx, ssss in cacaca.items():
         regdd = rf"{texx}عقد (\d+)( ق م| ق\.م|)"
         regex = "تصنيف:" + regdd + "( في |)(.*|)$"
-        test = re.sub(r"تصنيف:", "", title)
+        test = re.sub("تصنيف:", "", title)
         test = re.sub(regdd, "", test)
         if title:
             dee = re.sub(regex, r"\g<1>", title)

@@ -46,13 +46,7 @@ class CategoryRepository:
         try:
             rows = db_manager.execute_query(wiki="ar", query=_ARCAT_QUERY, params=(category_title,))
 
-            titles = []
-            for row in rows:
-                title = row["page_title"].replace(" ", "_")
-                ns = row["page_namespace"]
-                formatted_title = add_namespace_prefix(title, ns, "ar")
-                titles.append(formatted_title)
-
+            titles = [add_namespace_prefix(row["page_title"].replace(" ", "_"), row["page_namespace"], lang="ar") for row in rows]
             return titles
         except Exception as e:
             logger.error("Failed to fetch Arabic titles for category '%s': %s", category_title, e)
