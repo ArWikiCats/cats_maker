@@ -4,7 +4,7 @@
 import logging
 
 from ...api_sql import find_sql
-from ...b18_new import get_ar_list_from_cat
+from ...b18_new import get_ar_list_from_encat
 from ...config import settings
 from ...wiki_api import find_LCN, get_arpage_inside_encat
 from ..cat_tools2 import Categorized_Page_Generator
@@ -22,11 +22,7 @@ def retrieve_ar_list_from_category(encat, enpageTitle):
         for x in fetchedarpages:
             gent_faso_list.append(x.replace("_", " "))
 
-    if not gent_faso_list:
-        gent_faso_list = get_ar_list_from_cat(encat, code="en", typee="all")
-
     logger.info(f" make_ar_list_from_en_cat lenth : {len(gent_faso_list)}")
-
     new_ll = Get_ar_list_from_en_list(gent_faso_list)
     return new_ll
 
@@ -73,17 +69,15 @@ def make_ar_list_from_en_cat(encat):
     enpageTitle = encat
     logger.debug("cat: " + encat)
 
-    listenpageTitle2 = []
-
     if settings.database.use_sql:
         listenpageTitle2 = find_sql(enpageTitle)
+    else:
+        listenpageTitle2 = retrieve_ar_list_from_category(enpageTitle)
 
     if not listenpageTitle2:
-
-        new_ll = retrieve_ar_list_from_category(encat, enpageTitle)
-
-        for cc in new_ll:
-            listenpageTitle2.append(cc)
+        # {'Yemen': {'ns': 0, 'ar': 'اليمن'}, 'Outline of Yemen': {'ns': 0, 'ar': 'مخطط اليمن'}, ... }
+        gent_faso_list = get_ar_list_from_encat(encat, code="en", typee="all")
+        listenpageTitle2 = [x["ar"] for x in gent_faso_list.values() if x.get("ar")]
 
     listenpageTitle = list(set(listenpageTitle2))
 

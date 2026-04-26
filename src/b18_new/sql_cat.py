@@ -5,7 +5,7 @@ import logging
 from ..api_sql import GET_SQL, sql_new, sql_new_title_ns
 from ..c18_new.cats_tools.ar_from_en2 import fetch_ar_titles_based_on_en_category
 from ..config import settings
-from .cat_tools_enlist2 import get_ar_list_from_cat
+from ..new_api import load_main_api
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,10 @@ def get_ar_list(arcat, us_sql=True):
         # Pass category as parameter to prevent SQL injection
         ar_list = sql_new_title_ns(qia_ar, wiki="arwiki", t1="page_title", t2="page_namespace", values=(ar_cat2,))
     else:
-        ar_list = get_ar_list_from_cat(arcat, code="ar", typee="", return_list=True)
+        api = load_main_api("ar")
+        cat_members = api.CatDepth("Category:" + arcat, depth=0, ns="all")
+
+        ar_list = list(cat_members.keys())
 
     logger.info(f"<<lightgreen>> lenth ar_list:{len(ar_list)}")
 

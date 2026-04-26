@@ -66,9 +66,6 @@ def Get_infos_wikidata(params):
 def Get_Sitelinks_From_wikidata(
     site,
     title,
-    ssite="",
-    ids="",
-    return_main_table=False,
 ):
 
     sitewiki = site
@@ -87,53 +84,28 @@ def Get_Sitelinks_From_wikidata(
         # "tltemplates": "Template:Category redirect",
     }
 
-    if ids:
-        params["ids"] = ids
-        del params["sites"]
-        del params["titles"]
-
     table = Get_infos_wikidata(params)
-
-    if return_main_table:
-        return table
-
-    if table:
-        table["site"] = sitewiki
-
-    ssite2 = ssite
-    if not ssite.endswith("wiki"):
-        ssite2 += "wiki"
-
-    if ssite:
-        sitelinks = table.get("sitelinks", {})
-        result = sitelinks.get(ssite) or sitelinks.get(ssite2) or ""
-        return result
 
     return table
 
 
-def Get_Sitelinks_from_qid(ssite="", ids=""):
-    return Get_Sitelinks_From_wikidata("", "", ssite=ssite, ids=ids)
+def Get_Sitelinks_from_qid(ids):
+
+    params = {
+        "action": "wbgetentities",
+        "props": "sitelinks",
+        "normalize": 1,
+        "ids": ids,
+    }
+
+    table = Get_infos_wikidata(params)
+
+    return table
 
 
 def Get_P373_API(q, titles="", sites=""):
-    """Retrieve the P373 value from the Wikidata API.
-
-    This function constructs a request to the Wikidata API to fetch entities
-    based on the provided identifier (q). It retrieves the sitelinks and
-    claims associated with the entity and specifically looks for the P373
-    property, which is used to link to Wikimedia Commons categories. If the
-    identifier is not provided, it can use titles and sites to fetch
-    relevant data.
-
-    Args:
-        q (str): The identifier for the Wikidata entity.
-        titles (str?): Titles to search for if no identifier is provided.
-        sites (str?): Sites to filter the search if no identifier is provided.
-
-    Returns:
-        str: The P373 value (Wikimedia Commons category title) if found,
-            otherwise an empty string.
+    """
+    Retrieve the P373 value from the Wikidata API.
     """
 
     # url =https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q805&utf8=1&property=P31&format=json

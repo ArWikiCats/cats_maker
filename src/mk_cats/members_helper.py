@@ -2,10 +2,10 @@
 Helper module for category member processing.
 
 This module encapsulates all logic related to collecting, merging, filtering,
-and normalizing category members from various sources (API, SQL, SubSub).
+and normalizing category members from various sources (API, SQL).
 
 Responsibilities:
-- Gathering members from API, SQL, and SubSub sources
+- Gathering members from API, SQL
 - Deduplicating results
 - Removing invalid entries and redirects
 - Returning a clean, final list of category members
@@ -13,7 +13,7 @@ Responsibilities:
 
 import logging
 
-from ..b18_new import MakeLitApiWay, get_listenpageTitle, get_SubSub_value
+from ..b18_new import MakeLitApiWay, get_ar_list_from_encat, get_listenpageTitle
 from ..config import settings
 from ..wiki_api import remove_redirect_pages
 
@@ -45,28 +45,13 @@ def gather_members_from_api(en_page_title: str) -> list:
         A list of category member titles from API sources
     """
     result = MakeLitApiWay(en_page_title, Type="all")
-    return result if result else []
 
+    if not result:
+        # {'Yemen': {'ns': 0, 'ar': 'اليمن'}, 'Outline of Yemen': {'ns': 0, 'ar': 'مخطط اليمن'}, ... }
+        gent_faso_list = get_ar_list_from_encat(en_page_title, code="en", typee="all")
+        result = [x["ar"] for x in gent_faso_list.values() if x.get("ar")]
 
-def gather_members_from_subsub(en_page_title: str) -> list:
-    """
-    Gather category members from SubSub source (previously created categories).
-
-    Args:
-        en_page_title: The English page title (stripped)
-
-    Returns:
-        A list of category member titles from SubSub sources
-    """
-    sub_category_values = get_SubSub_value(en_page_title.strip())
-    if not sub_category_values:
-        return []
-
-    logger.debug('<<lightgreen>> New Adding for cats: "%s" : ' % en_page_title)
-    for member in sub_category_values:
-        logger.debug('<<lightgreen>> New Adding "%s" to fapage list.............' % member)
-
-    return list(sub_category_values)
+    return result
 
 
 def merge_member_lists(*member_lists: list) -> list:
@@ -129,23 +114,22 @@ def remove_redirects(lang: str, members: list) -> list:
 
 def collect_category_members(ar_title: str, en_page_title: str) -> list:
     """
-    Collect, merge, filter, and normalize category members from all sources.
+        Collect, merge, filter, and normalize category members from all sources.
 
-    This is the main entry point for gathering category members. It:
-    1. Gathers members from SQL sources
-    2. Gathers members from API if SQL returns empty or is disabled
-    3. Gathers members from SubSub sources
-    4. Merges all results
-    5. Deduplicates the list
-    6. Filters out invalid entries
-    7. Removes redirect pages
+        This is the main entry point for gathering category members. It:
+        1. Gathers members from SQL sources
+        2. Gathers members from API if SQL returns empty or is disabled
+    X    4. Merges all results
+        5. Deduplicates the list
+        6. Filters out invalid entries
+        7. Removes redirect pages
 
-    Args:
-        ar_title: The Arabic category title
-        en_page_title: The English page title
+        Args:
+            ar_title: The Arabic category title
+            en_page_title: The English page title
 
-    Returns:
-        A clean, deduplicated list of valid category members
+        Returns:
+            A clean, deduplicated list of valid category members
     """
     # Step 1: Gather members from SQL
     members = gather_members_from_sql(ar_title, en_page_title)
@@ -154,10 +138,6 @@ def collect_category_members(ar_title: str, en_page_title: str) -> list:
     if settings.database.use_sql is False or members == []:
         api_members = gather_members_from_api(en_page_title)
         members = merge_member_lists(members, api_members)
-
-    # Step 3: Gather from SubSub sources
-    subsub_members = gather_members_from_subsub(en_page_title)
-    members = merge_member_lists(members, subsub_members)
 
     # Step 4: Deduplicate
     members = deduplicate_members(members)

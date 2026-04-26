@@ -208,11 +208,12 @@ def makejson(property, numeric):
         }
 
 
-def Log_to_wikidata(artitle, entitle, qid) -> None:
-    if qid:
-        add_sitelinks_to_wikidata(qid, artitle, "arwiki", nowait=True)
-        add_labels(qid, artitle, "ar")
-        return True
+def log_to_wikidata_qid(artitle, qid) -> None:
+    add_sitelinks_to_wikidata(qid, artitle, "arwiki", nowait=True)
+    add_labels(qid, artitle, "ar")
+
+
+def log_to_wikidata(artitle, entitle) -> None:
 
     cd = add_sitelinks_to_wikidata("", artitle, "arwiki", enlink=entitle, ensite="enwiki", nowait=True)
 

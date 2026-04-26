@@ -62,6 +62,7 @@ class CategoryDepth:
         self.tempyes = []
         self.without_lang = ""
         self.with_lang = ""
+        self.gcmtype = ""
         self.depth = 0
         self.ns = "all"
         self.nslist = []
@@ -99,6 +100,7 @@ class CategoryDepth:
         if isinstance(kwargs.get("props"), str):
             self.props = [kwargs.get("props")]
 
+        self.gcmtype = kwargs.get("gcmtype") or ""
         self.gcmlimit = kwargs.get("gcmlimit") or 1000
         self.no_props = kwargs.get("no_props") or False
 
@@ -137,20 +139,20 @@ class CategoryDepth:
             t_props.append("langlinks")
             params["lllimit"] = "max"
 
+        if self.gcmtype:
+            params["gcmtype"] = self.gcmtype
+
         if self.ns in ["0", "10"]:
             params["gcmtype"] = "page"
+
         elif self.ns in [14]:
             params["gcmtype"] = "subcat"
-
-        # print('gcmtype::', params["gcmtype"])
 
         if len(self.nslist) > 0:
             if self.nslist == [14]:
                 params["gcmtype"] = "subcat"
             elif 14 not in self.nslist and self.depth == 0:
                 params["gcmtype"] = "page"
-
-        # print('gcmtype::', params["gcmtype"])
 
         if not self.no_props:
             for x in self.props:

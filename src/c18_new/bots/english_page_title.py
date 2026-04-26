@@ -45,7 +45,7 @@ def english_page_link_from_text(link, firstsite_code, second_site_code, text="")
     logger.debug(f">> get qid from text: {qid} ")
     logger.debug(f">> qid {qid} ")
 
-    data = Get_Sitelinks_from_qid(ssite="", ids=qid)
+    data = Get_Sitelinks_from_qid(ids=qid)
 
     sitelinks = data.get("sitelinks", {})
 
@@ -184,7 +184,7 @@ def english_page_link(link, firstsite_code, second_site_code, text=""):
 
 def get_en_link_from_ar_text(title, site, sitetarget):
 
-    enpage = Get_Sitelinks_From_wikidata(site, title, return_main_table=True)
+    enpage = Get_Sitelinks_From_wikidata(site, title)
 
     if not enpage:
         return ""
