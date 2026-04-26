@@ -68,10 +68,7 @@ def _fetch_ar_titles(ar_category: str) -> list[str]:
         return []
 
     rows = sql_new(_ARCAT_QUERY, wiki="ar", values=(title,))
-    return [
-        add_nstext_to_title(row["page_title"].replace(" ", "_"), row["page_namespace"], lang="ar")
-        for row in rows
-    ]
+    return [add_nstext_to_title(row["page_title"].replace(" ", "_"), row["page_namespace"], lang="ar") for row in rows]
 
 
 @function_timer

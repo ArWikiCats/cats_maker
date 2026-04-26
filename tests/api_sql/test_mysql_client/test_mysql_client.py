@@ -9,10 +9,9 @@ This module tests:
 
 from unittest.mock import MagicMock
 
+import pymysql
 import pymysql.cursors
 import pytest
-
-import pymysql
 
 from src.core.api_sql.exceptions import (
     DatabaseConnectionError,

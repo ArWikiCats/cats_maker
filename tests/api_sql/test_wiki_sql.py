@@ -211,8 +211,10 @@ class TestSqlNew:
 
         assert result == [{"col": "val"}]
         mock_connect.assert_called_once_with(
-            "SELECT * FROM page", host="enwiki.analytics.db.svc.wikimedia.cloud",
-            db="enwiki_p", values=("title",),
+            "SELECT * FROM page",
+            host="enwiki.analytics.db.svc.wikimedia.cloud",
+            db="enwiki_p",
+            values=("title",),
         )
 
 
