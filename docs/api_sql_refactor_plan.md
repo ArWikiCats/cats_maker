@@ -2,6 +2,8 @@
 
 > Database access layer for Wikimedia Tool Labs MySQL replicas (pymysql-based).
 > Companion plan following same methodology as `mk_cats_refactor_plan.md`.
+>
+> **Status:** Quick Wins mostly done; Phases 1-4 still pending.
 
 ---
 
