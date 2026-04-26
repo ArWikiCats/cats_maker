@@ -147,7 +147,7 @@ DATABASE_SUFFIX = "_p"
 | `encatTitle`            | `en_cat_title`                       | `sql_bot.py`                   |
 | `arcatTitle`            | `ar_cat_title`                       | `sql_bot.py`                   |
 | `enpageTitle`           | `en_page_title`                      | `sql_bot.py`                   |
-| `dbs_p`                 | `db_name`                            | `wiki_sql.py:sql_new`          |
+| `db_p`                 | `db_name`                            | `wiki_sql.py:sql_new`          |
 | `ns_text_tab_ar`        | `NS_TEXT_AR` (module-level constant) | `wiki_sql.py`                  |
 | `ns_text_tab_en`        | `NS_TEXT_EN` (module-level constant) | `wiki_sql.py`                  |
 | `t1`, `t2` (parameters) | `title_key`, `ns_key`                | `wiki_sql.py:sql_new_title_ns` |
@@ -171,7 +171,7 @@ def fetch_arcat_titles(arcatTitle):
     if not GET_SQL():
         return []
     ...
-    ar_results = make_sql_connect_silent(ar_queries, db=dbs_p, host=host, values=(arcatTitle,))
+    ar_results = make_sql_connect_silent(ar_queries, db=db_p, host=host, values=(arcatTitle,))
 ```
 
 **After:**
@@ -190,8 +190,8 @@ def fetch_arcat_titles(ar_cat_title: str) -> list[str]:
 **Before (fetch_encat_titles):**
 
 ```python
-host, dbs_p = make_labsdb_dbs_p("enwiki")
-en_results = make_sql_connect_silent(queries, host=host, db=dbs_p, values=(item,))
+host, db_p = make_labsdb_dbs_p("enwiki")
+en_results = make_sql_connect_silent(queries, host=host, db=db_p, values=(item,))
 ```
 
 **After:**
