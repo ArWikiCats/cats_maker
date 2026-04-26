@@ -1,4 +1,5 @@
 """Database connection pool and context manager."""
+
 import logging
 import threading
 from contextlib import contextmanager
@@ -7,8 +8,8 @@ from typing import Generator
 import pymysql
 from pymysql.cursors import DictCursor
 
-from .config import DatabaseConfig, ConfigLoader
-from .exceptions import DatabaseConnectionError, QueryExecutionError, DatabaseFetchError
+from .config import ConfigLoader, DatabaseConfig
+from .exceptions import DatabaseConnectionError, DatabaseFetchError, QueryExecutionError
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ class DatabaseManager:
     Manages connections using a context manager pattern to ensure
     connections are always closed, even if errors occur.
     """
+
     _instance = None
     _lock = threading.Lock()
 
@@ -105,7 +107,7 @@ class DatabaseManager:
 
                     # Decode bytes to strings if necessary
                     return [
-                        {k: (v.decode('utf-8') if isinstance(v, bytes) else v) for k, v in row.items()}
+                        {k: (v.decode("utf-8") if isinstance(v, bytes) else v) for k, v in row.items()}
                         for row in results
                     ]
             except pymysql.MySQLError as e:
