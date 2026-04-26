@@ -16,7 +16,7 @@ from ..b18_new import (
 )
 from ..config import settings
 from ..new_api import load_main_api
-from ..wd_bots import Get_Sitelinks_From_wikidata, log_to_wikidata, add_labels, log_to_wikidata_qid
+from ..wd_bots import Get_Sitelinks_From_wikidata, add_labels, log_to_wikidata, log_to_wikidata_qid
 from ..wiki_api import find_Page_Cat_without_hidden
 from .add_bot import add_to_final_list
 from .create_category_page import new_category

@@ -2,11 +2,10 @@
 """ """
 import logging
 
-from ..new_api import load_main_api
-
 from ..api_sql import GET_SQL, sql_new, sql_new_title_ns
 from ..c18_new.cats_tools.ar_from_en2 import fetch_ar_titles_based_on_en_category
 from ..config import settings
+from ..new_api import load_main_api
 
 logger = logging.getLogger(__name__)
 
