@@ -20,8 +20,8 @@ Remove dead code and consolidate duplication to keep codebase clean and maintain
 
 **Add to `[dependency-groups]` dev**: `"vulture"`, `"pylint"`
 
-- **vulture**: AST-based dead code detection
-- **pylint**: Duplicate code detection
+-   **vulture**: AST-based dead code detection
+-   **pylint**: Duplicate code detection
 
 **Permissions**: Run py-quality-setup first to configure `.claude/settings.local.json` with all needed tool permissions.
 
@@ -54,15 +54,17 @@ src/config.py:12
 ```
 
 **Confidence levels**:
-- **60-70%**: May be false positive (dynamic imports, metaclasses, etc.)
-- **80-89%**: Likely unused, verify before removing
-- **90-100%**: Almost certainly unused
+
+-   **60-70%**: May be false positive (dynamic imports, metaclasses, etc.)
+-   **80-89%**: Likely unused, verify before removing
+-   **90-100%**: Almost certainly unused
 
 ### Handle False Positives
 
 Vulture may flag code that's actually used:
 
 **1. Dynamic imports/calls**:
+
 ```python
 # Flagged as unused but called dynamically
 def plugin_handler():
@@ -72,6 +74,7 @@ def plugin_handler():
 ```
 
 **2. Framework conventions**:
+
 ```python
 # Django models - fields used by ORM
 class User(models.Model):
@@ -79,6 +82,7 @@ class User(models.Model):
 ```
 
 **3. Public API**:
+
 ```python
 # Part of library's public API, used by external code
 def public_function():
@@ -86,13 +90,14 @@ def public_function():
 ```
 
 **Solutions**:
-- Add to whitelist file: `vulture . whitelist.py`
-- Add comment: `# pragma: no cover` or custom marker
-- Accept false positives for public APIs
 
-4. Code that *should* be used, but isn't:
+-   Add to whitelist file: `vulture . whitelist.py`
+-   Add comment: `# pragma: no cover` or custom marker
+-   Accept false positives for public APIs
 
-For example, constants, magic numbers, type definitions, or even functions may appear unused. But this may in 
+4. Code that _should_ be used, but isn't:
+
+For example, constants, magic numbers, type definitions, or even functions may appear unused. But this may in
 fact be the issue! (Consider partial refactoring, or other causes.)
 
 Before eliminating apparently dead code, validate that no similar patterns that should reference it exist. If they do, instead fix the call/use sites.
@@ -272,19 +277,19 @@ def calculate_total(items: list) -> float:
 
 **Rationale**: Git history preserves old implementations. Commented code creates noise.
 
-
 ## Verification Checklist
 
-- [ ] `vulture . --min-confidence 80` reports no dead code (or only accepted false positives)
-- [ ] `pylint --disable=all --enable=duplicate-code` reports no duplicate blocks >6 lines
-- [ ] No commented-out code blocks remain
-- [ ] All tests pass after removals
-- [ ] Code coverage maintained or improved
-- [ ] Whitelist file created for intentional false positives (if needed)
+-   [ ] `vulture . --min-confidence 80` reports no dead code (or only accepted false positives)
+-   [ ] `pylint --disable=all --enable=duplicate-code` reports no duplicate blocks >6 lines
+-   [ ] No commented-out code blocks remain
+-   [ ] All tests pass after removals
+-   [ ] Code coverage maintained or improved
+-   [ ] Whitelist file created for intentional false positives (if needed)
 
 ## Examples
 
 **Example: Code health cleanup workflow**
+
 ```
 1. Scan: vulture . --min-confidence 80; pylint --disable=all --enable=duplicate-code --recursive=y .
 2. Found: 5 unused functions (67 lines), 3 duplicate blocks (45 lines)
@@ -294,6 +299,7 @@ def calculate_total(items: list) -> float:
 ```
 
 **Example: Handle false positives**
+
 ```
 1. Scan: vulture . --min-confidence 80
 2. Found: public_api_function flagged as unused (actually part of library API)
@@ -303,6 +309,7 @@ def calculate_total(items: list) -> float:
 ```
 
 **Example: Consolidate duplicate validation**
+
 ```
 1. Scan: pylint --disable=all --enable=duplicate-code --recursive=y .
 2. Found: Same validation logic in create_user() and update_user()
@@ -313,6 +320,6 @@ def calculate_total(items: list) -> float:
 
 ## Related Skills
 
-- **Prerequisites**: py-quality-setup (tool configuration), py-test-quality (safety net before removing code)
-- **Next steps**: py-complexity (reduce complexity after cleanup)
-- **See also**: py-security (check security before major changes)
+-   **Prerequisites**: py-quality-setup (tool configuration), py-test-quality (safety net before removing code)
+-   **Next steps**: py-complexity (reduce complexity after cleanup)
+-   **See also**: py-security (check security before major changes)

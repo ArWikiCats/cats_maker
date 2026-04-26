@@ -12,15 +12,15 @@ Comprehensive refactoring workflow coordinating specialized skills to improve Py
 
 This skill orchestrates multiple focused skills to perform systematic refactoring:
 
-| Skill | Purpose | Status |
-|-------|---------|--------|
-| `py-security` | Vulnerability detection and remediation | stable |
-| `py-code-health` | Dead code and duplication removal | stable |
-| `py-complexity` | Reduce cyclomatic/cognitive complexity | stable |
-| `py-test-quality` | Coverage analysis and mutation testing | stable |
-| `py-modernize` | Upgrade tooling and syntax | stable |
-| `py-quality-setup` | Configure linters and type checkers | stable |
-| `py-git-hooks` | Set up pre-commit hooks | stable |
+| Skill              | Purpose                                 | Status |
+| ------------------ | --------------------------------------- | ------ |
+| `py-security`      | Vulnerability detection and remediation | stable |
+| `py-code-health`   | Dead code and duplication removal       | stable |
+| `py-complexity`    | Reduce cyclomatic/cognitive complexity  | stable |
+| `py-test-quality`  | Coverage analysis and mutation testing  | stable |
+| `py-modernize`     | Upgrade tooling and syntax              | stable |
+| `py-quality-setup` | Configure linters and type checkers     | stable |
+| `py-git-hooks`     | Set up pre-commit hooks                 | stable |
 
 ## Refactoring Priorities
 
@@ -78,6 +78,7 @@ wily build .
 ### Phase 3: Prioritized Remediation
 
 **Step 1: Security (Critical)**
+
 ```
 If security.txt shows issues:
 → Invoke: py-security
@@ -87,6 +88,7 @@ If security.txt shows issues:
 ```
 
 **Step 2: Test Quality (High - enables safe refactoring)**
+
 ```
 If coverage < 80%:
 → Invoke: py-test-quality
@@ -96,6 +98,7 @@ If coverage < 80%:
 ```
 
 **Step 3: Code Health (High)**
+
 ```
 If duplication.txt or dead_code.txt show issues:
 → Invoke: py-code-health
@@ -105,6 +108,7 @@ If duplication.txt or dead_code.txt show issues:
 ```
 
 **Step 4: Complexity Reduction (Medium)**
+
 ```
 If complexity.txt shows C+ functions or maintainability < 65:
 → Invoke: py-complexity
@@ -115,6 +119,7 @@ If complexity.txt shows C+ functions or maintainability < 65:
 ```
 
 **Step 5: Modernization (Optional)**
+
 ```
 If project uses old patterns or pip:
 → Invoke: py-modernize
@@ -154,12 +159,12 @@ wily report .
 
 Don't use orchestrated refactoring when:
 
-- **Single focused task**: Use specific skill directly (e.g., just py-security for CVE fix)
-- **No tests exist**: Write tests first (py-test-quality), then refactor
-- **Active development**: Coordinate with team to avoid merge conflicts
-- **Production incident**: Fix incident first, refactor later
+-   **Single focused task**: Use specific skill directly (e.g., just py-security for CVE fix)
+-   **No tests exist**: Write tests first (py-test-quality), then refactor
+-   **Active development**: Coordinate with team to avoid merge conflicts
+-   **Production incident**: Fix incident first, refactor later
 
 ## Additional Resources
 
-- **WORKFLOWS.md**: Quick workflows for specific scenarios (security sweep, complexity sprint, legacy modernization)
-- **METRICS.md**: Success metrics, tool reference, Engineering Charter alignment
+-   **WORKFLOWS.md**: Quick workflows for specific scenarios (security sweep, complexity sprint, legacy modernization)
+-   **METRICS.md**: Success metrics, tool reference, Engineering Charter alignment
