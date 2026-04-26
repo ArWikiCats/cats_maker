@@ -1,7 +1,12 @@
-"""Application configuration management."""
+"""
+Environment-driven configuration for the wiki_sql package.
+"""
+
+from __future__ import annotations
+
 import os
-from pathlib import Path
 from dataclasses import dataclass
+from pathlib import Path
 
 from .exceptions import ConfigurationError
 
@@ -9,6 +14,7 @@ from .exceptions import ConfigurationError
 @dataclass(frozen=True)
 class DatabaseConfig:
     """Immutable database configuration container."""
+
     host: str
     database: str
     user_file_path: Path
@@ -61,11 +67,7 @@ class ConfigLoader:
         host = f"{normalized_wiki}.analytics.db.svc.wikimedia.cloud"
         db_name = f"{normalized_wiki}_p"
 
-        return DatabaseConfig(
-            host=host,
-            database=db_name,
-            user_file_path=cnf_path
-        )
+        return DatabaseConfig(host=host, database=db_name, user_file_path=cnf_path)
 
     @staticmethod
     def is_production() -> bool:
