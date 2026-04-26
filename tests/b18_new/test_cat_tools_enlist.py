@@ -48,7 +48,9 @@ class TestExtractFanPageTitles:
         """Test that Category: prefix is stripped"""
         mocker.patch("src.core.b18_new.cat_tools_enlist.GET_SQL", return_value=True)
         mocker.patch("src.core.b18_new.cat_tools_enlist.settings.database.use_sql", True)
-        mock_get_exclusive = mocker.patch("src.core.b18_new.cat_tools_enlist.get_exclusive_category_titles", return_value=[])
+        mock_get_exclusive = mocker.patch(
+            "src.core.b18_new.cat_tools_enlist.get_exclusive_category_titles", return_value=[]
+        )
 
         extract_fan_page_titles("Category:Science")
 
@@ -106,7 +108,9 @@ class TestGetListenpageTitle:
     def test_removes_duplicates(self, mocker):
         """Test that duplicates are removed"""
         mocker.patch("src.core.b18_new.cat_tools_enlist.validate_categories_for_new_cat", return_value=False)
-        mocker.patch("src.core.b18_new.cat_tools_enlist.extract_fan_page_titles", return_value=["Page1", "Page1", "Page2"])
+        mocker.patch(
+            "src.core.b18_new.cat_tools_enlist.extract_fan_page_titles", return_value=["Page1", "Page1", "Page2"]
+        )
 
         result = get_listenpageTitle("تصنيف:علوم", "Category:Science")
 
@@ -115,7 +119,9 @@ class TestGetListenpageTitle:
     def test_filters_empty_strings(self, mocker):
         """Test that empty strings are filtered"""
         mocker.patch("src.core.b18_new.cat_tools_enlist.validate_categories_for_new_cat", return_value=False)
-        mocker.patch("src.core.b18_new.cat_tools_enlist.extract_fan_page_titles", return_value=["Page1", "", "Page2", None])
+        mocker.patch(
+            "src.core.b18_new.cat_tools_enlist.extract_fan_page_titles", return_value=["Page1", "", "Page2", None]
+        )
 
         result = get_listenpageTitle("تصنيف:علوم", "Category:Science")
 

@@ -117,7 +117,9 @@ class TestFindSql:
     def test_filters_empty_pages(self, mocker):
         """Test that empty page names are filtered"""
         mocker.patch("src.core.api_sql.sql_bot.GET_SQL", return_value=True)
-        mocker.patch("src.core.api_sql.sql_bot.get_exclusive_category_titles", return_value=["Page1", "", "  ", "Page2"])
+        mocker.patch(
+            "src.core.api_sql.sql_bot.get_exclusive_category_titles", return_value=["Page1", "", "  ", "Page2"]
+        )
 
         result = find_sql("Category")
 

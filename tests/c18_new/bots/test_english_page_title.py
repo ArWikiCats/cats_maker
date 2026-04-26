@@ -138,7 +138,9 @@ class TestGetEnglishPageTitle:
 
     def test_blacklists_sandbox_pages(self, mocker):
         """Test that Sandbox pages are blacklisted"""
-        mocker.patch("src.core.c18_new.bots.english_page_title.get_en_link_from_ar_text", return_value="User:Test/Sandbox")
+        mocker.patch(
+            "src.core.c18_new.bots.english_page_title.get_en_link_from_ar_text", return_value="User:Test/Sandbox"
+        )
 
         result, site = get_english_page_title("", "علوم", "", {})
         # Sandbox pages should be rejected

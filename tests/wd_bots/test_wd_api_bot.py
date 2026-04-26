@@ -120,7 +120,9 @@ class TestGetSitelinksFromWikidata:
 
     def test_adds_wiki_suffix_if_missing(self, mocker):
         """Test that 'wiki' suffix is added to site code"""
-        mock_info = mocker.patch("src.core.wd_bots.wd_api_bot.Get_infos_wikidata", return_value={"sitelinks": {}, "q": ""})
+        mock_info = mocker.patch(
+            "src.core.wd_bots.wd_api_bot.Get_infos_wikidata", return_value={"sitelinks": {}, "q": ""}
+        )
         Get_Sitelinks_From_wikidata.cache_clear()
 
         Get_Sitelinks_From_wikidata("en", "Test")
