@@ -1,7 +1,7 @@
 import logging
+from collections.abc import KeysView
 
 from ..new_api import load_main_api
-from collections.abc import KeysView
 
 logger = logging.getLogger(__name__)
 
@@ -9,19 +9,15 @@ logger = logging.getLogger(__name__)
 class NEW_API:
     def __init__(self, login_bot):
         self.login_bot = login_bot
-        self.username = getattr(self, "username", "")
 
-    def Find_pages_exists_or_not(self, liste, get_redirect=False):
-        done = 0
+    def Find_pages_exists_or_not(self, liste, get_redirect=False) -> dict:
         all_jsons = {}
 
         for titles in self.chunk_titles(liste, chunk_size=50):
-            done += len(titles)
             params = {
                 "action": "query",
                 "titles": "|".join(titles),
                 "prop": "info|pageprops",
-                "ppprop": "wikibase_item",
                 "formatversion": 2,
             }
             json1 = self.login_bot.post_params(params)
@@ -43,19 +39,25 @@ class NEW_API:
         for kk in query_pages:
             if isinstance(query_pages, dict):
                 kk = query_pages[kk]
+
             tit = kk.get("title", "")
+
             if not tit:
                 continue
+
             tit = normalized.get(tit, tit)
             table[tit] = True
+
             if "missing" in kk:
                 table[tit] = False
                 missing += 1
+
             elif "redirect" in kk and get_redirect:
                 table[tit] = "redirect"
                 redirects += 1
             else:
                 exists += 1
+
         logger.debug(f" : missing:{missing}, exists: {exists}, redirects: {redirects}")
         return table
 
@@ -91,10 +93,10 @@ class NEW_API:
 
 def load_non_redirects(lang: str, page_titles: list) -> list:
     """Remove redirect pages from a list of page titles."""
-    api = load_main_api(lang)
-    result = NEW_API().Find_pages_exists_or_not(page_titles, get_redirect=True)
-
-    non_redirects = [x for x, v in result.items() if v is True]  # and v != "redirect"
+    _bot = load_main_api(lang, "wikipedia")
+    api_n = NEW_API(_bot.login_bot)
+    result = api_n.Find_pages_exists_or_not(page_titles, get_redirect=True)
+    non_redirects = [x for x, v in result.items() if v is True]
     return non_redirects
 
 

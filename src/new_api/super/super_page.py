@@ -1,7 +1,7 @@
 """ """
 
-from copy import copy
 import logging
+from copy import copy
 from dataclasses import dataclass, field
 
 from ...config import settings
