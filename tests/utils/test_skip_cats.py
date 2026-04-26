@@ -1,5 +1,5 @@
 """
-Tests for src/utils/skip_cats.py
+Tests for src/core/utils/skip_cats.py
 
 This module tests the category skip lists and template blacklists.
 """

@@ -1,5 +1,5 @@
 """
-Tests for src/c18_new/bots/english_page_title.py
+Tests for src/core/c18_new/bots/english_page_title.py
 
 This module tests functions for finding English page titles from Arabic pages.
 """

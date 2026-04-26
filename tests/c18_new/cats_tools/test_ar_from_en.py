@@ -1,5 +1,5 @@
 """
-Tests for src/c18_new/cats_tools/ar_from_en.py
+Tests for src/core/c18_new/cats_tools/ar_from_en.py
 
 This module tests functions for converting English category pages to Arabic.
 """

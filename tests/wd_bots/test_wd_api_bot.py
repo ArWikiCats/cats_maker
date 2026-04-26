@@ -1,5 +1,5 @@
 """
-Tests for src/wd_bots/wd_api_bot.py
+Tests for src/core/wd_bots/wd_api_bot.py
 
 This module tests Wikidata API functions.
 """

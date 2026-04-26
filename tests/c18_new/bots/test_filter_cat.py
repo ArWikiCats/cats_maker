@@ -1,5 +1,5 @@
 """
-Tests for src/c18_new/bots/filter_cat.py
+Tests for src/core/c18_new/bots/filter_cat.py
 
 This module tests category filtering functions.
 """

@@ -7,12 +7,12 @@
 
 ## 1. Executive Summary
 
-`src/new_api` provides an object-oriented interface for interacting with MediaWiki wikis (Wikipedia, Commons, Wikidata). It wraps the low-level `wiki_api` transport with classes (`ALL_APIS`, `MainPage`, `Login`, `CategoryDepth`) and dataclasses for structured data. It is consumed by 10 files across 5 modules.
+`src/core/new_api` provides an object-oriented interface for interacting with MediaWiki wikis (Wikipedia, Commons, Wikidata). It wraps the low-level `wiki_api` transport with classes (`ALL_APIS`, `MainPage`, `Login`, `CategoryDepth`) and dataclasses for structured data. It is consumed by 10 files across 5 modules.
 
 ### Current Structure
 
 ```
-src/new_api/
+src/core/new_api/
 ├── __init__.py                    # Public API: exports botEdit, load_main_api, Login
 ├── pagenew.py                     # Module-level singleton factory (load_main_api)
 ├── api_utils/
@@ -70,7 +70,7 @@ src/new_api/
 ## 3. Proposed Target Architecture
 
 ```
-src/new_api/
+src/core/new_api/
 ├── __init__.py                  # Public API: unchanged exports
 ├── factory.py                   # load_main_api() — moved from pagenew.py, no module-level singleton
 ├── api_utils/
@@ -161,14 +161,14 @@ Priority targets (highest usage):
 
 **5.1.4 Extract namespace constants to shared location**
 
-Move `ns_list` from `catdepth_new.py:17-39` to a shared module (`src/new_api/constants.py` or shared `src/constants.py`). Use the same constants from `api_sql/constants.py` if possible (deduplicate with `api_sql`).
+Move `ns_list` from `catdepth_new.py:17-39` to a shared module (`src/core/new_api/constants.py` or shared `src/constants.py`). Use the same constants from `api_sql/constants.py` if possible (deduplicate with `api_sql`).
 
 ```python
-# src/new_api/constants.py
+# src/core/new_api/constants.py
 from ..api_sql.constants import NS_TEXT_AR  # or move ns_list here and import in both places
 ```
 
-**Success criteria:** `ruff check src/new_api` passes. `mypy src/new_api --ignore-missing-imports` passes. All `__all__` defined. No spelling errors.
+**Success criteria:** `ruff check src/core/new_api` passes. `mypy src/core/new_api --ignore-missing-imports` passes. All `__all__` defined. No spelling errors.
 
 ---
 
@@ -561,7 +561,7 @@ def test_login_get_text_flow(responses):
 | Test files                | 1       | ≥6     |
 | Test methods              | 4       | ≥40    |
 | `pytest tests/new_api/`   | passes  | passes |
-| Coverage (`src/new_api/`) | ~5%     | ≥75%   |
+| Coverage (`src/core/new_api/`) | ~5%     | ≥75%   |
 
 ---
 
@@ -600,10 +600,10 @@ def test_login_get_text_flow(responses):
 
 ## 8. Acceptance Criteria
 
--   [ ] `ruff check src/new_api` passes with zero errors
--   [ ] `mypy src/new_api --ignore-missing-imports` passes
--   [ ] `radon cc src/new_api -n C` reports no functions with complexity ≥ C
--   [ ] No file in `src/new_api/` exceeds 500 lines (except `super_page.py` ≤500)
+-   [ ] `ruff check src/core/new_api` passes with zero errors
+-   [ ] `mypy src/core/new_api --ignore-missing-imports` passes
+-   [ ] `radon cc src/core/new_api -n C` reports no functions with complexity ≥ C
+-   [ ] No file in `src/core/new_api/` exceeds 500 lines (except `super_page.py` ≤500)
 -   [ ] No module-level mutable state remains (globals → instance-scoped)
 -   [ ] No mixin inheritance on `MainPage` (uses composition instead)
 -   [ ] `post_params` uses iteration, not recursion
@@ -653,16 +653,16 @@ After refactoring, verify these consumer files still work:
 
 | Consumer file                           | Symbols imported from `new_api`                  |
 | --------------------------------------- | ------------------------------------------------ |
-| `src/mk_cats/mknew.py`                  | `load_main_api`                                  |
-| `src/mk_cats/categorytext.py`           | `load_main_api`                                  |
-| `src/mk_cats/create_category_page.py`   | `load_main_api`                                  |
-| `src/mk_cats/add_bot.py`                | `load_main_api`                                  |
-| `src/b18_new/sql_cat.py`                | `load_main_api`                                  |
-| `src/c18_new/cat_tools2.py`             | `load_main_api`                                  |
-| `src/c18_new/cats_tools/ar_from_en2.py` | `load_main_api`                                  |
-| `src/c18_new/bots/text_to_temp_bot.py`  | `load_main_api`                                  |
-| `src/wiki_api/check_redirects.py`       | `load_main_api`                                  |
-| `src/wd_bots/wd_bots_main.py`           | `password`, `username` (from `pagenew`), `Login` |
+| `src/core/mk_cats/mknew.py`                  | `load_main_api`                                  |
+| `src/core/mk_cats/categorytext.py`           | `load_main_api`                                  |
+| `src/core/mk_cats/create_category_page.py`   | `load_main_api`                                  |
+| `src/core/mk_cats/add_bot.py`                | `load_main_api`                                  |
+| `src/core/b18_new/sql_cat.py`                | `load_main_api`                                  |
+| `src/core/c18_new/cat_tools2.py`             | `load_main_api`                                  |
+| `src/core/c18_new/cats_tools/ar_from_en2.py` | `load_main_api`                                  |
+| `src/core/c18_new/bots/text_to_temp_bot.py`  | `load_main_api`                                  |
+| `src/core/wiki_api/check_redirects.py`       | `load_main_api`                                  |
+| `src/core/wd_bots/wd_bots_main.py`           | `password`, `username` (from `pagenew`), `Login` |
 
 No import changes are needed. `new_api/__init__.py` and `pagenew.py` (with shim) re-export all public symbols unchanged.
 

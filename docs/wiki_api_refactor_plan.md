@@ -2,12 +2,12 @@
 
 ## Overview
 
-The `wiki_api` module provides the low-level HTTP transport layer and high-level query functions for interacting with MediaWiki APIs (Wikipedia, Commons, Wikidata). It is consumed by all three business-logic layers (`b18_new`, `c18_new`, `mk_cats`) and `wd_bots`. Located at `src/wiki_api/`.
+The `wiki_api` module provides the low-level HTTP transport layer and high-level query functions for interacting with MediaWiki APIs (Wikipedia, Commons, Wikidata). It is consumed by all three business-logic layers (`b18_new`, `c18_new`, `mk_cats`) and `wd_bots`. Located at `src/core/wiki_api/`.
 
 ## Current Architecture
 
 ```
-src/wiki_api/
+src/core/wiki_api/
 ├── __init__.py              # Public API re-exports (10 symbols)
 ├── api_requests.py          # submitAPI() — low-level HTTP POST to MediaWiki API
 ├── check_redirects.py       # NEW_API class + remove_redirect_pages() helper
@@ -45,7 +45,7 @@ src/wiki_api/
 ## Proposed Target Architecture
 
 ```
-src/wiki_api/
+src/core/wiki_api/
 ├── __init__.py              # Public API (unchanged exports)
 ├── transport.py             # submitAPI() — extracted from api_requests.py, bugfixed
 ├── models.py                # Typed result dataclasses, enums, cache key types

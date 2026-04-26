@@ -1,5 +1,5 @@
 """
-Tests for src/helps/jsonl_data.py
+Tests for src/core/helps/jsonl_data.py
 
 اختبارات لملف jsonl_data.py - حفظ وتحميل بيانات JSONL
 

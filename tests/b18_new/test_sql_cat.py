@@ -1,5 +1,5 @@
 """
-Tests for src/b18_new/sql_cat.py
+Tests for src/core/b18_new/sql_cat.py
 
 This module tests SQL-based category functions.
 """

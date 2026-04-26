@@ -1,5 +1,5 @@
 """
-Tests for src/b18_new/cat_tools_enlist.py
+Tests for src/core/b18_new/cat_tools_enlist.py
 
 This module tests category page listing functions.
 """

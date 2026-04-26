@@ -1,5 +1,5 @@
 """
-Tests for src/c18_new/tools_bots/temp_bot.py
+Tests for src/core/c18_new/tools_bots/temp_bot.py
 
 This module tests template query functions for Wikipedia categories.
 """

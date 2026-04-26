@@ -1,5 +1,5 @@
 """
-Tests for src/c18_new/bots/text_to_temp_bot.py
+Tests for src/core/c18_new/bots/text_to_temp_bot.py
 
 This module tests functions for adding text/categories to template pages.
 """

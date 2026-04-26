@@ -7,7 +7,7 @@
 
 ## 1. Executive Summary
 
-The `src/c18_new` module drives Arabic Wikipedia category generation, cross-wiki page linking
+The `src/core/c18_new` module drives Arabic Wikipedia category generation, cross-wiki page linking
 (EN→AR, FR→AR), template handling, and filtering/sorting. It works, but carries visible
 technical debt:
 
@@ -37,7 +37,7 @@ These are explicitly out of scope to protect business logic stability:
 ## 3. Proposed Directory Structure
 
 ```
-src/c18_new/
+src/core/c18_new/
 ├── __init__.py                  # Export only the public interface; add __all__
 ├── constants.py                 # All magic strings, namespace IDs, template names
 ├── models.py                    # Lightweight dataclasses: WikiPage, Category, Sitelink
@@ -147,7 +147,7 @@ Fix typos: `Skippe_Cat` → `skipped_categories`, `lenth` → `length`, `sito_co
 -   Replace every `return False` where a list or string is expected with `return []` or `return None`.
 -   Standardize `english_page_link` family to return `str | None` consistently.
 
-**Success criteria:** `ruff check src/c18_new` and `mypy src/c18_new --ignore-missing-imports`
+**Success criteria:** `ruff check src/core/c18_new` and `mypy src/core/c18_new --ignore-missing-imports`
 pass with zero errors.
 
 ---
@@ -317,7 +317,7 @@ def add_direct(text: str, content: str) -> str:
 Move `pre_text` into a separate `.txt` asset or clearly named constant. Use
 `wikitextparser` consistently instead of mixing it with `str.find`.
 
-**Success criteria:** `radon cc src/c18_new -s` shows the top 3 functions have dropped from
+**Success criteria:** `radon cc src/core/c18_new -s` shows the top 3 functions have dropped from
 grade C/D to grade A/B (cyclomatic complexity ≤ 10).
 
 ---
@@ -411,7 +411,7 @@ timeit.timeit(lambda: filter_category_text(big_list, ns=14, text=""), number=100
 
 Expected: ≥ 30% speedup from O(n²) → O(n).
 
-**CI/CD:** `pytest tests/c18_new/ --cov=src/c18_new --cov-report=term-missing` must
+**CI/CD:** `pytest tests/c18_new/ --cov=src/core/c18_new --cov-report=term-missing` must
 show ≥ 80% coverage in GitHub Actions.
 
 ---
@@ -437,8 +437,8 @@ show ≥ 80% coverage in GitHub Actions.
 -   [ ] `english_page_link` family returns `str | None` consistently — no `False`, no `""`
 -   [ ] `dontadd.py` split into `io/json_store.py` and `io/sql_queries.py`
 -   [ ] `pytest tests/c18_new/` passes with ≥ 80% coverage
--   [ ] `ruff check src/c18_new` reports zero errors
--   [ ] `radon cc src/c18_new -s` shows no function above grade B (complexity ≤ 10)
+-   [ ] `ruff check src/core/c18_new` reports zero errors
+-   [ ] `radon cc src/core/c18_new -s` shows no function above grade B (complexity ≤ 10)
 -   [ ] Integration diff on `Science` category is empty before → after
 
 ---

@@ -1,5 +1,5 @@
 """
-Tests for src/helps/printe_helper.py
+Tests for src/core/helps/printe_helper.py
 
 This module tests the color formatting functionality for console output.
 """

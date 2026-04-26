@@ -1,5 +1,5 @@
 """
-Tests for src/b18_new/cat_tools_enlist2.py
+Tests for src/core/b18_new/cat_tools_enlist2.py
 
 This module tests category member API functions.
 """

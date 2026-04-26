@@ -1,5 +1,5 @@
 """
-Tests for src/mk_cats/categorytext.py
+Tests for src/core/mk_cats/categorytext.py
 
 This module tests category text generation functions.
 """

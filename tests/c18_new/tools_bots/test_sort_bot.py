@@ -1,5 +1,5 @@
 """
-Tests for src/c18_new/tools_bots/sort_bot.py
+Tests for src/core/c18_new/tools_bots/sort_bot.py
 
 This module tests category sorting functions.
 """

@@ -1,5 +1,5 @@
 """
-Tests for src/api_sql/mysql_client.py
+Tests for src/core/api_sql/mysql_client.py
 
 اختبارات لملف mysql_client.py - استعلامات SQL
 

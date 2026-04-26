@@ -1,6 +1,6 @@
-# Refactoring Plan for `src/b18_new`
+# Refactoring Plan for `src/core/b18_new`
 
-> **Scope:** This plan targets the `src/b18_new` directory, which handles Arabic category member resolution, SQL/API category translation, and category validation.
+> **Scope:** This plan targets the `src/core/b18_new` directory, which handles Arabic category member resolution, SQL/API category translation, and category validation.
 
 ---
 
@@ -28,7 +28,7 @@ While functional, the module suffers from:
 ## 2. Proposed Directory Structure
 
 ```
-src/b18_new/
+src/core/b18_new/
 ├── __init__.py
 ├── constants.py              # Hardcoded template blacklists, namespace IDs
 ├── models.py                 # Small dataclasses: CategoryRef, PageRef, ValidationResult
@@ -271,7 +271,7 @@ Use `pytest` and `unittest.mock` to patch SQL and API calls.
 -   [ ] `pages_in_arcat_toMake` is no longer a module-level mutable dict.
 -   [ ] All hardcoded template names and namespace IDs are imported from `constants.py`.
 -   [ ] `py.test tests/b18_new/` passes with >80% coverage.
--   [ ] `ruff check src/b18_new` reports zero errors.
+-   [ ] `ruff check src/core/b18_new` reports zero errors.
 
 ---
 

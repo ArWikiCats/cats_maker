@@ -1,5 +1,5 @@
 """
-Tests for src/wiki_api/check_redirects.py
+Tests for src/core/wiki_api/check_redirects.py
 
 This module tests Wikipedia API helper functions.
 """

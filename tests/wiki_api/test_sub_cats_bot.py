@@ -1,5 +1,5 @@
 """
-Tests for src/wiki_api/sub_cats_bot.py
+Tests for src/core/wiki_api/sub_cats_bot.py
 
 This module tests subcategory query functions.
 """
