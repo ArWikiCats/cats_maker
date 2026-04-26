@@ -4,7 +4,7 @@
 import logging
 
 from ...config import settings
-from ..api_sql import GET_SQL, sql_new, sql_new_title_ns
+from ..api_sql import GET_SQL, add_namespace_prefix, sql_new
 from ..c18_new.cats_tools.ar_from_en2 import fetch_ar_titles_based_on_en_category
 from ..new_api import load_main_api
 
@@ -46,8 +46,8 @@ def get_ar_list(arcat, us_sql=True):
     ar_list = []
 
     if us_sql is True and GET_SQL():
-        # Pass category as parameter to prevent SQL injection
-        ar_list = sql_new_title_ns(qia_ar, wiki="arwiki", title_key="page_title", ns_key="page_namespace", values=(ar_cat2,))
+        rows = sql_new(qia_ar, wiki="ar", values=(ar_cat2,))
+        ar_list = [add_namespace_prefix(r["page_title"], r["page_namespace"], lang="ar") for r in rows]
 
     if not ar_list:
         api = load_main_api("ar")

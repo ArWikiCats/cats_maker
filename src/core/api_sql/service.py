@@ -4,10 +4,9 @@ Wikipedia / Wikimedia SQL helpers.
 Public API
 ----------
 GET_SQL            – returns True only in production (APP_ENV=production).
-add_nstext_to_title – prepend namespace prefix to a page title.
+add_namespace_prefix – prepend namespace prefix to a page title.
 make_labsdb_dbs_p  – resolve (host, db_p) for a given wiki name.
 sql_new            – run a raw query against a wiki replica and return rows.
-sql_new_title_ns   – like sql_new but maps rows → "Namespace:Title" strings.
 """
 
 import functools
@@ -24,6 +23,7 @@ from .constants import (
     WIKI_ALIASES,
 )
 from .db_pool import make_sql_connect_silent
+from .utils import add_namespace_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -38,37 +38,11 @@ def GET_SQL() -> bool:
     """Return True when running in production (APP_ENV == 'production')."""
     return os.getenv("APP_ENV", "") == "production"
 
-
-# ---------------------------------------------------------------------------
-# Namespace helpers
-# ---------------------------------------------------------------------------
-
-
-def add_nstext_to_title(title: str, ns: str | int, lang: str = "ar") -> str:
-    """Prepend the namespace label to *title*.
-
-    Returns *title* unchanged when namespace is 0 or the label is unknown.
-    """
-    ns_key = str(ns)
-    if not title:
-        return ""
-
-    if ns_key == "0":
-        return title
-
-    table = NS_TEXT_AR if lang == "ar" else NS_TEXT_EN
-    prefix = table.get(ns_key)
-
-    if not prefix:
-        logger.debug("No namespace label for ns=%s lang=%s", ns_key, lang)
-        return title
-
-    return f"{prefix}:{title}"
-
-
 # ---------------------------------------------------------------------------
 # Host / DB resolution
 # ---------------------------------------------------------------------------
+
+
 def make_labsdb_dbs_p(wiki: str) -> tuple[str, str]:
     """Return (host, db_p) for *wiki*.
 
@@ -115,41 +89,11 @@ def sql_new(query: str, wiki: str = "", values: tuple | list = ()) -> list[dict]
     return rows
 
 
-@function_timer
-def sql_new_title_ns(
-    query: str,
-    wiki: str = "",
-    title_key: str = "page_title",
-    ns_key: str = "page_namespace",
-    values: tuple | list | None = None,
-) -> list[str]:
-    """Run *query* and convert each row to a "Namespace:Title" string.
-
-    Rows missing either field are skipped with a debug log.
-    """
-    lang = wiki.removesuffix("wiki") if wiki.endswith("wiki") else wiki
-    rows = sql_new(query, wiki=wiki, values=values or ())
-
-    titles: list[str] = []
-    for row in rows:
-        title = row.get(title_key)
-        ns = row.get(ns_key)
-
-        if not title or ns is None:
-            logger.debug("sql_new_title_ns: skipping incomplete row: %s", row)
-            continue
-
-        titles.append(add_nstext_to_title(title, ns, lang=lang))
-
-    return titles
-
-
 __all__ = [
     "GET_SQL",
-    "add_nstext_to_title",
+    "add_namespace_prefix",
     "make_labsdb_dbs_p",
     "sql_new",
-    "sql_new_title_ns",
     "NS_TEXT_AR",
     "NS_TEXT_EN",
 ]

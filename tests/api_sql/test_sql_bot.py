@@ -52,8 +52,8 @@ class TestFetchArcatTitles:
         assert "values" in call_kwargs
         assert "علوم_الحاسوب" in call_kwargs["values"][0]
 
-    def test_uses_add_nstext_to_title_for_namespace_prefix(self, mocker):
-        """Test that Arabic namespace prefixes are applied via add_nstext_to_title"""
+    def test_uses_add_namespace_prefix_for_namespace_prefix(self, mocker):
+        """Test that Arabic namespace prefixes are applied via add_namespace_prefix"""
         mocker.patch(
             "src.core.api_sql.sql_bot.sql_new",
             return_value=[

@@ -6,100 +6,99 @@ This module tests namespace handling and SQL query functions for MediaWiki.
 
 from src.core.api_sql.constants import NS_TEXT_AR, NS_TEXT_EN
 from src.core.api_sql.service import (
-    add_nstext_to_title,
+    add_namespace_prefix,
     make_labsdb_dbs_p,
     sql_new,
-    sql_new_title_ns,
 )
 
 
 class TestAddNsTextToTitle:
-    """Tests for add_nstext_to_title function"""
+    """Tests for add_namespace_prefix function"""
 
     def test_with_namespace_0_returns_original_title(self):
         """Test that namespace 0 returns the original title unchanged"""
-        result = add_nstext_to_title("محمد", "0", "ar")
+        result = add_namespace_prefix("محمد", "0", "ar")
         assert result == "محمد"
 
     def test_with_namespace_0_string(self):
         """Test namespace 0 as string"""
-        result = add_nstext_to_title("Test Article", 0, "en")
+        result = add_namespace_prefix("Test Article", 0, "en")
         assert result == "Test Article"
 
     def test_with_category_namespace_ar(self):
         """Test adding category namespace prefix in Arabic"""
-        result = add_nstext_to_title("علوم", "14", "ar")
+        result = add_namespace_prefix("علوم", "14", "ar")
         assert result == "تصنيف:علوم"
 
     def test_with_category_namespace_en(self):
         """Test adding category namespace prefix in English"""
-        result = add_nstext_to_title("Science", "14", "en")
+        result = add_namespace_prefix("Science", "14", "en")
         assert result == "Category:Science"
 
     def test_with_template_namespace_ar(self):
         """Test adding template namespace prefix in Arabic"""
-        result = add_nstext_to_title("صندوق", "10", "ar")
+        result = add_namespace_prefix("صندوق", "10", "ar")
         assert result == "قالب:صندوق"
 
     def test_with_template_namespace_en(self):
         """Test adding template namespace prefix in English"""
-        result = add_nstext_to_title("Infobox", "10", "en")
+        result = add_namespace_prefix("Infobox", "10", "en")
         assert result == "Template:Infobox"
 
     def test_with_user_namespace_ar(self):
         """Test adding user namespace prefix in Arabic"""
-        result = add_nstext_to_title("أحمد", "2", "ar")
+        result = add_namespace_prefix("أحمد", "2", "ar")
         assert result == "مستخدم:أحمد"
 
     def test_with_user_namespace_en(self):
         """Test adding user namespace prefix in English"""
-        result = add_nstext_to_title("John", "2", "en")
+        result = add_namespace_prefix("John", "2", "en")
         assert result == "User:John"
 
     def test_with_talk_namespace_ar(self):
         """Test adding talk namespace prefix in Arabic"""
-        result = add_nstext_to_title("موضوع", "1", "ar")
+        result = add_namespace_prefix("موضوع", "1", "ar")
         assert result == "نقاش:موضوع"
 
     def test_with_talk_namespace_en(self):
         """Test adding talk namespace prefix in English"""
-        result = add_nstext_to_title("Topic", "1", "en")
+        result = add_namespace_prefix("Topic", "1", "en")
         assert result == "Talk:Topic"
 
     def test_with_portal_namespace_ar(self):
         """Test adding portal namespace prefix in Arabic"""
-        result = add_nstext_to_title("علوم", "100", "ar")
+        result = add_namespace_prefix("علوم", "100", "ar")
         assert result == "بوابة:علوم"
 
     def test_with_portal_namespace_en(self):
         """Test adding portal namespace prefix in English"""
-        result = add_nstext_to_title("Science", "100", "en")
+        result = add_namespace_prefix("Science", "100", "en")
         assert result == "Portal:Science"
 
     def test_with_module_namespace_ar(self):
         """Test adding module namespace prefix in Arabic"""
-        result = add_nstext_to_title("بيانات", "828", "ar")
+        result = add_namespace_prefix("بيانات", "828", "ar")
         assert result == "وحدة:بيانات"
 
     def test_with_module_namespace_en(self):
         """Test adding module namespace prefix in English"""
-        result = add_nstext_to_title("Data", "828", "en")
+        result = add_namespace_prefix("Data", "828", "en")
         assert result == "Module:Data"
 
     def test_with_invalid_namespace(self):
         """Test with an invalid namespace number"""
-        result = add_nstext_to_title("Test", "999", "ar")
+        result = add_namespace_prefix("Test", "999", "ar")
         # When namespace is not found, ns_text is None, so it returns "None:Test"
         assert result == "Test"
 
     def test_with_empty_title(self):
         """Test with empty title string"""
-        result = add_nstext_to_title("", "14", "ar")
+        result = add_namespace_prefix("", "14", "ar")
         assert result == ""
 
     def test_default_language_is_arabic(self):
         """Test that default language is Arabic"""
-        result = add_nstext_to_title("علوم", "14")
+        result = add_namespace_prefix("علوم", "14")
         assert result == "تصنيف:علوم"
 
 
@@ -216,38 +215,3 @@ class TestSqlNew:
             db="enwiki_p",
             values=("title",),
         )
-
-
-class TestSqlNewTitleNs:
-    """Tests for sql_new_title_ns function."""
-
-    def test_maps_rows_to_namespace_titles(self, mocker):
-        """Test mapping rows to 'Namespace:Title' strings."""
-        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=True)
-        mocker.patch(
-            "src.core.api_sql.service.make_sql_connect_silent",
-            return_value=[
-                {"page_title": "Science", "page_namespace": 14},
-                {"page_title": "Test", "page_namespace": 0},
-            ],
-        )
-
-        result = sql_new_title_ns("SELECT 1", wiki="en")
-
-        assert result == ["Category:Science", "Test"]
-
-    def test_skips_incomplete_rows(self, mocker):
-        """Test that rows missing title or namespace are skipped."""
-        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=True)
-        mocker.patch(
-            "src.core.api_sql.service.make_sql_connect_silent",
-            return_value=[
-                {"page_title": "Valid", "page_namespace": 0},
-                {"page_title": "Missing NS"},
-                {"page_namespace": 0},
-            ],
-        )
-
-        result = sql_new_title_ns("SELECT 1", wiki="ar")
-
-        assert result == ["Valid"]

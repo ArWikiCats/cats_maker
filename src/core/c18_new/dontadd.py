@@ -10,7 +10,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ...config import settings
-from ..api_sql import GET_SQL, sql_new_title_ns
+from ..api_sql import GET_SQL, sql_new, add_namespace_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +87,8 @@ def from_sql():
     cats = []
 
     if GET_SQL():
-        cats = sql_new_title_ns(queries, wiki="ar", title_key="page_title", ns_key="page_namespace")
+        rows = sql_new(queries, wiki="ar", values=None)
+        cats = [add_namespace_prefix(r["page_title"], r["page_namespace"], lang="ar") for r in rows]
 
     return cats
 

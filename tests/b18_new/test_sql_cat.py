@@ -25,19 +25,10 @@ class TestGetArList:
 
         assert isinstance(result, list)
 
-    def test_uses_sql_when_enabled(self, mocker):
-        """Test that SQL is used when enabled"""
-        mocker.patch("src.core.b18_new.sql_cat.GET_SQL", return_value=True)
-        mock_sql = mocker.patch("src.core.b18_new.sql_cat.sql_new_title_ns", return_value=["صفحة1", "صفحة2"])
-
-        result = get_ar_list("تصنيف:علوم", us_sql=True)
-
-        mock_sql.assert_called_once()
-
     def test_replaces_spaces_with_underscores(self, mocker):
         """Test that spaces are replaced with underscores in parameter"""
         mocker.patch("src.core.b18_new.sql_cat.GET_SQL", return_value=True)
-        mock_sql = mocker.patch("src.core.b18_new.sql_cat.sql_new_title_ns", return_value=[])
+        mock_sql = mocker.patch("src.core.b18_new.sql_cat.sql_new", return_value=[])
 
         get_ar_list("تصنيف:علوم الحاسوب", us_sql=True)
 

@@ -4,7 +4,7 @@ import logging
 import re
 
 from ..helps import function_timer
-from .service import GET_SQL, add_nstext_to_title, sql_new
+from .service import GET_SQL, add_namespace_prefix, sql_new
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ def _fetch_ar_titles(ar_category: str) -> list[str]:
         return []
 
     rows = sql_new(_ARCAT_QUERY, wiki="ar", values=(title,))
-    return [add_nstext_to_title(row["page_title"].replace(" ", "_"), row["page_namespace"], lang="ar") for row in rows]
+    return [add_namespace_prefix(row["page_title"].replace(" ", "_"), row["page_namespace"], lang="ar") for row in rows]
 
 
 @function_timer
