@@ -1,7 +1,7 @@
-"""Public API for the wiki_sql package."""
+"""Public API for the service package."""
 
+from .service import GET_SQL, add_nstext_to_title, sql_new, sql_new_title_ns
 from .sql_bot import get_exclusive_category_titles
-from .wiki_sql import GET_SQL, add_nstext_to_title, sql_new, sql_new_title_ns
 
 __all__ = [
     "get_exclusive_category_titles",

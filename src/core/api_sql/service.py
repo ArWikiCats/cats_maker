@@ -15,70 +15,17 @@ import logging
 import os
 
 from ..helps import function_timer
-from .mysql_client import make_sql_connect_silent
+from .constants import (
+    ANALYTICS_DB_TEMPLATE,
+    DATABASE_SUFFIX,
+    NS_TEXT_AR,
+    NS_TEXT_EN,
+    SUFFIXED_WIKIS,
+    WIKI_ALIASES,
+)
+from .db_pool import make_sql_connect_silent
 
 logger = logging.getLogger(__name__)
-
-
-# ---------------------------------------------------------------------------
-# Namespace label tables
-# ---------------------------------------------------------------------------
-_WIKI_ALIASES: dict[str, str] = {
-    "wikidata": "wikidatawiki",
-    "be-x-old": "be_x_old",
-    "be_tarask": "be_x_old",
-    "be-tarask": "be_x_old",
-}
-
-_SUFFIXED_WIKIS = {"wiktionary"}  # wikis that already carry their own suffix
-
-
-NS_TEXT_AR: dict[str, str] = {
-    "0": "",
-    "1": "نقاش",
-    "2": "مستخدم",
-    "3": "نقاش المستخدم",
-    "4": "ويكيبيديا",
-    "5": "نقاش ويكيبيديا",
-    "6": "ملف",
-    "7": "نقاش الملف",
-    "10": "قالب",
-    "11": "نقاش القالب",
-    "12": "مساعدة",
-    "13": "نقاش المساعدة",
-    "14": "تصنيف",
-    "15": "نقاش التصنيف",
-    "100": "بوابة",
-    "101": "نقاش البوابة",
-    "828": "وحدة",
-    "829": "نقاش الوحدة",
-    "2600": "موضوع",
-    "1728": "فعالية",
-    "1729": "نقاش الفعالية",
-}
-
-NS_TEXT_EN: dict[str, str] = {
-    "0": "",
-    "1": "Talk",
-    "2": "User",
-    "3": "User talk",
-    "4": "Project",
-    "5": "Project talk",
-    "6": "File",
-    "7": "File talk",
-    "8": "MediaWiki",
-    "9": "MediaWiki talk",
-    "10": "Template",
-    "11": "Template talk",
-    "12": "Help",
-    "13": "Help talk",
-    "14": "Category",
-    "15": "Category talk",
-    "100": "Portal",
-    "101": "Portal talk",
-    "828": "Module",
-    "829": "Module talk",
-}
 
 
 # ---------------------------------------------------------------------------
@@ -134,14 +81,14 @@ def make_labsdb_dbs_p(wiki: str) -> tuple[str, str]:
     ('enwiki.analytics.db.svc.wikimedia.cloud', 'enwiki_p')
     """
     wiki = wiki.removesuffix("wiki").replace("-", "_")
-    wiki = _WIKI_ALIASES.get(wiki, wiki)
+    wiki = WIKI_ALIASES.get(wiki, wiki)
 
     # Append "wiki" unless the name already contains it or is a known suffixed wiki
-    if "wiki" not in wiki and not any(wiki.endswith(s) for s in _SUFFIXED_WIKIS):
+    if "wiki" not in wiki and not any(wiki.endswith(s) for s in SUFFIXED_WIKIS):
         wiki = f"{wiki}wiki"
 
-    host = f"{wiki}.analytics.db.svc.wikimedia.cloud"
-    return host, f"{wiki}_p"
+    host = ANALYTICS_DB_TEMPLATE.format(wiki=wiki)
+    return host, f"{wiki}{DATABASE_SUFFIX}"
 
 
 # ---------------------------------------------------------------------------

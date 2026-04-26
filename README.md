@@ -488,8 +488,8 @@ cats_maker_new/
 │   │   └── check_redirects.py # تصفية صفحة التحويل
 │   │
 │   ├── api_sql/            # عمليات قاعدة البيانات
-│   │   ├── wiki_sql.py     # استعلامات Wiki SQL
-│   │   └── mysql_client/   # معالجة اتصال MySQL
+│   │   ├── service.py     # استعلامات Wiki SQL
+│   │   └── db_pool/   # معالجة اتصال MySQL
 │   │
 │   ├── new_api/            # تجريد صفحة API
 │   │   ├── page.py         # فئة MainPage

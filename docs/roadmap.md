@@ -27,16 +27,16 @@ wd_bots (Wikidata) ─────────┼─> mk_cats
 
 Zero-risk changes that can be done immediately, in any order:
 
-| #   | Task                                                   | Plans            |
-| --- | ------------------------------------------------------ | ---------------- |
-| 0.1 | Add `__all__` to all `__init__.py` and submodule files | All 7            |
-| 0.2 | Remove commented-out debug code                        | All 7            |
-| 0.3 | Remove empty `__init__` methods                        | new_api          |
+| #   | Task                                                   | Plans                       |
+| --- | ------------------------------------------------------ | --------------------------- |
+| 0.1 | Add `__all__` to all `__init__.py` and submodule files | All 7                       |
+| 0.2 | Remove commented-out debug code                        | All 7                       |
+| 0.3 | Remove empty `__init__` methods                        | new_api                     |
 | 0.4 | Remove dead functions (`decode_bytes`, unused imports) | api_sql (**done**), new_api |
-| 0.5 | Fix mutable default args (`values=[]` → `values=()`)   | api_sql (**done**) |
-| 0.6 | Replace mutable lists with tuples/frozensets           | mk_cats, c18_new |
-| 0.7 | Add `__pycache__` to `.gitignore`                      | mk_cats, c18_new |
-| 0.8 | Run `ruff` across all modules, fix auto-fixable issues | All 7            |
+| 0.5 | Fix mutable default args (`values=[]` → `values=()`)   | api_sql (**done**)          |
+| 0.6 | Replace mutable lists with tuples/frozensets           | mk_cats, c18_new            |
+| 0.7 | Add `__pycache__` to `.gitignore`                      | mk_cats, c18_new            |
+| 0.8 | Run `ruff` across all modules, fix auto-fixable issues | All 7                       |
 
 **Estimated effort:** 1-2 hours. **Goal:** Get type-checking and linting baseline passing.
 
@@ -59,20 +59,20 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Verification:** `pytest tests/wiki_api/` passes, `ruff check src/core/wiki_api` is clean.
 
-### Step 1.2 — `api_sql` refactoring *(Quick Wins done; Phases 1-4 pending)*
+### Step 1.2 — `api_sql` refactoring _(Phases 1, 2, 4, 5 done; Phase 3 pending)_
 
 **Why second:** Database layer needed by business logic modules. No dependency on `wiki_api`.
 
 **Execute per plan:** `api_sql_refactor_plan.md`
 
-| Phase   | Status       | Notes                                                                         |
-| ------- | ------------ | ----------------------------------------------------------------------------- |
-| Quick Wins | Done      | `__all__` added, mutable default fixed, dead code removed, formatting done    |
-| Phase 1 | Pending      | `constants.py` not yet created; namespace dicts still in `wiki_sql.py`        |
-| Phase 2 | Partial      | `GET_SQL()` guards removed from helpers; still bypasses `sql_new` for queries |
-| Phase 3 | Pending      | No file split yet (`client.py`, `gateway.py`, `queries.py`)                   |
-| Phase 4 | Pending      | `fetchall` still unconditional; no connection timeout                         |
-| Phase 5 | Partial      | 48/48 tests pass; ≥ 85% coverage not yet verified                             |
+| Phase      | Status  | Notes                                                                             |
+| ---------- | ------- | --------------------------------------------------------------------------------- |
+| Quick Wins | Done    | `__all__` added, mutable default fixed, dead code removed, formatting done        |
+| Phase 1    | Done    | `constants.py` created; namespace dicts and config extracted                      |
+| Phase 2    | Done    | Queries route through `sql_new`; `add_nstext_to_title` replaces `_with_ns_prefix` |
+| Phase 3    | Pending | No file rename shims yet (`client.py`, `gateway.py`, `queries.py`)                |
+| Phase 4    | Done    | `fetchall` skipped for non-SELECT; connection timeouts added                      |
+| Phase 5    | Done    | 78/78 tests pass; 99% coverage                                                    |
 
 **Verification:** `pytest tests/api_sql/` passes with >= 85% coverage.
 
@@ -190,7 +190,8 @@ mypy src/core/ --ignore-missing-imports --statistics
 #    wiki_api_refactor_plan.md → Phase 1
 
 # 3. Build shared infrastructure
-#    api_sql: Quick Wins done; next: constants.py → type hints → DRY → structural split
+#    api_sql: constants.py done; DRY done; fetchall fix done
+#    utils:   shared constants.py + utils/text.py
 #    utils:   shared constants.py + utils/text.py
 
 # 4. Refactor upstream layers in order:

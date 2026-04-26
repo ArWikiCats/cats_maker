@@ -1,7 +1,7 @@
 """
-Tests for src/core/api_sql/mysql_client.py
+Tests for src/core/api_sql/db_pool.py
 
-اختبارات لملف mysql_client.py - استعلامات SQL
+اختبارات لملف db_pool.py - استعلامات SQL
 
 This module tests:
 - _decode() - Decode bytes to string
@@ -10,7 +10,7 @@ This module tests:
 
 import pytest
 
-from src.core.api_sql.mysql_client import (
+from src.core.api_sql.db_pool import (
     _decode,
     decode_bytes_in_list,
 )

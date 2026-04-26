@@ -4,8 +4,7 @@ import logging
 import re
 
 from ..helps import function_timer
-from .mysql_client import make_sql_connect_silent
-from .wiki_sql import GET_SQL, NS_TEXT_AR, make_labsdb_dbs_p
+from .service import GET_SQL, add_nstext_to_title, sql_new
 
 logger = logging.getLogger(__name__)
 
@@ -56,15 +55,6 @@ def _normalise_category_title(title: str, prefix_pattern: str) -> str:
     return title.replace(" ", "_")
 
 
-def _with_ns_prefix(title: str, ns: int | str) -> str:
-    """Prepend the Arabic namespace label when namespace != 0."""
-    ns_str = str(ns)
-    prefix = NS_TEXT_AR.get(ns_str, "")
-    if prefix:
-        return f"{prefix}:{title}"
-    return title
-
-
 # ---------------------------------------------------------------------------
 # Fetchers
 # ---------------------------------------------------------------------------
@@ -77,10 +67,8 @@ def _fetch_ar_titles(ar_category: str) -> list[str]:
     if not title:
         return []
 
-    host, db_p = make_labsdb_dbs_p("ar")
-    rows = make_sql_connect_silent(_ARCAT_QUERY, host=host, db=db_p, values=(title,))
-
-    return [_with_ns_prefix(row["page_title"].replace(" ", "_"), row["page_namespace"]) for row in rows]
+    rows = sql_new(_ARCAT_QUERY, wiki="ar", values=(title,))
+    return [add_nstext_to_title(row["page_title"].replace(" ", "_"), row["page_namespace"], lang="ar") for row in rows]
 
 
 @function_timer
@@ -93,9 +81,7 @@ def _fetch_en_titles(en_category: str) -> list[str]:
     if not title:
         return []
 
-    host, db_p = make_labsdb_dbs_p("enwiki")
-    rows = make_sql_connect_silent(_ENCAT_QUERY, host=host, db=db_p, values=(title,))
-
+    rows = sql_new(_ENCAT_QUERY, wiki="enwiki", values=(title,))
     titles = sorted(row["ll_title"] for row in rows)
     logger.debug("_fetch_en_titles: %d titles for '%s'", len(titles), title)
     return titles

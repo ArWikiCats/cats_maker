@@ -1,14 +1,15 @@
 """
-Tests for src/core/api_sql/wiki_sql.py
+Tests for src/core/api_sql/service.py
 
 This module tests namespace handling and SQL query functions for MediaWiki.
 """
 
-from src.core.api_sql.wiki_sql import (
-    NS_TEXT_AR,
-    NS_TEXT_EN,
+from src.core.api_sql.constants import NS_TEXT_AR, NS_TEXT_EN
+from src.core.api_sql.service import (
     add_nstext_to_title,
     make_labsdb_dbs_p,
+    sql_new,
+    sql_new_title_ns,
 )
 
 
@@ -187,3 +188,66 @@ class TestMakeLabsdbDbsP:
         host, db_p = make_labsdb_dbs_p("commons")
         assert "commonswiki" in host
         assert "commonswiki_p" == db_p
+
+
+class TestSqlNew:
+    """Tests for sql_new function."""
+
+    def test_returns_empty_list_when_sql_disabled(self, mocker):
+        """Test that sql_new returns [] when GET_SQL is False."""
+        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=False)
+        result = sql_new("SELECT 1", wiki="ar")
+        assert result == []
+
+    def test_routes_to_make_sql_connect_silent(self, mocker):
+        """Test that sql_new routes through make_sql_connect_silent."""
+        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=True)
+        mock_connect = mocker.patch(
+            "src.core.api_sql.service.make_sql_connect_silent",
+            return_value=[{"col": "val"}],
+        )
+
+        result = sql_new("SELECT * FROM page", wiki="en", values=("title",))
+
+        assert result == [{"col": "val"}]
+        mock_connect.assert_called_once_with(
+            "SELECT * FROM page",
+            host="enwiki.analytics.db.svc.wikimedia.cloud",
+            db="enwiki_p",
+            values=("title",),
+        )
+
+
+class TestSqlNewTitleNs:
+    """Tests for sql_new_title_ns function."""
+
+    def test_maps_rows_to_namespace_titles(self, mocker):
+        """Test mapping rows to 'Namespace:Title' strings."""
+        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=True)
+        mocker.patch(
+            "src.core.api_sql.service.make_sql_connect_silent",
+            return_value=[
+                {"page_title": "Science", "page_namespace": 14},
+                {"page_title": "Test", "page_namespace": 0},
+            ],
+        )
+
+        result = sql_new_title_ns("SELECT 1", wiki="en")
+
+        assert result == ["Category:Science", "Test"]
+
+    def test_skips_incomplete_rows(self, mocker):
+        """Test that rows missing title or namespace are skipped."""
+        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=True)
+        mocker.patch(
+            "src.core.api_sql.service.make_sql_connect_silent",
+            return_value=[
+                {"page_title": "Valid", "page_namespace": 0},
+                {"page_title": "Missing NS"},
+                {"page_namespace": 0},
+            ],
+        )
+
+        result = sql_new_title_ns("SELECT 1", wiki="ar")
+
+        assert result == ["Valid"]

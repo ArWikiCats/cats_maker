@@ -8,6 +8,7 @@ from typing import Any
 import pymysql
 from pymysql.cursors import DictCursor
 
+from .constants import REPLICA_CNF_FILENAME
 from .exceptions import (
     DatabaseConnectionError,
     DatabaseError,
@@ -29,11 +30,13 @@ def _build_db_config(host: str, db: str) -> dict[str, Any]:
     return {
         "host": host,
         "database": db,
-        "read_default_file": str(Path.home() / "replica.my.cnf"),
+        "read_default_file": str(Path.home() / REPLICA_CNF_FILENAME),
         "charset": "utf8mb4",
         "use_unicode": True,
         "autocommit": True,
         "cursorclass": DictCursor,
+        "connect_timeout": 10,
+        "read_timeout": 30,
     }
 
 
@@ -42,8 +45,16 @@ def _build_db_config(host: str, db: str) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
+def _is_select_query(query: str) -> bool:
+    """Return True if *query* appears to be a SELECT statement."""
+    return query.lstrip().upper().startswith("SELECT")
+
+
 def _run_query(query: str, host: str, db: str, values: tuple | None) -> list[dict]:
     """Connect, execute *query*, and return all rows.
+
+    For non-SELECT statements (INSERT/UPDATE/DELETE) an empty list is
+    returned instead of calling ``fetchall``, which would raise.
 
     Raises:
         DatabaseConnectionError: connection failed.
@@ -64,6 +75,9 @@ def _run_query(query: str, host: str, db: str, values: tuple | None) -> list[dic
         except pymysql.Error as exc:
             logger.error("Query execution failed: %s", exc)
             raise QueryExecutionError("Query failed") from exc
+
+        if not _is_select_query(query):
+            return []
 
         try:
             return cursor.fetchall()
