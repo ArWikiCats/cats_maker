@@ -141,54 +141,54 @@ class TestMakeLabsdbDbsP:
 
     def test_with_ar_wiki(self):
         """Test generating host and db for Arabic Wikipedia"""
-        host, dbs_p = make_labsdb_dbs_p("ar")
+        host, db_p = make_labsdb_dbs_p("ar")
         assert host == "arwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "arwiki_p"
+        assert db_p == "arwiki_p"
 
     def test_with_en_wiki(self):
         """Test generating host and db for English Wikipedia"""
-        host, dbs_p = make_labsdb_dbs_p("en")
+        host, db_p = make_labsdb_dbs_p("en")
         assert host == "enwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "enwiki_p"
+        assert db_p == "enwiki_p"
 
     def test_with_wiki_suffix(self):
         """Test handling wiki suffix"""
-        host, dbs_p = make_labsdb_dbs_p("arwiki")
+        host, db_p = make_labsdb_dbs_p("arwiki")
         assert host == "arwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "arwiki_p"
+        assert db_p == "arwiki_p"
 
     def test_with_wikidata(self):
         """Test special handling for Wikidata"""
-        host, dbs_p = make_labsdb_dbs_p("wikidata")
+        host, db_p = make_labsdb_dbs_p("wikidata")
         assert host == "wikidatawiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "wikidatawiki_p"
+        assert db_p == "wikidatawiki_p"
 
     def test_with_be_tarask(self):
         """Test special handling for Belarusian (Taraškievica)"""
-        host, dbs_p = make_labsdb_dbs_p("be-tarask")
+        host, db_p = make_labsdb_dbs_p("be-tarask")
         assert host == "be_x_oldwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "be_x_oldwiki_p"
+        assert db_p == "be_x_oldwiki_p"
 
     def test_with_be_x_old(self):
         """Test special handling for be-x-old"""
-        host, dbs_p = make_labsdb_dbs_p("be-x-old")
+        host, db_p = make_labsdb_dbs_p("be-x-old")
         assert host == "be_x_oldwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "be_x_oldwiki_p"
+        assert db_p == "be_x_oldwiki_p"
 
     def test_with_hyphenated_wiki(self):
         """Test handling hyphenated wiki names"""
-        host, dbs_p = make_labsdb_dbs_p("zh-yue")
+        host, db_p = make_labsdb_dbs_p("zh-yue")
         assert "_" in host  # hyphen should be converted to underscore
-        assert "wiki" in dbs_p
+        assert "wiki" in db_p
 
     def test_with_wiktionary(self):
         """Test handling wiktionary"""
-        host, dbs_p = make_labsdb_dbs_p("arwiktionary")
+        host, db_p = make_labsdb_dbs_p("arwiktionary")
         assert host == "arwiktionary.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "arwiktionary_p"
+        assert db_p == "arwiktionary_p"
 
     def test_with_commons(self):
         """Test handling commons wiki"""
-        host, dbs_p = make_labsdb_dbs_p("commons")
+        host, db_p = make_labsdb_dbs_p("commons")
         assert "commonswiki" in host
-        assert "commonswiki_p" == dbs_p
+        assert "commonswiki_p" == db_p
