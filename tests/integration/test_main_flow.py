@@ -210,8 +210,8 @@ class TestModuleInteraction:
     def test_b18_new_integration_with_sql(self, mocker):
         """Test that b18_new module integrates with SQL queries."""
         # Mock database connection
-        mock_connect = mocker.patch("src.core.api_sql.db_pool._run_query")
-        mock_connect.return_value = None
+        mock_connect = mocker.patch("src.core.api_sql_new.db_pool.db_manager.execute_query")
+        mock_connect.return_value = []
 
         # This tests that the modules can be imported and interact
         from src.core.b18_new import sql_cat
