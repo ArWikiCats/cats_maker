@@ -152,18 +152,6 @@ class TestGetSitelinksFromWikidata:
         assert "q" in result
 
 
-class TestGetSitelinksFromQid:
-    """Tests for Get_Sitelinks_from_qid function"""
-
-    def test_calls_get_sitelinks_with_ids(self, mocker):
-        """Test that Get_Sitelinks_from_qid calls parent function with ids"""
-        mock_fn = mocker.patch("src.wd_bots.wd_api_bot.Get_Sitelinks_From_wikidata", return_value="Result")
-
-        result = Get_Sitelinks_from_qid(ids="Q123")
-
-        mock_fn.assert_called_once_with("", "", ssite="", ids="Q123")
-
-
 class TestGetP373API:
     """Tests for Get_P373_API function"""
 

@@ -112,8 +112,18 @@ def Get_Sitelinks_From_wikidata(
     return table
 
 
-def Get_Sitelinks_from_qid(ids=""):
-    return Get_Sitelinks_From_wikidata("", "", ssite="", ids=ids)
+def Get_Sitelinks_from_qid(ids):
+
+    params = {
+        "action": "wbgetentities",
+        "props": "sitelinks",
+        "normalize": 1,
+        "ids": ids,
+    }
+
+    table = Get_infos_wikidata(params)
+
+    return table
 
 
 def Get_P373_API(q, titles="", sites=""):
