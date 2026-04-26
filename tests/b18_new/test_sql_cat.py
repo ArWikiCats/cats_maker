@@ -20,7 +20,6 @@ class TestGetArList:
     def test_returns_list(self, mocker):
         """Test that function returns a list"""
         mocker.patch("src.b18_new.sql_cat.GET_SQL", return_value=False)
-        mocker.patch("src.b18_new.sql_cat.get_ar_list_from_cat", return_value=[])
 
         result = get_ar_list("تصنيف:علوم")
 
@@ -34,15 +33,6 @@ class TestGetArList:
         result = get_ar_list("تصنيف:علوم", us_sql=True)
 
         mock_sql.assert_called_once()
-
-    def test_falls_back_to_api_when_sql_disabled(self, mocker):
-        """Test fallback to API when SQL is disabled"""
-        mocker.patch("src.b18_new.sql_cat.GET_SQL", return_value=False)
-        mock_api = mocker.patch("src.b18_new.sql_cat.get_ar_list_from_cat", return_value=["صفحة1"])
-
-        result = get_ar_list("تصنيف:علوم")
-
-        mock_api.assert_called_once()
 
     def test_replaces_spaces_with_underscores(self, mocker):
         """Test that spaces are replaced with underscores in parameter"""

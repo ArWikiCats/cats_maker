@@ -159,7 +159,6 @@ class TestRetrieveArListFromCategory:
         """Test that Categorized_Page_Generator is called"""
         mock_cpg = mocker.patch("src.c18_new.cats_tools.ar_from_en.Categorized_Page_Generator", return_value=[])
         mocker.patch("src.c18_new.cats_tools.ar_from_en.get_arpage_inside_encat", return_value=[])
-        mocker.patch("src.c18_new.cats_tools.ar_from_en.get_ar_list_from_cat", return_value=[])
         mocker.patch("src.c18_new.cats_tools.ar_from_en.Get_ar_list_from_en_list", return_value=[])
 
         retrieve_ar_list_from_category("Science", "Science")
@@ -170,7 +169,6 @@ class TestRetrieveArListFromCategory:
         """Test that pages from get_arpage_inside_encat are added"""
         mocker.patch("src.c18_new.cats_tools.ar_from_en.Categorized_Page_Generator", return_value=[])
         mocker.patch("src.c18_new.cats_tools.ar_from_en.get_arpage_inside_encat", return_value=["صفحة_عربية"])
-        mocker.patch("src.c18_new.cats_tools.ar_from_en.get_ar_list_from_cat", return_value=[])
         mock_get_ar = mocker.patch("src.c18_new.cats_tools.ar_from_en.Get_ar_list_from_en_list", return_value=[])
 
         retrieve_ar_list_from_category("Science", "Science")

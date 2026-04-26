@@ -13,7 +13,7 @@ from src.b18_new.cat_tools_enlist2 import (
 
 
 class TestGetArListFromCat:
-    """Tests for get_ar_list_from_cat function"""
+    """Tests"""
 
     def test_returns_list(self, mocker):
         """Test that function returns a list"""
@@ -104,7 +104,6 @@ class TestMakeLitApiWay:
         """Test that Categorized_Page_Generator is called"""
         mock_cpg = mocker.patch("src.b18_new.cat_tools_enlist2.Categorized_Page_Generator", return_value=[])
         mocker.patch("src.b18_new.cat_tools_enlist2.get_arpage_inside_encat", return_value=[])
-        mocker.patch("src.b18_new.cat_tools_enlist2.get_ar_list_from_cat", return_value=[])
 
         MakeLitApiWay("Science")
 
@@ -114,7 +113,6 @@ class TestMakeLitApiWay:
         """Test that Category: prefix is stripped"""
         mock_cpg = mocker.patch("src.b18_new.cat_tools_enlist2.Categorized_Page_Generator", return_value=[])
         mocker.patch("src.b18_new.cat_tools_enlist2.get_arpage_inside_encat", return_value=[])
-        mocker.patch("src.b18_new.cat_tools_enlist2.get_ar_list_from_cat", return_value=[])
 
         MakeLitApiWay("[[Category:Science]]")
 
@@ -140,7 +138,6 @@ class TestMakeLitApiWay:
         """Test that False is returned when no pages found"""
         mocker.patch("src.b18_new.cat_tools_enlist2.Categorized_Page_Generator", return_value=[])
         mocker.patch("src.b18_new.cat_tools_enlist2.get_arpage_inside_encat", return_value=[])
-        mocker.patch("src.b18_new.cat_tools_enlist2.get_ar_list_from_cat", return_value=[])
 
         result = MakeLitApiWay("EmptyCategory")
 
