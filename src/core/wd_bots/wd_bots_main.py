@@ -4,17 +4,13 @@
 """
 
 import functools
-import json
 import logging
-import re
 import time
-
-from src.core.wd_bots.utils import do_lag, find_lag
 
 from ...config import settings
 from ..new_api.pagenew import password, username
 from ..new_api.super.super_login import Login
-from .utils import lag_bot
+from .utils import lag_bot, do_lag, find_lag
 
 logger = logging.getLogger(__name__)
 
