@@ -271,7 +271,7 @@ def _sql_connect_pymysql(
         return []
 ```
 
-**5.4.2 Fix mutable default argument in `sql_new`**
+**5.4.2 Fix mutable default argument in `sql_new`** *(DONE — changed to `values: tuple | list = ()`)*
 
 `wiki_sql.py:158`:
 
@@ -296,7 +296,7 @@ Consider adding `connect_timeout=10` and `read_timeout=30` to `load_db_config` f
 
 ---
 
-### Phase 5 — Testing & Validation
+### Phase 5 — Testing & Validation *(PARTIALLY DONE — 48 tests pass, >=85% coverage not verified)*
 
 **5.5.1 Update existing tests**
 
