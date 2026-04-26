@@ -1,4 +1,6 @@
-"""Shared constants for the api_sql package."""
+"""Shared constants for the wiki_sql package."""
+
+from __future__ import annotations
 
 # ---------------------------------------------------------------------------
 # Wiki code → database name special cases
@@ -10,8 +12,8 @@ WIKI_ALIASES: dict[str, str] = {
     "be-tarask": "be_x_old",
 }
 
-# Suffixes that should not get "wiki" appended
-SUFFIXED_WIKIS: set[str] = {"wiktionary"}
+# Suffixes that should never have "wiki" appended
+SUFFIXED_WIKIS: frozenset[str] = frozenset({"wiktionary"})
 
 # ---------------------------------------------------------------------------
 # Namespace label tables
@@ -66,16 +68,16 @@ NS_TEXT_EN: dict[str, str] = {
 # ---------------------------------------------------------------------------
 # Database connection templates
 # ---------------------------------------------------------------------------
-ANALYTICS_DB_TEMPLATE = "{wiki}.analytics.db.svc.wikimedia.cloud"
-DATABASE_SUFFIX = "_p"
-REPLICA_CNF_FILENAME = "replica.my.cnf"
+ANALYTICS_DB_TEMPLATE: str = "{wiki}.analytics.db.svc.wikimedia.cloud"
+DATABASE_SUFFIX: str = "_p"
+REPLICA_CNF_FILENAME: str = "replica.my.cnf"
 
 __all__ = [
-    "WIKI_ALIASES",
-    "SUFFIXED_WIKIS",
-    "NS_TEXT_AR",
-    "NS_TEXT_EN",
     "ANALYTICS_DB_TEMPLATE",
     "DATABASE_SUFFIX",
+    "NS_TEXT_AR",
+    "NS_TEXT_EN",
     "REPLICA_CNF_FILENAME",
+    "SUFFIXED_WIKIS",
+    "WIKI_ALIASES",
 ]
