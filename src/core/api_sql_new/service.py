@@ -1,10 +1,11 @@
 """Business Logic Service."""
+
 import logging
 import re
 from typing import List
 
-from .repository import CategoryRepository
 from .config import ConfigLoader
+from .repository import CategoryRepository
 
 logger = logging.getLogger(__name__)
 
