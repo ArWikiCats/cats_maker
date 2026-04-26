@@ -8,9 +8,7 @@ import sys
 from pathlib import Path
 
 from ..b18_new import (
-    add_SubSub,
     get_ar_list_from_en,
-    get_SubSub_keys,
     make_ar_list_newcat2,
     validate_categories_for_new_cat,
 )
@@ -113,13 +111,8 @@ def scan_ar_title(title):
     cat3 = str(title)
     if cat3 in _new_cat_done.keys():
         _new_cat_done[cat3] += 1
-        if settings.category.we_try and cat3 in get_SubSub_keys():
-            logger.debug(f'<<lightred>>2070:<<lightpurple>>new trying with cat: "{title}"')
-            _new_cat_done[cat3] += 1
-            return True
-        else:
-            logger.debug(f'<<lightblue>> We tried {_new_cat_done[cat3]} times to/created title:<<lightred>>"{cat3}".')
-            return False
+        logger.debug(f'<<lightblue>> We tried {_new_cat_done[cat3]} times to/created title:<<lightred>>"{cat3}".')
+        return False
     else:
         if cat3 in _new_cat_done.keys():
             logger.debug(f'<<lightred>>2070:<<lightpurple>>new trying with cat: "{title}"')
@@ -233,13 +226,12 @@ def _finalize_category_creation(
     callback,
 ) -> list:
     """
-    Finalize category creation: add members, update SubSub, and log to Wikidata.
+    Finalize category creation: add members, and log to Wikidata.
 
     Returns:
         list: English categories of the new category
     """
     add_to_final_list(members, ar_title, callback=callback)
-    add_SubSub(en_cats_of_new_cat, created_category)
 
     if validate_categories_for_new_cat(ar_title, en_page_title, wiki="en"):
         listen = make_ar_list_newcat2(ar_title, en_page_title, us_sql=True) or []
@@ -330,7 +322,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
         add_labels(qid, ar_title, "ar")
         return en_cats_of_new_cat
 
-    # Finalize: add members, update SubSub, log to Wikidata
+    # Finalize: add members, log to Wikidata
     return _finalize_category_creation(
         created_category.page_title,
         ar_title,

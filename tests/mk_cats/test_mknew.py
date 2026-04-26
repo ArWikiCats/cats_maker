@@ -110,25 +110,6 @@ class TestScanArTitle:
         # Cleanup
         mknew._new_cat_done.clear()
 
-    def test_returns_false_for_duplicate_without_subsub(self, mocker):
-        """Test that scan_ar_title returns False for duplicate without SubSub."""
-        from src.mk_cats import mknew
-
-        # Clear state
-        mknew._already_created.clear()
-        mknew._new_cat_done.clear()
-
-        # First call - should return True
-        result1 = mknew.scan_ar_title("تصنيف:مكرر")
-        assert result1 is True
-
-        # Second call - should return False
-        result2 = mknew.scan_ar_title("تصنيف:مكرر")
-        assert result2 is False
-
-        # Cleanup
-        mknew._new_cat_done.clear()
-
 
 class TestMakeAr:
     """Tests for make_ar function."""
@@ -459,7 +440,6 @@ class TestMakeArMinMembers:
             "src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
         )
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
-        mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
         mocker.patch("src.mk_cats.mknew.log_to_wikidata")
 
@@ -498,7 +478,6 @@ class TestMakeArMinMembers:
             "src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
         )
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
-        mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
         mocker.patch("src.mk_cats.mknew.log_to_wikidata")
 
@@ -563,7 +542,6 @@ class TestMakeArMinMembers:
             "src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
         )
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
-        mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
         mocker.patch("src.mk_cats.mknew.log_to_wikidata")
 
