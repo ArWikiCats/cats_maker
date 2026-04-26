@@ -13,12 +13,12 @@ import pymysql
 import pymysql.cursors
 import pytest
 
+from src.core.api_sql.db_pool import _decode, _is_select_query, _run_query, make_sql_connect_silent
 from src.core.api_sql.exceptions import (
     DatabaseConnectionError,
     DatabaseFetchError,
     QueryExecutionError,
 )
-from src.core.api_sql.db_pool import _decode, _is_select_query, _run_query, make_sql_connect_silent
 
 
 @pytest.fixture
