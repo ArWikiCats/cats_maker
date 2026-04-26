@@ -73,13 +73,6 @@ class TestWikipediaConfig:
         config = WikipediaConfig()
         assert config.en_code == "en"
 
-    def test_default_user_agent(self):
-        """Test default user agent is set."""
-        from src.config.settings import WikipediaConfig
-
-        config = WikipediaConfig()
-        assert "Himo bot" in config.user_agent
-
     def test_default_timeout(self):
         """Test default timeout is 10."""
         from src.config.settings import WikipediaConfig

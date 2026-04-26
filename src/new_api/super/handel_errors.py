@@ -12,7 +12,13 @@ class HANDEL_ERRORS:
     def __init__(self):
         pass
 
-    def handel_err(self, error: dict, function: str = "", params: dict = None, do_error: bool = True):
+    def handel_err(
+        self,
+        error: dict,
+        function: str = "",
+        params: dict = None,
+        do_error: bool = True,
+    ):
         """Handle errors based on the provided error dictionary.
 
         This function processes an error dictionary and performs actions based

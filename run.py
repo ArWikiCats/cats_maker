@@ -37,7 +37,7 @@ new_all_tab = {1: False}
 
 def new_all_work_on_title(title, **Kwargs):
     if new_all:
-        # ---
+
         new_all.work_on_title(title=title, dont_create=True, **Kwargs)
 
 
@@ -54,32 +54,32 @@ def get_url_result(url):
 
 def get_result(num):
     url = f"https://quarry.wmcloud.org/run/{str(num)}/output/0/json"
-    # ---
+
     result = get_url_result(url)
-    # ---
+
     rows = []
-    # ---
+
     try:
         jsons = json.loads(result)
         rows = jsons["rows"]
     except json.decoder.JSONDecodeError:
         logging.warning(f" json.decoder.JSONDecodeError url {url}")
-    # ---
+
     return rows
 
 
 def get_quarry_result(number, get_rows=None):
-    # ---
+
     logger.info(f"Get quarry result from number: {number}")
-    # ---
+
     results = get_result(number)
-    # ---
+
     if get_rows == 1:
         return [x[0] for x in results]
-    # ---
+
     if get_rows == 2:
         return {x[0]: x[1] for x in results}
-    # ---
+
     return results
 
 

@@ -29,7 +29,7 @@ class TestArMakeLab:
 
     def test_returns_empty_when_filter_fails(self, mocker):
         """Test that ar_make_lab returns empty string when filter_cat fails."""
-        mocker.patch("src.mk_cats.mknew.filter_en.filter_cat", return_value=False)
+        mocker.patch("src.mk_cats.mknew.filter_cat", return_value=False)
 
         from src.mk_cats.mknew import ar_make_lab
 
@@ -39,7 +39,7 @@ class TestArMakeLab:
 
     def test_returns_empty_when_no_resolver(self, mocker):
         """Test that ar_make_lab returns empty when resolve_arabic_category_label is None."""
-        mocker.patch("src.mk_cats.mknew.filter_en.filter_cat", return_value=True)
+        mocker.patch("src.mk_cats.mknew.filter_cat", return_value=True)
         mocker.patch("src.mk_cats.mknew.resolve_arabic_category_label", None)
 
         from src.mk_cats.mknew import ar_make_lab
@@ -50,7 +50,7 @@ class TestArMakeLab:
 
     def test_returns_label_when_resolver_exists(self, mocker):
         """Test that ar_make_lab returns label when resolver exists."""
-        mocker.patch("src.mk_cats.mknew.filter_en.filter_cat", return_value=True)
+        mocker.patch("src.mk_cats.mknew.filter_cat", return_value=True)
         mock_resolver = MagicMock(return_value="علوم")
         mocker.patch("src.mk_cats.mknew.resolve_arabic_category_label", mock_resolver)
 
@@ -461,7 +461,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
         mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
-        mocker.patch("src.mk_cats.mknew.to_wd.Log_to_wikidata")
+        mocker.patch("src.mk_cats.mknew.Log_to_wikidata")
 
         result = mknew.make_ar("Category:Science", "علوم")
 
@@ -500,7 +500,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
         mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
-        mocker.patch("src.mk_cats.mknew.to_wd.Log_to_wikidata")
+        mocker.patch("src.mk_cats.mknew.Log_to_wikidata")
 
         result = mknew.make_ar("Category:Science", "علوم")
 
@@ -565,7 +565,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.add_to_final_list")
         mocker.patch("src.mk_cats.mknew.add_SubSub")
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
-        mocker.patch("src.mk_cats.mknew.to_wd.Log_to_wikidata")
+        mocker.patch("src.mk_cats.mknew.Log_to_wikidata")
 
         result = mknew.make_ar("Category:Science", "علوم")
 

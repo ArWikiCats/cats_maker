@@ -1,6 +1,5 @@
-# ---
 """ """
-# ---
+
 import functools
 import os
 
@@ -25,12 +24,10 @@ def load_main_api(lang="ar", family="wikipedia") -> ALL_APIS:
 
 
 main_api = load_main_api()
-NEW_API = main_api.NEW_API
 MainPage = main_api.MainPage
 CatDepth = main_api.CatDepth
 
 __all__ = [
     "MainPage",
-    "NEW_API",
     "CatDepth",
 ]

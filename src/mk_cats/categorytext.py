@@ -1,33 +1,33 @@
 #!/usr/bin/python3
 """ """
-from ..new_api.pagenew import load_main_api
+from ..new_api import load_main_api
 from ..temp import main_make_temp_no_title
-from ..wd_bots.wd_api_bot import Get_P373_API
+from ..wd_bots import Get_P373_API
 from .categorytext_data import LocalLanguageLinks, category_mapping
 from .utils import portal_en_to_ar_lower
 
 
 def get_page_link_data(title: str, sitecode: str, ns: int = 100) -> list:
-    # ---
+
     api = load_main_api(sitecode)
     page = api.MainPage(title)
-    # ---
+
     json1 = page.page_links()
-    # ---
+
     if not json1:
         return []
-    # ---
+
     data = []
-    # ---
+
     # [{'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True}, {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}]
-    # ---
+
     for cx in json1:
         page_ns = int(cx.get("ns"))
         if not cx.get("title") or not cx.get("exists"):
             continue
         if page_ns == ns:
             data.append(cx.get("title"))
-    # ---
+
     return data
 
 
@@ -78,7 +78,7 @@ def generate_portal_content(title, enca, return_list=False):
 
 def generate_category_text(enca, title, Qid):
     ff = main_make_temp_no_title(enca, title)
-    # ---
+
     text = ""
     text += generate_portal_content(title, enca)
     text += "{{نسخ:#لوموجود:{{نسخ:اسم_الصفحة}}|{{مقالة تصنيف}}|}}\n"

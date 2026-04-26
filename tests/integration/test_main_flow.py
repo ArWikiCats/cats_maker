@@ -232,10 +232,10 @@ class TestModuleInteraction:
 
     def test_wd_bots_integration_with_get_bots(self, mocker):
         """Test that wd_bots module functions integrate properly."""
-        from src.wd_bots import get_bots
+        from src.wd_bots import wd_api_bot
 
         # Mock the underlying API call
-        mock_api = mocker.patch("src.wd_bots.get_bots.Get_infos_wikidata")
+        mock_api = mocker.patch("src.wd_bots.wd_api_bot.Get_infos_wikidata")
         mock_api.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -248,7 +248,7 @@ class TestModuleInteraction:
         }
 
         # Test get_sitelinks function (mocking at the right level)
-        mock_sitelinks = mocker.patch("src.wd_bots.get_bots.Get_Sitelinks_From_wikidata")
+        mock_sitelinks = mocker.patch("src.wd_bots.wd_api_bot.Get_Sitelinks_From_wikidata")
         mock_sitelinks.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -256,7 +256,7 @@ class TestModuleInteraction:
             }
         }
 
-        result = get_bots.Get_Sitelinks_From_wikidata("en", "Science")
+        result = wd_api_bot.Get_Sitelinks_From_wikidata("en", "Science")
 
         assert result is not None
 

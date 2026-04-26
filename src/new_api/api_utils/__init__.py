@@ -22,21 +22,8 @@ change_codes = {
 }
 
 
-@lru_cache(maxsize=1)
-def default_user_agent():
-    tool = os.getenv("HOME")
-    tool = tool.split("/")[-1] if tool else "himo"
-    # ---
-    li = f"{tool} bot/1.0 (https://{tool}.toolforge.org/; tools.{tool}@toolforge.org)"
-    # ---
-    # logger.debug(f": {li}")
-    # ---
-    return li
-
-
 __all__ = [
     "ASK_BOT",
     "change_codes",
-    "default_user_agent",
     "bot_May_Edit",
 ]

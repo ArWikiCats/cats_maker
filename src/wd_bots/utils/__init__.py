@@ -5,10 +5,14 @@ Utilities package
 This package contains utility modules.
 """
 
-import logging
+from . import lag_bot
+from .lag_bot import bad_lag, do_lag, find_lag
+from .out_json import outbot_json
 
-from . import handle_wd_errors, lag_bot, out_json
-
-logger = logging.getLogger(__name__)
-
-__all__ = ["logger", "lag_bot", "handle_wd_errors", "out_json"]
+__all__ = [
+    "lag_bot",
+    "find_lag",
+    "bad_lag",
+    "do_lag",
+    "outbot_json",
+]

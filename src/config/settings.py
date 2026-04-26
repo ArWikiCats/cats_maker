@@ -33,6 +33,12 @@ def _safe_int(value: str, default: int) -> int:
         return default
 
 
+def default_user_agent() -> str:
+    home = (os.getenv("HOME") or "").rstrip("/")
+    tool = home.rsplit("/", 1)[-1] or "himo"
+    return f"{tool} bot/1.0 (https://{tool}.toolforge.org/; tools.{tool}@toolforge.org)"
+
+
 @dataclass
 class WikipediaConfig:
     """Configuration for Wikipedia API connections.
@@ -50,7 +56,7 @@ class WikipediaConfig:
     ar_code: str = "ar"
     en_family: str = "wikipedia"
     en_code: str = "en"
-    user_agent: str = "Himo bot/1.0 (https://himo.toolforge.org/; tools.himo@toolforge.org)"
+    user_agent: str = default_user_agent()
     default_timeout: int = 10
 
 

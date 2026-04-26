@@ -15,15 +15,13 @@ from ..b18_new import (
     validate_categories_for_new_cat,
 )
 from ..config import settings
-from ..new_api.pagenew import load_main_api
-from ..wd_bots import to_wd
-from ..wd_bots.wd_api_bot import Get_Sitelinks_From_wikidata
+from ..new_api import load_main_api
+from ..wd_bots import Get_Sitelinks_From_wikidata, Log_to_wikidata, add_labels
 from ..wiki_api import find_Page_Cat_without_hidden
 from .add_bot import add_to_final_list
 from .create_category_page import new_category
 from .members_helper import collect_category_members
-from .utils import filter_en
-from .utils.check_en import check_en_temps
+from .utils import check_en_temps, filter_cat
 
 # Optional ArWikiCats integration - configure via environment variable
 arwikicats_path = os.getenv("ARWIKICATS_PATH", "D:/categories_bot/make2_new/ArWikiCats")
@@ -82,7 +80,7 @@ def get_processing_state():
 
 
 def ar_make_lab(title, **Kwargs) -> str:
-    okay = filter_en.filter_cat(title)
+    okay = filter_cat(title)
 
     if not okay:
         logger.debug(f"<<lightred>> {title} is not okay.")
@@ -134,14 +132,14 @@ def scan_ar_title(title):
 def check_if_artitle_exists(test_title):
     if not test_title.startswith("تصنيف:"):
         test_title = f"تصنيف:{test_title}"
-    # ---
+
     api = load_main_api(WIKI_SITE_AR["code"])
     page = api.MainPage(test_title)
-    # ---
+
     if page.exists():
         logger.debug(f"<<lightred>>* category:{test_title} already exists in arwiki.")
         return False
-    # ---
+
     return True
 
 
@@ -226,7 +224,13 @@ def _log_members_info(members: list) -> None:
 
 
 def _finalize_category_creation(
-    created_category, ar_title: str, en_page_title: str, qid: str, members: list, en_cats_of_new_cat: list, callback
+    created_category,
+    ar_title: str,
+    en_page_title: str,
+    qid: str,
+    members: list,
+    en_cats_of_new_cat: list,
+    callback,
 ) -> list:
     """
     Finalize category creation: add members, update SubSub, and log to Wikidata.
@@ -242,7 +246,7 @@ def _finalize_category_creation(
         if listen:
             add_to_final_list(listen, ar_title, callback=callback)
 
-    to_wd.Log_to_wikidata(ar_title, en_page_title, qid)
+    Log_to_wikidata(ar_title, en_page_title, qid)
 
     return en_cats_of_new_cat
 
@@ -320,7 +324,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     created_category = new_category(en_page_title, ar_title, cats_of_new_cat, qid, family=WIKI_SITE_AR["family"])
 
     if not created_category.success:
-        to_wd.add_label(qid, ar_title)
+        add_labels(qid, ar_title, "ar")
         return en_cats_of_new_cat
 
     # Finalize: add members, update SubSub, log to Wikidata

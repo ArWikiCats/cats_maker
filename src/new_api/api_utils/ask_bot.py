@@ -52,35 +52,25 @@ class ASK_BOT:
             True if the user accepts the changes or prompting is not required; False otherwise.
         """
         message = message or "Do you want to accept these changes?"
-        # ---
         if settings.bot.ask and not Save_or_Ask.get(job):
-            # ---
             if text or newtext:
                 if not settings.bot.no_diff and not nodiff:
                     if len(newtext) < 70000 and len(text) < 70000 or settings.bot.show_diff:
                         showDiff(text, newtext)
                     else:
                         logger.warning("showDiff error..")
-                # ---
                 logger.warning(f"diference in bytes: {len(newtext) - len(text):,}")
                 logger.warning(f"len of text: {len(text):,}, len of newtext: {len(newtext):,}")
-            # ---
             if summary:
                 logger.warning(f"-Edit summary: {summary}")
-            # ---
             logger.warning(f"<<lightyellow>>ASK_BOT: {message}? (yes, no) {username=}")
-            # ---
             sa = input("([y]es, [N]o, [a]ll)?")
-            # ---
             if sa == "a":
                 Save_or_Ask[job] = True
-                # ---
                 logger.warning("<<lightgreen>> ---------------------------------")
                 logger.warning(f"<<lightgreen>> save all:{job} without asking.")
                 logger.warning("<<lightgreen>> ---------------------------------")
-            # ---
             if sa not in yes_answer:
                 logger.warning("wrong answer")
                 return False
-        # ---
         return True
