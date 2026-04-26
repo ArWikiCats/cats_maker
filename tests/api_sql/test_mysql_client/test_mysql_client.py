@@ -1,7 +1,7 @@
 """
-Tests for src/core/api_sql/mysql_client.py
+Tests for src/core/api_sql/db_pool.py
 
-اختبارات لملف mysql_client.py - استعلامات SQL
+اختبارات لملف db_pool.py - استعلامات SQL
 
 This module tests:
 - _run_query() - Connect and execute SQL queries
@@ -18,7 +18,7 @@ from src.core.api_sql.exceptions import (
     DatabaseFetchError,
     QueryExecutionError,
 )
-from src.core.api_sql.mysql_client import _decode, _is_select_query, _run_query, make_sql_connect_silent
+from src.core.api_sql.db_pool import _decode, _is_select_query, _run_query, make_sql_connect_silent
 
 
 @pytest.fixture
@@ -222,7 +222,7 @@ class TestMakeSqlConnectSilent:
 
     def test_returns_decoded_rows_on_success(self, mocker):
         mocker.patch(
-            "src.core.api_sql.mysql_client._run_query",
+            "src.core.api_sql.db_pool._run_query",
             return_value=[{"col": b"value"}],
         )
 
@@ -234,7 +234,7 @@ class TestMakeSqlConnectSilent:
         from src.core.api_sql.exceptions import DatabaseConnectionError
 
         mocker.patch(
-            "src.core.api_sql.mysql_client._run_query",
+            "src.core.api_sql.db_pool._run_query",
             side_effect=DatabaseConnectionError("fail"),
         )
 

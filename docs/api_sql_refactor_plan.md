@@ -13,7 +13,7 @@
 
 | Layer | File              | Lines | Responsibility                                                            |
 | ----- | ----------------- | ----- | ------------------------------------------------------------------------- |
-| Low   | `mysql_client.py` | 158   | pymysql connection, query execution, byte decoding                        |
+| Low   | `db_pool.py` | 158   | pymysql connection, query execution, byte decoding                        |
 | Mid   | `wiki_sql.py`     | 227   | Namespace tables, `GET_SQL` gate, host/db name generation, query wrappers |
 | High  | `sql_bot.py`      | 158   | Business-logic queries (category member fetch, cross-language diff)       |
 
@@ -24,10 +24,10 @@ Key issues:
 | `sql_bot.py` duplicates `GET_SQL()` guard logic (3 times)                               | `sql_bot.py:24,74,111`  | Violates DRY — mid-layer already guards                 |
 | `sql_bot.py` calls `make_sql_connect_silent` directly (bypassing mid-layer)             | `sql_bot.py:49,120`     | Bypasses `sql_new` wrapper, duplicates host/db logic    |
 | `sql_bot.py` reimplements namespace prefix logic                                        | `sql_bot.py:59-60`      | `wiki_sql.add_nstext_to_title` already exists           |
-| `sql_bot.py` reimplements byte decoding                                                 | `sql_bot.py:13-16`      | `mysql_client.decode_value` already exists              |
+| `sql_bot.py` reimplements byte decoding                                                 | `sql_bot.py:13-16`      | `db_pool.decode_value` already exists              |
 | `wiki_sql.py` `sql_new` has mutable default arg `values=[]`                             | `wiki_sql.py:158`       | Shared mutable default across calls                     |
 | `wiki_sql.py` `sql_new_title_ns` mixes wiki code extraction with query logic            | `wiki_sql.py:198-201`   | `make_labsdb_dbs_p` already handles this                |
-| `mysql_client.py` `_sql_connect_pymysql` tries to `fetchall` even on non-SELECT queries | `mysql_client.py:81-88` | `INSERT`/`UPDATE` have no result set; `fetchall` raises |
+| `db_pool.py` `_sql_connect_pymysql` tries to `fetchall` even on non-SELECT queries | `db_pool.py:81-88` | `INSERT`/`UPDATE` have no result set; `fetchall` raises |
 | Hardcoded namespace dicts in `wiki_sql.py`                                              | `wiki_sql.py:13-58`     | No constants file                                       |
 | No type hints on many functions                                                         | All files               | Reduced IDE support and runtime safety                  |
 
@@ -61,7 +61,7 @@ Legacy files become thin shims:
 
 | Old file          | Shim to                                               |
 | ----------------- | ----------------------------------------------------- |
-| `mysql_client.py` | `from .client import *`                               |
+| `db_pool.py` | `from .client import *`                               |
 | `wiki_sql.py`     | `from .gateway import *` + `from .constants import *` |
 | `sql_bot.py`      | `from .queries import *`                              |
 
@@ -70,10 +70,10 @@ Legacy files become thin shims:
 ## 4. Quick Wins (Execute Before Any Phase)
 
 -   [x] Fix mutable default arg `values=[]` → `values=None` in `wiki_sql.py:sql_new` — changed to `values: tuple | list = ()` (tuple is immutable, bug fixed; not `None` as originally planned)
--   [x] Remove dead `decode_bytes` in `sql_bot.py:13-16` (use `mysql_client.decode_value`) — already removed in a prior commit
+-   [x] Remove dead `decode_bytes` in `sql_bot.py:13-16` (use `db_pool.decode_value`) — already removed in a prior commit
 -   [x] Add `__all__` to `sql_bot.py`
 -   [x] Add `__all__` to `wiki_sql.py`
--   [x] Add `__all__` to `mysql_client.py` (already present)
+-   [x] Add `__all__` to `db_pool.py` (already present)
 
 ---
 
@@ -217,7 +217,7 @@ if ns_text_tab_ar.get(str(ns)):
 
 **5.2.4 Remove duplicate `decode_bytes` in `sql_bot.py`** *(DONE — already removed in prior commit)*
 
-`sql_bot.py:13-16` defines `decode_bytes` which duplicates `mysql_client.py:decode_value`. The function is never called in `sql_bot.py` — it is dead code.
+`sql_bot.py:13-16` defines `decode_bytes` which duplicates `db_pool.py:decode_value`. The function is never called in `sql_bot.py` — it is dead code.
 
 **Action:** Remove `decode_bytes` from `sql_bot.py`.
 
@@ -229,7 +229,7 @@ if ns_text_tab_ar.get(str(ns)):
 
 **Target:** Decompose files into clear layers.
 
-**5.3.1 Rename `mysql_client.py` → `client.py`**
+**5.3.1 Rename `db_pool.py` → `client.py`**
 
 Pure rename with shim. Contains: `load_db_config`, `_sql_connect_pymysql`, `decode_value`, `decode_bytes_in_list`, `make_sql_connect_silent`.
 
@@ -244,7 +244,7 @@ Pure rename with shim. Contains: `load_db_config`, `_sql_connect_pymysql`, `deco
 
 Pure rename with shim. Contains: `fetch_arcat_titles`, `fetch_encat_titles`, `get_exclusive_category_titles`.
 
-**Success criteria:** All old file paths importable via deprecation shims (`mysql_client.py`, `wiki_sql.py`, `sql_bot.py`). All new paths work.
+**Success criteria:** All old file paths importable via deprecation shims (`db_pool.py`, `wiki_sql.py`, `sql_bot.py`). All new paths work.
 
 ---
 
@@ -344,7 +344,7 @@ pytest tests/api_sql/ tests/integration/test_main_flow.py -v
 | `api_sql.sql_new_title_ns`              | `api_sql.gateway.sql_new_title_ns`              | Yes, via `__init__.py`     |
 | `api_sql.add_nstext_to_title`           | `api_sql.gateway.add_nstext_to_title`           | Yes, via `__init__.py`     |
 | `api_sql.get_exclusive_category_titles` | `api_sql.queries.get_exclusive_category_titles` | Yes, via `__init__.py`     |
-| `api_sql.mysql_client.*`                | `api_sql.client.*`                              | Via `mysql_client.py` shim |
+| `api_sql.db_pool.*`                | `api_sql.client.*`                              | Via `db_pool.py` shim |
 | `api_sql.wiki_sql.*`                    | `api_sql.gateway.*` + `api_sql.constants.*`     | Via `wiki_sql.py` shim     |
 | `api_sql.sql_bot.*`                     | `api_sql.queries.*`                             | Via `sql_bot.py` shim      |
 
@@ -388,14 +388,14 @@ The public API exported from `__init__.py` stays **identical** — no consumer c
 Current:                              Target:
 src/core/api_sql/                          src/core/api_sql/
 ├── __init__.py                       ├── __init__.py          (unchanged exports)
-├── mysql_client.py                   ├── constants.py         (new — namespace dicts, config)
+├── db_pool.py                   ├── constants.py         (new — namespace dicts, config)
 ├── wiki_sql.py                       ├── models.py            (new — dataclasses)
-├── sql_bot.py                        ├── client.py            (was mysql_client.py)
+├── sql_bot.py                        ├── client.py            (was db_pool.py)
                                       ├── gateway.py           (was wiki_sql.py sans constants)
                                       └── queries.py           (was sql_bot.py)
 
 Legacy shims (import from new locations):
-├── mysql_client.py  →  from .client import *       # noqa: F401, F403
+├── db_pool.py  →  from .client import *       # noqa: F401, F403
 ├── wiki_sql.py      →  from .constants import *    # noqa: F401, F403
                        from .gateway import *        # noqa: F401, F403
 └── sql_bot.py       →  from .queries import *       # noqa: F401, F403

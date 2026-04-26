@@ -23,7 +23,7 @@ from .constants import (
     SUFFIXED_WIKIS,
     WIKI_ALIASES,
 )
-from .mysql_client import make_sql_connect_silent
+from .db_pool import make_sql_connect_silent
 
 logger = logging.getLogger(__name__)
 

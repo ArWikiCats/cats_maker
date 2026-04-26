@@ -50,7 +50,7 @@ def mock_database(mocker):
     mock_conn = MagicMock()
     mock_cursor = MagicMock()
     mock_conn.cursor.return_value = mock_cursor
-    mocker.patch("src.core.api_sql.mysql_client.make_sql_connect_silent", return_value=[])
+    mocker.patch("src.core.api_sql.db_pool.make_sql_connect_silent", return_value=[])
     return mock_cursor
 
 

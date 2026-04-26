@@ -120,7 +120,7 @@ Multiple error-handling approaches across modules:
 
 | Plan     | Old name           | New name                                 | Pattern                     |
 | -------- | ------------------ | ---------------------------------------- | --------------------------- |
-| api_sql  | `mysql_client.py`  | `client.py`                              | Lower-layer file renamed    |
+| api_sql  | `db_pool.py`  | `client.py`                              | Lower-layer file renamed    |
 | api_sql  | `wiki_sql.py`      | `gateway.py` + `constants.py`            | Split                       |
 | api_sql  | `sql_bot.py`       | `queries.py`                             | Business query file renamed |
 | new_api  | `bot.py`           | `transport.py` + `auth.py` + `client.py` | Split into 3                |

@@ -489,7 +489,7 @@ cats_maker_new/
 │   │
 │   ├── api_sql/            # عمليات قاعدة البيانات
 │   │   ├── wiki_sql.py     # استعلامات Wiki SQL
-│   │   └── mysql_client/   # معالجة اتصال MySQL
+│   │   └── db_pool/   # معالجة اتصال MySQL
 │   │
 │   ├── new_api/            # تجريد صفحة API
 │   │   ├── page.py         # فئة MainPage
