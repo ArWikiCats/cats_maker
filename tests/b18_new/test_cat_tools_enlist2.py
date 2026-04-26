@@ -8,7 +8,7 @@ import pytest
 
 from src.b18_new.cat_tools_enlist2 import (
     MakeLitApiWay,
-    get_ar_list_from_cat,
+    get_ar_list_from_encat,
 )
 
 
@@ -19,7 +19,7 @@ class TestGetArListFromCat:
         """Test that function returns a list"""
         mocker.patch("src.b18_new.cat_tools_enlist2.sub_cats_query", return_value={"categorymembers": {}})
 
-        result = get_ar_list_from_cat("Science")
+        result = get_ar_list_from_encat("Science")
 
         assert isinstance(result, list)
 
@@ -29,7 +29,7 @@ class TestGetArListFromCat:
             "src.b18_new.cat_tools_enlist2.sub_cats_query", return_value={"categorymembers": {}}
         )
 
-        get_ar_list_from_cat("Category:Science", code="ar")
+        get_ar_list_from_encat("Category:Science", code="ar")
 
         call_args = mock_sub_cats.call_args[0][0]
         assert "Category:Science" in call_args  # Prefix is added back
@@ -40,7 +40,7 @@ class TestGetArListFromCat:
             "src.b18_new.cat_tools_enlist2.sub_cats_query", return_value={"categorymembers": {}}
         )
 
-        get_ar_list_from_cat("تصنيف:علوم", code="ar")
+        get_ar_list_from_encat("تصنيف:علوم", code="ar")
 
         # Should process without error
 
@@ -51,7 +51,7 @@ class TestGetArListFromCat:
             return_value={"categorymembers": {"Page1": {}, "Page2": {}, "Page3": {}}},
         )
 
-        result = get_ar_list_from_cat("Science")
+        result = get_ar_list_from_encat("Science")
 
         assert len(result) == 3
         assert "Page1" in result
@@ -62,7 +62,7 @@ class TestGetArListFromCat:
             "src.b18_new.cat_tools_enlist2.sub_cats_query", return_value={"categorymembers": {}}
         )
 
-        get_ar_list_from_cat("Science", typee="cat")
+        get_ar_list_from_encat("Science", typee="cat")
 
         call_args = mock_sub_cats.call_args
         assert call_args[1]["ctype"] == "subcat"
@@ -73,7 +73,7 @@ class TestGetArListFromCat:
             "src.b18_new.cat_tools_enlist2.sub_cats_query", return_value={"categorymembers": {}}
         )
 
-        get_ar_list_from_cat("Science", typee="page")
+        get_ar_list_from_encat("Science", typee="page")
 
         call_args = mock_sub_cats.call_args
         assert call_args[1]["ctype"] == "page"
@@ -82,7 +82,7 @@ class TestGetArListFromCat:
         """Test that empty list is returned when no results"""
         mocker.patch("src.b18_new.cat_tools_enlist2.sub_cats_query", return_value=None)
 
-        result = get_ar_list_from_cat("EmptyCategory")
+        result = get_ar_list_from_encat("EmptyCategory")
 
         assert result == []
 

@@ -13,7 +13,7 @@ Responsibilities:
 
 import logging
 
-from ..b18_new import MakeLitApiWay, get_listenpageTitle, get_SubSub_value
+from ..b18_new import MakeLitApiWay, get_ar_list_from_encat, get_listenpageTitle, get_SubSub_value
 from ..config import settings
 from ..wiki_api import remove_redirect_pages
 
@@ -45,7 +45,13 @@ def gather_members_from_api(en_page_title: str) -> list:
         A list of category member titles from API sources
     """
     result = MakeLitApiWay(en_page_title, Type="all")
-    return result if result else []
+
+    if not result:
+        # {'Yemen': {'ns': 0, 'ar': 'اليمن'}, 'Outline of Yemen': {'ns': 0, 'ar': 'مخطط اليمن'}, ... }
+        gent_faso_list = get_ar_list_from_encat(en_page_title, code="en", typee="all")
+        result = [x["ar"] for x in gent_faso_list.values() if x.get("ar")]
+
+    return result
 
 
 def gather_members_from_subsub(en_page_title: str) -> list:
