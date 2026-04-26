@@ -15,8 +15,8 @@ This module tests the helper functions for category member processing:
 from unittest.mock import MagicMock
 
 import pytest
-from src.mk_cats.members_helper import gather_members_from_api
-from src.mk_cats.members_helper import gather_members_from_sql
+
+from src.mk_cats.members_helper import gather_members_from_api, gather_members_from_sql
 
 
 class TestGatherMembersFromSql:
