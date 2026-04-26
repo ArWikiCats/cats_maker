@@ -21,7 +21,7 @@ from ..wiki_api import find_Page_Cat_without_hidden
 from .add_bot import add_to_final_list
 from .create_category_page import new_category
 from .members_helper import collect_category_members
-from .utils import check_en_temps, filter_en
+from .utils import check_en_temps, filter_cat
 
 # Optional ArWikiCats integration - configure via environment variable
 arwikicats_path = os.getenv("ARWIKICATS_PATH", "D:/categories_bot/make2_new/ArWikiCats")
@@ -80,7 +80,7 @@ def get_processing_state():
 
 
 def ar_make_lab(title, **Kwargs) -> str:
-    okay = filter_en.filter_cat(title)
+    okay = filter_cat(title)
 
     if not okay:
         logger.debug(f"<<lightred>> {title} is not okay.")

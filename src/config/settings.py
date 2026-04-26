@@ -34,10 +34,9 @@ def _safe_int(value: str, default: int) -> int:
 
 
 def default_user_agent() -> str:
-    tool = os.getenv("HOME")
-    tool = tool.split("/")[-1] if tool else "himo"
-    li = f"{tool} bot/1.0 (https://{tool}.toolforge.org/; tools.{tool}@toolforge.org)"
-    return li
+    home = (os.getenv("HOME") or "").rstrip("/")
+    tool = home.rsplit("/", 1)[-1] or "himo"
+    return f"{tool} bot/1.0 (https://{tool}.toolforge.org/; tools.{tool}@toolforge.org)"
 
 
 @dataclass
