@@ -15,13 +15,13 @@ from src.b18_new.cat_tools_enlist2 import (
 class TestGetArListFromCat:
     """Tests"""
 
-    def test_returns_list(self, mocker):
-        """Test that function returns a list"""
+    def test_returns_dict(self, mocker):
+        """Test that function returns a dict"""
         mocker.patch("src.b18_new.cat_tools_enlist2.sub_cats_query", return_value={"categorymembers": {}})
 
         result = get_ar_list_from_encat("Science")
 
-        assert isinstance(result, list)
+        assert isinstance(result, dict)
 
     def test_strips_category_prefix(self, mocker):
         """Test that Category: prefix is stripped"""
@@ -84,7 +84,7 @@ class TestGetArListFromCat:
 
         result = get_ar_list_from_encat("EmptyCategory")
 
-        assert result == []
+        assert result == {}
 
 
 class TestMakeLitApiWay:
@@ -124,6 +124,7 @@ class TestMakeLitApiWay:
         """Test that pages from get_arpage_inside_encat are included"""
         mocker.patch("src.b18_new.cat_tools_enlist2.Categorized_Page_Generator", return_value=["Page1"])
         mocker.patch("src.b18_new.cat_tools_enlist2.get_arpage_inside_encat", return_value=["صفحة_عربية"])
+        mocker.patch("src.b18_new.cat_tools_enlist2.sub_cats_query", return_value=["صفحة_عربية"])
         mocker.patch(
             "src.b18_new.cat_tools_enlist2.find_LCN",
             return_value={"Page1": {"langlinks": {"ar": "صفحة1"}}, "صفحة عربية": {"langlinks": {"ar": "صفحة عربية"}}},
@@ -138,7 +139,8 @@ class TestMakeLitApiWay:
         """Test that False is returned when no pages found"""
         mocker.patch("src.b18_new.cat_tools_enlist2.Categorized_Page_Generator", return_value=[])
         mocker.patch("src.b18_new.cat_tools_enlist2.get_arpage_inside_encat", return_value=[])
+        mocker.patch("src.b18_new.cat_tools_enlist2.sub_cats_query", return_value=[])
 
         result = MakeLitApiWay("EmptyCategory")
 
-        assert result is False
+        assert result == []
