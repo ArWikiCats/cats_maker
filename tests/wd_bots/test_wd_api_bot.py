@@ -136,9 +136,9 @@ class TestGetSitelinksFromWikidata:
         )
         Get_Sitelinks_From_wikidata.cache_clear()
 
-        result = Get_Sitelinks_From_wikidata("en", "Science", ssite="ar")
+        result = Get_Sitelinks_From_wikidata("en", "Science")
 
-        assert result == "علوم"
+        assert result["sitelinks"]["arwiki"] == "علوم"
 
     def test_returns_table_when_no_ssite(self, mocker):
         """Test that full table is returned when ssite is not provided"""
