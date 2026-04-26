@@ -5,11 +5,30 @@ import logging
 
 from ....config import settings
 from ...api_sql import CategoryComparator
-from ...b18_new import get_ar_list_from_encat
 from ...cats_helpers.cat_tools2 import Categorized_Page_Generator
-from ...wiki_api import find_LCN, get_arpage_inside_encat
+from ...wiki_api import find_LCN, get_arpage_inside_encat, sub_cats_query
 
 logger = logging.getLogger(__name__)
+
+
+def get_ar_list_from_encat(cat, code="ar", typee="cat"):
+    """
+    Retrieve a list of category members from a specified category.
+    """
+
+    if cat.startswith("Category:"):
+        cat = cat.replace("Category:", "")
+
+    if cat.startswith("تصنيف:"):
+        cat = cat.replace("تصنيف:", "")
+
+    ctype = "subcat" if typee == "cat" else "page" if typee == "page" else ""
+
+    subcategories_result = sub_cats_query("Category:" + cat, code, ctype=ctype)
+
+    categorymembers = subcategories_result.get("categorymembers", {}) if subcategories_result else {}
+
+    return categorymembers
 
 
 def retrieve_ar_list_from_category(encat, enpageTitle):
