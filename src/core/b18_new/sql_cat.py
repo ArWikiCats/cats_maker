@@ -48,7 +48,8 @@ def get_ar_list(arcat, us_sql=True):
     if us_sql is True and GET_SQL():
         # Pass category as parameter to prevent SQL injection
         ar_list = sql_new_title_ns(qia_ar, wiki="arwiki", t1="page_title", t2="page_namespace", values=(ar_cat2,))
-    else:
+
+    if not ar_list:
         api = load_main_api("ar")
         cat_members = api.CatDepth("Category:" + arcat, depth=0, ns="all")
 
@@ -85,12 +86,13 @@ def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
             AND lt.lt_title = %s
             AND ll_lang = 'ar'
     """
-
+    en_list = []
     if us_sql is True and GET_SQL():
         # Pass category as parameter to prevent SQL injection
         en_list_table = sql_new(en_qua, wiki=f"{wiki}wiki", values=(encat2,))
         en_list = [x.get("ll_title") for x in en_list_table if x.get("ll_title")]
-    else:
+
+    if not en_list:
         en_list = fetch_ar_titles_based_on_en_category(encat, wiki=wiki)
 
     en_list = [x.replace("_", " ") for x in en_list]
