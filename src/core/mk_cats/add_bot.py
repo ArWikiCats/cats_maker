@@ -3,7 +3,6 @@
 
 import functools
 import logging
-
 from ..c18_new.bots.text_to_temp_bot import add_text_to_template
 from ..c18_new.dontadd import Dont_add_to_pages_def
 from ..c18_new.tools_bots.sort_bot import sort_categories

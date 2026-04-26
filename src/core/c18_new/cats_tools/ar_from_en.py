@@ -120,3 +120,11 @@ def Get_ar_list_from_en_list(enlist):
     new_ar_list = list(set(new_ar_list))
 
     return new_ar_list
+
+
+__all__ = [
+    "retrieve_ar_list_from_category",
+    "clean_category_input",
+    "make_ar_list_from_en_cat",
+    "Get_ar_list_from_en_list",
+]

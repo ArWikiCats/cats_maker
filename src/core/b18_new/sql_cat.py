@@ -5,8 +5,8 @@ import logging
 
 from ...config import settings
 from ..api_sql import add_namespace_prefix
-from ..api_sql.db_pool import db_manager
-from ..c18_new.cats_tools.ar_from_en2 import fetch_ar_titles_based_on_en_category
+from ..api_sql import db_manager
+from ..c18_new import fetch_ar_titles_based_on_en_category
 from ..new_api import load_main_api
 
 logger = logging.getLogger(__name__)
