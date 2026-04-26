@@ -10,7 +10,8 @@ from datetime import datetime
 from pathlib import Path
 
 from ...config import settings
-from ..api_sql import GET_SQL, sql_new, add_namespace_prefix
+from ..api_sql_new import add_namespace_prefix
+from ..api_sql_new.db_pool import db_manager
 
 logger = logging.getLogger(__name__)
 
@@ -86,9 +87,12 @@ def from_sql():
 
     cats = []
 
-    if GET_SQL():
-        rows = sql_new(queries, wiki="ar", values=None)
+    try:
+        rows = db_manager.execute_query(wiki="ar", query=queries)
         cats = [add_namespace_prefix(r["page_title"], r["page_namespace"], lang="ar") for r in rows]
+    except Exception as e:
+        logger.error(f"SQL error in from_sql: {e}")
+        cats = []
 
     return cats
 

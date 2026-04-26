@@ -4,7 +4,7 @@
 import logging
 
 from ....config import settings
-from ...api_sql import get_exclusive_category_titles
+from ...api_sql_new import CategoryComparator
 from ...b18_new import get_ar_list_from_encat
 from ...wiki_api import find_LCN, get_arpage_inside_encat
 from ..cat_tools2 import Categorized_Page_Generator
@@ -70,7 +70,8 @@ def make_ar_list_from_en_cat(encat):
     logger.debug("cat: " + encat)
 
     if settings.database.use_sql:
-        listenpageTitle2 = get_exclusive_category_titles(enpageTitle)
+        comparator = CategoryComparator()
+        listenpageTitle2 = comparator.get_exclusive_category_titles(enpageTitle, "")
         listenpageTitle2 = [x.replace("_", " ") for x in listenpageTitle2]
     else:
         listenpageTitle2 = retrieve_ar_list_from_category(enpageTitle)
