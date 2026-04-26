@@ -16,7 +16,7 @@ from ..b18_new import (
 )
 from ..config import settings
 from ..new_api import load_main_api
-from ..wd_bots import Get_Sitelinks_From_wikidata, Log_to_wikidata, add_labels
+from ..wd_bots import Get_Sitelinks_From_wikidata, log_to_wikidata, add_labels, log_to_wikidata_qid
 from ..wiki_api import find_Page_Cat_without_hidden
 from .add_bot import add_to_final_list
 from .create_category_page import new_category
@@ -246,7 +246,10 @@ def _finalize_category_creation(
         if listen:
             add_to_final_list(listen, ar_title, callback=callback)
 
-    Log_to_wikidata(ar_title, en_page_title, qid)
+    if qid:
+        log_to_wikidata_qid(ar_title, qid)
+    else:
+        log_to_wikidata(ar_title, en_page_title)
 
     return en_cats_of_new_cat
 

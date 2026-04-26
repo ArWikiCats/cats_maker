@@ -52,8 +52,8 @@ class TestMainFlowIntegration:
         # Mock add_to_final_list
         mock_add_final = mocker.patch("src.mk_cats.add_bot.add_to_final_list")
 
-        # Mock to_wd.Log_to_wikidata
-        mock_log_wd = mocker.patch("src.wd_bots.to_wd.Log_to_wikidata")
+        # Mock to_wd.log_to_wikidata
+        mock_log_wd = mocker.patch("src.wd_bots.to_wd.log_to_wikidata")
 
         # Mock validate_categories_for_new_cat
         mock_validate = mocker.patch("src.b18_new.sql_cat_checker.validate_categories_for_new_cat")
