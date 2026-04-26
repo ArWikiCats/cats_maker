@@ -17,7 +17,6 @@ SKIP_CATEGORIES = ["تصنيف:أشخاص على قيد الحياة", "تصني
 
 
 def _get_from_cache(enlink, sitecode):
-
     tup = (enlink, sitecode, "templates")
 
     site_cache = templatequery_cache[sitecode]
@@ -34,7 +33,6 @@ def _get_from_cache(enlink, sitecode):
 
 
 def templatequery(enlink, sitecode="ar"):
-
     if enlink in SKIP_CATEGORIES:
         return False
 
@@ -61,7 +59,6 @@ def templatequery(enlink, sitecode="ar"):
 
 
 def templatequerymulti(enlink, sitecode):
-
     if enlink in SKIP_CATEGORIES:
         return False
 

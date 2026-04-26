@@ -53,7 +53,6 @@ class LOGIN_HELPS(PARAMS_HELPS):
             )
 
     def add_User_tables(self, family, table, lang="") -> None:
-
         langx = self.lang
 
         # for example family=toolforge, lang in (medwiki, mdwikicx)
@@ -64,7 +63,6 @@ class LOGIN_HELPS(PARAMS_HELPS):
             logger.info(f": {family=}, {table['username']=}")
 
         if family != "" and table["username"] != "" and table["password"] != "":
-
             if self.family == family or (langx == "ar" and self.family.startswith("wik")):  # wiktionary
                 self.user_table_done = True
 
@@ -72,7 +70,6 @@ class LOGIN_HELPS(PARAMS_HELPS):
                 self.password = table["password"]
 
     def make_new_r3_token(self) -> str:
-
         r3_params = {
             "format": "json",
             "action": "query",
@@ -244,7 +241,6 @@ class LOGIN_HELPS(PARAMS_HELPS):
         return True
 
     def make_new_session(self) -> None:
-
         logger.debug(f":({self.lang}, {self.family}, {self.username})")
 
         self.session = _load_session(lang=self.lang, family=self.family, username=self.username)
@@ -280,14 +276,12 @@ class LOGIN_HELPS(PARAMS_HELPS):
 
     def _handle_server_error(self, req0, action, params=None):
         if req0 and req0.status_code:
-
             self.log_error(req0.status_code, action, params=params)
 
             if not str(req0.status_code).startswith("2"):
                 logger.debug(f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}")
 
     def raw_request(self, params, files=None, timeout=30):
-
         # TODO: ('toomanyvalues', 'Too many values supplied for parameter "titles". The limit is 50.', 'See https://en.wikipedia.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/postorius/lists/mediawiki-api-announce.lists.wikimedia.org/&gt; for notice of API deprecations and breaking changes.')
 
         if not self.user_table_done:
@@ -333,7 +327,6 @@ class LOGIN_HELPS(PARAMS_HELPS):
         return req0
 
     def post_it(self, params, files=None, timeout=30):
-
         params = self.params_w(params)
 
         if not self.username_in:
@@ -360,7 +353,6 @@ class LOGIN_HELPS(PARAMS_HELPS):
         return req0
 
     def post_it_parse_data(self, params, files=None, timeout=30) -> dict:
-
         req = self.post_it(params, files, timeout)
 
         data = {}
@@ -376,7 +368,6 @@ class LOGIN_HELPS(PARAMS_HELPS):
             code = error.get("code", "")
 
             if code == "assertnameduserfailed":
-
                 logger.warning("assertnameduserfailed" * 10)
 
                 del_cookies_file(self.cookies_file)

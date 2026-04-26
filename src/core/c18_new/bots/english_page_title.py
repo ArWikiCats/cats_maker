@@ -32,7 +32,6 @@ def extract_wikidata_qid(text):
 
 
 def english_page_link_from_text(link, firstsite_code, second_site_code, text="") -> str:
-
     tubb = (link, firstsite_code, second_site_code, "en_links")
 
     logger.debug(">>sssss text: ")
@@ -134,7 +133,6 @@ def english_page_link_from_api(link, firstsite_code, second_site_code, text=""):
         tavr = Get_Sitelinks_From_wikidata(firstsite_code + "wiki", link)
 
         if tavr and "sitelinks" in tavr:
-
             Sitelinks2 = tavr["sitelinks"]
             logger.info("sitelinks 2020.")
 
@@ -173,7 +171,6 @@ def english_page_link(link, firstsite_code, second_site_code, text=""):
         str: The title of the English page that corresponds to the given page, or False if no such page exists.
     """
     if text:
-
         results = english_page_link_from_text(link, firstsite_code, second_site_code, text)
         if results:
             return results
@@ -183,7 +180,6 @@ def english_page_link(link, firstsite_code, second_site_code, text=""):
 
 
 def get_en_link_from_ar_text(title, site, sitetarget):
-
     enpage = Get_Sitelinks_From_wikidata(site, title)
 
     if not enpage:
@@ -206,7 +202,6 @@ def get_en_link_from_ar_text(title, site, sitetarget):
 
 
 def get_english_page_title(englishlink, pagetitle, text_new, ar_page_langlinks):
-
     en = ""
 
     if englishlink:

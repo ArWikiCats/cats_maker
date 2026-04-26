@@ -15,7 +15,6 @@ file_name = os.path.basename(__file__)
 
 
 def outbot_json_bot(err):
-
     text = str(err)
 
     err_code = err.get("code", "")
@@ -41,11 +40,9 @@ def outbot_json_bot(err):
         return "warn"
 
     elif err_code in ["modification-failed", "failed-modify"]:
-
         logger.debug(f"<<lightred>> err_info: {err_info} ")
 
         if msg_name == "wikibase-api-failed-modify":
-
             logger.debug(f"<<lightred>>err msg_name: {msg_name}")
             logger.debug(f"<<lightred>>\t: {extradata}")
             return msg_name
@@ -56,7 +53,6 @@ def outbot_json_bot(err):
             return msg_name
 
         if msg_name == "wikibase-validator-label-with-description-conflict":
-
             logger.debug("<<lightred>>same description:")
 
             lab, code, q = messages.get("parameters", [])
@@ -66,7 +62,6 @@ def outbot_json_bot(err):
             return "same description"
         return "warn"
     elif err_code == "unresolved-redirect":
-
         logger.debug("<<lightred>> - unresolved-redirect")
         return "unresolved-redirect"
 
@@ -80,13 +75,11 @@ def outbot_json_bot(err):
         logger.debug(text)
         return False
     elif err_code == "no-external-page":
-
         logger.debug(f'<<lightred>> - "{err_code}" ')
         logger.debug(text)
         return False
 
     else:
-
         if "wikibase-api-invalid-json" in text:
             logger.debug('<<lightred>> - "wikibase-api-invalid-json" ')
             logger.debug(text)
@@ -102,7 +95,6 @@ def outbot_json_bot(err):
 
 
 def outbot_json(js_text, fi="", line=""):
-
     success = js_text.get("success", 0)
 
     if success == 1:

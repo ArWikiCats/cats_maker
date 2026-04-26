@@ -56,7 +56,6 @@ class LiteDB:
         return self.db[table_name].rows
 
     def select(self, table_name, args):
-
         where_conditions = []
         params = []
 

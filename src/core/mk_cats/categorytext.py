@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 from ...temp import main_make_temp_no_title
 from ..new_api import load_main_api
 from ..wd_bots import Get_P373_API
@@ -8,7 +9,6 @@ from .utils import portal_en_to_ar_lower
 
 
 def get_page_link_data(title: str, sitecode: str, ns: int = 100) -> list:
-
     api = load_main_api(sitecode)
     page = api.MainPage(title)
 

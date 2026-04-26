@@ -8,6 +8,7 @@ https://doc.wikimedia.org/Wikibase/master/js/rest-api/#/items/getItem
 
 
 """
+
 import logging
 from functools import lru_cache
 
@@ -29,7 +30,6 @@ def format_labels_descriptions(labels):
 
 
 def Get_infos_wikidata(params):
-
     table = {"labels": {}, "sitelinks": {}, "q": ""}
 
     json1 = submitWikidataParams(params)
@@ -67,7 +67,6 @@ def Get_Sitelinks_From_wikidata(
     site,
     title,
 ):
-
     sitewiki = site
     if site.find("wiki") == -1:
         sitewiki = f"{site}wiki"
@@ -90,7 +89,6 @@ def Get_Sitelinks_From_wikidata(
 
 
 def Get_Sitelinks_from_qid(ids):
-
     params = {
         "action": "wbgetentities",
         "props": "sitelinks",

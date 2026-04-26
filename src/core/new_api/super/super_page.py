@@ -178,7 +178,6 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         pages = data.get("query", {}).get("pages", {})
 
         for _, v in pages.items():
-
             page_data = v.get("revisions", [{}])[0]
 
             if "parentid" in page_data and page_data["parentid"] == 0:
@@ -220,7 +219,6 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         pages = data.get("query", {}).get("pages", {})
 
         for k, v in pages.items():
-
             if "ns" in v:
                 self.ns = v["ns"]  # ns = 0 !
 
@@ -317,7 +315,6 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         self.meta.is_redirect = True if "redirect" in ta else False
 
         for cat in ta.get("categories", []):
-
             # _cat_ = { "ns": 14, "title": "تصنيف:بوابة سباق الدراجات الهوائية/مقالات متعلقة", "sortkey": "d8b7", "sortkeyprefix": "", "hidden": True }
 
             if "sortkey" in cat:
@@ -334,13 +331,11 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
                 self.categories_data.categories[tit] = cat
 
         if ta.get("langlinks", []) != []:
-
             # {"lang": "ca", "*": "UCI World Tour 2023"} or {'lang': 'bh', 'title': 'टेम्पलेट:AWB'}
 
             self.langlinks = {ta["lang"]: ta.get("*") or ta.get("title") for ta in ta.get("langlinks", [])}
 
         if ta.get("templates", []) != []:
-
             # 'templates': [{'ns': 10, 'title': 'قالب:No redirect'}],
 
             self.template_data.templates_API = [ta["title"] for ta in ta.get("templates", [])]
@@ -353,7 +348,6 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         self.meta.info["done"] = True
 
     def get_redirect_target(self):
-
         params = {
             "action": "query",
             "titles": self.title,
@@ -394,7 +388,6 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         d = 0
 
         while continue_params != {} or d == 0:
-
             d += 1
 
             if continue_params:
@@ -440,14 +433,12 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         return self.meta.userinfo
 
     def isRedirect(self):
-
         if not self.meta.is_redirect:
             self.get_infos()
 
         return self.meta.is_redirect
 
     def isDisambiguation(self):
-
         # if the title ends with '(توضيح)' or '(disambiguation)'
         self.meta.is_Disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
 
@@ -457,7 +448,6 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         return self.meta.is_Disambig
 
     def get_categories(self, with_hidden=False):
-
         # if not self.categories_data.categories: self.get_infos()
         if not self.meta.info["done"]:
             self.get_infos()
@@ -468,21 +458,18 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         return self.categories_data.categories
 
     def get_hidden_categories(self):
-
         if self.categories_data.categories == {} and self.categories_data.hidden_categories == {}:
             self.get_infos()
 
         return self.categories_data.hidden_categories
 
     def get_langlinks(self):
-
         if not self.meta.info["done"]:
             self.get_infos()
 
         return self.langlinks
 
     def can_edit(self, script="", delay=0):
-
         if self.family != "wikipedia":
             return True
 
@@ -641,7 +628,6 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         self.newtext = text
 
         if not noask:
-
             message = f"Do you want to create this page? ({self.lang}:{self.title})"
 
             user = self.meta.username or getattr(self, "user_login", "")
@@ -671,7 +657,6 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
         result = edit.get("result", "")
 
         if result.lower() == "success":
-
             # {'edit': {'new': '', 'result': 'Success', 'pageid': 9090918, 'title': 'مستخدم:Mr. Ibrahem/test2024', 'contentmodel': 'wikitext', 'oldrevid': 0, 'newrevid': 61016221, 'newtimestamp': '2023-02-01T21:52:42Z'}}
 
             self.text = text

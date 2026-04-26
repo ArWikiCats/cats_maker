@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 import logging
 
 from ....config import settings
@@ -10,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_ar_list_title_from_en_list(enlist, wiki="en"):
-
     new_ar_list = []
 
     en_done = []
@@ -31,7 +31,6 @@ def get_ar_list_title_from_en_list(enlist, wiki="en"):
 
             if new_list:
                 for p_w in new_list:
-
                     if "langlinks" in new_list[p_w] and "ar" in new_list[p_w]["langlinks"]:
                         arpagetitle = new_list[p_w]["langlinks"]["ar"]
 
@@ -45,7 +44,6 @@ def get_ar_list_title_from_en_list(enlist, wiki="en"):
 
 
 def en_category_members(enpageTitle, wiki="en"):
-
     logger.info(f"<<lightyellow>> from category: {enpageTitle}")
 
     namespace_ids = [0, 14, 100]
@@ -63,7 +61,6 @@ def en_category_members(enpageTitle, wiki="en"):
 
 
 def fetch_ar_titles_based_on_en_category(enpageTitle, wiki="en"):
-
     en_titles = en_category_members(enpageTitle, wiki=wiki)
 
     new_ar_list = get_ar_list_title_from_en_list(en_titles, wiki=wiki)

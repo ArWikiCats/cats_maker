@@ -158,7 +158,6 @@ class Login(LOGIN_HELPS, HANDEL_ERRORS):
         error_code = error.get("code", "")
 
         if error_code == "maxlag" and max_retry < 4:
-
             lage = int(error.get("lag", "0"))
             logger.debug(params)
             logger.debug(f"<<purple>>: <<red>> {lage=} {max_retry=}, sleep: {lage + 1}")

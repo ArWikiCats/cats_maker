@@ -2,6 +2,7 @@
 """
 !
 """
+
 import functools
 import json
 import logging
@@ -34,7 +35,6 @@ def log_in_wikidata(www="www") -> Login:
 
 class WD_API:
     def __init__(self, login_bot: Login, Mr_or_bot="bot"):
-
         self.login_bot = login_bot
 
         self.lang = "test" if settings.wikidata.test_mode else "www"
@@ -84,7 +84,6 @@ class WD_API:
         logger.debug(tt)
         # ---["protectedpage", 'تأخير البوتات 3 ساعات', False]
         if err_code == "abusefilter-disallowed":
-
             # oioioi = {'error': {'code': 'abusefilter-disallowed', 'info': 'This', 'abusefilter': {'id': '169', 'description': 'تأخير البوتات 3 ساعات', 'actions': ['disallow']}, '*': 'See https'}, 'servedby': 'mw1374'}
 
             abusefilter = error.get("abusefilter", "")
@@ -128,7 +127,6 @@ class WD_API:
         max_retry=0,
         **kwargs,
     ):
-
         if params is None:
             params = {}
         if data is None:
@@ -154,7 +152,6 @@ class WD_API:
             return self.post_to_newapi(params=params, max_retry=max_retry + 1)
 
         if error:
-
             er = self.handle_err_wd(error, function="", params=params)
 
             logger.debug(f"<<purple>>: <<red>> handle_err_wd: {er}")
@@ -163,7 +160,6 @@ class WD_API:
         success = results.get("success", 0)
 
         if success == 1:
-
             # {"entity":{"sitelinks":{"arwiki":{}},"id":"Q97928551","type":"item","lastrevid":1242627521,"nochange":""},"success":1}
 
             if lag_bot.newsleep[1] != 0:
@@ -176,7 +172,6 @@ class WD_API:
         return results
 
     def filter_data(self, data):
-
         do_lag()
 
         if "maxlag" not in data:

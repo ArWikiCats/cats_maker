@@ -41,7 +41,6 @@ ns_list = {
 
 class CategoryDepth:
     def __init__(self, login_bot, title, **kwargs):
-
         self.login_bot = login_bot
 
         self.user_login = login_bot.user_login
@@ -78,7 +77,6 @@ class CategoryDepth:
         return self.len_pages
 
     def prase_params(self, **kwargs):
-
         if not kwargs:
             return
 
@@ -172,7 +170,6 @@ class CategoryDepth:
         return params
 
     def pages_table_work(self, table, pages):
-
         self.len_pages += len(pages)
 
         for category in pages:
@@ -239,7 +236,6 @@ class CategoryDepth:
         return table
 
     def get_cat_new(self, cac):
-
         # print("get_cat_new")
 
         params = {
@@ -269,7 +265,6 @@ class CategoryDepth:
         d = 0
 
         while continue_params != {} or d == 0:
-
             d += 1
 
             if self.limit > 0 and len(results) >= self.limit:
@@ -323,7 +318,6 @@ class CategoryDepth:
         self.result_table[x] = tab
 
     def subcatquery_(self, **kwargs):
-
         # self.prase_params(**kwargs)
 
         tablemember = self.get_cat_new(self.title)
@@ -349,11 +343,9 @@ class CategoryDepth:
             # logger.debug(f"<<yellow>> work in subcats: {len(new_list)}, depth:{depth_done}/{self.depth}:")
 
             for cat in tqdm(new_list):
-
                 table2 = self.get_cat_new(cat)
 
                 for x, v in table2.items():
-
                     if int(v["ns"]) == 14:
                         new_tab2.append(x)
 
@@ -371,7 +363,6 @@ class CategoryDepth:
 
 @lru_cache(maxsize=256)
 def title_process(title, sitecode):
-
     prefixes = {"ar": "تصنيف:", "en": "Category:", "www": "Category:"}
 
     start_prefixes = prefixes.get(sitecode)
@@ -383,7 +374,6 @@ def title_process(title, sitecode):
 
 
 def args_group(title, kwargs):
-
     args2 = {
         "title": title,
         "depth": None,
@@ -406,7 +396,6 @@ def args_group(title, kwargs):
 
 @function_timer
 def subcatquery(login_bot, title, sitecode=SITECODE, family=FAMILY, **kwargs):
-
     print_s = kwargs.get("print_s", True)
 
     get_revids = kwargs.get("get_revids", False)

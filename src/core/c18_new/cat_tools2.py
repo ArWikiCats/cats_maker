@@ -5,6 +5,7 @@
 # Categorized_Page_Generator(enpageTitle, Type)
 
 """
+
 import logging
 
 from ...config import settings
@@ -19,7 +20,6 @@ if settings.category.stubs:
 
 
 def Categorized_Page_Generator(enpageTitle, typee):
-
     logger.info(f", enpageTitle:{enpageTitle}")
 
     nss = "all"

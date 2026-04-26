@@ -1,16 +1,39 @@
-#!/usr/bin/python3
-""" """
+"""
+Wikipedia / Wikimedia SQL helpers.
+
+Public API
+----------
+GET_SQL            – returns True only in production (APP_ENV=production).
+add_nstext_to_title – prepend namespace prefix to a page title.
+make_labsdb_dbs_p  – resolve (host, db_p) for a given wiki name.
+sql_new            – run a raw query against a wiki replica and return rows.
+sql_new_title_ns   – like sql_new but maps rows → "Namespace:Title" strings.
+"""
+
 import functools
 import logging
 import os
-import time
 
 from ..helps import function_timer
-from . import mysql_client
+from .mysql_client import make_sql_connect_silent
 
 logger = logging.getLogger(__name__)
 
-ns_text_tab_ar = {
+
+# ---------------------------------------------------------------------------
+# Namespace label tables
+# ---------------------------------------------------------------------------
+_WIKI_ALIASES: dict[str, str] = {
+    "wikidata": "wikidatawiki",
+    "be-x-old": "be_x_old",
+    "be_tarask": "be_x_old",
+    "be-tarask": "be_x_old",
+}
+
+_SUFFIXED_WIKIS = {"wiktionary"}  # wikis that already carry their own suffix
+
+
+NS_TEXT_AR: dict[str, str] = {
     "0": "",
     "1": "نقاش",
     "2": "مستخدم",
@@ -34,7 +57,7 @@ ns_text_tab_ar = {
     "1729": "نقاش الفعالية",
 }
 
-ns_text_tab_en = {
+NS_TEXT_EN: dict[str, str] = {
     "0": "",
     "1": "Talk",
     "2": "User",
@@ -58,170 +81,128 @@ ns_text_tab_en = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Environment flag
+# ---------------------------------------------------------------------------
+
+
 @functools.lru_cache(maxsize=1)
 def GET_SQL() -> bool:
-    """Check if running in production environment with SQL access.
+    """Return True when running in production (APP_ENV == 'production')."""
+    return os.getenv("APP_ENV", "") == "production"
 
-    Returns:
-        bool: True if APP_ENV is set to "production", False otherwise.
+
+# ---------------------------------------------------------------------------
+# Namespace helpers
+# ---------------------------------------------------------------------------
+
+
+def add_nstext_to_title(title: str, ns: str | int, lang: str = "ar") -> str:
+    """Prepend the namespace label to *title*.
+
+    Returns *title* unchanged when namespace is 0 or the label is unknown.
     """
-    app_env = os.getenv("APP_ENV", "")
+    ns_key = str(ns)
+    if not title:
+        return ""
 
-    return app_env == "production"
+    if ns_key == "0":
+        return title
+
+    table = NS_TEXT_AR if lang == "ar" else NS_TEXT_EN
+    prefix = table.get(ns_key)
+
+    if not prefix:
+        logger.debug("No namespace label for ns=%s lang=%s", ns_key, lang)
+        return title
+
+    return f"{prefix}:{title}"
 
 
-def add_nstext_to_title(title, ns, lang="ar"):
-    """Add namespace text to a title based on the provided namespace and
-    language.
+# ---------------------------------------------------------------------------
+# Host / DB resolution
+# ---------------------------------------------------------------------------
+def make_labsdb_dbs_p(wiki: str) -> tuple[str, str]:
+    """Return (host, db_p) for *wiki*.
 
-    This function modifies the given title by prepending the corresponding
-    namespace text based on the provided namespace identifier (ns) and
-    language. If the namespace is "0", the original title is returned
-    unchanged. The function retrieves the appropriate namespace text from
-    predefined mappings based on the specified language. If no matching
-    namespace text is found, a debug message is logged.
+    Examples
+    --------
+    >>> make_labsdb_dbs_p("ar")
+    ('arwiki.analytics.db.svc.wikimedia.cloud', 'arwiki_p')
 
-    Args:
-        title (str): The original title to which the namespace text will be added.
-        ns (str): The namespace identifier used to fetch the corresponding namespace text.
-        lang (str?): The language code for fetching the namespace text. Defaults to "ar".
-
-    Returns:
-        str: The modified title with the namespace text prepended, or the original
-            title if ns is "0".
+    >>> make_labsdb_dbs_p("enwiki")
+    ('enwiki.analytics.db.svc.wikimedia.cloud', 'enwiki_p')
     """
+    wiki = wiki.removesuffix("wiki").replace("-", "_")
+    wiki = _WIKI_ALIASES.get(wiki, wiki)
 
-    new_title = title
-
-    if str(ns) == "0":
-        return new_title
-
-    ns_text = ns_text_tab_ar.get(str(ns))
-    if lang != "ar":
-        ns_text = ns_text_tab_en.get(str(ns))
-
-    if not ns_text:
-        logger.debug(f"no ns_text for {str(ns)}")
-
-    if title and ns:
-        new_title = f"{ns_text}:{title}"
-
-    return new_title
-
-
-def make_labsdb_dbs_p(wiki: str):
-    """Generate host and database name for a given wiki.
-
-    This function takes a wiki name as input, processes it to conform to
-    specific naming conventions, and generates the corresponding host and
-    database name. It handles certain predefined wiki names by mapping them
-    to standardized formats. The function ensures that the resulting names
-    are suitable for use in a database connection context.
-
-    Args:
-        wiki (str): The name of the wiki, which may include a suffix or hyphens.
-
-    Returns:
-        tuple: A tuple containing the host string and the database name string.
-    """
-
-    wiki = wiki.removesuffix("wiki")
-
-    wiki = wiki.replace("-", "_")
-
-    databases = {
-        "wikidata": "wikidatawiki",
-        "be-x-old": "be_x_old",
-        "be_tarask": "be_x_old",
-        "be-tarask": "be_x_old",
-    }
-
-    wiki = databases.get(wiki, wiki)
-
-    valid_ends = [
-        "wiktionary",
-    ]
-
-    if not (any((wiki.endswith(x)) for x in valid_ends)) and wiki.find("wiki") == -1:
+    # Append "wiki" unless the name already contains it or is a known suffixed wiki
+    if "wiki" not in wiki and not any(wiki.endswith(s) for s in _SUFFIXED_WIKIS):
         wiki = f"{wiki}wiki"
 
-    dbs = wiki
-
     host = f"{wiki}.analytics.db.svc.wikimedia.cloud"
+    return host, f"{wiki}_p"
 
-    dbs_p = f"{dbs}_p"
 
-    return host, dbs_p
+# ---------------------------------------------------------------------------
+# SQL runners
+# ---------------------------------------------------------------------------
 
 
 @function_timer
-def sql_new(queries, wiki="", values=[]):
+def sql_new(query: str, wiki: str = "", values: tuple | list = ()) -> list[dict]:
+    """Execute *query* against the replica for *wiki* and return raw rows.
 
-    logger.debug(f"wiki_sql.py wiki '{wiki}'")
-
-    host, dbs_p = make_labsdb_dbs_p(wiki)
-
-    logger.info(queries)
-
+    Returns [] when not in production or on any database error.
+    """
     if not GET_SQL():
-        logger.info("no GET_SQL()")
+        logger.info("sql_new: skipped (not in production)")
         return []
 
-    rows = mysql_client.make_sql_connect_silent(queries, db=dbs_p, host=host, values=values)
+    host, db_p = make_labsdb_dbs_p(wiki)
+    logger.debug("sql_new: wiki=%s host=%s db=%s", wiki, host, db_p)
+    logger.info(query)
 
-    logger.info(f'wiki_sql.py len(encats) = "{len(rows)}"')
-
+    rows = make_sql_connect_silent(query, host=host, db=db_p, values=tuple(values) if values else None)
+    logger.info("sql_new: returned %d rows", len(rows))
     return rows
 
 
-def sql_new_title_ns(queries, wiki="", t1="page_title", t2="page_namespace", values=None):
-    """Generate a list of new titles based on SQL query results.
+@function_timer
+def sql_new_title_ns(
+    query: str,
+    wiki: str = "",
+    title_key: str = "page_title",
+    ns_key: str = "page_namespace",
+    values: tuple | list | None = None,
+) -> list[str]:
+    """Run *query* and convert each row to a "Namespace:Title" string.
 
-    This function processes the results of SQL queries to create a list of
-    new titles by combining page titles with their corresponding namespaces.
-    It first checks if the provided wiki string ends with "wiki" and removes
-    it if necessary. Then, it retrieves the rows from the SQL query results
-    and constructs new titles using the specified title and namespace keys.
-    If a title or namespace is missing, it appends the original row to the
-    new list and logs a debug message.
-
-    Args:
-        queries (str): The SQL queries to execute.
-        wiki (str?): The wiki identifier. Defaults to an empty string.
-        t1 (str?): The key for the page title in the row. Defaults to "page_title".
-        t2 (str?): The key for the page namespace in the row. Defaults to "page_namespace".
-
-    Returns:
-        list: A list of new titles generated from the SQL query results.
+    Rows missing either field are skipped with a debug log.
     """
+    lang = wiki.removesuffix("wiki") if wiki.endswith("wiki") else wiki
+    rows = sql_new(query, wiki=wiki, values=values or ())
 
-    lang = wiki
-
-    if lang.endswith("wiki"):
-        lang = lang[:-4]
-
-    rows = sql_new(queries, wiki=wiki, values=values)
-
-    if not t1:
-        t1 = "page_title"
-    if not t2:
-        t2 = "page_namespace"
-
-    newlist = []
-
+    titles: list[str] = []
     for row in rows:
-        title = row.get(t1)
-        ns = row.get(t2)
+        title = row.get(title_key)
+        ns = row.get(ns_key)
 
-        new_title = title
+        if not title or ns is None:
+            logger.debug("sql_new_title_ns: skipping incomplete row: %s", row)
+            continue
 
-        if title and ns:
-            new_title = add_nstext_to_title(title, ns, lang=lang)
+        titles.append(add_nstext_to_title(title, ns, lang=lang))
 
-        if new_title:
-            newlist.append(new_title)
-        else:
-            logger.debug(f"xa {str(row)}")
-            newlist.append(row)
+    return titles
 
-    return newlist
+
+__all__ = [
+    "GET_SQL",
+    "add_nstext_to_title",
+    "make_labsdb_dbs_p",
+    "sql_new",
+    "sql_new_title_ns",
+    "NS_TEXT_AR",
+    "NS_TEXT_EN",
+]

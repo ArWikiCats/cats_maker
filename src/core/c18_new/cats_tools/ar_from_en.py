@@ -4,7 +4,7 @@
 import logging
 
 from ....config import settings
-from ...api_sql import find_sql
+from ...api_sql import get_exclusive_category_titles
 from ...b18_new import get_ar_list_from_encat
 from ...wiki_api import find_LCN, get_arpage_inside_encat
 from ..cat_tools2 import Categorized_Page_Generator
@@ -70,7 +70,8 @@ def make_ar_list_from_en_cat(encat):
     logger.debug("cat: " + encat)
 
     if settings.database.use_sql:
-        listenpageTitle2 = find_sql(enpageTitle)
+        listenpageTitle2 = get_exclusive_category_titles(enpageTitle)
+        listenpageTitle2 = [x.replace("_", " ") for x in listenpageTitle2]
     else:
         listenpageTitle2 = retrieve_ar_list_from_category(enpageTitle)
 
@@ -89,7 +90,6 @@ def make_ar_list_from_en_cat(encat):
 
 
 def Get_ar_list_from_en_list(enlist):
-
     new_ar_list = []
     en_done = []
 
@@ -104,13 +104,11 @@ def Get_ar_list_from_en_list(enlist):
 
             if new_list:
                 for p_w in new_list:
-
                     arpagetitle = ""
                     if "langlinks" in new_list[p_w] and "ar" in new_list[p_w]["langlinks"]:
                         arpagetitle = new_list[p_w]["langlinks"]["ar"]
 
                     if arpagetitle:
-
                         logger.debug(f"<<lightblue>>Adding {arpagetitle} to ar lists {p_w}")
 
                         new_ar_list.append(arpagetitle)

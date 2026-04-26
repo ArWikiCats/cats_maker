@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 import functools
 import logging
 from urllib.parse import urlencode
@@ -19,7 +20,6 @@ def _load_session() -> requests.Session:
 
 
 def submitAPI(params, Code, family, **kwargs):
-
     if Code.endswith("wiki"):
         Code = Code[:-4]
 

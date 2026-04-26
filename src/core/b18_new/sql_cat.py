@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 import logging
 
 from ...config import settings
@@ -98,7 +99,6 @@ def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
 
 
 def do_sql(encat, arcat, us_sql=True, wiki="en"):
-
     ar_list = get_ar_list(arcat, us_sql=us_sql)
 
     en_list = get_ar_list_from_en(encat, us_sql=us_sql, wiki=wiki)
@@ -111,7 +111,6 @@ def do_sql(encat, arcat, us_sql=True, wiki="en"):
 
 
 def make_ar_list_newcat2(arcat, encat, us_sql=False, wiki="en"):
-
     encat = encat.replace("Category:Category:", "Category:")
     encat = encat.replace("category:", "").replace("Category:", "").replace("Catégorie:", "")
     encat = encat.replace("_", " ")

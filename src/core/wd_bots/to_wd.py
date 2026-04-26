@@ -2,6 +2,7 @@
 """
 Wikidata functions for cats_maker_new bot
 """
+
 import functools
 import json
 import logging
@@ -24,7 +25,6 @@ def add_labels(
     label,
     lang,
 ):
-
     if bad_lag(True):
         return ""
 
@@ -80,7 +80,6 @@ def add_sitelinks_to_wikidata(
     returnid=False,
     return_text=False,
 ):
-
     if bad_lag(nowait):
         return ""
 
@@ -185,7 +184,6 @@ def create_new_item(
 
 
 def makejson(property, numeric):
-
     if numeric:
         numeric = numeric.replace("Q", "")
         Q = f"Q{numeric}"
@@ -214,7 +212,6 @@ def log_to_wikidata_qid(artitle, qid) -> None:
 
 
 def log_to_wikidata(artitle, entitle) -> None:
-
     cd = add_sitelinks_to_wikidata("", artitle, "arwiki", enlink=entitle, ensite="enwiki", nowait=True)
 
     if cd is True:

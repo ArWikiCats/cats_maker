@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 import logging
 
 from ...config import settings
@@ -24,7 +25,6 @@ def extract_fan_page_titles(enpageTitle) -> list:
 
 
 def get_listenpageTitle(artitle, enpageTitle1) -> list[str]:
-
     enpageTitle = enpageTitle1.strip()
 
     listenpageTitle = []

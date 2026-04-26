@@ -40,7 +40,6 @@ if not ta_dir.exists():
 
 
 def del_cookies_file(file_path):
-
     file = Path(str(file_path))
 
     if file.exists():
@@ -52,7 +51,6 @@ def del_cookies_file(file_path):
 
 
 def get_file_name(lang, family, username) -> Path:
-
     if settings.bot.no_cookies:
         randome = os.urandom(8).hex()
         return ta_dir / f"{randome}.txt"
@@ -65,7 +63,6 @@ def get_file_name(lang, family, username) -> Path:
     file = ta_dir / f"{family}_{lang}_{username}.txt"
 
     if file.exists():
-
         # check if file old is > 3 days
 
         file_time = datetime.fromtimestamp(file.stat().st_mtime)
@@ -79,13 +76,11 @@ def get_file_name(lang, family, username) -> Path:
 
 
 def from_folder(lang, family, username):
-
     file = get_file_name(lang, family, username)
 
     cookies = False
 
     if file.exists():
-
         if not file.stat().st_size:
             return False
 
@@ -111,7 +106,6 @@ def from_folder(lang, family, username):
 
 @lru_cache(maxsize=128)
 def get_cookies(lang, family, username):
-
     cookies = from_folder(lang, family, username)
 
     if not cookies:

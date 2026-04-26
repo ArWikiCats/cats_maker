@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 import functools
 import logging
 
@@ -24,7 +25,6 @@ def add_text_to_articles(final_categories, newtext):
 
 @functools.lru_cache(maxsize=1024)
 def _get_page(page_title):
-
     api = load_main_api("ar")
     page = api.MainPage(page_title)
 
@@ -53,7 +53,6 @@ def _get_page(page_title):
 
 @function_timer
 def add_to_page(page_title, arcat):
-
     Dont_add_to_pages = Dont_add_to_pages_def()
 
     logger.info(f" page_title:{page_title} , cat:{arcat}")
@@ -104,7 +103,6 @@ def add_to_page(page_title, arcat):
 
 
 def add_to_final_list(final_list, title, callback=None):
-
     title = title.replace("_", " ")
 
     if not title.startswith("تصنيف:"):

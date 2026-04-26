@@ -64,7 +64,6 @@ def post_request_for_lag() -> int:
 
 
 def find_lag(err) -> None:
-
     lagese = int(err.get("lag", "0"))
 
     if lagese != FFa_lag[1]:
@@ -73,17 +72,15 @@ def find_lag(err) -> None:
     else:
         logger.debug(f"<<lightpurple>> lagese == FFa_lag[1] ({FFa_lag[1]})")
 
-    logger.debug(f"<<lightred>> max lag: sleep for {lagese+1} secound.")
+    logger.debug(f"<<lightred>> max lag: sleep for {lagese + 1} secound.")
 
     time.sleep(FFa_lag[1] + 1)
 
 
 def make_sleep_def():
-
     frr = int(time.time() - Find_Lag[2])
 
     if Find_Lag_o[1] or frr > 119:
-
         Find_Lag_o[1] = False
 
         Find_Lag[3] += 1
@@ -98,7 +95,6 @@ def make_sleep_def():
     fain = 0
 
     if FFa_lag[1] != FFa_lag[2]:
-
         fain = FFa_lag[1]
 
         logger.debug(f"<<lightpurple>> bot.py : {fain=}")
@@ -156,7 +152,6 @@ def do_lag():
 
 
 def bad_lag(nowait):
-
     if settings.wikidata.test_mode:
         return False
 

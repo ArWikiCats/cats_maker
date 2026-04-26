@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 import functools
 import logging
 
@@ -72,7 +73,7 @@ def get_page_info_from_wikipedia(
                 title2 = xio["to"]
 
     for red in query.get("redirects", []):
-        logger.debug(f"page is redirects to : \"{red['to']}\"")
+        logger.debug(f'page is redirects to : "{red["to"]}"')
 
         table2 = dict(tata)
         table2["isRedirectPage"] = True
@@ -88,7 +89,6 @@ def get_page_info_from_wikipedia(
     numb = 1
 
     for id2, kk in pages.items():
-
         titlle = kk.get("title", "")
         table[titlle] = dict(tata)
         table[titlle]["title"] = titlle

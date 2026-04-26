@@ -4,15 +4,15 @@ Tests for src/core/api_sql/mysql_client.py
 اختبارات لملف mysql_client.py - استعلامات SQL
 
 This module tests:
-- decode_value() - Decode bytes to string
+- _decode() - Decode bytes to string
 - decode_bytes_in_list() - Resolve bytes to string
 """
 
 import pytest
 
 from src.core.api_sql.mysql_client import (
+    _decode,
     decode_bytes_in_list,
-    decode_value,
 )
 
 
@@ -37,34 +37,34 @@ class TestResolveBytes:
 
 
 class TestDecodeValue:
-    """Tests for decode_value function."""
+    """Tests for _decode function."""
 
     def test_decode_bytes_to_string(self):
-        """Test that decode_value decodes bytes to string."""
+        """Test that _decode decodes bytes to string."""
 
-        result = decode_value(b"test_string")
+        result = _decode(b"test_string")
 
         assert result == "test_string"
         assert isinstance(result, str)
 
     def test_decode_preserves_string(self):
-        """Test that decode_value preserves string input."""
+        """Test that _decode preserves string input."""
 
-        result = decode_value("already_string")
+        result = _decode("already_string")
 
         assert result == "already_string"
 
     def test_decode_handles_utf8(self):
-        """Test that decode_value handles UTF-8 encoded bytes."""
+        """Test that _decode handles UTF-8 encoded bytes."""
 
-        result = decode_value("مرحبا".encode("utf-8"))
+        result = _decode("مرحبا".encode("utf-8"))
 
         assert result == "مرحبا"
 
     def test_decode_handles_none(self):
-        """Test that decode_value handles None input."""
+        """Test that _decode handles None input."""
 
-        result = decode_value(None)
+        result = _decode(None)
 
-        # decode_value converts None to string 'None'
+        # _decode converts None to string 'None'
         assert result == "None" or result is None or result == ""

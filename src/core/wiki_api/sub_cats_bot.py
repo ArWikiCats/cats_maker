@@ -13,7 +13,6 @@ API_n_CALLS = {1: 0}
 
 
 def sub_cats_query(enlink, sitecode, ctype=""):
-
     if not enlink:
         return False
 
@@ -67,7 +66,6 @@ def sub_cats_query(enlink, sitecode, ctype=""):
     pages = api.get("query", {}).get("pages", {})
 
     for _category, caca in pages.items():
-
         cate_title = caca["title"]
         tablemember[cate_title] = {}
 

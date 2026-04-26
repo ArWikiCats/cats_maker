@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 import logging
 from typing import NamedTuple, Optional
 

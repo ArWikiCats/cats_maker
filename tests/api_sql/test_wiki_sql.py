@@ -4,16 +4,11 @@ Tests for src/core/api_sql/wiki_sql.py
 This module tests namespace handling and SQL query functions for MediaWiki.
 """
 
-import pytest
-
 from src.core.api_sql.wiki_sql import (
-    GET_SQL,
+    NS_TEXT_AR,
+    NS_TEXT_EN,
     add_nstext_to_title,
     make_labsdb_dbs_p,
-    ns_text_tab_ar,
-    ns_text_tab_en,
-    sql_new,
-    sql_new_title_ns,
 )
 
 
@@ -94,7 +89,7 @@ class TestAddNsTextToTitle:
         """Test with an invalid namespace number"""
         result = add_nstext_to_title("Test", "999", "ar")
         # When namespace is not found, ns_text is None, so it returns "None:Test"
-        assert result == "None:Test"
+        assert result == "Test"
 
     def test_with_empty_title(self):
         """Test with empty title string"""
@@ -112,28 +107,28 @@ class TestNsTextTables:
 
     def test_ar_namespace_table_has_category(self):
         """Test Arabic namespace table has category (14)"""
-        assert "14" in ns_text_tab_ar
-        assert ns_text_tab_ar["14"] == "تصنيف"
+        assert "14" in NS_TEXT_AR
+        assert NS_TEXT_AR["14"] == "تصنيف"
 
     def test_en_namespace_table_has_category(self):
         """Test English namespace table has category (14)"""
-        assert "14" in ns_text_tab_en
-        assert ns_text_tab_en["14"] == "Category"
+        assert "14" in NS_TEXT_EN
+        assert NS_TEXT_EN["14"] == "Category"
 
     def test_ar_namespace_table_has_template(self):
         """Test Arabic namespace table has template (10)"""
-        assert "10" in ns_text_tab_ar
-        assert ns_text_tab_ar["10"] == "قالب"
+        assert "10" in NS_TEXT_AR
+        assert NS_TEXT_AR["10"] == "قالب"
 
     def test_en_namespace_table_has_template(self):
         """Test English namespace table has template (10)"""
-        assert "10" in ns_text_tab_en
-        assert ns_text_tab_en["10"] == "Template"
+        assert "10" in NS_TEXT_EN
+        assert NS_TEXT_EN["10"] == "Template"
 
     def test_namespace_0_is_empty_string(self):
         """Test that namespace 0 maps to empty string"""
-        assert ns_text_tab_ar["0"] == ""
-        assert ns_text_tab_en["0"] == ""
+        assert NS_TEXT_AR["0"] == ""
+        assert NS_TEXT_EN["0"] == ""
 
 
 class TestMakeLabsdbDbsP:
@@ -141,54 +136,54 @@ class TestMakeLabsdbDbsP:
 
     def test_with_ar_wiki(self):
         """Test generating host and db for Arabic Wikipedia"""
-        host, dbs_p = make_labsdb_dbs_p("ar")
+        host, db_p = make_labsdb_dbs_p("ar")
         assert host == "arwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "arwiki_p"
+        assert db_p == "arwiki_p"
 
     def test_with_en_wiki(self):
         """Test generating host and db for English Wikipedia"""
-        host, dbs_p = make_labsdb_dbs_p("en")
+        host, db_p = make_labsdb_dbs_p("en")
         assert host == "enwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "enwiki_p"
+        assert db_p == "enwiki_p"
 
     def test_with_wiki_suffix(self):
         """Test handling wiki suffix"""
-        host, dbs_p = make_labsdb_dbs_p("arwiki")
+        host, db_p = make_labsdb_dbs_p("arwiki")
         assert host == "arwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "arwiki_p"
+        assert db_p == "arwiki_p"
 
     def test_with_wikidata(self):
         """Test special handling for Wikidata"""
-        host, dbs_p = make_labsdb_dbs_p("wikidata")
+        host, db_p = make_labsdb_dbs_p("wikidata")
         assert host == "wikidatawiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "wikidatawiki_p"
+        assert db_p == "wikidatawiki_p"
 
     def test_with_be_tarask(self):
         """Test special handling for Belarusian (Taraškievica)"""
-        host, dbs_p = make_labsdb_dbs_p("be-tarask")
+        host, db_p = make_labsdb_dbs_p("be-tarask")
         assert host == "be_x_oldwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "be_x_oldwiki_p"
+        assert db_p == "be_x_oldwiki_p"
 
     def test_with_be_x_old(self):
         """Test special handling for be-x-old"""
-        host, dbs_p = make_labsdb_dbs_p("be-x-old")
+        host, db_p = make_labsdb_dbs_p("be-x-old")
         assert host == "be_x_oldwiki.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "be_x_oldwiki_p"
+        assert db_p == "be_x_oldwiki_p"
 
     def test_with_hyphenated_wiki(self):
         """Test handling hyphenated wiki names"""
-        host, dbs_p = make_labsdb_dbs_p("zh-yue")
+        host, db_p = make_labsdb_dbs_p("zh-yue")
         assert "_" in host  # hyphen should be converted to underscore
-        assert "wiki" in dbs_p
+        assert "wiki" in db_p
 
     def test_with_wiktionary(self):
         """Test handling wiktionary"""
-        host, dbs_p = make_labsdb_dbs_p("arwiktionary")
+        host, db_p = make_labsdb_dbs_p("arwiktionary")
         assert host == "arwiktionary.analytics.db.svc.wikimedia.cloud"
-        assert dbs_p == "arwiktionary_p"
+        assert db_p == "arwiktionary_p"
 
     def test_with_commons(self):
         """Test handling commons wiki"""
-        host, dbs_p = make_labsdb_dbs_p("commons")
+        host, db_p = make_labsdb_dbs_p("commons")
         assert "commonswiki" in host
-        assert "commonswiki_p" == dbs_p
+        assert "commonswiki_p" == db_p

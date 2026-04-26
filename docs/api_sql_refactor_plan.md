@@ -2,6 +2,8 @@
 
 > Database access layer for Wikimedia Tool Labs MySQL replicas (pymysql-based).
 > Companion plan following same methodology as `mk_cats_refactor_plan.md`.
+>
+> **Status:** Quick Wins mostly done; Phases 1-4 still pending.
 
 ---
 
@@ -67,11 +69,11 @@ Legacy files become thin shims:
 
 ## 4. Quick Wins (Execute Before Any Phase)
 
--   [ ] Fix mutable default arg `values=[]` → `values=None` in `wiki_sql.py:sql_new`
--   [ ] Remove dead `decode_bytes` in `sql_bot.py:13-16` (use `mysql_client.decode_value`)
--   [ ] Add `__all__` to `sql_bot.py`
--   [ ] Add `__all__` to `wiki_sql.py`
--   [ ] Add `__all__` to `mysql_client.py` (already present)
+-   [x] Fix mutable default arg `values=[]` → `values=None` in `wiki_sql.py:sql_new` — changed to `values: tuple | list = ()` (tuple is immutable, bug fixed; not `None` as originally planned)
+-   [x] Remove dead `decode_bytes` in `sql_bot.py:13-16` (use `mysql_client.decode_value`) — already removed in a prior commit
+-   [x] Add `__all__` to `sql_bot.py`
+-   [x] Add `__all__` to `wiki_sql.py`
+-   [x] Add `__all__` to `mysql_client.py` (already present)
 
 ---
 
@@ -81,7 +83,7 @@ Legacy files become thin shims:
 
 **Target:** All files in `api_sql`.
 
-**5.1.1 Create `constants.py`**
+**5.1.1 Create `constants.py`** _(NOT DONE)_
 
 Move namespace dicts and wiki config from `wiki_sql.py`:
 
@@ -124,7 +126,7 @@ ANALYTICS_DB_TEMPLATE = "{wiki}.analytics.db.svc.wikimedia.cloud"
 DATABASE_SUFFIX = "_p"
 ```
 
-**5.1.2 Add full type hints to all functions**
+**5.1.2 Add full type hints to all functions** _(PARTIALLY DONE — signatures typed, but `_run_query` returns bare `list[dict]` without `Any`, several helpers still lack full annotations)_
 
 | Function                        | Current signature                   | Target signature                                           |
 | ------------------------------- | ----------------------------------- | ---------------------------------------------------------- | ------------------------------ |
@@ -139,7 +141,6 @@ DATABASE_SUFFIX = "_p"
 | `fetch_arcat_titles`            | `(arcatTitle)`                      | `(arcatTitle: str) -> list[str]`                           |
 | `fetch_encat_titles`            | `(encatTitle)`                      | `(encatTitle: str) -> list[str]`                           |
 | `get_exclusive_category_titles` | `(encatTitle, arcatTitle) -> list`  | Already typed (returns `list`)                             |
-| `find_sql`                      | `(enpageTitle)`                     | `(enpageTitle: str) -> list[str]`                          |
 
 **5.1.3 Normalize naming to snake_case**
 
@@ -148,7 +149,7 @@ DATABASE_SUFFIX = "_p"
 | `encatTitle`            | `en_cat_title`                       | `sql_bot.py`                   |
 | `arcatTitle`            | `ar_cat_title`                       | `sql_bot.py`                   |
 | `enpageTitle`           | `en_page_title`                      | `sql_bot.py`                   |
-| `dbs_p`                 | `db_name`                            | `wiki_sql.py:sql_new`          |
+| `db_p`                  | `db_name`                            | `wiki_sql.py:sql_new`          |
 | `ns_text_tab_ar`        | `NS_TEXT_AR` (module-level constant) | `wiki_sql.py`                  |
 | `ns_text_tab_en`        | `NS_TEXT_EN` (module-level constant) | `wiki_sql.py`                  |
 | `t1`, `t2` (parameters) | `title_key`, `ns_key`                | `wiki_sql.py:sql_new_title_ns` |
@@ -157,13 +158,15 @@ DATABASE_SUFFIX = "_p"
 
 ---
 
-### Phase 2 — Eliminate Duplication (DRY)
+### Phase 2 — Eliminate Duplication (DRY) *(PARTIALLY DONE)*
 
-**5.2.1 Remove redundant `GET_SQL()` guards in `sql_bot.py`**
+**5.2.1 Remove redundant `GET_SQL()` guards in `sql_bot.py`** *(DONE)*
 
 `sql_bot.py` calls `GET_SQL()` at three entry points (`fetch_arcat_titles:24`, `get_exclusive_category_titles:74`, `fetch_encat_titles:111`). Since `wiki_sql.py:sql_new` already guards with `GET_SQL()` and returns `[]` when disabled, the guards in `fetch_arcat_titles` and `fetch_encat_titles` are redundant if they route through `sql_new`.
 
-**Action:** Remove `GET_SQL()` guards from `fetch_arcat_titles` and `fetch_encat_titles`. Keep guard only at the top-level entry point (`find_sql` or `get_exclusive_category_titles`).
+**Action:** Remove `GET_SQL()` guards from `fetch_arcat_titles` and `fetch_encat_titles`. Keep guard only at the top-level entry point (`get_exclusive_category_titles`).
+
+**Current state:** `_fetch_ar_titles` and `_fetch_en_titles` have no `GET_SQL()` guard. Only `get_exclusive_category_titles` guards.
 
 **Before:**
 
@@ -172,7 +175,7 @@ def fetch_arcat_titles(arcatTitle):
     if not GET_SQL():
         return []
     ...
-    ar_results = make_sql_connect_silent(ar_queries, db=dbs_p, host=host, values=(arcatTitle,))
+    ar_results = make_sql_connect_silent(ar_queries, db=db_p, host=host, values=(arcatTitle,))
 ```
 
 **After:**
@@ -182,7 +185,7 @@ def fetch_arcat_titles(ar_cat_title: str) -> list[str]:
     ar_results = sql_new(ar_queries, wiki="ar", values=(ar_cat_title,))
 ```
 
-**5.2.2 Route `sql_bot.py` queries through `sql_new` instead of `make_sql_connect_silent`**
+**5.2.2 Route `sql_bot.py` queries through `sql_new` instead of `make_sql_connect_silent`** *(NOT DONE)*
 
 `fetch_arcat_titles` and `fetch_encat_titles` both call `make_labsdb_dbs_p` + `make_sql_connect_silent` directly, duplicating logic that already lives in `wiki_sql.py:sql_new`.
 
@@ -191,8 +194,8 @@ def fetch_arcat_titles(ar_cat_title: str) -> list[str]:
 **Before (fetch_encat_titles):**
 
 ```python
-host, dbs_p = make_labsdb_dbs_p("enwiki")
-en_results = make_sql_connect_silent(queries, host=host, db=dbs_p, values=(item,))
+host, db_p = make_labsdb_dbs_p("enwiki")
+en_results = make_sql_connect_silent(queries, host=host, db=db_p, values=(item,))
 ```
 
 **After:**
@@ -201,7 +204,7 @@ en_results = make_sql_connect_silent(queries, host=host, db=dbs_p, values=(item,
 en_results = sql_new(queries, wiki="en", values=(item,))
 ```
 
-**5.2.3 Use `add_nstext_to_title` in `sql_bot.py` instead of manual prefix logic**
+**5.2.3 Use `add_nstext_to_title` in `sql_bot.py` instead of manual prefix logic** *(NOT DONE)*
 
 `fetch_arcat_titles:59-60` manually does:
 
@@ -212,17 +215,17 @@ if ns_text_tab_ar.get(str(ns)):
 
 **Action:** Replace with `add_nstext_to_title(title, ns, lang="ar")` from `wiki_sql.py`.
 
-**5.2.4 Remove duplicate `decode_bytes` in `sql_bot.py`**
+**5.2.4 Remove duplicate `decode_bytes` in `sql_bot.py`** *(DONE — already removed in prior commit)*
 
 `sql_bot.py:13-16` defines `decode_bytes` which duplicates `mysql_client.py:decode_value`. The function is never called in `sql_bot.py` — it is dead code.
 
 **Action:** Remove `decode_bytes` from `sql_bot.py`.
 
-**Success criteria:** `sql_bot.py` no longer imports `make_sql_connect_silent`, `make_labsdb_dbs_p`, or `ns_text_tab_ar` directly. All queries route through `sql_new`. No dead code.
+**Success criteria:** `sql_bot.py` no longer imports `make_sql_connect_silent`, `make_labsdb_dbs_p`, or `ns_text_tab_ar` directly. All queries route through `sql_new`. No dead code. *(PENDING: still imports `make_sql_connect_silent` and `make_labsdb_dbs_p`, `_with_ns_prefix` still duplicates `add_nstext_to_title`)*
 
 ---
 
-### Phase 3 — Structural Split
+### Phase 3 — Structural Split *(NOT DONE)*
 
 **Target:** Decompose files into clear layers.
 
@@ -239,15 +242,15 @@ Pure rename with shim. Contains: `load_db_config`, `_sql_connect_pymysql`, `deco
 
 **5.3.3 Rename `sql_bot.py` → `queries.py`**
 
-Pure rename with shim. Contains: `fetch_arcat_titles`, `fetch_encat_titles`, `get_exclusive_category_titles`, `find_sql`.
+Pure rename with shim. Contains: `fetch_arcat_titles`, `fetch_encat_titles`, `get_exclusive_category_titles`.
 
 **Success criteria:** All old file paths importable via deprecation shims (`mysql_client.py`, `wiki_sql.py`, `sql_bot.py`). All new paths work.
 
 ---
 
-### Phase 4 — Error Handling & Robustness
+### Phase 4 — Error Handling & Robustness *(NOT DONE)*
 
-**5.4.1 Handle non-SELECT queries in `_sql_connect_pymysql`**
+**5.4.1 Handle non-SELECT queries in `_sql_connect_pymysql`** *(NOT DONE)*
 
 Currently `_sql_connect_pymysql` unconditionally calls `cursor.fetchall()`. For `INSERT`/`UPDATE`/`DELETE` queries, this raises `pymysql.Error` which is caught and re-raised as `DatabaseFetchError`.
 
@@ -268,7 +271,7 @@ def _sql_connect_pymysql(
         return []
 ```
 
-**5.4.2 Fix mutable default argument in `sql_new`**
+**5.4.2 Fix mutable default argument in `sql_new`** *(DONE — changed to `values: tuple | list = ()`)*
 
 `wiki_sql.py:158`:
 
@@ -293,7 +296,7 @@ Consider adding `connect_timeout=10` and `read_timeout=30` to `load_db_config` f
 
 ---
 
-### Phase 5 — Testing & Validation
+### Phase 5 — Testing & Validation *(PARTIALLY DONE — 48 tests pass, >=85% coverage not verified)*
 
 **5.5.1 Update existing tests**
 
@@ -340,7 +343,6 @@ pytest tests/api_sql/ tests/integration/test_main_flow.py -v
 | `api_sql.sql_new`                       | `api_sql.gateway.sql_new`                       | Yes, via `__init__.py`     |
 | `api_sql.sql_new_title_ns`              | `api_sql.gateway.sql_new_title_ns`              | Yes, via `__init__.py`     |
 | `api_sql.add_nstext_to_title`           | `api_sql.gateway.add_nstext_to_title`           | Yes, via `__init__.py`     |
-| `api_sql.find_sql`                      | `api_sql.queries.find_sql`                      | Yes, via `__init__.py`     |
 | `api_sql.get_exclusive_category_titles` | `api_sql.queries.get_exclusive_category_titles` | Yes, via `__init__.py`     |
 | `api_sql.mysql_client.*`                | `api_sql.client.*`                              | Via `mysql_client.py` shim |
 | `api_sql.wiki_sql.*`                    | `api_sql.gateway.*` + `api_sql.constants.*`     | Via `wiki_sql.py` shim     |
@@ -353,16 +355,16 @@ The public API exported from `__init__.py` stays **identical** — no consumer c
 ## 7. Acceptance Criteria
 
 -   [ ] `sql_bot.py` no longer calls `make_sql_connect_silent` or `make_labsdb_dbs_p` directly — routes through `sql_new`
--   [ ] `sql_bot.py` no longer has `GET_SQL()` guards inside helper fetchers
+-   [x] `sql_bot.py` no longer has `GET_SQL()` guards inside helper fetchers
 -   [ ] `sql_bot.py` uses `add_nstext_to_title` instead of manual namespace prefixing
--   [ ] Dead `decode_bytes` removed from `sql_bot.py`
--   [ ] Mutable default `values=[]` fixed to `values=None`
+-   [x] Dead `decode_bytes` removed from `sql_bot.py`
+-   [x] Mutable default fixed (`values=[]` → `values=()`) — tuple default avoids mutable-default bug
 -   [ ] `_sql_connect_pymysql` handles non-SELECT queries without calling `fetchall`
 -   [ ] Namespace dicts moved to `constants.py`
 -   [ ] All old file paths remain importable via shims
 -   [ ] `ruff check src/core/api_sql` passes with zero errors
 -   [ ] `mypy src/core/api_sql --ignore-missing-imports` passes
--   [ ] `pytest tests/api_sql/` passes with ≥ 85% coverage
+-   [x] `pytest tests/api_sql/` passes — 48/48 pass (≥ 85% coverage not yet verified)
 -   [ ] `pytest tests/integration/test_main_flow.py` passes
 -   [ ] All downstream consumers (`b18_new/sql_cat.py`, `b18_new/cat_tools_enlist.py`, `c18_new/dontadd.py`, `c18_new/cats_tools/ar_from_en.py`) continue to work with zero import changes
 
@@ -370,13 +372,13 @@ The public API exported from `__init__.py` stays **identical** — no consumer c
 
 ## 8. Risks & Mitigations
 
-| Risk                                                                                  | Impact | Mitigation                                                                                            |
-| ------------------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------- |
-| Removing `GET_SQL()` from `fetch_*` functions could expose dev to real DB calls       | Medium | Keep guard at `get_exclusive_category_titles` and `find_sql` — these are the only public entry points |
-| `sql_new` returns `[]` silently when SQL is disabled; `fetch_*` callers may not check | Low    | Behavior identical to current — not a regression                                                      |
-| Renaming files breaks internal relative imports                                       | Medium | Shim files at old paths guarantee backward compat                                                     |
-| `_is_select_query` misses edge cases (CTE, comments before SELECT)                    | Low    | Conservative — only affects non-SELECT paths that would have broken anyway                            |
-| `decode_bytes` removal could affect external consumers                                | Low    | Function was never called; safe to remove                                                             |
+| Risk                                                                                  | Impact | Mitigation                                                                             |
+| ------------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------- |
+| Removing `GET_SQL()` from `fetch_*` functions could expose dev to real DB calls       | Medium | Keep guard at `get_exclusive_category_titles` — these are the only public entry points |
+| `sql_new` returns `[]` silently when SQL is disabled; `fetch_*` callers may not check | Low    | Behavior identical to current — not a regression                                       |
+| Renaming files breaks internal relative imports                                       | Medium | Shim files at old paths guarantee backward compat                                      |
+| `_is_select_query` misses edge cases (CTE, comments before SELECT)                    | Low    | Conservative — only affects non-SELECT paths that would have broken anyway             |
+| `decode_bytes` removal could affect external consumers                                | Low    | Function was never called; safe to remove                                              |
 
 ---
 
@@ -403,16 +405,16 @@ Legacy shims (import from new locations):
 
 ## 10. Execution Order
 
-| Phase      | Steps                                                                  | Estimated effort | Dependencies |
-| ---------- | ---------------------------------------------------------------------- | ---------------- | ------------ |
-| Quick Wins | Fix mutable default, remove dead code, add `__all__`                   | 15 min           | None         |
-| Phase 1    | Create `constants.py`, add type hints, rename symbols                  | 1 hr             | Quick Wins   |
-| Phase 2    | DRY: route through `sql_new`, use `add_nstext_to_title`, remove guards | 1 hr             | Phase 1      |
-| Phase 3    | Rename and split files, add shims                                      | 30 min           | Phase 2      |
-| Phase 4    | Fix `fetchall` for non-SELECT, add connection timeout                  | 30 min           | Phase 3      |
-| Phase 5    | Update tests, add missing tests                                        | 1-2 hr           | Phase 4      |
+| Phase      | Steps                                                                  | Status     | Estimated effort | Dependencies |
+| ---------- | ---------------------------------------------------------------------- | ---------- | ---------------- | ------------ |
+| Quick Wins | Fix mutable default, remove dead code, add `__all__`                   | Done       | 15 min           | None         |
+| Phase 1    | Create `constants.py`, add type hints, rename symbols                  | Pending    | 1 hr             | Quick Wins   |
+| Phase 2    | DRY: route through `sql_new`, use `add_nstext_to_title`, remove guards | Partial    | 1 hr             | Phase 1      |
+| Phase 3    | Rename and split files, add shims                                      | Pending    | 30 min           | Phase 2      |
+| Phase 4    | Fix `fetchall` for non-SELECT, add connection timeout                  | Pending    | 30 min           | Phase 3      |
+| Phase 5    | Update tests, add missing tests                                        | Partial    | 1-2 hr           | Phase 4      |
 
-**Total estimated effort:** ~4-5 hours.
+**Total estimated effort:** ~4-5 hours. **Spent so far:** ~15 min (formatting + import ordering).
 
 ---
 
@@ -422,10 +424,9 @@ After refactoring, verify these consumer files still work (imports unchanged due
 
 | Consumer file                          | Symbols imported from api_sql |
 | -------------------------------------- | ----------------------------- |
-| `src/core/b18_new/sql_cat.py`               | `GET_SQL`, `sql_new_title_ns` |
-| `src/core/b18_new/cat_tools_enlist.py`      | (via settings-based SQL flag) |
-| `src/core/c18_new/dontadd.py`               | (via settings-based SQL flag) |
-| `src/core/c18_new/cats_tools/ar_from_en.py` | `find_sql`                    |
+| `src/core/b18_new/sql_cat.py`          | `GET_SQL`, `sql_new_title_ns` |
+| `src/core/b18_new/cat_tools_enlist.py` | (via settings-based SQL flag) |
+| `src/core/c18_new/dontadd.py`          | (via settings-based SQL flag) |
 | `tests/integration/test_main_flow.py`  | (mock-based import test)      |
 
 No import changes are needed — `api_sql/__init__.py` re-exports all public symbols unchanged.

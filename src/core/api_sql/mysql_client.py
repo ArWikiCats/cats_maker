@@ -1,5 +1,5 @@
-#!/usr/bin/python3
-""" """
+"""Low-level MySQL connection and query helpers."""
+
 import functools
 import logging
 from pathlib import Path
@@ -8,7 +8,7 @@ from typing import Any
 import pymysql
 from pymysql.cursors import DictCursor
 
-from ...exceptions import (
+from .exceptions import (
     DatabaseConnectionError,
     DatabaseError,
     DatabaseFetchError,
@@ -18,14 +18,18 @@ from ...exceptions import (
 logger = logging.getLogger(__name__)
 
 
-@functools.lru_cache(maxsize=1)
-def load_db_config(db: str, host: str) -> dict[str, Any]:
-    # --- 1) تحقق من ملف الإنتاج ~/replica.my.cnf ---
-    replica_cnf_path = Path.home() / "replica.my.cnf"
+# ---------------------------------------------------------------------------
+# Connection config
+# ---------------------------------------------------------------------------
+
+
+@functools.lru_cache(maxsize=None)
+def _build_db_config(host: str, db: str) -> dict[str, Any]:
+    """Build a pymysql connection config dict (cached per host+db pair)."""
     return {
         "host": host,
         "database": db,
-        "read_default_file": str(replica_cnf_path),
+        "read_default_file": str(Path.home() / "replica.my.cnf"),
         "charset": "utf8mb4",
         "use_unicode": True,
         "autocommit": True,
@@ -33,126 +37,85 @@ def load_db_config(db: str, host: str) -> dict[str, Any]:
     }
 
 
-def _sql_connect_pymysql(query: str, db: str = "", host: str = "", values: tuple = None) -> list:
-    """Execute a SQL query and return results.
+# ---------------------------------------------------------------------------
+# Query execution
+# ---------------------------------------------------------------------------
 
-    Args:
-        query: SQL query to execute
-        db: Database name
-        host: Database host
-        values: Parameters for parameterized queries
 
-    Returns:
-        List of result rows
+def _run_query(query: str, host: str, db: str, values: tuple | None) -> list[dict]:
+    """Connect, execute *query*, and return all rows.
 
     Raises:
-        DatabaseConnectionError: If connection to database fails
-        QueryExecutionError: If query execution fails
-        DatabaseFetchError: If fetching results fails
+        DatabaseConnectionError: connection failed.
+        QueryExecutionError:     cursor.execute failed.
+        DatabaseFetchError:      cursor.fetchall failed.
     """
-
-    logger.debug("start :")
-
-    params = None
-
-    if values:
-        params = values
-
-    # connect to the database server without error
-
-    DB_CONFIG = load_db_config(db, host)
+    config = _build_db_config(host, db)
 
     try:
-        connection = pymysql.connect(**DB_CONFIG)
-    except pymysql.Error as e:
-        logger.error(f"Database connection failed: {e}")
-        raise DatabaseConnectionError(f"Failed to connect to database: {e}") from e
+        connection = pymysql.connect(**config)
+    except pymysql.Error as exc:
+        logger.error("DB connection failed: %s", exc)
+        raise DatabaseConnectionError(f"Cannot connect to {host}/{db}") from exc
 
     with connection as conn, conn.cursor() as cursor:
-
-        # Execute query with parameters
         try:
-            cursor.execute(query, params)
-
-        except pymysql.Error as e:
-            logger.error(f"Query execution failed: {e}")
-            raise QueryExecutionError(f"Failed to execute query: {e}") from e
-
-        results = []
+            cursor.execute(query, values or None)
+        except pymysql.Error as exc:
+            logger.error("Query execution failed: %s", exc)
+            raise QueryExecutionError("Query failed") from exc
 
         try:
-            results = cursor.fetchall()
-
-        except pymysql.Error as e:
-            logger.error(f"Failed to fetch results: {e}")
-            raise DatabaseFetchError(f"Failed to fetch query results: {e}") from e
-
-        # yield from cursor
-        return results
+            return cursor.fetchall()
+        except pymysql.Error as exc:
+            logger.error("Fetch failed: %s", exc)
+            raise DatabaseFetchError("Could not fetch results") from exc
 
 
-def decode_value(value: bytes) -> str:
+# ---------------------------------------------------------------------------
+# Byte decoding helpers
+# ---------------------------------------------------------------------------
+
+
+def _decode(value: bytes) -> str:
     try:
-        value = value.decode("utf-8")  # Assuming UTF-8 encoding
+        return value.decode("utf-8")
     except Exception:
-        try:
-            value = str(value)
-        except Exception:
-            return ""
-    return value
+        return str(value)
 
 
 def decode_bytes_in_list(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    decoded_rows = []
+    """Decode any byte values in a list of row dicts to str."""
+    return [{k: (_decode(v) if isinstance(v, bytes) else v) for k, v in row.items()} for row in rows]
 
-    for row in rows:
-        decoded_row = {}
-        for key, value in row.items():
-            if isinstance(value, bytes):
-                value = decode_value(value)
-            decoded_row[key] = value
-        decoded_rows.append(decoded_row)
 
-    return decoded_rows
+# ---------------------------------------------------------------------------
+# Public interface
+# ---------------------------------------------------------------------------
 
 
 def make_sql_connect_silent(
     query: str,
-    db: str = "",
-    host: str = "",
-    values=None,
-):
-    """Execute a SQL query and return decoded results.
+    *,
+    host: str,
+    db: str,
+    values: tuple | None = None,
+) -> list[dict]:
+    """Execute *query* and return decoded rows; return [] on any error.
 
-    Args:
-        query: SQL query to execute
-        db: Database name
-        host: Database host
-        values: Parameters for parameterized queries
-
-    Returns:
-        List of decoded result rows, or empty list on error if silent=True
+    Uses keyword-only args for host/db to prevent accidental positional misuse.
     """
-
     if not query:
-        logger.debug("query == ''")
+        logger.debug("make_sql_connect_silent called with empty query")
         return []
-
-    logger.debug("<<lightyellow>> newsql::")
 
     try:
-        rows = _sql_connect_pymysql(query, db=db, host=host, values=values)
-    except DatabaseError as e:
-        logger.error(f"Database error: {e}")
+        rows = _run_query(query, host=host, db=db, values=values)
+    except DatabaseError as exc:
+        logger.error("Suppressed database error: %s", exc)
         return []
 
-    rows = decode_bytes_in_list(rows)
-
-    return rows
+    return decode_bytes_in_list(rows)
 
 
-__all__ = [
-    "make_sql_connect_silent",
-    "decode_value",
-    "decode_bytes_in_list",
-]
+__all__ = ["make_sql_connect_silent", "decode_bytes_in_list"]

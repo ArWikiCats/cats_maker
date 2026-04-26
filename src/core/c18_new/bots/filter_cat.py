@@ -40,7 +40,6 @@ if settings.category.stubs:
 
 
 def filter_cats_text(final_cats, ns, text_new):
-
     len_first = len(final_cats)
 
     logger.debug("<<lightred>> last<<lightyellow>>final_cats")
@@ -49,7 +48,6 @@ def filter_cats_text(final_cats, ns, text_new):
     textremove = re.sub(r"\s*\|\s*", "|", text_new)
 
     for item in final_cats[:]:
-
         if ns not in [10, 14]:
             if item.startswith("تصنيف:قوالب") or item.startswith("تصنيف:صناديق تصفح"):
                 logger.info(f"remove templates cat {item}. ")

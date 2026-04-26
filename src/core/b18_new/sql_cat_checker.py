@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 import logging
 
 from ...config import settings
@@ -26,14 +27,12 @@ if settings.category.stubs:
 
 
 def check_category_status(wiki, arcat, encat):
-
     arcat2 = f"تصنيف:{arcat}"
     encat2 = f"Category:{encat}"
 
     ioio_en = get_page_info_from_wikipedia(wiki, encat2)
 
     if ioio_en:
-
         if not ioio_en:
             logger.info(f"<<lightred>> not ioio_en:({encat2})")
             return False
@@ -62,7 +61,6 @@ def check_category_status(wiki, arcat, encat):
 
 
 def check_arabic_category_status(arcat, encat):
-
     arcat2 = f"تصنيف:{arcat}"
     encat2 = f"Category:{encat}"
 
@@ -96,7 +94,6 @@ def check_arabic_category_status(arcat, encat):
 
 
 def validate_categories_for_new_cat(arcat, encat, wiki="en"):
-
     encat = encat.replace("Category:Category:", "Category:")
     encat = encat.replace("category:", "").replace("Category:", "").replace("Catégorie:", "")
     encat = encat.replace("_", " ")

@@ -10,6 +10,7 @@ added = text_to_temp_bot.find_doc_and_add(Final_Categories, title)
 if page has ({{#استدعاء:شريط|شريط) replace ({{توثيق}}) by ({{توثيق شريط}})
 
 """
+
 import logging
 import re
 
@@ -62,7 +63,6 @@ pre_text = """{{صفحة توثيق فرعية}}
 
 
 def add_to_text_temps(text, Final_Categories):
-
     for x in tosearch_and_replace:
         if text.find(x) != -1:
             text = text.replace(x, x + "\n" + Final_Categories)
@@ -72,7 +72,6 @@ def add_to_text_temps(text, Final_Categories):
 
 
 def add_to_doc_page(text, Final_Categories):
-
     if text == "":
         return pre_text + "\n" + Final_Categories + "\n}}</includeonly>"
 
@@ -124,7 +123,6 @@ def add_to_doc_page(text, Final_Categories):
     temp_done = False
 
     for template in parsed.templates:
-
         if not template:
             continue
 
@@ -154,7 +152,6 @@ def add_to_doc_page(text, Final_Categories):
 
 
 def add_direct(text, Final_Categories):
-
     if text.find("{{توثيق") != -1:
         num = text.find("{{توثيق")
         text = text[:num] + Final_Categories + "\n" + text[num:]
@@ -198,7 +195,6 @@ def add_direct(text, Final_Categories):
 
 
 def find_doc_and_add(Final_Categories, title, create=False):
-
     if any(x in title for x in ["/ملعب", "/مختبر"]):
         logger.info(f"Skipping {title=}")
         return False

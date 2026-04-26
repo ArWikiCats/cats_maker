@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ """
+
 import functools
 import json
 import logging
@@ -46,7 +47,6 @@ def load_json(filename, empty_data="list"):
 
 
 def log_to_file(data, filename):
-
     delete = False
 
     try:

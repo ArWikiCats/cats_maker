@@ -2,6 +2,7 @@
 """
 Refactored module for handling MediaWiki API calls for categories, langlinks, etc.
 """
+
 import logging
 from typing import Any, Dict, List, Optional, Tuple
 
