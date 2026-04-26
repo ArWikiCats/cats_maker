@@ -8,16 +8,17 @@ import json
 import logging
 import re
 
+from ..new_api import ALL_APIS, load_main_api
 from .utils import bad_lag, outbot_json
-from .wd_bots_main import WD_API, log_in_wikidata
+from .wd_bots_main import WD_API
 
 logger = logging.getLogger(__name__)
 
 
 @functools.lru_cache(maxsize=1024)
-def get_session_post(Mr_or_bot="bot", www="www") -> WD_API:
-    login_bot = log_in_wikidata(www=www)
-    return WD_API(login_bot, Mr_or_bot=Mr_or_bot)
+def get_session_post(www="www") -> ALL_APIS:
+    api = load_main_api(lang=www, family="wikidata")
+    return WD_API(api.login_bot)
 
 
 def add_labels(

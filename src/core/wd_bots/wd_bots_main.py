@@ -3,42 +3,22 @@
 !
 """
 
-import functools
 import logging
 import time
 
 from ...config import settings
 from ..new_api import Login
-from ..new_api.pagenew import password, username
 from .utils import do_lag, find_lag, lag_bot
 
 logger = logging.getLogger(__name__)
 
-User_tables_bot = {
-    "username": username,
-    "password": password,
-}
-
-
-@functools.lru_cache(maxsize=1)
-def log_in_wikidata(www="www") -> Login:
-    username = User_tables_bot.get("username")
-    login_bot = Login(www, family="wikidata")
-    logger.debug(f"### <<purple>> make new bot for ({www}.wikidata.org|{username})")
-    login_bot.add_users({"wikidata": User_tables_bot}, lang=www)
-    return login_bot
-
 
 class WD_API:
-    def __init__(self, login_bot: Login, Mr_or_bot="bot"):
+    def __init__(self, login_bot: Login):
         self.login_bot = login_bot
 
         self.lang = "test" if settings.wikidata.test_mode else "www"
         self.family = "wikidata"
-
-        self.usernamex = self.login_bot.user_login
-
-        logger.warning(f"<<lightgreen>> {Mr_or_bot}, {self.usernamex=} \n")
 
     def handle_err_wd(
         self,
@@ -175,10 +155,6 @@ class WD_API:
 
         data["format"] = "json"
         data["utf8"] = 1
-
-        if "summary" in data:
-            if self.usernamex.find("bot") == -1:
-                del data["summary"]
 
         data.setdefault("formatversion", 1)
 
