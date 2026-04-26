@@ -45,7 +45,7 @@ def english_page_link_from_text(link, firstsite_code, second_site_code, text="")
     logger.debug(f">> get qid from text: {qid} ")
     logger.debug(f">> qid {qid} ")
 
-    data = Get_Sitelinks_from_qid(ssite="", ids=qid)
+    data = Get_Sitelinks_from_qid(ids=qid)
 
     sitelinks = data.get("sitelinks", {})
 

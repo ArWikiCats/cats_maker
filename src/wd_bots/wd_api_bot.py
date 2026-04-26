@@ -112,8 +112,8 @@ def Get_Sitelinks_From_wikidata(
     return table
 
 
-def Get_Sitelinks_from_qid(ssite="", ids=""):
-    return Get_Sitelinks_From_wikidata("", "", ssite=ssite, ids=ids)
+def Get_Sitelinks_from_qid(ids=""):
+    return Get_Sitelinks_From_wikidata("", "", ssite="", ids=ids)
 
 
 def Get_P373_API(q, titles="", sites=""):
