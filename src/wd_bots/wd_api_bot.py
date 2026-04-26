@@ -66,8 +66,6 @@ def Get_infos_wikidata(params):
 def Get_Sitelinks_From_wikidata(
     site,
     title,
-    ssite="",
-    return_main_table=False,
 ):
 
     sitewiki = site
@@ -87,21 +85,6 @@ def Get_Sitelinks_From_wikidata(
     }
 
     table = Get_infos_wikidata(params)
-
-    if return_main_table:
-        return table
-
-    if table:
-        table["site"] = sitewiki
-
-    ssite2 = ssite
-    if not ssite.endswith("wiki"):
-        ssite2 += "wiki"
-
-    if ssite:
-        sitelinks = table.get("sitelinks", {})
-        result = sitelinks.get(ssite) or sitelinks.get(ssite2) or ""
-        return result
 
     return table
 

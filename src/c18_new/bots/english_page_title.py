@@ -184,7 +184,7 @@ def english_page_link(link, firstsite_code, second_site_code, text=""):
 
 def get_en_link_from_ar_text(title, site, sitetarget):
 
-    enpage = Get_Sitelinks_From_wikidata(site, title, return_main_table=True)
+    enpage = Get_Sitelinks_From_wikidata(site, title)
 
     if not enpage:
         return ""
