@@ -87,7 +87,7 @@ def from_sql():
     cats = []
 
     if GET_SQL():
-        cats = sql_new_title_ns(queries, wiki="ar", t1="page_title", t2="page_namespace")
+        cats = sql_new_title_ns(queries, wiki="ar", title_key="page_title", ns_key="page_namespace")
 
     return cats
 

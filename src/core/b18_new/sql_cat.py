@@ -47,7 +47,7 @@ def get_ar_list(arcat, us_sql=True):
 
     if us_sql is True and GET_SQL():
         # Pass category as parameter to prevent SQL injection
-        ar_list = sql_new_title_ns(qia_ar, wiki="arwiki", t1="page_title", t2="page_namespace", values=(ar_cat2,))
+        ar_list = sql_new_title_ns(qia_ar, wiki="arwiki", title_key="page_title", ns_key="page_namespace", values=(ar_cat2,))
 
     if not ar_list:
         api = load_main_api("ar")
