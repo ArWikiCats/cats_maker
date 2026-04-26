@@ -6,7 +6,7 @@ This module tests functions for converting English category members to Arabic.
 
 import pytest
 
-from src.core.c18_new.cats_tools.ar_from_en2 import (
+from src.core.cats_helpers.ar_from_en2 import (
     en_category_members,
     fetch_ar_titles_based_on_en_category,
     get_ar_list_title_from_en_list,

@@ -5,10 +5,18 @@ import logging
 
 from ...config import settings
 from ..api_sql import add_namespace_prefix, db_manager
-from ..c18_new import fetch_ar_titles_based_on_en_category
+from ..cats_helpers import en_category_members, get_ar_list_title_from_en_list
 from ..new_api import load_main_api
 
 logger = logging.getLogger(__name__)
+
+
+def fetch_ar_titles_based_on_en_category(enpageTitle, wiki="en"):
+    en_titles = en_category_members(enpageTitle, wiki=wiki)
+
+    new_ar_list = get_ar_list_title_from_en_list(en_titles, wiki=wiki)
+
+    return new_ar_list
 
 
 def get_ar_list(arcat, us_sql=True):
