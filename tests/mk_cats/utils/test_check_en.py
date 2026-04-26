@@ -19,7 +19,7 @@ class TestCheckEnTemps:
         """Test that check_en_temps returns False for categories in skip_encats."""
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", ["Category:Skip"])
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         result = check_en_temps("Category:Skip")
 
@@ -30,7 +30,7 @@ class TestCheckEnTemps:
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
         mocker.patch("src.mk_cats.utils.check_en.find_LCN", return_value=None)
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         result = check_en_temps("Category:Test")
 
@@ -41,7 +41,7 @@ class TestCheckEnTemps:
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
         mocker.patch("src.mk_cats.utils.check_en.find_LCN", return_value={"Category:Test": {}})
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         result = check_en_temps("Category:Test")
 
@@ -56,7 +56,7 @@ class TestCheckEnTemps:
             return_value={"Category:Test": {"templates": ["Template:GoodTemplate"]}},
         )
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         result = check_en_temps("Category:Test")
 
@@ -71,7 +71,7 @@ class TestCheckEnTemps:
             return_value={"Category:Test": {"templates": ["Template:BadTemplate"]}},
         )
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         result = check_en_temps("Category:Test")
 
@@ -86,7 +86,7 @@ class TestCheckEnTemps:
             return_value={"Category:Test": {"templates": ["Template:BADTEMPLATE"]}},
         )
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         result = check_en_temps("Category:Test")
 
@@ -101,7 +101,7 @@ class TestCheckEnTemps:
             return_value={"Category:Test": {"templates": ["template:badtemplate"]}},
         )
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         result = check_en_temps("Category:Test")
 
@@ -112,7 +112,7 @@ class TestCheckEnTemps:
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
         mock_find_lcn = mocker.patch("src.mk_cats.utils.check_en.find_LCN", return_value=None)
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         check_en_temps("Category:Test")
 
@@ -123,7 +123,7 @@ class TestCheckEnTemps:
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
         mocker.patch("src.mk_cats.utils.check_en.find_LCN", return_value={"Category:Test": {"templates": []}})
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         result = check_en_temps("Category:Test")
 
@@ -142,7 +142,7 @@ class TestCheckEnTemps:
             },
         )
 
-        from src.mk_cats.utils.check_en import check_en_temps
+        from src.core.mk_cats.utils.check_en import check_en_temps
 
         result = check_en_temps("Category:Test")
 

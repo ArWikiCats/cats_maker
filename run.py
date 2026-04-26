@@ -9,7 +9,7 @@ from pathlib import Path
 import requests
 
 from src.config import settings
-from src.mk_cats import create_categories_from_list
+from src.core.mk_cats import create_categories_from_list
 
 logger = logging.getLogger(__name__)
 

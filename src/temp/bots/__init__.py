@@ -11,7 +11,7 @@ from .temp import main_make_temp, Make_years_temp
 import logging
 import re
 
-from ...helps import dump_data
+from ...core.helps import dump_data
 from .load_data import cacaca
 from .temp_cent import Make_Cent_temp
 from .temp_decades import MakedecadesTemp

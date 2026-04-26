@@ -15,7 +15,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.mk_cats.members_helper import gather_members_from_api, gather_members_from_sql
+from src.core.mk_cats.members_helper import gather_members_from_api, gather_members_from_sql
 
 
 class TestGatherMembersFromSql:
@@ -77,7 +77,7 @@ class TestMergeMemberLists:
 
     def test_merges_two_lists(self):
         """Test that merge_member_lists merges two lists."""
-        from src.mk_cats.members_helper import merge_member_lists
+        from src.core.mk_cats.members_helper import merge_member_lists
 
         result = merge_member_lists(["A", "B"], ["C", "D"])
 
@@ -85,7 +85,7 @@ class TestMergeMemberLists:
 
     def test_removes_duplicates(self):
         """Test that merge_member_lists removes duplicates."""
-        from src.mk_cats.members_helper import merge_member_lists
+        from src.core.mk_cats.members_helper import merge_member_lists
 
         result = merge_member_lists(["A", "B"], ["B", "C"])
 
@@ -94,7 +94,7 @@ class TestMergeMemberLists:
 
     def test_handles_empty_lists(self):
         """Test that merge_member_lists handles empty lists."""
-        from src.mk_cats.members_helper import merge_member_lists
+        from src.core.mk_cats.members_helper import merge_member_lists
 
         result = merge_member_lists([], [])
 
@@ -102,7 +102,7 @@ class TestMergeMemberLists:
 
     def test_merges_multiple_lists(self):
         """Test that merge_member_lists merges multiple lists."""
-        from src.mk_cats.members_helper import merge_member_lists
+        from src.core.mk_cats.members_helper import merge_member_lists
 
         result = merge_member_lists(["A"], ["B"], ["C"])
 
@@ -114,7 +114,7 @@ class TestFilterInvalidMembers:
 
     def test_filters_empty_strings(self):
         """Test that filter_invalid_members filters empty strings."""
-        from src.mk_cats.members_helper import filter_invalid_members
+        from src.core.mk_cats.members_helper import filter_invalid_members
 
         result = filter_invalid_members(["A", "", "B"])
 
@@ -122,7 +122,7 @@ class TestFilterInvalidMembers:
 
     def test_filters_none_values(self):
         """Test that filter_invalid_members filters None values."""
-        from src.mk_cats.members_helper import filter_invalid_members
+        from src.core.mk_cats.members_helper import filter_invalid_members
 
         result = filter_invalid_members(["A", None, "B"])
 
@@ -130,7 +130,7 @@ class TestFilterInvalidMembers:
 
     def test_filters_non_strings(self):
         """Test that filter_invalid_members filters non-string values."""
-        from src.mk_cats.members_helper import filter_invalid_members
+        from src.core.mk_cats.members_helper import filter_invalid_members
 
         result = filter_invalid_members(["A", 123, "B", [], {}])
 
@@ -138,7 +138,7 @@ class TestFilterInvalidMembers:
 
     def test_returns_empty_list_for_all_invalid(self):
         """Test that filter_invalid_members returns empty list when all invalid."""
-        from src.mk_cats.members_helper import filter_invalid_members
+        from src.core.mk_cats.members_helper import filter_invalid_members
 
         result = filter_invalid_members(["", None, 123])
 
@@ -150,7 +150,7 @@ class TestDeduplicateMembers:
 
     def test_removes_duplicates(self):
         """Test that deduplicate_members removes duplicates."""
-        from src.mk_cats.members_helper import deduplicate_members
+        from src.core.mk_cats.members_helper import deduplicate_members
 
         result = deduplicate_members(["A", "A", "B", "B"])
 
@@ -159,7 +159,7 @@ class TestDeduplicateMembers:
 
     def test_handles_empty_list(self):
         """Test that deduplicate_members handles empty list."""
-        from src.mk_cats.members_helper import deduplicate_members
+        from src.core.mk_cats.members_helper import deduplicate_members
 
         result = deduplicate_members([])
 
@@ -167,7 +167,7 @@ class TestDeduplicateMembers:
 
     def test_preserves_unique_items(self):
         """Test that deduplicate_members preserves unique items."""
-        from src.mk_cats.members_helper import deduplicate_members
+        from src.core.mk_cats.members_helper import deduplicate_members
 
         result = deduplicate_members(["A", "B", "C"])
 
@@ -181,7 +181,7 @@ class TestRemoveRedirects:
         """Test that remove_redirects calls remove_redirect_pages."""
         mock_remove = mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", return_value=["A", "B"])
 
-        from src.mk_cats.members_helper import remove_redirects
+        from src.core.mk_cats.members_helper import remove_redirects
 
         result = remove_redirects("ar", ["A", "B", "C"])
 
@@ -199,7 +199,7 @@ class TestCollectCategoryMembers:
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
         mocker.patch("src.mk_cats.members_helper.settings")
 
-        from src.mk_cats.members_helper import collect_category_members
+        from src.core.mk_cats.members_helper import collect_category_members
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
@@ -217,7 +217,7 @@ class TestCollectCategoryMembers:
         mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
         mock_settings.database.use_sql = True
 
-        from src.mk_cats.members_helper import collect_category_members
+        from src.core.mk_cats.members_helper import collect_category_members
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
@@ -236,7 +236,7 @@ class TestCollectCategoryMembers:
         mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
         mock_settings.database.use_sql = False
 
-        from src.mk_cats.members_helper import collect_category_members
+        from src.core.mk_cats.members_helper import collect_category_members
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
@@ -253,7 +253,7 @@ class TestCollectCategoryMembers:
         mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
         mock_settings.database.use_sql = False
 
-        from src.mk_cats.members_helper import collect_category_members
+        from src.core.mk_cats.members_helper import collect_category_members
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
@@ -269,7 +269,7 @@ class TestCollectCategoryMembers:
         mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
         mock_settings.database.use_sql = True
 
-        from src.mk_cats.members_helper import collect_category_members
+        from src.core.mk_cats.members_helper import collect_category_members
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
@@ -285,7 +285,7 @@ class TestCollectCategoryMembers:
         mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
         mock_settings.database.use_sql = True
 
-        from src.mk_cats.members_helper import collect_category_members
+        from src.core.mk_cats.members_helper import collect_category_members
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 

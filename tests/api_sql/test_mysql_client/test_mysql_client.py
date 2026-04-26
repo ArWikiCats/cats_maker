@@ -12,7 +12,7 @@ from unittest.mock import MagicMock
 import pymysql.cursors
 import pytest
 
-from src.api_sql.mysql_client import _sql_connect_pymysql
+from src.core.api_sql.mysql_client import _sql_connect_pymysql
 
 
 @pytest.fixture

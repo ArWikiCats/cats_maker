@@ -6,7 +6,7 @@ This module tests Wikidata lag handling functions.
 
 import pytest
 
-from src.wd_bots.utils.lag_bot import (
+from src.core.wd_bots.utils.lag_bot import (
     FFa_lag,
     Find_Lag,
     bad_lag,

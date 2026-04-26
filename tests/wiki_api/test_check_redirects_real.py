@@ -6,7 +6,7 @@ This module tests Wikipedia API helper functions.
 
 import pytest
 
-from src.wiki_api.check_redirects import (
+from src.core.wiki_api.check_redirects import (
     remove_redirect_pages,
 )
 

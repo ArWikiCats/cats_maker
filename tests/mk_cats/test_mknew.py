@@ -31,7 +31,7 @@ class TestArMakeLab:
         """Test that ar_make_lab returns empty string when filter_cat fails."""
         mocker.patch("src.mk_cats.mknew.filter_cat", return_value=False)
 
-        from src.mk_cats.mknew import ar_make_lab
+        from src.core.mk_cats.mknew import ar_make_lab
 
         result = ar_make_lab("Category:Test")
 
@@ -42,7 +42,7 @@ class TestArMakeLab:
         mocker.patch("src.mk_cats.mknew.filter_cat", return_value=True)
         mocker.patch("src.mk_cats.mknew.resolve_arabic_category_label", None)
 
-        from src.mk_cats.mknew import ar_make_lab
+        from src.core.mk_cats.mknew import ar_make_lab
 
         result = ar_make_lab("Category:Science")
 
@@ -54,7 +54,7 @@ class TestArMakeLab:
         mock_resolver = MagicMock(return_value="علوم")
         mocker.patch("src.mk_cats.mknew.resolve_arabic_category_label", mock_resolver)
 
-        from src.mk_cats.mknew import ar_make_lab
+        from src.core.mk_cats.mknew import ar_make_lab
 
         result = ar_make_lab("Category:Science")
 
@@ -66,7 +66,7 @@ class TestScanArTitle:
 
     def test_returns_false_for_already_created(self, mocker):
         """Test that scan_ar_title returns False for already created titles."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Add title to _already_created
         mknew._already_created.clear()
@@ -81,7 +81,7 @@ class TestScanArTitle:
 
     def test_returns_true_for_new_title(self, mocker):
         """Test that scan_ar_title returns True for new titles."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._already_created.clear()
@@ -97,7 +97,7 @@ class TestScanArTitle:
 
     def test_tracks_title_in_newcat_done(self, mocker):
         """Test that scan_ar_title tracks title in NewCat_Done."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._already_created.clear()
@@ -116,7 +116,7 @@ class TestMakeAr:
 
     def test_returns_empty_list_for_empty_ar_title(self):
         """Test that make_ar returns empty list for empty Arabic title."""
-        from src.mk_cats.mknew import make_ar
+        from src.core.mk_cats.mknew import make_ar
 
         result = make_ar("Category:Science", "")
 
@@ -124,7 +124,7 @@ class TestMakeAr:
 
     def test_returns_empty_list_for_whitespace_ar_title(self):
         """Test that make_ar returns empty list for whitespace Arabic title."""
-        from src.mk_cats.mknew import make_ar
+        from src.core.mk_cats.mknew import make_ar
 
         result = make_ar("Category:Science", "   ")
 
@@ -132,7 +132,7 @@ class TestMakeAr:
 
     def test_cleans_en_page_title(self, mocker):
         """Test that make_ar cleans the English page title."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._already_created.clear()
@@ -151,7 +151,7 @@ class TestMakeAr:
 
     def test_returns_empty_when_ar_exists_in_wikidata(self, mocker):
         """Test that make_ar returns empty when Arabic link exists in Wikidata."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._already_created.clear()
@@ -180,7 +180,7 @@ class TestProcessCatagories:
         """Test that process_catagories calls make_ar with correct parameters."""
         mock_make_ar = mocker.patch("src.mk_cats.mknew.make_ar", return_value=[])
 
-        from src.mk_cats.mknew import process_catagories
+        from src.core.mk_cats.mknew import process_catagories
 
         process_catagories("Category:Science", "علوم", 1, 10)
 
@@ -193,7 +193,7 @@ class TestProcessCatagories:
         """Test that process_catagories handles empty make_ar result."""
         mocker.patch("src.mk_cats.mknew.make_ar", return_value=[])
 
-        from src.mk_cats.mknew import process_catagories
+        from src.core.mk_cats.mknew import process_catagories
 
         # Should not raise any exceptions
         result = process_catagories("Category:Science", "علوم", 1, 10)
@@ -202,7 +202,7 @@ class TestProcessCatagories:
 
     def test_iterates_over_subcategories(self, mocker):
         """Test that process_catagories iterates over subcategories."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # First call returns subcategories, second call returns empty
         mock_make_ar = mocker.patch.object(mknew, "make_ar", side_effect=[["SubCat1"], []])
@@ -217,7 +217,7 @@ class TestProcessCatagories:
         """Test that process_catagories passes callback to make_ar."""
         mock_make_ar = mocker.patch("src.mk_cats.mknew.make_ar", return_value=[])
 
-        from src.mk_cats.mknew import process_catagories
+        from src.core.mk_cats.mknew import process_catagories
 
         callback = MagicMock()
         process_catagories("Category:Science", "علوم", 1, 10, callback=callback)
@@ -231,7 +231,7 @@ class TestOneCat:
 
     def test_returns_false_for_empty_title(self):
         """Test that one_cat returns False for empty title."""
-        from src.mk_cats.mknew import one_cat
+        from src.core.mk_cats.mknew import one_cat
 
         result = one_cat("", 1, 1)
 
@@ -239,7 +239,7 @@ class TestOneCat:
 
     def test_returns_false_for_whitespace_title(self):
         """Test that one_cat returns False for whitespace title."""
-        from src.mk_cats.mknew import one_cat
+        from src.core.mk_cats.mknew import one_cat
 
         result = one_cat("   ", 1, 1)
 
@@ -247,7 +247,7 @@ class TestOneCat:
 
     def test_returns_false_for_duplicate_title(self, mocker):
         """Test that one_cat returns False for duplicate title."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear and add to _done_d
         mknew._done_d.clear()
@@ -262,7 +262,7 @@ class TestOneCat:
 
     def test_returns_false_when_no_label(self, mocker):
         """Test that one_cat returns False when no Arabic label is found."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._done_d.clear()
@@ -278,7 +278,7 @@ class TestOneCat:
 
     def test_returns_false_when_check_en_temps_fails(self, mocker):
         """Test that one_cat returns False when check_en_temps fails."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._done_d.clear()
@@ -295,7 +295,7 @@ class TestOneCat:
 
     def test_returns_false_when_no_en_list(self, mocker):
         """Test that one_cat returns False when no English list."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._done_d.clear()
@@ -313,7 +313,7 @@ class TestOneCat:
 
     def test_uses_sugust_when_no_label(self, mocker):
         """Test that one_cat uses sugust parameter when no label found."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._done_d.clear()
@@ -338,7 +338,7 @@ class TestCreateCategoriesFromList:
 
     def test_handles_empty_list(self):
         """Test that create_categories_from_list handles empty list."""
-        from src.mk_cats.mknew import create_categories_from_list
+        from src.core.mk_cats.mknew import create_categories_from_list
 
         # Should not raise any exceptions
         create_categories_from_list([])
@@ -347,7 +347,7 @@ class TestCreateCategoriesFromList:
         """Test that create_categories_from_list calls one_cat for each item."""
         mock_one_cat = mocker.patch("src.mk_cats.mknew.one_cat")
 
-        from src.mk_cats.mknew import create_categories_from_list
+        from src.core.mk_cats.mknew import create_categories_from_list
 
         categories = ["Cat1", "Cat2", "Cat3"]
         create_categories_from_list(categories)
@@ -358,7 +358,7 @@ class TestCreateCategoriesFromList:
         """Test that create_categories_from_list passes correct num and lenth."""
         mock_one_cat = mocker.patch("src.mk_cats.mknew.one_cat")
 
-        from src.mk_cats.mknew import create_categories_from_list
+        from src.core.mk_cats.mknew import create_categories_from_list
 
         categories = ["Cat1", "Cat2"]
         create_categories_from_list(categories)
@@ -377,7 +377,7 @@ class TestCreateCategoriesFromList:
         """Test that create_categories_from_list passes callback to one_cat."""
         mock_one_cat = mocker.patch("src.mk_cats.mknew.one_cat")
 
-        from src.mk_cats.mknew import create_categories_from_list
+        from src.core.mk_cats.mknew import create_categories_from_list
 
         callback = MagicMock()
         create_categories_from_list(["Cat1"], callback=callback)
@@ -391,7 +391,7 @@ class TestMakeArMinMembers:
 
     def test_returns_empty_when_below_min_members(self, mocker):
         """Test that make_ar returns empty list when members below min_members."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._already_created.clear()
@@ -416,7 +416,7 @@ class TestMakeArMinMembers:
 
     def test_proceeds_when_at_min_members(self, mocker):
         """Test that make_ar proceeds when members equals min_members."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._already_created.clear()
@@ -434,7 +434,7 @@ class TestMakeArMinMembers:
         mock_settings = mocker.patch("src.mk_cats.mknew.settings")
         mock_settings.category.min_members = 5
         mock_settings.range_limit = 5
-        from src.mk_cats.create_category_page import CategoryResult
+        from src.core.mk_cats.create_category_page import CategoryResult
 
         mock_new_category = mocker.patch(
             "src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
@@ -454,7 +454,7 @@ class TestMakeArMinMembers:
 
     def test_proceeds_when_above_min_members(self, mocker):
         """Test that make_ar proceeds when members above min_members."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._already_created.clear()
@@ -472,7 +472,7 @@ class TestMakeArMinMembers:
         mock_settings = mocker.patch("src.mk_cats.mknew.settings")
         mock_settings.category.min_members = 5
         mock_settings.range_limit = 5
-        from src.mk_cats.create_category_page import CategoryResult
+        from src.core.mk_cats.create_category_page import CategoryResult
 
         mock_new_category = mocker.patch(
             "src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
@@ -492,7 +492,7 @@ class TestMakeArMinMembers:
 
     def test_custom_min_members_value(self, mocker):
         """Test that make_ar respects custom min_members value."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._already_created.clear()
@@ -521,7 +521,7 @@ class TestMakeArMinMembers:
 
     def test_min_members_zero_allows_any(self, mocker):
         """Test that min_members of 0 allows any number of members."""
-        from src.mk_cats import mknew
+        from src.core.mk_cats import mknew
 
         # Clear state
         mknew._already_created.clear()
@@ -536,7 +536,7 @@ class TestMakeArMinMembers:
         mock_settings = mocker.patch("src.mk_cats.mknew.settings")
         mock_settings.category.min_members = 0  # Allow any
         mock_settings.range_limit = 5
-        from src.mk_cats.create_category_page import CategoryResult
+        from src.core.mk_cats.create_category_page import CategoryResult
 
         mock_new_category = mocker.patch(
             "src.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)

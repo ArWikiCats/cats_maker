@@ -1,6 +1,6 @@
 import pytest
 
-from src.new_api.pagenew import load_main_api
+from src.core.new_api.pagenew import load_main_api
 
 
 @pytest.fixture

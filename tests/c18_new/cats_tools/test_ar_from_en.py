@@ -6,7 +6,7 @@ This module tests functions for converting English category pages to Arabic.
 
 import pytest
 
-from src.c18_new.cats_tools.ar_from_en import (
+from src.core.c18_new.cats_tools.ar_from_en import (
     Get_ar_list_from_en_list,
     clean_category_input,
     make_ar_list_from_en_cat,
@@ -73,9 +73,9 @@ class TestMakeArListFromEnCat:
 
     def test_cleans_category_input(self, mocker):
         """Test that category input is cleaned"""
-        mocker.patch("src.c18_new.cats_tools.ar_from_en.settings.database.use_sql", False)
-        mocker.patch("src.c18_new.cats_tools.ar_from_en.retrieve_ar_list_from_category", return_value=[])
-        mocker.patch("src.c18_new.cats_tools.ar_from_en.get_ar_list_from_encat", return_value={})
+        mocker.patch("src.core.c18_new.cats_tools.ar_from_en.settings.database.use_sql", False)
+        mocker.patch("src.core.c18_new.cats_tools.ar_from_en.retrieve_ar_list_from_category", return_value=[])
+        mocker.patch("src.core.c18_new.cats_tools.ar_from_en.get_ar_list_from_encat", return_value={})
 
         result = make_ar_list_from_en_cat("[[Category:Science]]")
         assert result == []
@@ -92,7 +92,7 @@ class TestGetArListFromEnList:
     def test_processes_list_in_batches(self, mocker):
         """Test that list is processed in batches of 50"""
         mock_find_lcn = mocker.patch(
-            "src.c18_new.cats_tools.ar_from_en.find_LCN",
+            "src.core.c18_new.cats_tools.ar_from_en.find_LCN",
             return_value={
                 "Page1": {"langlinks": {"ar": "صفحة1"}},
             },
@@ -108,7 +108,7 @@ class TestGetArListFromEnList:
     def test_extracts_arabic_langlinks(self, mocker):
         """Test that Arabic langlinks are extracted"""
         mocker.patch(
-            "src.c18_new.cats_tools.ar_from_en.find_LCN",
+            "src.core.c18_new.cats_tools.ar_from_en.find_LCN",
             return_value={
                 "Science": {"langlinks": {"ar": "علوم"}},
                 "History": {"langlinks": {"ar": "تاريخ"}},
@@ -122,7 +122,7 @@ class TestGetArListFromEnList:
     def test_skips_pages_without_arabic_langlink(self, mocker):
         """Test that pages without Arabic langlinks are skipped"""
         mocker.patch(
-            "src.c18_new.cats_tools.ar_from_en.find_LCN",
+            "src.core.c18_new.cats_tools.ar_from_en.find_LCN",
             return_value={
                 "Science": {"langlinks": {"fr": "Science"}},  # No Arabic
             },
@@ -134,7 +134,7 @@ class TestGetArListFromEnList:
     def test_removes_duplicates(self, mocker):
         """Test that duplicate results are removed"""
         mocker.patch(
-            "src.c18_new.cats_tools.ar_from_en.find_LCN",
+            "src.core.c18_new.cats_tools.ar_from_en.find_LCN",
             return_value={
                 "Page1": {"langlinks": {"ar": "صفحة"}},
                 "Page2": {"langlinks": {"ar": "صفحة"}},  # Same Arabic
@@ -146,7 +146,7 @@ class TestGetArListFromEnList:
 
     def test_handles_pipe_prefix_in_list(self, mocker):
         """Test that pipe prefix is removed from joined list"""
-        mock_find_lcn = mocker.patch("src.c18_new.cats_tools.ar_from_en.find_LCN", return_value={})
+        mock_find_lcn = mocker.patch("src.core.c18_new.cats_tools.ar_from_en.find_LCN", return_value={})
 
         # This tests the handling when "|" appears at the start
         result = Get_ar_list_from_en_list(["Page1"])
@@ -158,9 +158,9 @@ class TestRetrieveArListFromCategory:
 
     def test_calls_categorized_page_generator(self, mocker):
         """Test that Categorized_Page_Generator is called"""
-        mock_cpg = mocker.patch("src.c18_new.cats_tools.ar_from_en.Categorized_Page_Generator", return_value=[])
-        mocker.patch("src.c18_new.cats_tools.ar_from_en.get_arpage_inside_encat", return_value=[])
-        mocker.patch("src.c18_new.cats_tools.ar_from_en.Get_ar_list_from_en_list", return_value=[])
+        mock_cpg = mocker.patch("src.core.c18_new.cats_tools.ar_from_en.Categorized_Page_Generator", return_value=[])
+        mocker.patch("src.core.c18_new.cats_tools.ar_from_en.get_arpage_inside_encat", return_value=[])
+        mocker.patch("src.core.c18_new.cats_tools.ar_from_en.Get_ar_list_from_en_list", return_value=[])
 
         retrieve_ar_list_from_category("Science", "Science")
 
@@ -168,9 +168,9 @@ class TestRetrieveArListFromCategory:
 
     def test_adds_pages_from_encat(self, mocker):
         """Test that pages from get_arpage_inside_encat are added"""
-        mocker.patch("src.c18_new.cats_tools.ar_from_en.Categorized_Page_Generator", return_value=[])
-        mocker.patch("src.c18_new.cats_tools.ar_from_en.get_arpage_inside_encat", return_value=["صفحة_عربية"])
-        mock_get_ar = mocker.patch("src.c18_new.cats_tools.ar_from_en.Get_ar_list_from_en_list", return_value=[])
+        mocker.patch("src.core.c18_new.cats_tools.ar_from_en.Categorized_Page_Generator", return_value=[])
+        mocker.patch("src.core.c18_new.cats_tools.ar_from_en.get_arpage_inside_encat", return_value=["صفحة_عربية"])
+        mock_get_ar = mocker.patch("src.core.c18_new.cats_tools.ar_from_en.Get_ar_list_from_en_list", return_value=[])
 
         retrieve_ar_list_from_category("Science", "Science")
 

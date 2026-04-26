@@ -6,7 +6,7 @@ This module tests category tools functions.
 
 import pytest
 
-from src.c18_new.cat_tools2 import tatone_ns
+from src.core.c18_new.cat_tools2 import tatone_ns
 
 
 class TestTatoneNs:

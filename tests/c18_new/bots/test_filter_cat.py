@@ -6,7 +6,7 @@ This module tests category filtering functions.
 
 import pytest
 
-from src.c18_new.bots.filter_cat import (
+from src.core.c18_new.bots.filter_cat import (
     Skippe_Cat,
     filter_cats_text,
     page_false_templates,
@@ -57,9 +57,9 @@ class TestFilterCatsText:
 
     def test_removes_template_categories_from_articles(self, mocker):
         """Test that template categories are removed from article namespace"""
-        mocker.patch("src.c18_new.bots.filter_cat.templatequerymulti", return_value={})
-        mocker.patch("src.c18_new.bots.filter_cat.templatequery", return_value=False)
-        mocker.patch("src.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequerymulti", return_value={})
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequery", return_value=False)
+        mocker.patch("src.core.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
 
         final_cats = ["تصنيف:قوالب معلومات"]
         result = filter_cats_text(final_cats, 0, "")  # ns=0 is article
@@ -70,9 +70,9 @@ class TestFilterCatsText:
 
     def test_keeps_template_categories_in_template_namespace(self, mocker):
         """Test that template categories are kept in template namespace"""
-        mocker.patch("src.c18_new.bots.filter_cat.templatequerymulti", return_value={})
-        mocker.patch("src.c18_new.bots.filter_cat.templatequery", return_value=False)
-        mocker.patch("src.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequerymulti", return_value={})
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequery", return_value=False)
+        mocker.patch("src.core.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
 
         final_cats = ["تصنيف:قوالب خاصة"]
         result = filter_cats_text(final_cats, 10, "")  # ns=10 is template
@@ -82,9 +82,9 @@ class TestFilterCatsText:
 
     def test_removes_categories_in_skip_list(self, mocker):
         """Test that categories in Skippe_Cat are removed"""
-        mocker.patch("src.c18_new.bots.filter_cat.templatequerymulti", return_value={})
-        mocker.patch("src.c18_new.bots.filter_cat.templatequery", return_value=False)
-        mocker.patch("src.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequerymulti", return_value={})
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequery", return_value=False)
+        mocker.patch("src.core.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
 
         final_cats = ["تصنيف:صفحات توضيح", "تصنيف:علوم"]
         result = filter_cats_text(final_cats, 0, "")
@@ -93,9 +93,9 @@ class TestFilterCatsText:
 
     def test_removes_categories_without_tasneef_prefix(self, mocker):
         """Test that non-category items are removed"""
-        mocker.patch("src.c18_new.bots.filter_cat.templatequerymulti", return_value={})
-        mocker.patch("src.c18_new.bots.filter_cat.templatequery", return_value=False)
-        mocker.patch("src.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequerymulti", return_value={})
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequery", return_value=False)
+        mocker.patch("src.core.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
 
         final_cats = ["علوم", "تصنيف:تاريخ"]  # First one lacks prefix
         result = filter_cats_text(final_cats, 0, "")
@@ -104,9 +104,9 @@ class TestFilterCatsText:
 
     def test_removes_categories_containing_false_templates(self, mocker):
         """Test that categories with false template names are removed"""
-        mocker.patch("src.c18_new.bots.filter_cat.templatequerymulti", return_value={})
-        mocker.patch("src.c18_new.bots.filter_cat.templatequery", return_value=False)
-        mocker.patch("src.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequerymulti", return_value={})
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequery", return_value=False)
+        mocker.patch("src.core.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
 
         final_cats = ["تصنيف:مقالات متعلقة بالعلوم", "تصنيف:علوم"]
         result = filter_cats_text(final_cats, 0, "")
@@ -116,9 +116,9 @@ class TestFilterCatsText:
 
     def test_removes_deleted_pages(self, mocker):
         """Test that deleted pages are removed"""
-        mocker.patch("src.c18_new.bots.filter_cat.templatequerymulti", return_value={})
-        mocker.patch("src.c18_new.bots.filter_cat.templatequery", return_value=False)
-        mocker.patch("src.c18_new.bots.filter_cat.get_deleted_pages", return_value=["تصنيف:محذوف"])
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequerymulti", return_value={})
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequery", return_value=False)
+        mocker.patch("src.core.c18_new.bots.filter_cat.get_deleted_pages", return_value=["تصنيف:محذوف"])
 
         final_cats = ["تصنيف:محذوف", "تصنيف:علوم"]
         result = filter_cats_text(final_cats, 0, "")
@@ -127,9 +127,9 @@ class TestFilterCatsText:
 
     def test_removes_existing_categories_in_text(self, mocker):
         """Test that categories already in text are removed"""
-        mocker.patch("src.c18_new.bots.filter_cat.templatequerymulti", return_value={})
-        mocker.patch("src.c18_new.bots.filter_cat.templatequery", return_value=False)
-        mocker.patch("src.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequerymulti", return_value={})
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequery", return_value=False)
+        mocker.patch("src.core.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
 
         final_cats = ["تصنيف:علوم"]
         text = "[[تصنيف:علوم]]"
@@ -140,11 +140,11 @@ class TestFilterCatsText:
     def test_removes_categories_with_redirect_template(self, mocker):
         """Test that categories with redirect template are removed"""
         mocker.patch(
-            "src.c18_new.bots.filter_cat.templatequerymulti",
+            "src.core.c18_new.bots.filter_cat.templatequerymulti",
             return_value={"تصنيف:علوم": {"templates": ["قالب:تحويل تصنيف"]}},
         )
-        mocker.patch("src.c18_new.bots.filter_cat.templatequery", return_value=["قالب:تحويل تصنيف"])
-        mocker.patch("src.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequery", return_value=["قالب:تحويل تصنيف"])
+        mocker.patch("src.core.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
 
         final_cats = ["تصنيف:علوم"]
         result = filter_cats_text(final_cats, 0, "")
@@ -153,9 +153,9 @@ class TestFilterCatsText:
 
     def test_returns_modified_list(self, mocker):
         """Test that function returns modified list"""
-        mocker.patch("src.c18_new.bots.filter_cat.templatequerymulti", return_value={})
-        mocker.patch("src.c18_new.bots.filter_cat.templatequery", return_value=False)
-        mocker.patch("src.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequerymulti", return_value={})
+        mocker.patch("src.core.c18_new.bots.filter_cat.templatequery", return_value=False)
+        mocker.patch("src.core.c18_new.bots.filter_cat.get_deleted_pages", return_value=[])
 
         final_cats = ["تصنيف:علوم", "تصنيف:تاريخ"]
         result = filter_cats_text(final_cats, 0, "")

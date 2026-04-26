@@ -21,7 +21,7 @@ class TestSaveFunction:
 
     def test_save_creates_directory_if_not_exists(self, tmp_path, mocker):
         """Test that save creates parent directory if it doesn't exist."""
-        from src.helps.jsonl_data import save
+        from src.core.helps.jsonl_data import save
 
         new_dir = tmp_path / "new_dir"
         file_path = new_dir / "test.jsonl"
@@ -40,7 +40,7 @@ class TestSaveFunction:
 
     def test_save_converts_dict_to_list(self, tmp_path, mocker):
         """Test that save converts dict to list internally."""
-        from src.helps.jsonl_data import save
+        from src.core.helps.jsonl_data import save
 
         file_path = tmp_path / "test.jsonl"
 
@@ -61,7 +61,7 @@ class TestSaveFunction:
 
     def test_save_appends_to_existing_file(self, tmp_path, mocker):
         """Test that save appends to existing file."""
-        from src.helps.jsonl_data import save
+        from src.core.helps.jsonl_data import save
 
         file_path = tmp_path / "test.jsonl"
         file_path.touch()  # Create empty file
@@ -80,7 +80,7 @@ class TestSaveFunction:
 
     def test_save_handles_path_as_string(self, tmp_path, mocker):
         """Test that save handles path as string."""
-        from src.helps.jsonl_data import save
+        from src.core.helps.jsonl_data import save
 
         file_path = str(tmp_path / "test.jsonl")
 
@@ -96,7 +96,7 @@ class TestSaveFunction:
 
     def test_save_handles_list_data(self, tmp_path, mocker):
         """Test that save handles list data correctly."""
-        from src.helps.jsonl_data import save
+        from src.core.helps.jsonl_data import save
 
         file_path = tmp_path / "test.jsonl"
         file_path.touch()
@@ -117,7 +117,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_returns_function_result(self, mocker):
         """Test that dump_data decorator returns the function result."""
-        from src.helps.jsonl_data import dump_data
+        from src.core.helps.jsonl_data import dump_data
 
         @dump_data()
         def test_func(x, y):
@@ -129,7 +129,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_preserves_function_name(self):
         """Test that dump_data preserves the function name."""
-        from src.helps.jsonl_data import dump_data
+        from src.core.helps.jsonl_data import dump_data
 
         @dump_data()
         def my_function():
@@ -139,7 +139,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_disabled_by_default(self, mocker):
         """Test that dump_data is disabled by default (SAVE_ENABLE=False)."""
-        from src.helps import jsonl_data
+        from src.core.helps import jsonl_data
 
         # Ensure SAVE_ENABLE is False
         original_save_enable = jsonl_data.SAVE_ENABLE
@@ -161,7 +161,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_enabled_with_parameter(self, mocker, tmp_path):
         """Test that dump_data can be enabled with parameter."""
-        from src.helps import jsonl_data
+        from src.core.helps import jsonl_data
 
         # Clear already_saved
         jsonl_data.already_saved.clear()
@@ -186,7 +186,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_does_not_save_empty_output(self, mocker):
         """Test that dump_data does not save when output is empty."""
-        from src.helps import jsonl_data
+        from src.core.helps import jsonl_data
 
         mock_jsonlines = mocker.patch("jsonlines.open")
 
@@ -201,7 +201,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_does_not_save_empty_list_output(self, mocker):
         """Test that dump_data does not save when output is empty list."""
-        from src.helps import jsonl_data
+        from src.core.helps import jsonl_data
 
         mock_jsonlines = mocker.patch("jsonlines.open")
 
@@ -216,7 +216,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_saves_specific_input_keys(self, mocker):
         """Test that dump_data saves only specified input keys."""
-        from src.helps import jsonl_data
+        from src.core.helps import jsonl_data
 
         # Clear already_saved
         jsonl_data.already_saved.clear()
@@ -244,7 +244,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_prevents_duplicate_saves(self, mocker):
         """Test that dump_data prevents duplicate saves."""
-        from src.helps import jsonl_data
+        from src.core.helps import jsonl_data
 
         # Clear already_saved
         jsonl_data.already_saved.clear()
@@ -271,7 +271,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_saves_different_inputs_separately(self, mocker):
         """Test that dump_data saves different inputs separately."""
-        from src.helps import jsonl_data
+        from src.core.helps import jsonl_data
 
         # Clear already_saved
         jsonl_data.already_saved.clear()
@@ -298,7 +298,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_compare_with_output(self, mocker):
         """Test that dump_data respects compare_with_output parameter."""
-        from src.helps import jsonl_data
+        from src.core.helps import jsonl_data
 
         # Clear already_saved
         jsonl_data.already_saved.clear()
@@ -323,7 +323,7 @@ class TestDumpDataDecorator:
 
     def test_dump_data_handles_non_serializable_data(self, mocker):
         """Test that dump_data handles non-serializable data."""
-        from src.helps import jsonl_data
+        from src.core.helps import jsonl_data
 
         # Clear already_saved
         jsonl_data.already_saved.clear()
@@ -353,13 +353,13 @@ class TestAlreadySavedDict:
 
     def test_already_saved_is_dict(self):
         """Test that already_saved is a dictionary."""
-        from src.helps.jsonl_data import already_saved
+        from src.core.helps.jsonl_data import already_saved
 
         assert isinstance(already_saved, dict)
 
     def test_already_saved_can_be_cleared(self):
         """Test that already_saved can be cleared."""
-        from src.helps.jsonl_data import already_saved
+        from src.core.helps.jsonl_data import already_saved
 
         already_saved["test_key"] = True
         already_saved.clear()
@@ -372,13 +372,13 @@ class TestSaveEnableFlag:
 
     def test_save_enable_is_boolean(self):
         """Test that SAVE_ENABLE is a boolean."""
-        from src.helps.jsonl_data import SAVE_ENABLE
+        from src.core.helps.jsonl_data import SAVE_ENABLE
 
         assert isinstance(SAVE_ENABLE, bool)
 
     def test_save_enable_default_is_false(self):
         """Test that SAVE_ENABLE default is False."""
-        from src.helps.jsonl_data import SAVE_ENABLE
+        from src.core.helps.jsonl_data import SAVE_ENABLE
 
         # The last assignment in the file sets it to False
         assert SAVE_ENABLE is False

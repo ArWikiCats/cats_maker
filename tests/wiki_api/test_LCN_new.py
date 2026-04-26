@@ -6,7 +6,7 @@ This module tests the WikiApiHandler class and language link functions.
 
 import pytest
 
-from src.wiki_api.LCN_new import (
+from src.core.wiki_api.LCN_new import (
     LC_bot,
     WikiApiCache,
     WikiApiHandler,

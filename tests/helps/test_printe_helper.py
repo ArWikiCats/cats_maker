@@ -6,7 +6,7 @@ This module tests the color formatting functionality for console output.
 
 import pytest
 
-from src.helps.printe_helper import get_color_table, make_str
+from src.core.helps.printe_helper import get_color_table, make_str
 
 
 class TestGetColorTable:

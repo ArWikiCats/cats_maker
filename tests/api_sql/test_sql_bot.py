@@ -4,7 +4,7 @@ Tests for src/api_sql/sql_bot.py
 This module tests SQL query functions for Wikipedia databases.
 """
 
-from src.api_sql.sql_bot import (
+from src.core.api_sql.sql_bot import (
     fetch_arcat_titles,
     find_sql,
     get_exclusive_category_titles,

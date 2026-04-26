@@ -6,7 +6,7 @@ This module tests category text generation functions.
 
 import pytest
 
-from src.mk_cats.categorytext import (
+from src.core.mk_cats.categorytext import (
     LocalLanguageLinks,
     category_mapping,
     get_page_link_data,

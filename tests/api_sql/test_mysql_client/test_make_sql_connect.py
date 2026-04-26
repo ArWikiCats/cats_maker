@@ -10,7 +10,7 @@ This module tests:
 
 import pytest
 
-from src.api_sql.mysql_client import (
+from src.core.api_sql.mysql_client import (
     decode_bytes_in_list,
     decode_value,
 )

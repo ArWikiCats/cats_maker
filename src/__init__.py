@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 from .logging_config import setup_logging
-from .mk_cats import (
+from .core.mk_cats import (
     ar_make_lab,
     create_categories_from_list,
     process_catagories,

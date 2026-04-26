@@ -4,7 +4,7 @@ Tests for src/wiki_api/check_redirects.py
 This module tests Wikipedia API helper functions.
 """
 
-from src.wiki_api.check_redirects import remove_redirect_pages
+from src.core.wiki_api.check_redirects import remove_redirect_pages
 
 
 class TestRemoveRedirectPages:

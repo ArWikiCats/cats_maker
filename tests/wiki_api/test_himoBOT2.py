@@ -6,7 +6,7 @@ This module tests Wikipedia API helper functions.
 
 import pytest
 
-from src.wiki_api.himoBOT2 import (
+from src.core.wiki_api.himoBOT2 import (
     get_page_info_from_wikipedia,
 )
 

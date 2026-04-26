@@ -6,7 +6,7 @@ This module tests category sorting functions.
 
 import pytest
 
-from src.c18_new.tools_bots.sort_bot import (
+from src.core.c18_new.tools_bots.sort_bot import (
     sort_categories,
     sort_text,
 )
