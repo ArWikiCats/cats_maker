@@ -37,7 +37,7 @@ Layered architecture from top to bottom:
 ```
 run.py (CLI args) → config/settings.py (dataclass config) → mk_cats/mknew.py (business logic)
     → mk_cats/members_helper.py (member collection) → mk_cats/create_category_page.py, categorytext.py (page creation)
-    → c18_new/ (data processing) → wiki_api/, wd_bots/, api_sql/ (external services)
+    → c18/ (data processing) → wiki_api/, wd_bots/, api_sql/ (external services)
 ```
 
 **Data flow**: English category → `ar_make_lab()` (Arabic label via ArWikiCats) → collect members (SQL/API/SubSub) → filter redirects → check min_members threshold → generate category text → save to ar.wikipedia → update Wikidata sitelink

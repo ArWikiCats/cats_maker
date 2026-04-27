@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `wd_bots` module handles all Wikidata interactions — reads (API queries) and writes (creating items, setting labels, sitelinks). It lives at `src/core/wd_bots/` and is consumed by `mk_cats`, `c18_new`, and other modules. The module has working test coverage for reads and error handling but has significant architectural debt.
+The `wd_bots` module handles all Wikidata interactions — reads (API queries) and writes (creating items, setting labels, sitelinks). It lives at `src/core/wd_bots/` and is consumed by `mk_cats`, `c18`, and other modules. The module has working test coverage for reads and error handling but has significant architectural debt.
 
 ## Current Architecture
 

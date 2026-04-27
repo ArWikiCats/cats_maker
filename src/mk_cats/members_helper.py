@@ -14,7 +14,7 @@ Responsibilities:
 import logging
 
 from ..config import settings
-from ..core.c18_new import MakeLitApiWay, get_listenpageTitle
+from ..core.c18 import MakeLitApiWay, get_listenpageTitle
 from ..core.wiki_api import remove_redirect_pages, sub_cats_query
 
 logger = logging.getLogger(__name__)

@@ -19,11 +19,6 @@ def _login(lang, family, username) -> Login:
 class ALL_APIS:
     """
     A class that provides access to various API functionalities.
-    Usage:
-        from newapi import ALL_APIS
-        main_api = ALL_APIS(lang='en', family='wikipedia', username='your_username', password='your_password')
-        page = main_api.MainPage('Main Page Title')
-        cat_members = main_api.CatDepth('Category Title')
     """
 
     def __init__(self, lang, family, username, password) -> None:
@@ -37,7 +32,6 @@ class ALL_APIS:
         return super_page.MainPage(self.login_bot, title, self.lang, family=self.family)
 
     def CatDepth(self, title, sitecode="", family="", *args, **kwargs):
-        # cat_members = CatDepth("RTTNEURO", sitecode="www", family="mdwiki", depth=3, ns="0")
         return catdepth_new.subcatquery(self.login_bot, title, sitecode=self.lang, family=self.family, **kwargs)
 
     def _login(self) -> Login:

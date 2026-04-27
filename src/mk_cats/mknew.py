@@ -5,7 +5,7 @@ python3 core8/pwb.py mk_cats/mknew
 import logging
 
 from ..config import settings
-from ..core.c18_new import (
+from ..core.c18 import (
     get_ar_list_from_en,
     make_ar_list_newcat2,
     validate_categories_for_new_cat,

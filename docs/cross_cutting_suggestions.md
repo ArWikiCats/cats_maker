@@ -18,16 +18,16 @@
 
 ---
 
-## 2. Shared Text/Category Normalization (Merge: b18_new + c18_new + mk_cats)
+## 2. Shared Text/Category Normalization (Merge: b18 + c18 + mk_cats)
 
-**Source plans:** `b18_new_refactor_plan.md` (3.2), `c18_new_master_refactoring_plan.md` (5.3.2), `mk_cats_refactor_plan.md` (5.1.1)
+**Source plans:** `b18_refactor_plan.md` (3.2), `c18_master_refactoring_plan.md` (5.3.2), `mk_cats_refactor_plan.md` (5.1.1)
 
 Each module repeatedly strips `Category:`/`تصنيف:` prefixes, `[[`, `]]`, and normalizes underscores/spaces.
 
 **Current duplication:**
 
--   `b18_new` proposes `utils/text.py` with `normalize_category_title()`
--   `c18_new` proposes `utils/text.py` with `clean_category_input()` and `extract_wikidata_qid()`
+-   `b18` proposes `utils/text.py` with `normalize_category_title()`
+-   `c18` proposes `utils/text.py` with `clean_category_input()` and `extract_wikidata_qid()`
 -   `mk_cats` has `_normalize_en_page_title()` inline in `mknew.py`
 
 **Suggestion:** Create a single `src/core/utils/text.py` with:
@@ -49,15 +49,15 @@ Each module repeatedly strips `Category:`/`تصنيف:` prefixes, `[[`, `]]`, an
 
 ---
 
-## 4. Shared SQL Query Functions (Merge: b18_new + c18_new + api_sql)
+## 4. Shared SQL Query Functions (Merge: b18 + c18 + api_sql)
 
-**Source plans:** `b18_new_refactor_plan.md` (3.6), `c18_new_master_refactoring_plan.md` (4.2), `api_sql_refactor_plan.md`
+**Source plans:** `b18_refactor_plan.md` (3.6), `c18_master_refactoring_plan.md` (4.2), `api_sql_refactor_plan.md`
 
--   `b18_new/sql_cat.py` embeds raw SQL strings for category member queries
--   `c18_new/dontadd.py` embeds SQL for fetching "don't add" pages
+-   `b18/sql_cat.py` embeds raw SQL strings for category member queries
+-   `c18/dontadd.py` embeds SQL for fetching "don't add" pages
 -   `api_sql/queries.py` will hold `fetch_arcat_titles`, `fetch_encat_titles`, etc.
 
-**Suggestion:** Move all SQL query strings from `b18_new` and `c18_new` into `api_sql/queries.py` (or a shared `src/core/db/queries.py`). Business logic modules should not embed raw SQL.
+**Suggestion:** Move all SQL query strings from `b18` and `c18` into `api_sql/queries.py` (or a shared `src/core/db/queries.py`). Business logic modules should not embed raw SQL.
 
 ---
 
@@ -96,7 +96,7 @@ Every module has module-level mutable state that must become instance-scoped:
 | `FFa_lag`, `newsleep`, `Find_Lag`              | `wd_bots/lag_bot.py`          | wd_bots (Phase 1)  |
 | `LC_bot = WikiApiHandler()`                    | `wiki_api/LCN_new.py`         | wiki_api (Phase 3) |
 | `API_n_CALLS`                                  | `wiki_api/sub_cats_bot.py`    | wiki_api (Phase 5) |
-| `pages_in_arcat_toMake` dict                   | `b18_new/cat_tools_enlist.py` | b18_new (3.5)      |
+| `pages_in_arcat_toMake` dict                   | `b18/cat_tools_enlist.py` | b18 (3.5)      |
 | `_done_d`, `_new_cat_done`, `_already_created` | `mk_cats/mknew.py`            | mk_cats (5.1.4)    |
 
 ---

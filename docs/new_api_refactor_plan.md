@@ -657,10 +657,10 @@ After refactoring, verify these consumer files still work:
 | `src/mk_cats/categorytext.py`                | `load_main_api`                                  |
 | `src/mk_cats/create_category_page.py`        | `load_main_api`                                  |
 | `src/mk_cats/add_bot.py`                     | `load_main_api`                                  |
-| `src/core/b18_new/sql_cat.py`                | `load_main_api`                                  |
-| `src/core/c18_new/cat_tools2.py`             | `load_main_api`                                  |
-| `src/core/c18_new/cats_tools/ar_from_en2.py` | `load_main_api`                                  |
-| `src/core/c18_new/bots/text_to_temp_bot.py`  | `load_main_api`                                  |
+| `src/core/b18/sql_cat.py`                | `load_main_api`                                  |
+| `src/core/c18/cat_tools2.py`             | `load_main_api`                                  |
+| `src/core/c18/cats_tools/ar_from_en2.py` | `load_main_api`                                  |
+| `src/core/c18/bots/text_to_temp_bot.py`  | `load_main_api`                                  |
 | `src/core/wiki_api/check_redirects.py`       | `load_main_api`                                  |
 | `src/core/wd_bots/wd_bots_main.py`           | `password`, `username` (from `pagenew`), `Login` |
 

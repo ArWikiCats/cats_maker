@@ -84,7 +84,7 @@ Business Logic (mk_cats/mknew.py)
     ↓
 Page Creation (mk_cats/create_category_page.py, categorytext.py)
     ↓
-Data Processing (b18_new/, c18_new/)
+Data Processing (b18/, c18/)
     ↓
 External Services (wiki_api/, wd_bots/, api_sql/)
     ↓
@@ -98,7 +98,7 @@ Utilities (helps/, utils/, temp/)
    - `categorytext.py`: Text generation for category pages
    - `create_category_page.py`: Page creation logic
 
-2. **b18_new/**: Category processing and link resolution
+2. **b18/**: Category processing and link resolution
    - `LCN_new.py`: Language link discovery
    - `cat_tools.py`: Category utilities
    - `sql_cat.py`: SQL-based category queries
