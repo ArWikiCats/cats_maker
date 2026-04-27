@@ -12,7 +12,7 @@ from ..core.wiki_api import find_Page_Cat_without_hidden
 from .add_bot import add_to_page
 from .create_category_page import new_category
 from .members_helper import collect_category_members
-from .utils import check_en_temps, filter_cat
+from .utils import check_en_temps, filter_category
 
 try:
     from ArWikiCats import resolve_arabic_category_label  # type: ignore
@@ -85,7 +85,7 @@ def get_processing_state():
 
 
 def ar_make_lab(title, **Kwargs) -> str:
-    okay = filter_cat(title)
+    okay = filter_category(title)
 
     if not okay:
         logger.debug(f"<<lightred>> {title} is not okay.")

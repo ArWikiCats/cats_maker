@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """new_c18 — Refactored Arabic Wikipedia category generation module."""
 
-from .core.category_filter import filter_category_text
 from .core.category_generator import fetch_category_members, translate_titles_to_ar
 from .core.category_resolver import CategoryResolver
 from .core.category_validator import validate_categories_for_new_cat
@@ -19,7 +18,6 @@ __all__ = [
     "clean_category_input",
     "extract_wikidata_qid",
     "fetch_category_members",
-    "filter_category_text",
     "get_dont_add_pages",
     "get_english_page_title",
     "get_page_link",

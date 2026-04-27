@@ -34,7 +34,8 @@ class Transport:
         self.lang = lang
         self.family = family
         self.username = username
-        self.cookies_file = cookies_file
+
+        self.cookies_file = cookies_file or get_file_name(self.lang, self.family, self.username)
         self.user_agent = user_agent or settings.wikipedia.user_agent
         self.endpoint = f"https://{self.lang}.{self.family}.org/w/api.php"
         self.session: requests.Session | None = None
@@ -44,7 +45,6 @@ class Transport:
         if self.session is None:
             self.session = load_session(lang=self.lang, family=self.family, username=self.username)
         if self.cookie_jar is None:
-            self.cookies_file = get_file_name(self.lang, self.family, self.username)
             self.cookie_jar = MozillaCookieJar(str(self.cookies_file))
             if os.path.exists(self.cookies_file) and self.family != "mdwiki":
                 try:

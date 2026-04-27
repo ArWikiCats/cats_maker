@@ -1,6 +1,5 @@
 """ """
 
-import copy
 import logging
 import time
 from typing import Any
@@ -15,14 +14,13 @@ logger = logging.getLogger(__name__)
 ar_lag = {1: 3}
 
 
-
 class Login(LOGIN_HELPS, HandleErrors):
     """
     Represents a login session for a wiki.
     """
+    _logins_count: int = 0
 
     def __init__(self, lang: str, family: str = "wikipedia") -> None:
-        self._url_counts = {"all": 0}
         self.user_login: str = ""
         self.lang: str = lang
         self.family: str = family
@@ -30,9 +28,11 @@ class Login(LOGIN_HELPS, HandleErrors):
         self.url_o_print: str = ""
         self.user_agent: str = settings.wikipedia.user_agent
         self.endpoint: str = f"https://{self.lang}.{self.family}.org/w/api.php"
+        self._url_counts: dict[str, int] = {}
+        self.headers = {"User-Agent": self.user_agent}
         super().__init__()
 
-    def filter_params(self, params):
+    def filter_params(self, params: dict) -> dict:
         """
         Filter out unnecessary parameters.
         """
@@ -75,13 +75,12 @@ class Login(LOGIN_HELPS, HandleErrors):
 
     def make_response(
         self,
-        params,
+        params: dict,
         files: Any = None,
         timeout: int = 30,
         do_error: bool = True,
     ) -> dict:
         self.p_url(params)
-
         data = {}
 
         if params.get("list") == "querypage":
@@ -92,24 +91,21 @@ class Login(LOGIN_HELPS, HandleErrors):
             data = self.parse_data(req)
 
         error = data.get("error", {})
-
-        if error != {}:
-            er = self.handle_err(error, "", params=params, do_error=do_error)
-            if do_error:
-                return er
+        if error and do_error:
+            return self.handle_err(error, "", params=params, do_error=do_error)
 
         return data
 
     def post_params(
         self,
         params,
-        Type="get",
-        addtoken=False,
-        GET_CSRF=True,
-        files=None,
-        do_error=False,
-        max_retry=0,
-    ):
+        Type: str = "get",
+        addtoken: bool = False,
+        GET_CSRF: bool = True,
+        files: Any = None,
+        do_error: bool = False,
+        max_retry: int = 0,
+    ) -> dict:
         """
         Make a POST request to the API endpoint with authentication token.
         """
@@ -120,53 +116,88 @@ class Login(LOGIN_HELPS, HandleErrors):
             logger.warning('<<red>> self.r3_token == "" ')
 
         params["token"] = self.r3_token
-
         params = self.filter_params(params)
 
-        data = self.make_response(params, files=files, do_error=do_error)
+        for attempt in range(5):
+            data = self._make_response_impl(params, files=files, do_error=do_error)
 
-        if not data:
-            logger.debug("<<red>> super_login(post): not data. return {}.")
-            return {}
+            if not data:
+                logger.debug("<<red>> super_login(post): not data. return {}.")
+                return {}
+
+            error = data.get("error", {})
+            if not error:
+                return data
+
+            Invalid = error.get("info", "")
+            error_code = error.get("code", "")
+
+            logger.debug(f"<<red>> super_login(post): error: {error}")
+
+            if Invalid == "Invalid CSRF token.":
+                logger.debug(f'<<red>> ** error "Invalid CSRF token.".\n{self.r3_token} ')
+                if GET_CSRF:
+                    self.r3_token = ""
+                    self.r3_token = self._make_new_r3_token()
+                    continue
+
+            if error_code == "maxlag" and max_retry < 4:
+                lage = int(error.get("lag", "0"))
+                logger.debug(params)
+                logger.debug(f"<<purple>>: <<red>> {lage=} {max_retry=}, sleep: {lage + 1}")
+
+                sleep_time = min(2**attempt + lage, 30)
+                time.sleep(sleep_time)
+
+                self._ar_lag = lage + 1
+                params["maxlag"] = self._ar_lag
+                max_retry += 1
+                continue
+
+            return data
+
+        return {}
+
+    def _make_new_r3_token(self) -> str:
+        r3_params = {
+            "format": "json",
+            "action": "query",
+            "meta": "tokens",
+        }
+        req = self.post_it_parse_data(r3_params) or {}
+        if not req:
+            return ""
+        return req.get("query", {}).get("tokens", {}).get("csrftoken", "") or ""
+
+    def _make_response_impl(
+        self,
+        params,
+        files: Any = None,
+        do_error: bool = True,
+    ) -> dict:
+        self.p_url(params)
+        data = {}
+
+        if params.get("list") == "querypage":
+            timeout = 60
+        else:
+            timeout = 30
+
+        if not self._client.session:
+            self._make_session()
+
+        req = self._client.session.request("POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout)
+
+        if req:
+            data = self.parse_data(req)
 
         error = data.get("error", {})
-
         if error != {}:
-            return self.error_do(data, GET_CSRF, params, Type, addtoken, max_retry)
+            return self.handle_err(error, "", params=params, do_error=do_error)
 
         return data
 
-    def error_do(self, data, GET_CSRF, params, Type, addtoken, max_retry):
-        error = data.get("error", {})
 
-        Invalid = error.get("info", "")
-        error_code = error.get("code", "")
-
-        logger.debug(f"<<red>> super_login(post): error: {error}")
-
-        if Invalid == "Invalid CSRF token.":
-            logger.debug(f'<<red>> ** error "Invalid CSRF token.".\n{self.r3_token} ')
-            if GET_CSRF:
-                self.r3_token = None
-                return self.post_params(params, Type=Type, addtoken=addtoken, GET_CSRF=False)
-
-        error_code = error.get("code", "")
-
-        if error_code == "maxlag" and max_retry < 4:
-            lage = int(error.get("lag", "0"))
-            logger.debug(params)
-            logger.debug(f"<<purple>>: <<red>> {lage=} {max_retry=}, sleep: {lage + 1}")
-
-            time.sleep(lage + 1)
-
-            ar_lag[1] = lage + 1
-            params["maxlag"] = ar_lag[1]
-
-            return self.post_params(
-                params,
-                Type=Type,
-                addtoken=addtoken,
-                max_retry=max_retry + 1,
-            )
-
-        return data
+__all__ = [
+    "Login",
+]

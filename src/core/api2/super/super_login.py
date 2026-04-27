@@ -5,6 +5,8 @@ import time
 import urllib.parse
 from typing import Any
 
+import requests
+
 from ....config import settings
 from .client import WikiApiClient
 from .handel_errors import HandleErrors
@@ -36,8 +38,9 @@ class Login(HandleErrors):
         )
         self._client.lang = lang
         self._client.family = family
-        self._ar_lag: int = 3
         self._url_counts: dict[str, int] = {}
+        self._ar_lag: int = 3
+        self.headers = {"User-Agent": self.user_agent}
 
     @property
     def session(self):
@@ -96,7 +99,7 @@ class Login(HandleErrors):
 
     def make_response(
         self,
-        params,
+        params: dict,
         files: Any = None,
         timeout: int = 30,
         do_error: bool = True,
@@ -113,16 +116,13 @@ class Login(HandleErrors):
             data = self.parse_data(req)
 
         error = data.get("error", {})
-        if error != {}:
+        if error and do_error:
             return self.handle_err(error, "", params=params, do_error=do_error)
 
         return data
 
     def post_it(self, params, files: Any = None, timeout: int = 30):
         params = self.params_w(params)
-
-        if not self._client.username_in:
-            self._client.username_in = Login._users_by_lang.get(self.lang, "")
 
         if not self._client.session:
             self._client.session = self._make_session()
@@ -142,14 +142,16 @@ class Login(HandleErrors):
 
         return req0
 
-    def _make_session(self):
+    def _make_session(self) -> requests.Session:
         from .transport import load_session
 
+        load_session.cache_clear()
         self._client.session = load_session(lang=self.lang, family=self.family, username=self._client.username)
         self._client.cookies_file = str(get_file_name(self.lang, self.family, self._client.username))
         return self._client.session
 
     def _raw_request(self, params, files: Any = None, timeout: int = 30):
+        # TODO: ('toomanyvalues', 'Too many values supplied for parameter "titles". The limit is 50.', 'See https://en.wikipedia.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/postorius/lists/mediawiki-api-announce.lists.wikimedia.org/&gt; for notice of API deprecations and breaking changes.')
         if not self._client.session:
             self._make_session()
 
@@ -161,7 +163,7 @@ class Login(HandleErrors):
 
         args = {
             "files": files,
-            "headers": {"User-Agent": self.user_agent},
+            "headers": self.headers,
             "data": params,
             "timeout": timeout,
         }
@@ -179,7 +181,7 @@ class Login(HandleErrors):
         req0 = None
         try:
             req0 = self._client.session.request("POST", self.endpoint, **args)
-        except __import__("requests").exceptions.ReadTimeout:
+        except requests.exceptions.ReadTimeout:
             self._log_error("ReadTimeout", u_action, params=params)
             logger.debug(f"<<red>> ReadTimeout: {self.endpoint=}, {timeout=}")
         except Exception as e:
@@ -209,6 +211,9 @@ class Login(HandleErrors):
             data = self.parse_data(req) or {}
 
         error = data.get("error", {})
+
+        # {'code': 'assertnameduserfailed', 'info': 'You are no longer logged in as "Mr. Ibrahem", ....', '*': ''}
+
         if error:
             code = error.get("code", "")
             if code == "assertnameduserfailed":
@@ -232,6 +237,9 @@ class Login(HandleErrors):
         do_error: bool = False,
         max_retry: int = 0,
     ) -> dict:
+        """
+        Make a POST request to the API endpoint with authentication token.
+        """
         if not self.r3_token:
             self.r3_token = self._make_new_r3_token()
 
@@ -250,11 +258,13 @@ class Login(HandleErrors):
                 return {}
 
             error = data.get("error", {})
-            if error == {}:
+            if not error:
                 return data
 
             Invalid = error.get("info", "")
             error_code = error.get("code", "")
+
+            logger.debug(f"<<red>> super_login(post): error: {error}")
 
             if Invalid == "Invalid CSRF token.":
                 logger.debug(f'<<red>> ** error "Invalid CSRF token.".\n{self.r3_token} ')
@@ -308,7 +318,7 @@ class Login(HandleErrors):
         if not self._client.session:
             self._make_session()
 
-        req = self._client.session.request("POST", self.endpoint, data=self.params_w(params), timeout=timeout)
+        req = self._client.session.request("POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout)
 
         if req:
             data = self.parse_data(req)
@@ -320,6 +330,9 @@ class Login(HandleErrors):
         return data
 
     def log_in(self) -> bool:
+        """
+        Log in to the wiki and get authentication token.
+        """
         from .transport import load_session
 
         Login._logins_count += 1
@@ -348,10 +361,11 @@ class Login(HandleErrors):
             "meta": "tokens",
             "type": "login",
         }
+
+        # WARNING: /data/project/himo/core/bots/page.py:101: UserWarning: Exception:502 Server Error: Server Hangup for url: https://ar.wikipedia.org/w/api.php
+
         try:
-            r11 = self._client.session.request(
-                "POST", self.endpoint, data=r1_params, headers={"User-Agent": self.user_agent}
-            )
+            r11 = self._client.session.request("POST", self.endpoint, data=r1_params, headers=self.headers)
             self._log_error(r11.status_code, "logintoken")
             if not str(r11.status_code).startswith("2"):
                 logger.debug(f"<<red>>  {r11.status_code} Server Error: Server Hangup for url: {self.endpoint}")
@@ -383,9 +397,7 @@ class Login(HandleErrors):
         }
         req = ""
         try:
-            req = self._client.session.request(
-                "POST", self.endpoint, data=r2_params, headers={"User-Agent": self.user_agent}
-            )
+            req = self._client.session.request("POST", self.endpoint, data=r2_params, headers=self.headers)
         except Exception as e:
             logger.warning(f" {self.lang}.{self.family} login request exception: {e}")
             return False
@@ -424,9 +436,7 @@ class Login(HandleErrors):
         }
         req = ""
         try:
-            req = self._client.session.request(
-                "POST", self.endpoint, data=params, headers={"User-Agent": self.user_agent}
-            )
+            req = self._client.session.request("POST", self.endpoint, data=params, headers=self.headers)
         except Exception as e:
             logger.warning(f" {self.lang}.{self.family} userinfo request exception: {e}")
             self._log_error("failed", "userinfo")
@@ -451,7 +461,6 @@ class Login(HandleErrors):
             return False
 
         self._client.username_in = userinfo.get("name", "")
-        Login._users_by_lang[self.lang] = self._client.username_in
         return True
 
     def make_new_session(self) -> None:

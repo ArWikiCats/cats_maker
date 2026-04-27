@@ -99,8 +99,8 @@ class TestMainFlowIntegration:
 
     @pytest.fixture
     def mock_filter_en(self, mocker):
-        """Mock filter_en.filter_cat to always return True."""
-        mock = mocker.patch("src.mk_cats.utils.filter_en.filter_cat")
+        """Mock filter_en.filter_category to always return True."""
+        mock = mocker.patch("src.mk_cats.utils.filter_en.filter_category")
         mock.return_value = True
         return mock
 

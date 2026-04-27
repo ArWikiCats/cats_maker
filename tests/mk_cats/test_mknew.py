@@ -30,8 +30,8 @@ class TestArMakeLab:
     """Tests for ar_make_lab function."""
 
     def test_returns_empty_when_filter_fails(self, mocker):
-        """Test that ar_make_lab returns empty string when filter_cat fails."""
-        mocker.patch("src.mk_cats.mknew.filter_cat", return_value=False)
+        """Test that ar_make_lab returns empty string when filter_category fails."""
+        mocker.patch("src.mk_cats.mknew.filter_category", return_value=False)
 
         from src.mk_cats.mknew import ar_make_lab
 
@@ -41,7 +41,7 @@ class TestArMakeLab:
 
     def test_returns_empty_when_no_resolver(self, mocker):
         """Test that ar_make_lab returns empty when resolve_arabic_category_label is None."""
-        mocker.patch("src.mk_cats.mknew.filter_cat", return_value=True)
+        mocker.patch("src.mk_cats.mknew.filter_category", return_value=True)
         mocker.patch("src.mk_cats.mknew.resolve_arabic_category_label", None)
 
         from src.mk_cats.mknew import ar_make_lab
@@ -52,7 +52,7 @@ class TestArMakeLab:
 
     def test_returns_label_when_resolver_exists(self, mocker):
         """Test that ar_make_lab returns label when resolver exists."""
-        mocker.patch("src.mk_cats.mknew.filter_cat", return_value=True)
+        mocker.patch("src.mk_cats.mknew.filter_category", return_value=True)
         mock_resolver = MagicMock(return_value="علوم")
         mocker.patch("src.mk_cats.mknew.resolve_arabic_category_label", mock_resolver)
 

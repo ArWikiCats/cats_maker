@@ -125,7 +125,6 @@ class TestLogin:
     def test_login_class_vars(self):
         from src.core.api2.super.super_login import Login
 
-        assert hasattr(Login, "_users_by_lang")
         assert hasattr(Login, "_logins_count")
 
 

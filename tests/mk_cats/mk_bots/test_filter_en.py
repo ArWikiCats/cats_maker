@@ -9,7 +9,7 @@ import pytest
 from src.mk_cats.utils.filter_en import (
     BBlcak,
     blcak_starts,
-    filter_cat,
+    filter_category,
 )
 
 
@@ -63,7 +63,7 @@ class TestBlcakStarts:
 
 
 class TestFilterCat:
-    """Tests for filter_cat function"""
+    """Tests for filter_category function"""
 
     def test_returns_false_for_disambiguation(self):
         """Test that Disambiguation categories with exact case match return False.
@@ -72,38 +72,38 @@ class TestFilterCat:
         blacklist item (not lowercased). So "Disambiguation" won't match
         "disambiguation" in the lowercased category string.
         """
-        result = filter_cat("Category:Disambiguation pages")
+        result = filter_category("Category:Disambiguation pages")
         # Blacklist item "Disambiguation" doesn't match lowercase "disambiguation"
         assert result is True
 
     def test_returns_false_for_wikiproject(self):
         """Test that WikiProject categories return False"""
-        result = filter_cat("Category:WikiProject Science")
+        result = filter_category("Category:WikiProject Science")
         assert result is False
 
     def test_returns_false_for_cleanup(self):
         """Test that cleanup categories return False"""
-        result = filter_cat("Cleanup articles")
+        result = filter_category("Cleanup articles")
         assert result is False
 
     def test_returns_false_for_wikipedia_articles(self):
         """Test that Wikipedia articles categories return False"""
-        result = filter_cat("Wikipedia articles needing cleanup")
+        result = filter_category("Wikipedia articles needing cleanup")
         assert result is False
 
     def test_returns_false_for_articles_with_prefix(self):
         """Test that 'Articles with...' categories return False"""
-        result = filter_cat("Articles with dead external links")
+        result = filter_category("Articles with dead external links")
         assert result is False
 
     def test_returns_true_for_valid_category(self):
         """Test that valid categories return True"""
-        result = filter_cat("Category:Science")
+        result = filter_category("Category:Science")
         assert result is True
 
     def test_returns_true_for_regular_topic(self):
         """Test that regular topic categories return True"""
-        result = filter_cat("Physics")
+        result = filter_category("Physics")
         assert result is True
 
     def test_case_insensitive_blacklist(self):
@@ -112,32 +112,32 @@ class TestFilterCat:
         The code uses cat.lower().find(x) where x is not lowercased,
         so blacklist matching is effectively case-sensitive.
         """
-        result = filter_cat("DISAMBIGUATION pages")
+        result = filter_category("DISAMBIGUATION pages")
         # "Disambiguation" in BBlcak won't match "disambiguation" (lowercased)
         assert result is True
 
     def test_returns_false_for_month_year_pattern(self):
         """Test that month/year patterns return False"""
-        result = filter_cat("Articles from January 2020")
+        result = filter_category("Articles from January 2020")
         assert result is False
 
     def test_returns_false_for_sockpuppets(self):
         """Test that sockpuppet categories return False"""
-        result = filter_cat("Wikipedia sockpuppets")
+        result = filter_category("Wikipedia sockpuppets")
         assert result is False
 
     def test_returns_false_for_use_prefix(self):
         """Test that 'use ' prefixed categories return False"""
-        result = filter_cat("use dmy dates")
+        result = filter_category("use dmy dates")
         assert result is False
 
     def test_caching_works(self):
         """Test that caching decorator works (same result for same input)"""
-        result1 = filter_cat("Science")
-        result2 = filter_cat("Science")
+        result1 = filter_category("Science")
+        result2 = filter_category("Science")
         assert result1 == result2
 
     def test_returns_false_for_userspace(self):
         """Test that Userspace categories return False"""
-        result = filter_cat("Userspace drafts")
+        result = filter_category("Userspace drafts")
         assert result is False

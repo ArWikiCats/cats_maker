@@ -2,11 +2,17 @@
 
 import json
 import logging
+import os
+import time
+import urllib.parse
+from http.cookiejar import MozillaCookieJar
 from typing import Any
 
 import requests
 
 from ....config import settings
+from .transport import load_session
+from .cookies_bot import del_cookies_file, get_file_name
 
 logger = logging.getLogger(__name__)
 
@@ -32,16 +38,13 @@ class WikiApiClient:
         self.user_table_done = False
         self.r3_token = ""
 
-        from .transport import get_file_name, load_session
-
         self.session = load_session(lang=lang, family=family, username=username)
         self.cookies_file = str(get_file_name(lang, family, username))
 
         if self.session and hasattr(self.session, "cookies"):
-            from http.cookiejar import MozillaCookieJar
 
             self.session.cookies = MozillaCookieJar(self.cookies_file)
-            if __import__("os").path.exists(self.cookies_file):
+            if os.path.exists(self.cookies_file):
                 try:
                     self.session.cookies.load(ignore_discard=True, ignore_expires=True)
                 except Exception:
@@ -74,18 +77,25 @@ class WikiApiClient:
         return params
 
     def parse_data(self, req0: requests.Response | dict) -> dict:
+        """
+        Parse JSON response data.
+        """
+        text = ""
         try:
             data = req0 if isinstance(req0, dict) else req0.json()
+
             if data.get("error", {}).get("*", "").find("mailing list") > -1:
                 data["error"]["*"] = ""
             if data.get("servedby"):
                 data["servedby"] = ""
+
             return data
         except Exception as e:
             logger.warning(f"<<red>> Error parsing response data: {e}")
             text = str(getattr(req0, "text", "").strip())
 
         valid_text = text.startswith("{") and text.endswith("}")
+
         if not text or not valid_text:
             return {}
 
@@ -93,6 +103,7 @@ class WikiApiClient:
             return json.loads(text)
         except Exception as e:
             logger.warning(e)
+            logger.warning(self.url_o_print)
 
         return {}
 
@@ -118,7 +129,7 @@ class WikiApiClient:
                 for k, v in params.items()
                 if k not in no_url
             }
-            url_o_print = f"{self.endpoint}?{__import__('urllib.parse').urlencode(pams2)}".replace("&format=json", "")
+            url_o_print = f"{self.endpoint}?{urllib.parse.urlencode(pams2)}".replace("&format=json", "")
             logger.debug(url_o_print)
 
     def make_response(
@@ -135,7 +146,6 @@ class WikiApiClient:
             timeout = 60
 
         if not self.session:
-            from .transport import load_session
 
             self.session = load_session(lang=self.lang, family=self.family, username=self.username)
 
@@ -145,7 +155,7 @@ class WikiApiClient:
             data = self.parse_data(req)
 
         error = data.get("error", {})
-        if error != {}:
+        if error and do_error:
             return self._handle_error(error, "", params=params, do_error=do_error)
 
         return data
@@ -196,7 +206,6 @@ class WikiApiClient:
         timeout: int = 30,
     ) -> dict:
         if not self.session:
-            from .transport import load_session
 
             self.session = load_session(lang=self.lang, family=self.family, username=self.username)
 
@@ -211,7 +220,6 @@ class WikiApiClient:
             code = error.get("code", "")
             if code == "assertnameduserfailed":
                 logger.warning("assertnameduserfailed" * 10)
-                from .transport import del_cookies_file
 
                 del_cookies_file(self.cookies_file)
                 self.username_in = ""
@@ -291,7 +299,7 @@ class WikiApiClient:
             logger.debug(params)
             logger.debug(f"<<purple>>: <<red>> {lage=} {max_retry=}, sleep: {lage + 1}")
 
-            __import__("time").sleep(lage + 1)
+            time.sleep(lage + 1)
 
             params["maxlag"] = lage + 1
 
