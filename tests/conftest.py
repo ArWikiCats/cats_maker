@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 @pytest.fixture(autouse=True)
-def _fake_all_apis(monkeypatch, fake_api):
+def _fake_all_apis(monkeypatch):
     fake_all_apis = MagicMock()
     monkeypatch.setattr("src.core.new_api.pagenew.ALL_APIS", fake_all_apis)
 
