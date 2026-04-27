@@ -98,22 +98,3 @@ def add_to_page(page_title, arcat):
         return False
 
     return True
-
-
-def add_to_final_list(final_list, title, callback=None):
-    title = title.replace("_", " ")
-
-    if not title.startswith("تصنيف:"):
-        title = f"تصنيف:{title}"
-
-    if not final_list:
-        return
-
-    for n, page in enumerate(final_list, start=1):
-        logger.info(f"<<yellow>> cat:{title} page:{page} n:{n}/{len(final_list)}")
-        save = add_to_page(page, title)
-        if save and callback:
-            try:
-                callback(title)
-            except Exception as e:
-                logger.info(f"<<lightred>> Error in callback: {e}")

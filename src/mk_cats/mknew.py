@@ -3,9 +3,6 @@ python3 core8/pwb.py mk_cats/mknew
 """
 
 import logging
-import os
-import sys
-from pathlib import Path
 
 from ..config import settings
 from ..core.b18_new import (
@@ -16,17 +13,10 @@ from ..core.b18_new import (
 from ..core.new_api import load_main_api
 from ..core.wd_bots import Get_Sitelinks_From_wikidata, add_labels, log_to_wikidata, log_to_wikidata_qid
 from ..core.wiki_api import find_Page_Cat_without_hidden
-from .add_bot import add_to_final_list
+from .add_bot import add_to_page
 from .create_category_page import new_category
 from .members_helper import collect_category_members
 from .utils import check_en_temps, filter_cat
-
-# Optional ArWikiCats integration - configure via environment variable
-arwikicats_path = os.getenv("ARWIKICATS_PATH", "D:/categories_bot/make2_new/ArWikiCats")
-if arwikicats_path:
-    arwikicats_path = Path(arwikicats_path)
-    if arwikicats_path.exists():
-        sys.path.insert(0, str(arwikicats_path.parent))
 
 try:
     from ArWikiCats import resolve_arabic_category_label  # type: ignore
@@ -59,6 +49,25 @@ logger = logging.getLogger(__name__)
 bad_words = [
     "ذكور",
 ]
+
+
+def add_to_final_list(final_list, title, callback=None):
+    title = title.replace("_", " ")
+
+    if not title.startswith("تصنيف:"):
+        title = f"تصنيف:{title}"
+
+    if not final_list:
+        return
+
+    for n, page in enumerate(final_list, start=1):
+        logger.info(f"<<yellow>> cat:{title} page:{page} n:{n}/{len(final_list)}")
+        save = add_to_page(page, title)
+        if save and callback:
+            try:
+                callback(title)
+            except Exception as e:
+                logger.info(f"<<lightred>> Error in callback: {e}")
 
 
 def clear_processing_state():
@@ -217,7 +226,6 @@ def _log_members_info(members: list) -> None:
 
 
 def _finalize_category_creation(
-    created_category,
     ar_title: str,
     en_page_title: str,
     qid: str,
@@ -324,7 +332,6 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
 
     # Finalize: add members, log to Wikidata
     return _finalize_category_creation(
-        created_category.page_title,
         ar_title,
         en_page_title,
         qid,
@@ -376,7 +383,7 @@ def process_catagories(cat, arlab, num, lenth, callback=None) -> None:
     logger.debug("<<lightred>> tago done........... ")
 
 
-def one_cat(en_title, num, lenth, sugust="", uselabs=False, callback=None):
+def one_cat(en_title, num, lenth, sugust="", callback=None):
     logger.debug("_________________________________________________________")
 
     logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")
@@ -413,9 +420,16 @@ def one_cat(en_title, num, lenth, sugust="", uselabs=False, callback=None):
     return process_catagories(en_title, labb, num, lenth, callback=callback)
 
 
-def create_categories_from_list(liste, uselabs=False, callback=None) -> None:
+def create_categories_from_list(liste, callback=None) -> None:
     # clear_processing_state()
     lenth = len(liste)
 
     for num, en_title in enumerate(liste, 1):
-        one_cat(en_title, num, lenth, uselabs=uselabs, callback=callback)
+        one_cat(en_title, num, lenth, callback=callback)
+
+
+__all__ = [
+    "create_categories_from_list",
+    "process_catagories",
+    "ar_make_lab",
+]
