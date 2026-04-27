@@ -105,9 +105,7 @@ class TestGetListenpageTitle:
     def test_removes_duplicates(self, mocker):
         """Test that duplicates are removed"""
         mocker.patch("src.core.c18.cat_tools_enlist.validate_categories_for_new_cat", return_value=False)
-        mocker.patch(
-            "src.core.c18.cat_tools_enlist.extract_fan_page_titles", return_value=["Page1", "Page1", "Page2"]
-        )
+        mocker.patch("src.core.c18.cat_tools_enlist.extract_fan_page_titles", return_value=["Page1", "Page1", "Page2"])
 
         result = get_listenpageTitle("تصنيف:علوم", "Category:Science")
 
@@ -116,9 +114,7 @@ class TestGetListenpageTitle:
     def test_filters_empty_strings(self, mocker):
         """Test that empty strings are filtered"""
         mocker.patch("src.core.c18.cat_tools_enlist.validate_categories_for_new_cat", return_value=False)
-        mocker.patch(
-            "src.core.c18.cat_tools_enlist.extract_fan_page_titles", return_value=["Page1", "", "Page2", None]
-        )
+        mocker.patch("src.core.c18.cat_tools_enlist.extract_fan_page_titles", return_value=["Page1", "", "Page2", None])
 
         result = get_listenpageTitle("تصنيف:علوم", "Category:Science")
 
