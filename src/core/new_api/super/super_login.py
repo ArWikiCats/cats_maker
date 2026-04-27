@@ -8,7 +8,7 @@ import urllib.parse
 
 from ....config import settings
 from .handel_errors import HandleErrors
-from .transport import LOGIN_HELPS
+from .bot import LOGIN_HELPS
 
 logger = logging.getLogger(__name__)
 
