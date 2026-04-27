@@ -1,5 +1,5 @@
 """
-Tests for src/core/new_c18/tools/template_query.py
+Tests for template_query.py
 
 This module tests template query functions for Wikipedia categories.
 """

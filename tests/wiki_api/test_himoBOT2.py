@@ -1,5 +1,5 @@
 """
-Tests for src/core/wiki_api/himoBOT2.py
+Tests for himoBOT2.py
 
 This module tests Wikipedia API helper functions.
 """

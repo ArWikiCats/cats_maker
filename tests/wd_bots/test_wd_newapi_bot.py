@@ -1,5 +1,5 @@
 """
-Tests for src/core/wd_bots/wd_bots_main.py
+Tests for wd_bots_main.py
 
 This module tests the WD_API class.
 """

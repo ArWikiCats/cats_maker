@@ -1,5 +1,5 @@
 """
-Tests for src/mk_cats/create_category_page.py
+Tests for create_category_page.py
 
 This module tests category page creation functionality.
 """

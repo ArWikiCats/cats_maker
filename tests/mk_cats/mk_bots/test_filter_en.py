@@ -1,5 +1,5 @@
 """
-Tests for src/mk_cats/utils/filter_en.py
+Tests for filter_en.py
 
 This module tests English category filtering functions.
 """

@@ -1,5 +1,5 @@
 """
-Tests for src/mk_cats/utils/portal_list.py
+Tests for portal_list.py
 
 This module tests the portal English to Arabic mapping.
 """

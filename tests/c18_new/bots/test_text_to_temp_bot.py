@@ -1,5 +1,5 @@
 """
-Tests for src/core/new_c18/tools/doc_handler.py
+Tests for doc_handler.py
 
 This module tests functions for adding text/categories to template pages.
 """

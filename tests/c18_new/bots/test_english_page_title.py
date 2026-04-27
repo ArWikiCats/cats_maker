@@ -1,5 +1,5 @@
 """
-Tests for src/core/new_c18/core/cross_wiki_linker.py
+Tests for cross_wiki_linker.py
 
 This module tests functions for finding English page titles from Arabic pages.
 """

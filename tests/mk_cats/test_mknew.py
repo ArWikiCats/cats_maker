@@ -1,5 +1,5 @@
 """
-Tests for src/mk_cats/mknew.py
+Tests for mknew.py
 
 اختبارات لملف mknew.py - الملف الرئيسي لإنشاء التصنيفات
 

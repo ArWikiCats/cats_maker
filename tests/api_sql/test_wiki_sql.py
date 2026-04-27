@@ -1,5 +1,5 @@
 """
-Tests for src/core/api_sql/service.py
+Tests for service.py
 
 This module tests namespace handling and SQL query functions for MediaWiki.
 """

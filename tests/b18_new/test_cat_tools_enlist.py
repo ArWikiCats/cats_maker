@@ -1,5 +1,5 @@
 """
-Tests for src/core/new_c18/core/member_lister.py
+Tests for member_lister.py
 
 This module tests category page listing functions.
 """

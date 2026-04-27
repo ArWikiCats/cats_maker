@@ -1,5 +1,5 @@
 """
-Tests for src/core/wd_bots/utils/lag_bot.py
+Tests for lag_bot.py
 
 This module tests Wikidata lag handling functions.
 """

@@ -1,5 +1,5 @@
 """
-Tests for src/mk_cats/members_helper.py
+Tests for members_helper.py
 
 This module tests the helper functions for category member processing:
 - gather_members_from_sql() - Gather members from SQL sources

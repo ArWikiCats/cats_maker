@@ -1,5 +1,5 @@
 """
-Tests for src/core/new_c18/core/category_resolver.py
+Tests for category_resolver.py
 
 This module tests category member API functions.
 """

@@ -1,5 +1,5 @@
 """
-Tests for src/core/new_c18/core/category_filter.py
+Tests for category_filter.py
 
 This module tests category filtering functions.
 """

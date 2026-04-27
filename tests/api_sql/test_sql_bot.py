@@ -1,5 +1,5 @@
 """
-Tests for src/core/api_sql/sql_bot.py
+Tests for sql_bot.py
 
 This module tests SQL query functions for Wikipedia databases.
 """

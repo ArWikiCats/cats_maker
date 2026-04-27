@@ -1,5 +1,5 @@
 """
-Tests for src/mk_cats/add_bot.py
+Tests for add_bot.py
 
 This module tests functions for adding categories to pages.
 """

@@ -1,5 +1,5 @@
 """
-Tests for src/mk_cats/utils/check_en.py
+Tests for check_en.py
 
 اختبارات لملف check_en.py - فحص القوالب الإنجليزية
 

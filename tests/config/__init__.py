@@ -1,1 +1,1 @@
-"""Tests for config/__init__.py"""
+"""Tests for __init__.py"""
