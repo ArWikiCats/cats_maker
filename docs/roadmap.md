@@ -8,15 +8,13 @@
 ## Dependency Map
 
 ```
-wiki_api (HTTP transport) ─┬─> new_api (OOP API wrapper) ─┬─> b18
-                            │                              ├─> mk_cats
-                            │                              └─> c18
-                            │
-api_sql (DB access) ────────┼─> b18
-                            ├─> c18
-                            │
+wiki_api (HTTP transport) ─┬─> new_api (OOP API wrapper) ─┬─> mk_cats
+                             │                              └─> c18
+                             │
+api_sql (DB access) ────────┼─> c18
+                             │
 wd_bots (Wikidata) ─────────┼─> mk_cats
-                            └─> c18
+                             └─> c18
 ```
 
 **Rule:** Always refactor a module only after all its upstream dependencies are done.
@@ -82,7 +80,7 @@ Zero-risk changes that can be done immediately, in any order:
 
 -   Create `src/core/constants.py` with shared namespace dicts (from api_sql + new_api)
 -   Create `src/core/utils/text.py` with `normalize_category_title()`, `clean_wiki_brackets()`, `extract_wikidata_qid()`
--   Ensure both are importable by `b18`, `c18`, `mk_cats`
+-   Ensure both are importable by `c18`, `mk_cats`
 
 ### Step 1.4 — `wd_bots` refactoring
 
@@ -120,25 +118,9 @@ Zero-risk changes that can be done immediately, in any order:
 
 ## Phase 2: Business Logic Modules
 
-### Step 2.1 — `b18` refactoring
+### Step 2.1 — `mk_cats` refactoring
 
-**Why first of the three:** Lightest module, fewest dependencies.
-
-**Execute per plan:** `b18_refactor_plan.md`
-
--   Phase 1: `constants.py` + `utils/text.py` (use shared utils from Step 1.3)
--   Phase 2: Refactor `sql_cat_checker.py` → `core/category_validator.py`
--   Phase 3: Refactor `cat_tools_enlist.py` → `core/member_lister.py`
--   Phase 4: Merge `sql_cat.py` + `cat_tools_enlist2.py` → `core/category_resolver.py` + `io/`
--   Phase 5: Add `models.py`
--   Phase 6: Update `__init__.py` with deprecation shims
--   Phase 7: Tests
-
-**Verification:** `pytest tests/b18/` passes, > 80% coverage.
-
-### Step 2.2 — `mk_cats` refactoring
-
-**Why second:** Depends on `new_api` + `wd_bots` (both done). Used by `c18`.
+**Why first:** Depends on `new_api` + `wd_bots` (both done). Used by `c18`.
 
 **Execute per plan:** `mk_cats_refactor_plan.md`
 
@@ -150,11 +132,11 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Verification:** `pytest tests/mk_cats/` passes, >= 80% coverage. Integration diff on `Science` category is empty.
 
-### Step 2.3 — `c18` refactoring
+### Step 2.2 — `c18` refactoring
 
-**Why last:** Largest module (7+ files), highest complexity, depends on everything.
+**Why last:** Largest module (now includes former b18 logic), highest complexity, depends on everything.
 
-**Execute per plan:** `c18_master_refactoring_plan.md`
+**Execute per plan:** `c18_merged_refactor_plan.md`
 
 -   Phase 1: `constants.py`, snake_case, type hints
 -   Phase 2: Deduplication — merge `ar_from_en.py` + `ar_from_en2.py`, merge templatequery files
@@ -198,7 +180,7 @@ mypy src/core/ --ignore-missing-imports --statistics
 #    wiki_api → wd_bots → new_api
 
 # 5. Refactor downstream layers in order:
-#    b18 → mk_cats → c18
+#    mk_cats → c18
 
 # 6. Validate
 pytest tests/ --cov=src/core --cov-report=term-missing

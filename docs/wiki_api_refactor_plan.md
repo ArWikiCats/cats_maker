@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `wiki_api` module provides the low-level HTTP transport layer and high-level query functions for interacting with MediaWiki APIs (Wikipedia, Commons, Wikidata). It is consumed by all three business-logic layers (`b18`, `c18`, `mk_cats`) and `wd_bots`. Located at `src/core/wiki_api/`.
+The `wiki_api` module provides the low-level HTTP transport layer and high-level query functions for interacting with MediaWiki APIs (Wikipedia, Commons, Wikidata). It is consumed by all business-logic layers (`c18`, `mk_cats`) and `wd_bots`. Located at `src/core/wiki_api/`.
 
 ## Current Architecture
 
@@ -102,7 +102,7 @@ src/core/wiki_api/
 
 -   Keep all 10 public API symbols exported from `__init__.py` with the same signatures.
 -   Old module-level functions delegate to the new classes with deprecation warnings.
--   Once all consumers (`b18`, `c18`, `mk_cats`, `wd_bots`) are updated, remove the compat layer.
+-   Once all consumers (`c18`, `mk_cats`, `wd_bots`) are updated, remove the compat layer.
 
 ### Phase 7: Update `__init__.py` and `_compat.py`
 

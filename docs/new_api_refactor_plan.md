@@ -657,7 +657,7 @@ After refactoring, verify these consumer files still work:
 | `src/mk_cats/categorytext.py`                | `load_main_api`                                  |
 | `src/mk_cats/create_category_page.py`        | `load_main_api`                                  |
 | `src/mk_cats/add_bot.py`                     | `load_main_api`                                  |
-| `src/core/b18/sql_cat.py`                | `load_main_api`                                  |
+| `src/core/c18/sql_cat.py`                | `load_main_api`                                  |
 | `src/core/c18/cat_tools2.py`             | `load_main_api`                                  |
 | `src/core/c18/cats_tools/ar_from_en2.py` | `load_main_api`                                  |
 | `src/core/c18/bots/text_to_temp_bot.py`  | `load_main_api`                                  |

@@ -98,10 +98,12 @@ Utilities (helps/, utils/, temp/)
    - `categorytext.py`: Text generation for category pages
    - `create_category_page.py`: Page creation logic
 
-2. **b18/**: Category processing and link resolution
-   - `LCN_new.py`: Language link discovery
-   - `cat_tools.py`: Category utilities
+2. **c18/**: Category processing, link resolution, and category tools
    - `sql_cat.py`: SQL-based category queries
+   - `cat_tools_enlist.py`: Category member listing
+   - `bots/`: Bot tools (filter_cat, english_page_title)
+   - `cats_tools/`: Category conversion tools (ar_from_en)
+   - `tools_bots/`: Helper bots
 
 3. **wd_bots/**: Wikidata integration
    - `wd_api_bot.py`: Wikidata API functions
