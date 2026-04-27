@@ -11,25 +11,25 @@
 
 `src/core/api_sql` provides SQL-based access to Wikimedia Analytics DB replicas to fetch Wikipedia page data (category members, cross-language differences). It has three layers:
 
-| Layer | File              | Lines | Responsibility                                                            |
-| ----- | ----------------- | ----- | ------------------------------------------------------------------------- |
+| Layer | File         | Lines | Responsibility                                                            |
+| ----- | ------------ | ----- | ------------------------------------------------------------------------- |
 | Low   | `db_pool.py` | 158   | pymysql connection, query execution, byte decoding                        |
-| Mid   | `service.py`     | 227   | Namespace tables, `GET_SQL` gate, host/db name generation, query wrappers |
-| High  | `sql_bot.py`      | 158   | Business-logic queries (category member fetch, cross-language diff)       |
+| Mid   | `service.py` | 227   | Namespace tables, `GET_SQL` gate, host/db name generation, query wrappers |
+| High  | `sql_bot.py` | 158   | Business-logic queries (category member fetch, cross-language diff)       |
 
 Key issues:
 
-| Issue                                                                                   | Location                | Impact                                                  |
-| --------------------------------------------------------------------------------------- | ----------------------- | ------------------------------------------------------- |
-| `sql_bot.py` duplicates `GET_SQL()` guard logic (3 times)                               | `sql_bot.py:24,74,111`  | Violates DRY — mid-layer already guards                 |
-| `sql_bot.py` calls `make_sql_connect_silent` directly (bypassing mid-layer)             | `sql_bot.py:49,120`     | Bypasses `sql_new` wrapper, duplicates host/db logic    |
-| `sql_bot.py` reimplements namespace prefix logic                                        | `sql_bot.py:59-60`      | `service.add_nstext_to_title` already exists           |
-| `sql_bot.py` reimplements byte decoding                                                 | `sql_bot.py:13-16`      | `db_pool.decode_value` already exists              |
-| `service.py` `sql_new` has mutable default arg `values=[]`                             | `service.py:158`       | Shared mutable default across calls                     |
-| `service.py` `sql_new_title_ns` mixes wiki code extraction with query logic            | `service.py:198-201`   | `make_labsdb_dbs_p` already handles this                |
-| `db_pool.py` `_sql_connect_pymysql` tries to `fetchall` even on non-SELECT queries | `db_pool.py:81-88` | `INSERT`/`UPDATE` have no result set; `fetchall` raises |
-| Hardcoded namespace dicts in `service.py`                                              | `service.py:13-58`     | No constants file                                       |
-| No type hints on many functions                                                         | All files               | Reduced IDE support and runtime safety                  |
+| Issue                                                                              | Location               | Impact                                                  |
+| ---------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------- |
+| `sql_bot.py` duplicates `GET_SQL()` guard logic (3 times)                          | `sql_bot.py:24,74,111` | Violates DRY — mid-layer already guards                 |
+| `sql_bot.py` calls `make_sql_connect_silent` directly (bypassing mid-layer)        | `sql_bot.py:49,120`    | Bypasses `sql_new` wrapper, duplicates host/db logic    |
+| `sql_bot.py` reimplements namespace prefix logic                                   | `sql_bot.py:59-60`     | `service.add_nstext_to_title` already exists            |
+| `sql_bot.py` reimplements byte decoding                                            | `sql_bot.py:13-16`     | `db_pool.decode_value` already exists                   |
+| `service.py` `sql_new` has mutable default arg `values=[]`                         | `service.py:158`       | Shared mutable default across calls                     |
+| `service.py` `sql_new_title_ns` mixes wiki code extraction with query logic        | `service.py:198-201`   | `make_labsdb_dbs_p` already handles this                |
+| `db_pool.py` `_sql_connect_pymysql` tries to `fetchall` even on non-SELECT queries | `db_pool.py:81-88`     | `INSERT`/`UPDATE` have no result set; `fetchall` raises |
+| Hardcoded namespace dicts in `service.py`                                          | `service.py:13-58`     | No constants file                                       |
+| No type hints on many functions                                                    | All files              | Reduced IDE support and runtime safety                  |
 
 **This plan reorganises the module in five sequential phases** with backward-compatible shims.
 
@@ -59,11 +59,11 @@ src/core/api_sql/
 
 Legacy files become thin shims:
 
-| Old file          | Shim to                                               |
-| ----------------- | ----------------------------------------------------- |
+| Old file     | Shim to                                               |
+| ------------ | ----------------------------------------------------- |
 | `db_pool.py` | `from .client import *`                               |
-| `service.py`     | `from .gateway import *` + `from .constants import *` |
-| `sql_bot.py`      | `from .queries import *`                              |
+| `service.py` | `from .gateway import *` + `from .constants import *` |
+| `sql_bot.py` | `from .queries import *`                              |
 
 ---
 
@@ -79,11 +79,11 @@ Legacy files become thin shims:
 
 ## 5. Detailed Phases
 
-### Phase 1 — Code Hygiene *(DONE)*
+### Phase 1 — Code Hygiene _(DONE)_
 
 **Target:** All files in `api_sql`.
 
-**5.1.1 Create `constants.py`** *(DONE)*
+**5.1.1 Create `constants.py`** _(DONE)_
 
 Move namespace dicts and wiki config from `service.py`:
 
@@ -144,11 +144,11 @@ DATABASE_SUFFIX = "_p"
 
 **5.1.3 Normalize naming to snake_case**
 
-| Old name                | New name                             | Location                       |
-| ----------------------- | ------------------------------------ | ------------------------------ |
-| `encatTitle`            | `en_cat_title`                       | `sql_bot.py`                   |
-| `arcatTitle`            | `ar_cat_title`                       | `sql_bot.py`                   |
-| `enpageTitle`           | `en_page_title`                      | `sql_bot.py`                   |
+| Old name                | New name                             | Location                      |
+| ----------------------- | ------------------------------------ | ----------------------------- |
+| `encatTitle`            | `en_cat_title`                       | `sql_bot.py`                  |
+| `arcatTitle`            | `ar_cat_title`                       | `sql_bot.py`                  |
+| `enpageTitle`           | `en_page_title`                      | `sql_bot.py`                  |
 | `db_p`                  | `db_name`                            | `service.py:sql_new`          |
 | `ns_text_tab_ar`        | `NS_TEXT_AR` (module-level constant) | `service.py`                  |
 | `ns_text_tab_en`        | `NS_TEXT_EN` (module-level constant) | `service.py`                  |
@@ -158,9 +158,9 @@ DATABASE_SUFFIX = "_p"
 
 ---
 
-### Phase 2 — Eliminate Duplication (DRY) *(PARTIALLY DONE)*
+### Phase 2 — Eliminate Duplication (DRY) _(PARTIALLY DONE)_
 
-**5.2.1 Remove redundant `GET_SQL()` guards in `sql_bot.py`** *(DONE)*
+**5.2.1 Remove redundant `GET_SQL()` guards in `sql_bot.py`** _(DONE)_
 
 `sql_bot.py` calls `GET_SQL()` at three entry points (`fetch_arcat_titles:24`, `get_exclusive_category_titles:74`, `fetch_encat_titles:111`). Since `service.py:sql_new` already guards with `GET_SQL()` and returns `[]` when disabled, the guards in `fetch_arcat_titles` and `fetch_encat_titles` are redundant if they route through `sql_new`.
 
@@ -185,7 +185,7 @@ def fetch_arcat_titles(ar_cat_title: str) -> list[str]:
     ar_results = sql_new(ar_queries, wiki="ar", values=(ar_cat_title,))
 ```
 
-**5.2.2 Route `sql_bot.py` queries through `sql_new` instead of `make_sql_connect_silent`** *(DONE)*
+**5.2.2 Route `sql_bot.py` queries through `sql_new` instead of `make_sql_connect_silent`** _(DONE)_
 
 `fetch_arcat_titles` and `fetch_encat_titles` both call `make_labsdb_dbs_p` + `make_sql_connect_silent` directly, duplicating logic that already lives in `service.py:sql_new`.
 
@@ -204,7 +204,7 @@ en_results = make_sql_connect_silent(queries, host=host, db=db_p, values=(item,)
 en_results = sql_new(queries, wiki="en", values=(item,))
 ```
 
-**5.2.3 Use `add_nstext_to_title` in `sql_bot.py` instead of manual prefix logic** *(DONE)*
+**5.2.3 Use `add_nstext_to_title` in `sql_bot.py` instead of manual prefix logic** _(DONE)_
 
 `fetch_arcat_titles:59-60` manually does:
 
@@ -215,17 +215,17 @@ if ns_text_tab_ar.get(str(ns)):
 
 **Action:** Replace with `add_nstext_to_title(title, ns, lang="ar")` from `service.py`.
 
-**5.2.4 Remove duplicate `decode_bytes` in `sql_bot.py`** *(DONE — already removed in prior commit)*
+**5.2.4 Remove duplicate `decode_bytes` in `sql_bot.py`** _(DONE — already removed in prior commit)_
 
 `sql_bot.py:13-16` defines `decode_bytes` which duplicates `db_pool.py:decode_value`. The function is never called in `sql_bot.py` — it is dead code.
 
 **Action:** Remove `decode_bytes` from `sql_bot.py`.
 
-**Success criteria:** `sql_bot.py` no longer imports `make_sql_connect_silent`, `make_labsdb_dbs_p`, or `ns_text_tab_ar` directly. All queries route through `sql_new`. No dead code. *(DONE)*
+**Success criteria:** `sql_bot.py` no longer imports `make_sql_connect_silent`, `make_labsdb_dbs_p`, or `ns_text_tab_ar` directly. All queries route through `sql_new`. No dead code. _(DONE)_
 
 ---
 
-### Phase 3 — Structural Split *(NOT DONE)*
+### Phase 3 — Structural Split _(NOT DONE)_
 
 **Target:** Decompose files into clear layers.
 
@@ -248,9 +248,9 @@ Pure rename with shim. Contains: `fetch_arcat_titles`, `fetch_encat_titles`, `ge
 
 ---
 
-### Phase 4 — Error Handling & Robustness *(DONE)*
+### Phase 4 — Error Handling & Robustness _(DONE)_
 
-**5.4.1 Handle non-SELECT queries in `_run_query`** *(DONE)*
+**5.4.1 Handle non-SELECT queries in `_run_query`** _(DONE)_
 
 Currently `_sql_connect_pymysql` unconditionally calls `cursor.fetchall()`. For `INSERT`/`UPDATE`/`DELETE` queries, this raises `pymysql.Error` which is caught and re-raised as `DatabaseFetchError`.
 
@@ -271,7 +271,7 @@ def _sql_connect_pymysql(
         return []
 ```
 
-**5.4.2 Fix mutable default argument in `sql_new`** *(DONE — changed to `values: tuple | list = ()`)*
+**5.4.2 Fix mutable default argument in `sql_new`** _(DONE — changed to `values: tuple | list = ()`)_
 
 `service.py:158`:
 
@@ -296,7 +296,7 @@ Consider adding `connect_timeout=10` and `read_timeout=30` to `load_db_config` f
 
 ---
 
-### Phase 5 — Testing & Validation *(DONE)*
+### Phase 5 — Testing & Validation _(DONE)_
 
 **5.5.1 Update existing tests**
 
@@ -331,22 +331,22 @@ Run the full `find_sql` flow before/after each phase to verify identical output:
 pytest tests/api_sql/ tests/integration/test_main_flow.py -v
 ```
 
-**Success criteria:** All existing tests pass. `pytest tests/api_sql/ --cov=src/core/api_sql --cov-report=term-missing` shows ≥ 85% coverage. *(DONE — 78 tests pass, 99% coverage)*
+**Success criteria:** All existing tests pass. `pytest tests/api_sql/ --cov=src/core/api_sql --cov-report=term-missing` shows ≥ 85% coverage. _(DONE — 78 tests pass, 99% coverage)_
 
 ---
 
 ## 6. Public API Changes
 
-| Current public symbol                   | New canonical location                          | Shim kept?                 |
-| --------------------------------------- | ----------------------------------------------- | -------------------------- |
-| `api_sql.GET_SQL`                       | `api_sql.gateway.GET_SQL`                       | Yes, via `__init__.py`     |
-| `api_sql.sql_new`                       | `api_sql.gateway.sql_new`                       | Yes, via `__init__.py`     |
-| `api_sql.sql_new_title_ns`              | `api_sql.gateway.sql_new_title_ns`              | Yes, via `__init__.py`     |
-| `api_sql.add_nstext_to_title`           | `api_sql.gateway.add_nstext_to_title`           | Yes, via `__init__.py`     |
-| `api_sql.get_exclusive_category_titles` | `api_sql.queries.get_exclusive_category_titles` | Yes, via `__init__.py`     |
-| `api_sql.db_pool.*`                | `api_sql.client.*`                              | Via `db_pool.py` shim |
-| `api_sql.service.*`                    | `api_sql.gateway.*` + `api_sql.constants.*`     | Via `service.py` shim     |
-| `api_sql.sql_bot.*`                     | `api_sql.queries.*`                             | Via `sql_bot.py` shim      |
+| Current public symbol                   | New canonical location                          | Shim kept?             |
+| --------------------------------------- | ----------------------------------------------- | ---------------------- |
+| `api_sql.GET_SQL`                       | `api_sql.gateway.GET_SQL`                       | Yes, via `__init__.py` |
+| `api_sql.sql_new`                       | `api_sql.gateway.sql_new`                       | Yes, via `__init__.py` |
+| `api_sql.sql_new_title_ns`              | `api_sql.gateway.sql_new_title_ns`              | Yes, via `__init__.py` |
+| `api_sql.add_nstext_to_title`           | `api_sql.gateway.add_nstext_to_title`           | Yes, via `__init__.py` |
+| `api_sql.get_exclusive_category_titles` | `api_sql.queries.get_exclusive_category_titles` | Yes, via `__init__.py` |
+| `api_sql.db_pool.*`                     | `api_sql.client.*`                              | Via `db_pool.py` shim  |
+| `api_sql.service.*`                     | `api_sql.gateway.*` + `api_sql.constants.*`     | Via `service.py` shim  |
+| `api_sql.sql_bot.*`                     | `api_sql.queries.*`                             | Via `sql_bot.py` shim  |
 
 The public API exported from `__init__.py` stays **identical** — no consumer code changes needed.
 
@@ -361,7 +361,7 @@ The public API exported from `__init__.py` stays **identical** — no consumer c
 -   [x] Mutable default fixed (`values=[]` → `values=()`) — tuple default avoids mutable-default bug
 -   [x] `_run_query` handles non-SELECT queries without calling `fetchall`
 -   [x] Namespace dicts moved to `constants.py`
--   [ ] All old file paths remain importable via shims *(pending Phase 3)*
+-   [ ] All old file paths remain importable via shims _(pending Phase 3)_
 -   [x] `ruff check src/core/api_sql` passes with zero errors
 -   [x] `mypy src/core/api_sql --ignore-missing-imports` passes
 -   [x] `pytest tests/api_sql/` passes — 78/78 pass, 99% coverage
@@ -405,14 +405,14 @@ Legacy shims (import from new locations):
 
 ## 10. Execution Order
 
-| Phase      | Steps                                                                  | Status     | Estimated effort | Dependencies |
-| ---------- | ---------------------------------------------------------------------- | ---------- | ---------------- | ------------ |
-| Quick Wins | Fix mutable default, remove dead code, add `__all__`                   | Done       | 15 min           | None         |
-| Phase 1    | Create `constants.py`, add type hints, rename symbols                  | Done       | 1 hr             | Quick Wins   |
-| Phase 2    | DRY: route through `sql_new`, use `add_nstext_to_title`, remove guards | Done       | 1 hr             | Phase 1      |
-| Phase 3    | Rename and split files, add shims                                      | Pending    | 30 min           | Phase 2      |
-| Phase 4    | Fix `fetchall` for non-SELECT, add connection timeout                  | Done       | 30 min           | Phase 3      |
-| Phase 5    | Update tests, add missing tests                                        | Done       | 1-2 hr           | Phase 4      |
+| Phase      | Steps                                                                  | Status  | Estimated effort | Dependencies |
+| ---------- | ---------------------------------------------------------------------- | ------- | ---------------- | ------------ |
+| Quick Wins | Fix mutable default, remove dead code, add `__all__`                   | Done    | 15 min           | None         |
+| Phase 1    | Create `constants.py`, add type hints, rename symbols                  | Done    | 1 hr             | Quick Wins   |
+| Phase 2    | DRY: route through `sql_new`, use `add_nstext_to_title`, remove guards | Done    | 1 hr             | Phase 1      |
+| Phase 3    | Rename and split files, add shims                                      | Pending | 30 min           | Phase 2      |
+| Phase 4    | Fix `fetchall` for non-SELECT, add connection timeout                  | Done    | 30 min           | Phase 3      |
+| Phase 5    | Update tests, add missing tests                                        | Done    | 1-2 hr           | Phase 4      |
 
 **Total estimated effort:** ~4-5 hours. **Spent so far:** ~2 hours.
 
