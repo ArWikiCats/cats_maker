@@ -54,9 +54,7 @@ class BotEditChecker:
         self._bot_cache: dict[str, dict[str, bool]] = {}
         self._created_cache: dict[str, bool] = {}
 
-    def _handle_nobots_template(
-        self, params: dict, title_page: str, botjob: str, _template: str
-    ) -> bool:
+    def _handle_nobots_template(self, params: dict, title_page: str, botjob: str, _template: str) -> bool:
         if not params:
             logger.debug(f"<<lightred>> botEdit.py: the page has temp:({_template}), botjob:{botjob} skipp.")
             self._bot_cache.setdefault(botjob, {})[title_page] = False
@@ -70,9 +68,7 @@ class BotEditChecker:
         self._bot_cache.setdefault(botjob, {})[title_page] = True
         return True
 
-    def _handle_bots_template(
-        self, params: dict, title_page: str, botjob: str, title: str
-    ) -> bool:
+    def _handle_bots_template(self, params: dict, title_page: str, botjob: str, title: str) -> bool:
         if not params:
             self._bot_cache.setdefault(botjob, {})[title_page] = False
             return False

@@ -44,9 +44,7 @@ class TestMainFlowIntegration:
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in mknew)
-        mock_sql = mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.list_en_pages_with_ar_links"
-        )
+        mock_sql = mocker.patch("src.core.new_c18.core.category_resolver.CategoryResolver.list_en_pages_with_ar_links")
         mock_sql.return_value = ["Test Article 1", "Test Article 2"]
 
         # Mock category page creation
@@ -54,15 +52,11 @@ class TestMainFlowIntegration:
         mock_new_cat.return_value = True
 
         # Mock MemberLister.get_listen_page_title (used in members_helper)
-        mock_listen = mocker.patch(
-            "src.core.new_c18.core.member_lister.MemberLister.get_listen_page_title"
-        )
+        mock_listen = mocker.patch("src.core.new_c18.core.member_lister.MemberLister.get_listen_page_title")
         mock_listen.return_value = ["Article1", "Article2"]
 
         # Mock CategoryResolver.make_lit_api_way (used in members_helper)
-        mock_lit_api = mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way"
-        )
+        mock_lit_api = mocker.patch("src.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way")
         mock_lit_api.return_value = []
 
         # Mock to_wd.log_to_wikidata
@@ -73,9 +67,7 @@ class TestMainFlowIntegration:
         mock_validate.return_value = MagicMock(valid=True)
 
         # Mock CategoryResolver.resolve_members (used in mknew)
-        mock_make_ar_list = mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.resolve_members"
-        )
+        mock_make_ar_list = mocker.patch("src.core.new_c18.core.category_resolver.CategoryResolver.resolve_members")
         mock_make_ar_list.return_value = []
 
         return {

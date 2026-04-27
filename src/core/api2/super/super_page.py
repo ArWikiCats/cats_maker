@@ -400,7 +400,9 @@ class MainPage:
         if not noask:
             message = f"Do you want to create this page? ({self.lang}:{self.title})"
             user = self.meta.username or getattr(self, "user_login", "")
-            if not self._ask_bot.ask_put(nodiff=nodiff, newtext=text, message=message, job="create", username=user, summary=summary):
+            if not self._ask_bot.ask_put(
+                nodiff=nodiff, newtext=text, message=message, job="create", username=user, summary=summary
+            ):
                 return False
 
         params = {

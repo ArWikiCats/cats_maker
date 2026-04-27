@@ -316,7 +316,9 @@ class CategoryDepth:
             new_tab2 = []
 
             if self.limit > 0 and len(self.result_table) >= self.limit:
-                logger.debug(f"<<yellow>> limit:{self.limit} reached, len of results: {len(self.result_table)} break ..")
+                logger.debug(
+                    f"<<yellow>> limit:{self.limit} reached, len of results: {len(self.result_table)} break .."
+                )
                 break
 
             depth_done += 1
@@ -391,7 +393,9 @@ def subcatquery(login_bot, title: str, sitecode: str = SITECODE, family: str = F
 
     if print_s:
         lenpages = bot.get_len_pages()
-        logger.debug(f"<<lightblue>> find {len(result)} pages({args2['ns']}) in {sitecode}:{title}, depth:{args2['depth']} | {lenpages=}")
+        logger.debug(
+            f"<<lightblue>> find {len(result)} pages({args2['ns']}) in {sitecode}:{title}, depth:{args2['depth']} | {lenpages=}"
+        )
 
     return result
 
