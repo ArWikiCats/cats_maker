@@ -17,6 +17,7 @@ from src.mk_cats.categorytext import (
 class TestGetPageLinkData:
     """Tests for get_page_link_data dictionary"""
 
+    @pytest.mark.skip(reason="required real network connection")
     def test_get_page_link_data(self):
         """Test the output of get_page_link_data"""
         result = get_page_link_data("Yemen", "en", 100)
@@ -24,6 +25,7 @@ class TestGetPageLinkData:
         assert "Portal:Asia" in result
         # Add more assertions based on expected output
 
+    @pytest.mark.skip(reason="required real network connection")
     def test_get_page_link_data_10(self):
         """Test the output of get_page_link_data"""
         result = get_page_link_data("Caenispirillum deserti", "en", 10)

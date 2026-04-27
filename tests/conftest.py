@@ -10,10 +10,21 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
+# ===== Test Utility Functions =====
+
+
 @pytest.fixture(autouse=True)
-def _fake_all_apis(monkeypatch):
-    fake_all_apis = MagicMock()
-    monkeypatch.setattr("src.core.new_api.pagenew.ALL_APIS", fake_all_apis)
+def disable_network(mocker):
+    """Disable all network requests during testing"""
+    mocker.patch("requests.get", side_effect=Exception("Network disabled in tests"))
+    mocker.patch("requests.post", side_effect=Exception("Network disabled in tests"))
+    mocker.patch("urllib.request.urlopen", side_effect=Exception("Network disabled in tests"))
+
+
+@pytest.fixture(autouse=True)
+def fake_all_apis(monkeypatch):
+    _fake = MagicMock()
+    monkeypatch.setattr("src.core.new_api.pagenew.ALL_APIS", _fake)
 
 
 # ===== Shared Test Data Fixtures =====
@@ -149,14 +160,3 @@ def temp_jsonl_file(tmp_path):
     """Create a temporary JSONL file for testing"""
     file_path = tmp_path / "test_data.jsonl"
     return file_path
-
-
-# ===== Test Utility Functions =====
-
-
-@pytest.fixture
-def disable_network(mocker):
-    """Disable all network requests during testing"""
-    mocker.patch("requests.get", side_effect=Exception("Network disabled in tests"))
-    mocker.patch("requests.post", side_effect=Exception("Network disabled in tests"))
-    mocker.patch("urllib.request.urlopen", side_effect=Exception("Network disabled in tests"))
