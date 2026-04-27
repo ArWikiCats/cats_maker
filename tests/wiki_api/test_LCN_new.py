@@ -1,5 +1,5 @@
 """
-Tests for src/core/b18_new/LCN_new.py
+Tests for src/core/c18_new/LCN_new.py
 
 This module tests the WikiApiHandler class and language link functions.
 """
