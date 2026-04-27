@@ -3,6 +3,7 @@
 import copy
 import logging
 import time
+from typing import Any
 import urllib.parse
 
 from ....config import settings
@@ -12,7 +13,7 @@ from .transport import LOGIN_HELPS
 logger = logging.getLogger(__name__)
 
 ar_lag = {1: 3}
-urls_prints = {"all": 0}
+
 
 
 class Login(LOGIN_HELPS, HandleErrors):
@@ -20,14 +21,15 @@ class Login(LOGIN_HELPS, HandleErrors):
     Represents a login session for a wiki.
     """
 
-    def __init__(self, lang, family="wikipedia"):
-        self.user_login = ""
-        self.lang = lang
-        self.family = family
-        self.r3_token = ""
-        self.url_o_print = ""
-        self.user_agent = settings.wikipedia.user_agent
-        self.endpoint = f"https://{self.lang}.{self.family}.org/w/api.php"
+    def __init__(self, lang: str, family: str = "wikipedia") -> None:
+        self._url_counts = {"all": 0}
+        self.user_login: str = ""
+        self.lang: str = lang
+        self.family: str = family
+        self.r3_token: str = ""
+        self.url_o_print: str = ""
+        self.user_agent: str = settings.wikipedia.user_agent
+        self.endpoint: str = f"https://{self.lang}.{self.family}.org/w/api.php"
         super().__init__()
 
     def filter_params(self, params):
@@ -44,13 +46,9 @@ class Login(LOGIN_HELPS, HandleErrors):
                 del params["summary"]
 
         params.setdefault("formatversion", "1")
-
         return params
 
-    def p_url(self, params):
-        """
-        Print the URL for debugging purposes.
-        """
+    def p_url(self, params: dict) -> None:
         if settings.debug_config.print_url:
             no_url = ["lgpassword", "format"]
             no_remove = ["titles", "title"]
@@ -61,13 +59,13 @@ class Login(LOGIN_HELPS, HandleErrors):
             }
             self.url_o_print = f"{self.endpoint}?{urllib.parse.urlencode(pams2)}".replace("&format=json", "")
 
-            if self.url_o_print not in urls_prints:
-                urls_prints[self.url_o_print] = 0
+            if self.url_o_print not in self._url_counts:
+                self._url_counts[self.url_o_print] = 0
 
-            urls_prints[self.url_o_print] += 1
-            urls_prints["all"] += 1
+            self._url_counts[self.url_o_print] += 1
+            self._url_counts["all"] = self._url_counts.get("all", 0) + 1
 
-            logger.debug(f"c: {urls_prints[self.url_o_print]}/{urls_prints['all']}\t {self.url_o_print}")
+            logger.debug(f"c: {self._url_counts[self.url_o_print]}/{self._url_counts['all']}\t {self.url_o_print}")
 
     def add_users(self, Users_tables, lang=""):
         if Users_tables:
@@ -78,13 +76,10 @@ class Login(LOGIN_HELPS, HandleErrors):
     def make_response(
         self,
         params,
-        files=None,
-        timeout=30,
-        do_error=True,
-    ):
-        """
-        Make a POST request to the API endpoint.
-        """
+        files: Any = None,
+        timeout: int = 30,
+        do_error: bool = True,
+    ) -> dict:
         self.p_url(params)
 
         data = {}
