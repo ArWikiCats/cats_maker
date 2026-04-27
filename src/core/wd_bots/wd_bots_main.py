@@ -8,7 +8,7 @@ import time
 
 from ...config import settings
 from ..new_api import Login
-from .lag_bot import do_lag, find_lag, get_lag_value, get_new_sleep
+from .lag_bot import do_lag, find_lag, get_lag_value
 
 logger = logging.getLogger(__name__)
 
@@ -132,18 +132,6 @@ class WD_API:
 
             logger.debug(f"<<purple>>: <<red>> handle_err_wd: {er}")
             # return er
-
-        success = results.get("success", 0)
-
-        if success == 1:
-            # {"entity":{"sitelinks":{"arwiki":{}},"id":"Q97928551","type":"item","lastrevid":1242627521,"nochange":""},"success":1}
-
-            if get_new_sleep() != 0:
-                logger.warning(f"<<lightgreen>> ** true. sleep({get_new_sleep()})")
-                time.sleep(get_new_sleep())
-            else:
-                logger.debug("<<lightgreen>> ** true.")
-            # return True
 
         return results
 

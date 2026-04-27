@@ -4,9 +4,12 @@ Tests for src/core/api_sql/service.py
 This module tests namespace handling and SQL query functions for MediaWiki.
 """
 
+import pytest
+
 from src.core.api_sql.config import ConfigLoader
 from src.core.api_sql.constants import NS_TEXT_AR, NS_TEXT_EN
 from src.core.api_sql.db_pool import db_manager
+from src.core.api_sql.exceptions import DatabaseConnectionError
 from src.core.api_sql.utils import add_namespace_prefix
 
 
@@ -157,19 +160,15 @@ class TestConfigLoader:
 class TestDatabaseManager:
     """Tests for DatabaseManager class."""
 
-    def test_execute_query_returns_empty_when_not_prod(self, mocker):
-        """Test that DatabaseManager raises error when not in production."""
+    def test_execute_query_raises_when_not_prod(self, mocker):
+        """Test that DatabaseManager raises DatabaseConnectionError when not in production."""
         mocker.patch("src.core.api_sql.config.ConfigLoader.is_production", return_value=False)
-        import pytest
-
-        from src.core.api_sql.exceptions import DatabaseConnectionError
 
         with pytest.raises(DatabaseConnectionError):
             db_manager.execute_query(wiki="ar", query="SELECT 1")
 
     def test_execute_query_rejects_non_select(self):
         """Test that only SELECT queries are allowed."""
-        import pytest
 
         with pytest.raises(ValueError, match="Only SELECT queries are allowed"):
             db_manager.execute_query(wiki="ar", query="DELETE FROM page")

@@ -166,11 +166,11 @@ class LOGIN_HELPS(PARAMS_HELPS):
             logger.warning(f" {self.lang}.{self.family} login request exception: {e}")
             return False
 
-        r22 = {}
+        result = {}
 
         if req:
             try:
-                r22 = req.json()
+                result = req.json()
             except Exception as e:
                 logger.warning(
                     f" {self.lang}.{self.family} error parsing login response: {e} - response: {getattr(req, 'text', '')}"
@@ -178,7 +178,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
                 logger.debug(req.text)
                 return False
 
-        login_result = r22.get("login", {}).get("result", "")
+        login_result = result.get("login", {}).get("result", "")
 
         success = login_result.lower() == "success"
 
@@ -188,9 +188,7 @@ class LOGIN_HELPS(PARAMS_HELPS):
             self.loged_in()
             return True
 
-        reason = r22.get("login", {}).get("reason", "")
-
-        # logger.warning(r22)
+        reason = result.get("login", {}).get("reason", "")
 
         if reason == "Incorrect username or password entered. Please try again.":
             logger.debug(f"user:{username}, pass:******")

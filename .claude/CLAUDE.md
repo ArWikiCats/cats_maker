@@ -37,7 +37,7 @@ Layered architecture from top to bottom:
 ```
 run.py (CLI args) → config/settings.py (dataclass config) → mk_cats/mknew.py (business logic)
     → mk_cats/members_helper.py (member collection) → mk_cats/create_category_page.py, categorytext.py (page creation)
-    → b18_new/, c18_new/ (data processing) → wiki_api/, wd_bots/, api_sql/ (external services)
+    → c18_new/ (data processing) → wiki_api/, wd_bots/, api_sql/ (external services)
 ```
 
 **Data flow**: English category → `ar_make_lab()` (Arabic label via ArWikiCats) → collect members (SQL/API/SubSub) → filter redirects → check min_members threshold → generate category text → save to ar.wikipedia → update Wikidata sitelink
@@ -45,8 +45,8 @@ run.py (CLI args) → config/settings.py (dataclass config) → mk_cats/mknew.py
 ## Key Modules
 
 -   `src/config/settings.py`: Centralized dataclass-based configuration. All settings accessed via `from src.config import settings`
--   `src/core/mk_cats/mknew.py`: Core functions - `create_categories_from_list()`, `ar_make_lab()`
--   `src/core/mk_cats/members_helper.py`: Member collection from SQL, API, and SubSub sources
+-   `src/mk_cats/mknew.py`: Core functions - `create_categories_from_list()`, `ar_make_lab()`
+-   `src/mk_cats/members_helper.py`: Member collection from SQL, API, and SubSub sources
 -   `src/core/wd_bots/`: Wikidata API integration
 -   `src/core/wiki_api/`: MediaWiki API calls
 

@@ -48,7 +48,7 @@ class CategoryComparator:
         ar_title_clean = self.normalize_category_title(ar_category, "تصنيف:")
         en_title_clean = self.normalize_category_title(en_category, r"(\[\[en:)|(category:)|(\]\])")
 
-        if not ar_title_clean or not en_title_clean:
+        if not en_title_clean:
             logger.warning("Invalid category titles provided.")
             return []
 
@@ -56,12 +56,15 @@ class CategoryComparator:
 
         # Fetch data from repositories
         en_titles = self.repo.fetch_english_titles_with_arabic_links(en_title_clean)
-        ar_titles = self.repo.fetch_arabic_titles_with_english_links(ar_title_clean)
+
+        ar_titles_set = set()
+
+        if ar_title_clean:
+            ar_titles = self.repo.fetch_arabic_titles_with_english_links(ar_title_clean)
+            # Convert AR titles to a set for O(1) lookup performance
+            ar_titles_set = set(ar_titles)
 
         logger.debug("Found %d EN titles and %d AR titles", len(en_titles), len(ar_titles))
-
-        # Convert AR titles to a set for O(1) lookup performance
-        ar_titles_set = set(ar_titles)
 
         # Find exclusive titles
         exclusive = [t for t in en_titles if t not in ar_titles_set]

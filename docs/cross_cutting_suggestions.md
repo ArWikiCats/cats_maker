@@ -78,7 +78,6 @@ Consolidated dead-code removal checklist:
 | Empty `__init__` methods                              | `new_api/ask_bot.py`, `new_api/handel_errors.py` | new_api (Quick Wins)            |
 | Commented-out debug code blocks                       | `new_api/super_page.py`, `new_api/botEdit.py`    | new_api (Quick Wins)            |
 | Unused `import copy`                                  | `new_api/super_page.py`                          | new_api (Quick Wins)            |
-| `r22` NameError on ReadTimeout                        | `wiki_api/api_requests.py`                       | wiki_api (Phase 1) — also a bug |
 
 ---
 
@@ -120,8 +119,8 @@ Multiple error-handling approaches across modules:
 
 | Plan     | Old name           | New name                                 | Pattern                     |
 | -------- | ------------------ | ---------------------------------------- | --------------------------- |
-| api_sql  | `db_pool.py`  | `client.py`                              | Lower-layer file renamed    |
-| api_sql  | `service.py`      | `gateway.py` + `constants.py`            | Split                       |
+| api_sql  | `db_pool.py`       | `client.py`                              | Lower-layer file renamed    |
+| api_sql  | `service.py`       | `gateway.py` + `constants.py`            | Split                       |
 | api_sql  | `sql_bot.py`       | `queries.py`                             | Business query file renamed |
 | new_api  | `bot.py`           | `transport.py` + `auth.py` + `client.py` | Split into 3                |
 | new_api  | `handel_errors.py` | `handle_errors.py`                       | Spelling fix                |

@@ -10,7 +10,7 @@ import re
 import time
 
 from ..new_api import ALL_APIS, load_main_api
-from .lag_bot import is_wd_lag_high
+from .lag_bot import get_new_sleep, is_wd_lag_high
 from .wd_bots_main import WD_API
 
 logger = logging.getLogger(__name__)
@@ -97,13 +97,6 @@ def outbot_json_bot(err):
 
 
 def outbot_json(js_text, fi="", line=""):
-    success = js_text.get("success", 0)
-
-    if success == 1:
-        logger.warning(f"<<lightgreen>> ** true. {fi}")
-
-        return True
-
     err = js_text.get("error", {})
 
     if not err:
@@ -118,10 +111,35 @@ def outbot_json(js_text, fi="", line=""):
     return outbot_json_bot(err)
 
 
+def after_success() -> None:
+    if get_new_sleep() > 0:
+        logger.warning(f"<<lightgreen>> ** true. sleep({get_new_sleep()})")
+        time.sleep(get_new_sleep())
+    else:
+        logger.debug("<<lightgreen>> ** true.")
+
+
 @functools.lru_cache(maxsize=1024)
-def get_session_post(www="www") -> ALL_APIS:
+def get_session_post(www="www") -> WD_API:
     api = load_main_api(lang=www, family="wikidata")
     return WD_API(api.login_bot)
+
+
+def post_wd_params(params) -> bool:
+    wd_api = get_session_post()
+    result = wd_api.post_to_newapi(
+        params=params,
+    )
+
+    success = result.get("success", 0)
+    if success == 1:
+        after_success()
+        logger.warning("<<lightgreen>> ** true.")
+        return True
+
+    outbot_json(result)
+
+    return False
 
 
 def add_labels(
@@ -142,36 +160,21 @@ def add_labels(
 
     # save the edit
     out = f'{qid} label:"{lang}"@{label}.'
-    wd_api = get_session_post()
-    r4 = wd_api.post_to_newapi(
-        params={
+
+    result = post_wd_params(
+        {
             "action": "wbsetlabel",
             "id": qid,
             "language": lang,
             "value": label,
-        },
+        }
     )
 
-    if not r4:
-        logger.debug(" r4 == {} ")
+    if not result:
         return False
 
-    text = str(r4)
-    if ("using the same description text" in text) and ("associated with language code" in text):
-        info = (r4.get("error") or {}).get("info", "")
-        m = re.search(r"(Q\d+)", str(info))
-        if m:
-            logger.debug(f"<<lightred>>API: same label item: {m.group(1)}")
-
-    success = r4.get("success", 0)
-    if success == 1:
-        logger.warning("<<lightgreen>> ** true.")
-        return True
-
-    d = outbot_json(r4, fi=out)
-
-    if d == "warn":
-        logger.warning(str(r4))
+    logger.info(out)
+    return True
 
 
 def add_sitelinks_to_wikidata(
@@ -180,8 +183,6 @@ def add_sitelinks_to_wikidata(
     wiki,
     enlink="",
     ensite="",
-    returnid=False,
-    return_text=False,
 ):
     if is_wd_lag_high():
         return ""
@@ -194,13 +195,11 @@ def add_sitelinks_to_wikidata(
     else:
         logger.debug(f' **: Qid:"{qid}" {wiki}:{title}')
 
-    # save the edit
-
     if qid.strip() == "" and enlink == "":
         logger.debug(f'<<lightred>> **: False: Qid == "" {wiki}:{title}.')
         return False
 
-    paramse = {
+    params = {
         "action": "wbsetsitelink",
         "linktitle": title,
         "linksite": wiki,
@@ -209,43 +208,24 @@ def add_sitelinks_to_wikidata(
     out = f'Added link to "{qid}" [{wiki}]:"{title}"'
 
     if qid:
-        paramse["id"] = qid
+        params["id"] = qid
     else:
         out = f'Added link to "{ensite}:{enlink}" [{wiki}]:"{title}"'
-        paramse["title"] = enlink
-        paramse["site"] = ensite
+        params["title"] = enlink
+        params["site"] = ensite
 
-    wd_api = get_session_post()
-    r4 = wd_api.post_to_newapi(params=paramse)
+    result = post_wd_params(params)
 
-    if not r4:
+    if not result:
         return False
 
-    success = r4.get("success", 0)
-    if success == 1:
-        logger.warning(f"<<lightgreen>> true {out}")
-        if enlink and returnid:
-            ido = re.match(r".*\"id\"\:\"(Q\d+)\".*", str(r4))
-            if ido:
-                return ido.group(1)
-        else:
-            return True
-
-    d = outbot_json(r4, fi=out)
-
-    if return_text:
-        return str(r4)
-
-    if d == "warn":
-        logger.warning(str(r4))
-
-    return d
+    logger.info(out)
+    return True
 
 
 def create_new_item(
     data2,
     summary,
-    returnid=False,
 ):
     """
     Create a new item in the API with the provided data and summary.
@@ -256,31 +236,17 @@ def create_new_item(
 
     data = json.JSONEncoder().encode(data2)
 
-    wd_api = get_session_post()
-    r4 = wd_api.post_to_newapi(
-        params={
+    result = post_wd_params(
+        {
             "action": "wbeditentity",
             "new": "item",
             "summary": summary,
             "data": data,
-        },
+        }
     )
 
-    if not r4:
+    if not result:
         return False
-
-    success = r4.get("success", 0)
-
-    if success != 1:
-        return False
-
-    logger.warning("<<lightgreen>> ** true.")
-
-    if returnid:
-        if "entity" in r4 and "id" in r4["entity"]:
-            qid = r4["entity"]["id"]
-            logger.debug(f'<<lightgreen>> bot.py : returnid:"{qid}" ')
-            return qid
 
     return True
 
@@ -332,5 +298,6 @@ def log_to_wikidata(artitle, entitle) -> None:
 
     summary = f"Bot: New item from [[w:en:{entitle}|{enwiki}]]/[[w:ar:{artitle}|{arwiki}]]."
 
-    new_item_id = create_new_item(data, summary, returnid=True)
+    new_item_id = create_new_item(data, summary)
+
     return new_item_id

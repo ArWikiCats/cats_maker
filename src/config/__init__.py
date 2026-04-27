@@ -15,10 +15,12 @@ from .settings import (
     SiteConfig,
     WikidataConfig,
     WikipediaConfig,
+    WikiSiteInfo,
     settings,
 )
 
 __all__ = [
+    "WikiSiteInfo",
     "Settings",
     "WikipediaConfig",
     "WikidataConfig",

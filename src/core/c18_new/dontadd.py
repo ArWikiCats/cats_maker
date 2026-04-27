@@ -91,7 +91,6 @@ def from_sql():
         cats = [add_namespace_prefix(r["page_title"], r["page_namespace"], lang="ar") for r in rows]
     except Exception as e:
         logger.error(f"SQL error in from_sql: {e}")
-        cats = []
 
     return cats
 

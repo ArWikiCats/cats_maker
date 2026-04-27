@@ -2,10 +2,18 @@
 Tests for the centralized settings configuration module.
 """
 
-import os
-import sys
-
 import pytest
+
+from src.config import (
+    CategoryConfig,
+    DatabaseConfig,
+    Settings,
+    WikidataConfig,
+    WikipediaConfig,
+    WikiSiteInfo,
+    settings,
+)
+from src.config.settings import _safe_int
 
 
 class TestSafeInt:
@@ -13,31 +21,26 @@ class TestSafeInt:
 
     def test_valid_integer_string(self):
         """Test valid integer string is converted."""
-        from src.config.settings import _safe_int
 
         assert _safe_int("42", 0) == 42
 
     def test_invalid_string_returns_default(self):
         """Test invalid string returns default value."""
-        from src.config.settings import _safe_int
 
         assert _safe_int("invalid", 10) == 10
 
     def test_empty_string_returns_default(self):
         """Test empty string returns default value."""
-        from src.config.settings import _safe_int
 
         assert _safe_int("", 5) == 5
 
     def test_none_returns_default(self):
         """Test None returns default value."""
-        from src.config.settings import _safe_int
 
         assert _safe_int(None, 15) == 15
 
     def test_float_string_returns_default(self):
         """Test float string returns default value."""
-        from src.config.settings import _safe_int
 
         assert _safe_int("3.14", 20) == 20
 
@@ -47,42 +50,36 @@ class TestWikipediaConfig:
 
     def test_default_ar_family(self):
         """Test default Arabic family is wikipedia."""
-        from src.config.settings import WikipediaConfig
 
         config = WikipediaConfig()
         assert config.ar_family == "wikipedia"
 
     def test_default_ar_code(self):
         """Test default Arabic code is ar."""
-        from src.config.settings import WikipediaConfig
 
         config = WikipediaConfig()
         assert config.ar_code == "ar"
 
     def test_default_en_family(self):
         """Test default English family is wikipedia."""
-        from src.config.settings import WikipediaConfig
 
         config = WikipediaConfig()
         assert config.en_family == "wikipedia"
 
     def test_default_en_code(self):
         """Test default English code is en."""
-        from src.config.settings import WikipediaConfig
 
         config = WikipediaConfig()
         assert config.en_code == "en"
 
     def test_default_timeout(self):
         """Test default timeout is 10."""
-        from src.config.settings import WikipediaConfig
 
         config = WikipediaConfig()
         assert config.default_timeout == 10
 
     def test_custom_values(self):
         """Test custom values can be set."""
-        from src.config.settings import WikipediaConfig
 
         config = WikipediaConfig(
             ar_family="wikiquote",
@@ -103,35 +100,30 @@ class TestWikidataConfig:
 
     def test_default_endpoint(self):
         """Test default Wikidata endpoint."""
-        from src.config.settings import WikidataConfig
 
         config = WikidataConfig()
         assert config.endpoint == "https://www.wikidata.org/w/api.php"
 
     def test_default_sparql_endpoint(self):
         """Test default SPARQL endpoint."""
-        from src.config.settings import WikidataConfig
 
         config = WikidataConfig()
         assert config.sparql_endpoint == "https://query.wikidata.org/sparql"
 
     def test_default_timeout(self):
         """Test default timeout is 30."""
-        from src.config.settings import WikidataConfig
 
         config = WikidataConfig()
         assert config.timeout == 30
 
     def test_default_maxlag(self):
         """Test default maxlag is 5."""
-        from src.config.settings import WikidataConfig
 
         config = WikidataConfig()
         assert config.maxlag == 5
 
     def test_custom_endpoint(self):
         """Test custom endpoint can be set."""
-        from src.config.settings import WikidataConfig
 
         config = WikidataConfig(endpoint="https://test.wikidata.org/w/api.php")
         assert config.endpoint == "https://test.wikidata.org/w/api.php"
@@ -142,28 +134,24 @@ class TestDatabaseConfig:
 
     def test_default_host_is_none(self):
         """Test default host is None."""
-        from src.config.settings import DatabaseConfig
 
         config = DatabaseConfig()
         assert config.host is None
 
     def test_default_port(self):
         """Test default port is 3306."""
-        from src.config.settings import DatabaseConfig
 
         config = DatabaseConfig()
         assert config.port == 3306
 
     def test_default_use_sql(self):
         """Test default use_sql is True."""
-        from src.config.settings import DatabaseConfig
 
         config = DatabaseConfig()
         assert config.use_sql is True
 
     def test_custom_host(self):
         """Test custom host can be set."""
-        from src.config.settings import DatabaseConfig
 
         config = DatabaseConfig(host="localhost")
         assert config.host == "localhost"
@@ -174,42 +162,36 @@ class TestSettings:
 
     def test_has_wikipedia_config(self):
         """Test Settings has wikipedia config."""
-        from src.config.settings import Settings, WikipediaConfig
 
         s = Settings()
         assert isinstance(s.wikipedia, WikipediaConfig)
 
     def test_has_wikidata_config(self):
         """Test Settings has wikidata config."""
-        from src.config.settings import Settings, WikidataConfig
 
         s = Settings()
         assert isinstance(s.wikidata, WikidataConfig)
 
     def test_has_database_config(self):
         """Test Settings has database config."""
-        from src.config.settings import DatabaseConfig, Settings
 
         s = Settings()
         assert isinstance(s.database, DatabaseConfig)
 
     def test_default_range_limit(self):
         """Test default range_limit is 5."""
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.range_limit == 5
 
     def test_default_debug(self):
         """Test default debug is False."""
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.debug is False
 
     def test_default_log_level(self):
         """Test default log_level is INFO."""
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.log_level == "INFO"
@@ -221,7 +203,6 @@ class TestSettingsEnvVars:
     def test_env_wikipedia_ar_code(self, monkeypatch):
         """Test WIKIPEDIA_AR_CODE environment variable."""
         monkeypatch.setenv("WIKIPEDIA_AR_CODE", "arz")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.wikipedia.ar_code == "arz"
@@ -229,7 +210,6 @@ class TestSettingsEnvVars:
     def test_env_wikidata_endpoint(self, monkeypatch):
         """Test WIKIDATA_ENDPOINT environment variable."""
         monkeypatch.setenv("WIKIDATA_ENDPOINT", "https://custom.wikidata.org/api")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.wikidata.endpoint == "https://custom.wikidata.org/api"
@@ -237,7 +217,6 @@ class TestSettingsEnvVars:
     def test_env_database_use_sql_true(self, monkeypatch):
         """Test DATABASE_USE_SQL environment variable with true."""
         monkeypatch.setenv("DATABASE_USE_SQL", "true")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.database.use_sql is True
@@ -245,7 +224,6 @@ class TestSettingsEnvVars:
     def test_env_database_use_sql_false(self, monkeypatch):
         """Test DATABASE_USE_SQL environment variable with false."""
         monkeypatch.setenv("DATABASE_USE_SQL", "false")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.database.use_sql is False
@@ -253,7 +231,6 @@ class TestSettingsEnvVars:
     def test_env_range_limit(self, monkeypatch):
         """Test RANGE_LIMIT environment variable."""
         monkeypatch.setenv("RANGE_LIMIT", "10")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.range_limit == 10
@@ -261,7 +238,6 @@ class TestSettingsEnvVars:
     def test_env_debug_true(self, monkeypatch):
         """Test DEBUG environment variable with true."""
         monkeypatch.setenv("DEBUG", "true")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.debug is True
@@ -269,7 +245,6 @@ class TestSettingsEnvVars:
     def test_env_log_level(self, monkeypatch):
         """Test LOG_LEVEL environment variable."""
         monkeypatch.setenv("LOG_LEVEL", "DEBUG")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.log_level == "DEBUG"
@@ -280,32 +255,27 @@ class TestGlobalSettings:
 
     def test_settings_instance_exists(self):
         """Test that global settings instance exists."""
-        from src.config import settings
 
         assert settings is not None
 
     def test_settings_is_settings_type(self):
         """Test that global settings is Settings type."""
-        from src.config import Settings, settings
 
         assert isinstance(settings, Settings)
 
     def test_settings_has_default_wikipedia(self):
         """Test settings has default Wikipedia config."""
-        from src.config import settings
 
         assert settings.wikipedia.ar_code == "ar"
         assert settings.wikipedia.en_code == "en"
 
     def test_settings_has_default_wikidata(self):
         """Test settings has default Wikidata config."""
-        from src.config import settings
 
         assert settings.wikidata.endpoint == "https://www.wikidata.org/w/api.php"
 
     def test_settings_has_default_database(self):
         """Test settings has default Database config."""
-        from src.config import settings
 
         assert settings.database.port == 3306
 
@@ -315,31 +285,26 @@ class TestModuleExports:
 
     def test_exports_settings(self):
         """Test settings is exported."""
-        from src.config import settings
 
         assert settings is not None
 
     def test_exports_settings_class(self):
         """Test Settings class is exported."""
-        from src.config import Settings
 
         assert Settings is not None
 
     def test_exports_wikipedia_config(self):
         """Test WikipediaConfig is exported."""
-        from src.config import WikipediaConfig
 
         assert WikipediaConfig is not None
 
     def test_exports_wikidata_config(self):
         """Test WikidataConfig is exported."""
-        from src.config import WikidataConfig
 
         assert WikidataConfig is not None
 
     def test_exports_database_config(self):
         """Test DatabaseConfig is exported."""
-        from src.config import DatabaseConfig
 
         assert DatabaseConfig is not None
 
@@ -349,7 +314,6 @@ class TestWikiSiteInfo:
 
     def test_default_values(self):
         """Test default values for WikiSiteInfo."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo()
         assert info.family == "wikipedia"
@@ -358,7 +322,6 @@ class TestWikiSiteInfo:
 
     def test_custom_values(self):
         """Test custom values for WikiSiteInfo."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo(family="commons", code="commons", use=True)
         assert info.family == "commons"
@@ -367,35 +330,30 @@ class TestWikiSiteInfo:
 
     def test_getitem_family(self):
         """Test dictionary-like access for family."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo(family="wikiquote", code="en")
         assert info.family == "wikiquote"
 
     def test_getitem_code(self):
         """Test dictionary-like access for code."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo(family="wikipedia", code="fr")
         assert info.code == "fr"
 
     def test_getitem_use(self):
         """Test dictionary-like access for use."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo(use=True)
         assert info.use is True
 
     def test_getitem_key_1(self):
         """Test dictionary-like access for key 1 (alias for use)."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo(use=True)
         assert info[1] is True
 
     def test_getitem_invalid_key(self):
         """Test dictionary-like access raises KeyError for invalid key."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo()
         with pytest.raises(KeyError):
@@ -403,35 +361,30 @@ class TestWikiSiteInfo:
 
     def test_contains_family(self):
         """Test 'in' operator for family."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo()
         assert "family" in info
 
     def test_contains_code(self):
         """Test 'in' operator for code."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo()
         assert "code" in info
 
     def test_contains_use(self):
         """Test 'in' operator for use."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo()
         assert "use" in info
 
     def test_contains_key_1(self):
         """Test 'in' operator for key 1."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo()
         assert 1 in info
 
     def test_not_contains_invalid(self):
         """Test 'in' operator returns False for invalid key."""
-        from src.config.settings import WikiSiteInfo
 
         info = WikiSiteInfo()
         assert "invalid" not in info
@@ -442,7 +395,6 @@ class TestEEnSiteProperty:
 
     def test_default_values(self):
         """Test default EEn_site values."""
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.EEn_site.family == "wikipedia"
@@ -450,7 +402,6 @@ class TestEEnSiteProperty:
 
     def test_custom_family(self):
         """Test EEn_site with custom_family."""
-        from src.config.settings import Settings
 
         s = Settings()
         s.site.custom_family = "wikiquote"
@@ -459,7 +410,6 @@ class TestEEnSiteProperty:
 
     def test_custom_lang(self):
         """Test EEn_site with custom_lang."""
-        from src.config.settings import Settings
 
         s = Settings()
         s.site.custom_lang = "de"
@@ -472,7 +422,6 @@ class TestAArSiteProperty:
 
     def test_default_values(self):
         """Test default AAr_site values."""
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.AAr_site.family == "wikipedia"
@@ -480,7 +429,6 @@ class TestAArSiteProperty:
 
     def test_custom_family(self):
         """Test AAr_site with custom_family."""
-        from src.config.settings import Settings
 
         s = Settings()
         s.site.custom_family = "wikiquote"
@@ -493,7 +441,6 @@ class TestFRSiteProperty:
 
     def test_default_values(self):
         """Test default FR_site values."""
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.FR_site.code == "fr"
@@ -501,7 +448,6 @@ class TestFRSiteProperty:
 
     def test_secondary_site(self):
         """Test FR_site with secondary language."""
-        from src.config.settings import Settings
 
         s = Settings()
         s.site.use_secondary = True
@@ -517,35 +463,30 @@ class TestCategoryConfig:
 
     def test_default_min_members(self):
         """Test default min_members is 10."""
-        from src.config.settings import CategoryConfig
 
         config = CategoryConfig()
         assert config.min_members == 10  # Default value
 
     def test_custom_min_members(self):
         """Test custom min_members can be set."""
-        from src.config.settings import CategoryConfig
 
         config = CategoryConfig(min_members=10)
         assert config.min_members == 10
 
     def test_min_members_zero(self):
         """Test min_members can be set to 0."""
-        from src.config.settings import CategoryConfig
 
         config = CategoryConfig(min_members=0)
         assert config.min_members == 0
 
     def test_default_stubs(self):
         """Test default stubs is False."""
-        from src.config.settings import CategoryConfig
 
         config = CategoryConfig()
         assert config.stubs is False
 
     def test_default_make_new_cat(self):
         """Test default make_new_cat is True."""
-        from src.config.settings import CategoryConfig
 
         config = CategoryConfig()
         assert config.make_new_cat is True
@@ -557,7 +498,6 @@ class TestMinMembersEnvVar:
     def test_env_min_members(self, monkeypatch):
         """Test MIN_MEMBERS environment variable."""
         monkeypatch.setenv("MIN_MEMBERS", "10")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.category.min_members == 10
@@ -565,7 +505,6 @@ class TestMinMembersEnvVar:
     def test_env_min_members_zero(self, monkeypatch):
         """Test MIN_MEMBERS environment variable with zero."""
         monkeypatch.setenv("MIN_MEMBERS", "0")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.category.min_members == 0
@@ -573,7 +512,6 @@ class TestMinMembersEnvVar:
     def test_env_min_members_invalid(self, monkeypatch):
         """Test MIN_MEMBERS environment variable with invalid value uses default."""
         monkeypatch.setenv("MIN_MEMBERS", "invalid")
-        from src.config.settings import Settings
 
         s = Settings()
         assert s.category.min_members == 10  # Default value

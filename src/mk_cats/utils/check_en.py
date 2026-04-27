@@ -3,8 +3,8 @@
 
 import logging
 
-from ...utils import NO_Templates_lower, skip_encats
-from ...wiki_api import find_LCN
+from ...core.utils import NO_Templates_lower, skip_encats
+from ...core.wiki_api import find_LCN
 
 logger = logging.getLogger(__name__)
 

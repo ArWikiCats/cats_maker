@@ -1,12 +1,12 @@
 """
-Tests for src/core/mk_cats/utils/filter_en.py
+Tests for src/mk_cats/utils/filter_en.py
 
 This module tests English category filtering functions.
 """
 
 import pytest
 
-from src.core.mk_cats.utils.filter_en import (
+from src.mk_cats.utils.filter_en import (
     BBlcak,
     blcak_starts,
     filter_cat,

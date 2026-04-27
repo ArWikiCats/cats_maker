@@ -49,16 +49,17 @@ def submitAPI(params, Code, family, **kwargs):
 
     json1 = {}
     try:
-        r22 = Session.post(mainurl, data=params, timeout=settings.wikipedia.default_timeout)
+        result = Session.post(mainurl, data=params, timeout=settings.wikipedia.default_timeout)
 
     except requests.exceptions.ReadTimeout:
         logger.debug(f"ReadTimeout: {mainurl}")
+        return {}
 
     except Exception as e:
         logger.warning(f"<<red>> Error submitting to API: {e}")
-
+        return {}
     try:
-        json1 = r22.json()
+        json1 = result.json()
     except Exception as e:
         logger.warning(f"<<red>> Error parsing API response: {e}")
 

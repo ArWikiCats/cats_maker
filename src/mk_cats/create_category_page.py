@@ -4,9 +4,9 @@
 import logging
 from typing import NamedTuple, Optional
 
-from ...temp import main_make_temp_no_title
-from ..new_api import load_main_api
-from ..utils import skip_encats
+from ..core.new_api import load_main_api
+from ..core.utils import skip_encats
+from ..temp import main_make_temp_no_title
 from . import categorytext
 
 logger = logging.getLogger(__name__)
