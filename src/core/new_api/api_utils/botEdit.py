@@ -23,7 +23,6 @@ STOP_EDIT_TEMPLATES: dict[str, list[str]] = {
 }
 
 BOT_USERNAME = "Mr.Ibrahembot"
-edit_username = {1: "Mr.Ibrahembot"}
 Bot_Cache = {}
 _created_cache = {}
 

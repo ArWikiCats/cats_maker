@@ -6,7 +6,6 @@ from functools import lru_cache
 
 from tqdm import tqdm
 
-from ...api_sql.constants import NS_TEXT_AR
 from ...utils import function_timer
 from ..constants import CATEGORY_PREFIXES
 
@@ -106,19 +105,6 @@ class CategoryDepth:
         if self.with_lang or self.without_lang:
             t_props.append("langlinks")
 
-        if self.gcmtype:
-            params_gcm = {"gcmtype": self.gcmtype}
-
-        if self.ns in ["0", "10"]:
-            self.gcmtype = "page"
-        elif self.ns in ["14"]:
-            self.gcmtype = "subcat"
-
-        if self.nslist == [14]:
-            self.gcmtype = "subcat"
-        elif 14 not in self.nslist and self.depth == 0:
-            self.gcmtype = "page"
-
         return t_props
 
     def params_work(self, params: dict) -> dict:
@@ -155,6 +141,7 @@ class CategoryDepth:
                 params["prop"] = "|".join(t_props)
 
             if "categories" in params.get("prop", ""):
+                # params["clprop"] = "hidden"
                 params["cllimit"] = "max"
 
             if "revisions" in params.get("prop", ""):
