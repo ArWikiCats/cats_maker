@@ -14,7 +14,6 @@ import pytest
 from src.core.b18_new import sql_cat
 from src.core.mk_cats import create_categories_from_list, create_category_page, mknew
 from src.core.mk_cats.mknew import (
-    ar_make_lab,
     clear_processing_state,
     make_ar,
     one_cat,
@@ -335,12 +334,14 @@ class TestDataFlowIntegration:
         mock_label = mocker.patch("src.core.mk_cats.mknew.ar_make_lab")
         mock_label.return_value = "علوم الحاسوب"
 
+        from src.core.mk_cats.mknew import ar_make_lab
+
         # Import after patching
 
-        result = ar_make_lab("Computer science")
+        result = ar_make_lab("Computer science zz")
 
         assert result == "علوم الحاسوب"
-        mock_label.assert_called_with("Computer science")
+        mock_label.assert_called_with("Computer science zz")
 
     def test_wiki_info_flows_to_category_creation(self, mocker):
         """Test that Wikipedia info flows to category creation."""
