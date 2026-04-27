@@ -6,10 +6,9 @@ Wikidata functions for cats_maker_new bot
 import functools
 import json
 import logging
-import re
 import time
 
-from ..new_api import ALL_APIS, load_main_api
+from ..new_api import load_login_bot
 from .lag_bot import get_new_sleep, is_wd_lag_high
 from .wd_bots_main import WD_API
 
@@ -121,8 +120,8 @@ def after_success() -> None:
 
 @functools.lru_cache(maxsize=1024)
 def get_session_post(www="www") -> WD_API:
-    api = load_main_api(lang=www, family="wikidata")
-    return WD_API(api.login_bot)
+    login_bot = load_login_bot(lang=www, family="wikidata")
+    return WD_API(login_bot)
 
 
 def post_wd_params(params) -> bool:
