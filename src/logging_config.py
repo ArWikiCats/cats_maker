@@ -191,7 +191,10 @@ def setup_file_handler(project_logger, log_file, level):
         fmt="%(asctime)s - %(name)s - %(levelname)-8s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-    file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
-    file_handler.setFormatter(file_formatter)
-    file_handler.setLevel(level)
-    project_logger.addHandler(file_handler)
+    try:
+        file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
+        file_handler.setFormatter(file_formatter)
+        file_handler.setLevel(level)
+        project_logger.addHandler(file_handler)
+    except Exception as e:
+        project_logger.error(f"Failed to create log file: {e}")

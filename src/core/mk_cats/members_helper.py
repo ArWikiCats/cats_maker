@@ -14,8 +14,8 @@ Responsibilities:
 import logging
 
 from ...config import settings
-from ..b18_new import MakeLitApiWay, get_ar_list_from_encat, get_listenpageTitle
-from ..wiki_api import remove_redirect_pages
+from ..b18_new import MakeLitApiWay, get_listenpageTitle
+from ..wiki_api import remove_redirect_pages, sub_cats_query
 
 logger = logging.getLogger(__name__)
 
@@ -46,12 +46,17 @@ def gather_members_from_api(en_page_title: str) -> list:
     """
     result = MakeLitApiWay(en_page_title, Type="all")
 
-    if not result:
-        # {'Yemen': {'ns': 0, 'ar': 'اليمن'}, 'Outline of Yemen': {'ns': 0, 'ar': 'مخطط اليمن'}, ... }
-        gent_faso_list = get_ar_list_from_encat(en_page_title, code="en", typee="all")
-        result = [x["ar"] for x in gent_faso_list.values() if x.get("ar")]
+    if result:
+        return result
 
-    return result
+    en_page_title = en_page_title.removeprefix("Category:")
+
+    # {'Yemen': {'ns': 0, 'ar': 'اليمن'}, 'Outline of Yemen': {'ns': 0, 'ar': 'مخطط اليمن'}, ... }
+    subcategories_result = sub_cats_query("Category:" + en_page_title, "en")
+    if subcategories_result:
+        result = [x["ar"] for x in subcategories_result.get("categorymembers", {}).values() if x.get("ar")]
+
+    return result or []
 
 
 def merge_member_lists(*member_lists: list) -> list:

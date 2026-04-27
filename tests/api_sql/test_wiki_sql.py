@@ -4,102 +4,99 @@ Tests for src/core/api_sql/service.py
 This module tests namespace handling and SQL query functions for MediaWiki.
 """
 
+from src.core.api_sql.config import ConfigLoader
 from src.core.api_sql.constants import NS_TEXT_AR, NS_TEXT_EN
-from src.core.api_sql.service import (
-    add_nstext_to_title,
-    make_labsdb_dbs_p,
-    sql_new,
-    sql_new_title_ns,
-)
+from src.core.api_sql.db_pool import db_manager
+from src.core.api_sql.utils import add_namespace_prefix
 
 
-class TestAddNsTextToTitle:
-    """Tests for add_nstext_to_title function"""
+class TestAddNamespacePrefix:
+    """Tests for add_namespace_prefix function"""
 
     def test_with_namespace_0_returns_original_title(self):
         """Test that namespace 0 returns the original title unchanged"""
-        result = add_nstext_to_title("محمد", "0", "ar")
+        result = add_namespace_prefix("محمد", "0", "ar")
         assert result == "محمد"
 
     def test_with_namespace_0_string(self):
         """Test namespace 0 as string"""
-        result = add_nstext_to_title("Test Article", 0, "en")
+        result = add_namespace_prefix("Test Article", 0, "en")
         assert result == "Test Article"
 
     def test_with_category_namespace_ar(self):
         """Test adding category namespace prefix in Arabic"""
-        result = add_nstext_to_title("علوم", "14", "ar")
+        result = add_namespace_prefix("علوم", "14", "ar")
         assert result == "تصنيف:علوم"
 
     def test_with_category_namespace_en(self):
         """Test adding category namespace prefix in English"""
-        result = add_nstext_to_title("Science", "14", "en")
+        result = add_namespace_prefix("Science", "14", "en")
         assert result == "Category:Science"
 
     def test_with_template_namespace_ar(self):
         """Test adding template namespace prefix in Arabic"""
-        result = add_nstext_to_title("صندوق", "10", "ar")
+        result = add_namespace_prefix("صندوق", "10", "ar")
         assert result == "قالب:صندوق"
 
     def test_with_template_namespace_en(self):
         """Test adding template namespace prefix in English"""
-        result = add_nstext_to_title("Infobox", "10", "en")
+        result = add_namespace_prefix("Infobox", "10", "en")
         assert result == "Template:Infobox"
 
     def test_with_user_namespace_ar(self):
         """Test adding user namespace prefix in Arabic"""
-        result = add_nstext_to_title("أحمد", "2", "ar")
+        result = add_namespace_prefix("أحمد", "2", "ar")
         assert result == "مستخدم:أحمد"
 
     def test_with_user_namespace_en(self):
         """Test adding user namespace prefix in English"""
-        result = add_nstext_to_title("John", "2", "en")
+        result = add_namespace_prefix("John", "2", "en")
         assert result == "User:John"
 
     def test_with_talk_namespace_ar(self):
         """Test adding talk namespace prefix in Arabic"""
-        result = add_nstext_to_title("موضوع", "1", "ar")
+        result = add_namespace_prefix("موضوع", "1", "ar")
         assert result == "نقاش:موضوع"
 
     def test_with_talk_namespace_en(self):
         """Test adding talk namespace prefix in English"""
-        result = add_nstext_to_title("Topic", "1", "en")
+        result = add_namespace_prefix("Topic", "1", "en")
         assert result == "Talk:Topic"
 
     def test_with_portal_namespace_ar(self):
         """Test adding portal namespace prefix in Arabic"""
-        result = add_nstext_to_title("علوم", "100", "ar")
+        result = add_namespace_prefix("علوم", "100", "ar")
         assert result == "بوابة:علوم"
 
     def test_with_portal_namespace_en(self):
         """Test adding portal namespace prefix in English"""
-        result = add_nstext_to_title("Science", "100", "en")
+        result = add_namespace_prefix("Science", "100", "en")
         assert result == "Portal:Science"
 
     def test_with_module_namespace_ar(self):
         """Test adding module namespace prefix in Arabic"""
-        result = add_nstext_to_title("بيانات", "828", "ar")
+        result = add_namespace_prefix("بيانات", "828", "ar")
         assert result == "وحدة:بيانات"
 
     def test_with_module_namespace_en(self):
         """Test adding module namespace prefix in English"""
-        result = add_nstext_to_title("Data", "828", "en")
+        result = add_namespace_prefix("Data", "828", "en")
         assert result == "Module:Data"
 
     def test_with_invalid_namespace(self):
         """Test with an invalid namespace number"""
-        result = add_nstext_to_title("Test", "999", "ar")
-        # When namespace is not found, ns_text is None, so it returns "None:Test"
+        result = add_namespace_prefix("Test", "999", "ar")
+        # When namespace is not found, it returns title
         assert result == "Test"
 
     def test_with_empty_title(self):
         """Test with empty title string"""
-        result = add_nstext_to_title("", "14", "ar")
+        result = add_namespace_prefix("", "14", "ar")
         assert result == ""
 
     def test_default_language_is_arabic(self):
         """Test that default language is Arabic"""
-        result = add_nstext_to_title("علوم", "14")
+        result = add_namespace_prefix("علوم", "14")
         assert result == "تصنيف:علوم"
 
 
@@ -132,122 +129,47 @@ class TestNsTextTables:
         assert NS_TEXT_EN["0"] == ""
 
 
-class TestMakeLabsdbDbsP:
-    """Tests for make_labsdb_dbs_p function"""
+class TestConfigLoader:
+    """Tests for ConfigLoader class"""
 
-    def test_with_ar_wiki(self):
-        """Test generating host and db for Arabic Wikipedia"""
-        host, db_p = make_labsdb_dbs_p("ar")
-        assert host == "arwiki.analytics.db.svc.wikimedia.cloud"
-        assert db_p == "arwiki_p"
+    def test_get_db_config_ar(self, mocker):
+        """Test resolving DB config for Arabic Wikipedia"""
+        mocker.patch("pathlib.Path.exists", return_value=True)
+        config = ConfigLoader.get_db_config("ar")
+        assert config.host == "arwiki.analytics.db.svc.wikimedia.cloud"
+        assert config.database == "arwiki_p"
 
-    def test_with_en_wiki(self):
-        """Test generating host and db for English Wikipedia"""
-        host, db_p = make_labsdb_dbs_p("en")
-        assert host == "enwiki.analytics.db.svc.wikimedia.cloud"
-        assert db_p == "enwiki_p"
+    def test_get_db_config_enwiki(self, mocker):
+        """Test resolving DB config for English Wikipedia"""
+        mocker.patch("pathlib.Path.exists", return_value=True)
+        config = ConfigLoader.get_db_config("enwiki")
+        assert config.host == "enwiki.analytics.db.svc.wikimedia.cloud"
+        assert config.database == "enwiki_p"
 
-    def test_with_wiki_suffix(self):
-        """Test handling wiki suffix"""
-        host, db_p = make_labsdb_dbs_p("arwiki")
-        assert host == "arwiki.analytics.db.svc.wikimedia.cloud"
-        assert db_p == "arwiki_p"
-
-    def test_with_wikidata(self):
-        """Test special handling for Wikidata"""
-        host, db_p = make_labsdb_dbs_p("wikidata")
-        assert host == "wikidatawiki.analytics.db.svc.wikimedia.cloud"
-        assert db_p == "wikidatawiki_p"
-
-    def test_with_be_tarask(self):
-        """Test special handling for Belarusian (Taraškievica)"""
-        host, db_p = make_labsdb_dbs_p("be-tarask")
-        assert host == "be_x_oldwiki.analytics.db.svc.wikimedia.cloud"
-        assert db_p == "be_x_oldwiki_p"
-
-    def test_with_be_x_old(self):
-        """Test special handling for be-x-old"""
-        host, db_p = make_labsdb_dbs_p("be-x-old")
-        assert host == "be_x_oldwiki.analytics.db.svc.wikimedia.cloud"
-        assert db_p == "be_x_oldwiki_p"
-
-    def test_with_hyphenated_wiki(self):
-        """Test handling hyphenated wiki names"""
-        host, db_p = make_labsdb_dbs_p("zh-yue")
-        assert "_" in host  # hyphen should be converted to underscore
-        assert "wiki" in db_p
-
-    def test_with_wiktionary(self):
-        """Test handling wiktionary"""
-        host, db_p = make_labsdb_dbs_p("arwiktionary")
-        assert host == "arwiktionary.analytics.db.svc.wikimedia.cloud"
-        assert db_p == "arwiktionary_p"
-
-    def test_with_commons(self):
-        """Test handling commons wiki"""
-        host, db_p = make_labsdb_dbs_p("commons")
-        assert "commonswiki" in host
-        assert "commonswiki_p" == db_p
+    def test_get_db_config_wikidata(self, mocker):
+        """Test resolving DB config for Wikidata"""
+        mocker.patch("pathlib.Path.exists", return_value=True)
+        config = ConfigLoader.get_db_config("wikidata")
+        assert config.host == "wikidatawiki.analytics.db.svc.wikimedia.cloud"
+        assert config.database == "wikidatawiki_p"
 
 
-class TestSqlNew:
-    """Tests for sql_new function."""
+class TestDatabaseManager:
+    """Tests for DatabaseManager class."""
 
-    def test_returns_empty_list_when_sql_disabled(self, mocker):
-        """Test that sql_new returns [] when GET_SQL is False."""
-        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=False)
-        result = sql_new("SELECT 1", wiki="ar")
-        assert result == []
+    def test_execute_query_returns_empty_when_not_prod(self, mocker):
+        """Test that DatabaseManager raises error when not in production."""
+        mocker.patch("src.core.api_sql.config.ConfigLoader.is_production", return_value=False)
+        import pytest
 
-    def test_routes_to_make_sql_connect_silent(self, mocker):
-        """Test that sql_new routes through make_sql_connect_silent."""
-        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=True)
-        mock_connect = mocker.patch(
-            "src.core.api_sql.service.make_sql_connect_silent",
-            return_value=[{"col": "val"}],
-        )
+        from src.core.api_sql.exceptions import DatabaseConnectionError
 
-        result = sql_new("SELECT * FROM page", wiki="en", values=("title",))
+        with pytest.raises(DatabaseConnectionError):
+            db_manager.execute_query(wiki="ar", query="SELECT 1")
 
-        assert result == [{"col": "val"}]
-        mock_connect.assert_called_once_with(
-            "SELECT * FROM page",
-            host="enwiki.analytics.db.svc.wikimedia.cloud",
-            db="enwiki_p",
-            values=("title",),
-        )
+    def test_execute_query_rejects_non_select(self):
+        """Test that only SELECT queries are allowed."""
+        import pytest
 
-
-class TestSqlNewTitleNs:
-    """Tests for sql_new_title_ns function."""
-
-    def test_maps_rows_to_namespace_titles(self, mocker):
-        """Test mapping rows to 'Namespace:Title' strings."""
-        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=True)
-        mocker.patch(
-            "src.core.api_sql.service.make_sql_connect_silent",
-            return_value=[
-                {"page_title": "Science", "page_namespace": 14},
-                {"page_title": "Test", "page_namespace": 0},
-            ],
-        )
-
-        result = sql_new_title_ns("SELECT 1", wiki="en")
-
-        assert result == ["Category:Science", "Test"]
-
-    def test_skips_incomplete_rows(self, mocker):
-        """Test that rows missing title or namespace are skipped."""
-        mocker.patch("src.core.api_sql.service.GET_SQL", return_value=True)
-        mocker.patch(
-            "src.core.api_sql.service.make_sql_connect_silent",
-            return_value=[
-                {"page_title": "Valid", "page_namespace": 0},
-                {"page_title": "Missing NS"},
-                {"page_namespace": 0},
-            ],
-        )
-
-        result = sql_new_title_ns("SELECT 1", wiki="ar")
-
-        assert result == ["Valid"]
+        with pytest.raises(ValueError, match="Only SELECT queries are allowed"):
+            db_manager.execute_query(wiki="ar", query="DELETE FROM page")

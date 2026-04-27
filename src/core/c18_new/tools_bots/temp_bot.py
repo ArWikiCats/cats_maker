@@ -1,8 +1,4 @@
-"""
-
-from ..tools_bots.temp_bot import templatequery, templatequerymulti
-
-"""
+""" """
 
 import logging
 from collections import defaultdict

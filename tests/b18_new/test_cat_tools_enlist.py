@@ -17,7 +17,7 @@ class TestExtractFanPageTitles:
 
     def test_returns_list(self, mocker):
         """Test that function returns a list"""
-        mocker.patch("src.core.b18_new.cat_tools_enlist.GET_SQL", return_value=False)
+        mocker.patch("src.core.b18_new.cat_tools_enlist.settings.database.use_sql", False)
 
         result = extract_fan_page_titles("Category:Science")
 
@@ -25,7 +25,7 @@ class TestExtractFanPageTitles:
 
     def test_returns_empty_when_sql_disabled(self, mocker):
         """Test that empty list is returned when SQL is disabled"""
-        mocker.patch("src.core.b18_new.cat_tools_enlist.GET_SQL", return_value=False)
+        mocker.patch("src.core.b18_new.cat_tools_enlist.settings.database.use_sql", False)
 
         result = extract_fan_page_titles("Category:Science")
 
@@ -33,29 +33,26 @@ class TestExtractFanPageTitles:
 
     def test_calls_get_exclusive_when_sql_enabled(self, mocker):
         """Test that get_exclusive_category_titles is called when SQL enabled"""
-        mocker.patch("src.core.b18_new.cat_tools_enlist.GET_SQL", return_value=True)
         mocker.patch("src.core.b18_new.cat_tools_enlist.settings.database.use_sql", True)
-        mock_get_exclusive = mocker.patch(
-            "src.core.b18_new.cat_tools_enlist.get_exclusive_category_titles", return_value=["Page1", "Page2"]
-        )
+        mock_comparator = mocker.patch("src.core.b18_new.cat_tools_enlist.CategoryComparator")
+        mock_comparator.return_value.get_exclusive_category_titles.return_value = ["Page1", "Page2"]
 
         result = extract_fan_page_titles("Category:Science")
 
-        mock_get_exclusive.assert_called_once()
+        mock_comparator.return_value.get_exclusive_category_titles.assert_called_once()
         assert len(result) == 2
 
     def test_strips_category_prefix(self, mocker):
         """Test that Category: prefix is stripped"""
-        mocker.patch("src.core.b18_new.cat_tools_enlist.GET_SQL", return_value=True)
         mocker.patch("src.core.b18_new.cat_tools_enlist.settings.database.use_sql", True)
-        mock_get_exclusive = mocker.patch(
-            "src.core.b18_new.cat_tools_enlist.get_exclusive_category_titles", return_value=[]
-        )
+        mock_comparator = mocker.patch("src.core.b18_new.cat_tools_enlist.CategoryComparator")
+        mock_get_exclusive = mock_comparator.return_value.get_exclusive_category_titles
+        mock_get_exclusive.return_value = []
 
         extract_fan_page_titles("Category:Science")
 
         call_args = mock_get_exclusive.call_args[0]
-        assert not call_args[0].startswith("Category:")
+        assert "Category:" not in call_args[0]
 
 
 class TestGetListenpageTitle:

@@ -3,46 +3,22 @@
 !
 """
 
-import functools
-import json
 import logging
-import re
 import time
 
-from src.core.wd_bots.utils import do_lag, find_lag
-
 from ...config import settings
-from ..new_api.pagenew import password, username
-from ..new_api.super.super_login import Login
-from .utils import lag_bot
+from ..new_api import Login
+from .lag_bot import do_lag, find_lag, get_lag_value, get_new_sleep
 
 logger = logging.getLogger(__name__)
 
-User_tables_bot = {
-    "username": username,
-    "password": password,
-}
-
-
-@functools.lru_cache(maxsize=1)
-def log_in_wikidata(www="www") -> Login:
-    username = User_tables_bot.get("username")
-    login_bot = Login(www, family="wikidata")
-    logger.debug(f"### <<purple>> make new bot for ({www}.wikidata.org|{username})")
-    login_bot.add_users({"wikidata": User_tables_bot}, lang=www)
-    return login_bot
-
 
 class WD_API:
-    def __init__(self, login_bot: Login, Mr_or_bot="bot"):
+    def __init__(self, login_bot: Login):
         self.login_bot = login_bot
 
         self.lang = "test" if settings.wikidata.test_mode else "www"
         self.family = "wikidata"
-
-        self.usernamex = self.login_bot.user_login
-
-        logger.warning(f"<<lightgreen>> {Mr_or_bot}, {self.usernamex=} \n")
 
     def handle_err_wd(
         self,
@@ -162,9 +138,9 @@ class WD_API:
         if success == 1:
             # {"entity":{"sitelinks":{"arwiki":{}},"id":"Q97928551","type":"item","lastrevid":1242627521,"nochange":""},"success":1}
 
-            if lag_bot.newsleep[1] != 0:
-                logger.warning(f"<<lightgreen>> ** true. sleep({lag_bot.newsleep[1]})")
-                time.sleep(lag_bot.newsleep[1])
+            if get_new_sleep() != 0:
+                logger.warning(f"<<lightgreen>> ** true. sleep({get_new_sleep()})")
+                time.sleep(get_new_sleep())
             else:
                 logger.debug("<<lightgreen>> ** true.")
             # return True
@@ -175,14 +151,10 @@ class WD_API:
         do_lag()
 
         if "maxlag" not in data:
-            data["maxlag"] = lag_bot.FFa_lag[1] + 1
+            data["maxlag"] = get_lag_value() + 1
 
         data["format"] = "json"
         data["utf8"] = 1
-
-        if "summary" in data:
-            if self.usernamex.find("bot") == -1:
-                del data["summary"]
 
         data.setdefault("formatversion", 1)
 

@@ -12,7 +12,6 @@ from .temp import main_make_temp, Make_years_temp
 import logging
 import re
 
-from ...core.helps import dump_data
 from .load_data import cacaca
 from .temp_cent import Make_Cent_temp
 from .temp_decades import MakedecadesTemp
@@ -101,7 +100,6 @@ def main_make_temp(enca, title) -> tuple[str, str]:
     return "", ""
 
 
-# @dump_data(1)
 def main_make_temp_no_title(title) -> str:
     result, _ = main_make_temp("", title)
 

@@ -5,7 +5,7 @@ import os
 
 from dotenv import load_dotenv
 
-from .super.all_apis import ALL_APIS
+from .super import ALL_APIS
 
 load_dotenv()
 

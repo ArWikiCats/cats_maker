@@ -4,11 +4,19 @@
 import logging
 
 from ...config import settings
-from ..api_sql import GET_SQL, sql_new, sql_new_title_ns
-from ..c18_new.cats_tools.ar_from_en2 import fetch_ar_titles_based_on_en_category
+from ..api_sql import add_namespace_prefix, db_manager
+from ..cats_helpers import en_category_members, get_ar_list_title_from_en_list
 from ..new_api import load_main_api
 
 logger = logging.getLogger(__name__)
+
+
+def fetch_ar_titles_based_on_en_category(enpageTitle, wiki="en"):
+    en_titles = en_category_members(enpageTitle, wiki=wiki)
+
+    new_ar_list = get_ar_list_title_from_en_list(en_titles, wiki=wiki)
+
+    return new_ar_list
 
 
 def get_ar_list(arcat, us_sql=True):
@@ -45,10 +53,16 @@ def get_ar_list(arcat, us_sql=True):
 
     ar_list = []
 
-    if us_sql is True and GET_SQL():
-        # Pass category as parameter to prevent SQL injection
-        ar_list = sql_new_title_ns(qia_ar, wiki="arwiki", t1="page_title", t2="page_namespace", values=(ar_cat2,))
-    else:
+    if us_sql is True:
+        try:
+            # Pass category as parameter to prevent SQL injection
+            rows = db_manager.execute_query(wiki="arwiki", query=qia_ar, params=(ar_cat2,))
+            ar_list = [add_namespace_prefix(r["page_title"], r["page_namespace"], lang="ar") for r in rows]
+        except Exception as e:
+            logger.error(f"SQL error in get_ar_list: {e}")
+            ar_list = []
+
+    if not ar_list:
         api = load_main_api("ar")
         cat_members = api.CatDepth("Category:" + arcat, depth=0, ns="all")
 
@@ -85,12 +99,17 @@ def get_ar_list_from_en(encat, us_sql=True, wiki="en"):
             AND lt.lt_title = %s
             AND ll_lang = 'ar'
     """
+    en_list = []
+    if us_sql is True:
+        try:
+            # Pass category as parameter to prevent SQL injection
+            en_list_table = db_manager.execute_query(wiki=f"{wiki}wiki", query=en_qua, params=(encat2,))
+            en_list = [x.get("ll_title") for x in en_list_table if x.get("ll_title")]
+        except Exception as e:
+            logger.error(f"SQL error in get_ar_list_from_en: {e}")
+            en_list = []
 
-    if us_sql is True and GET_SQL():
-        # Pass category as parameter to prevent SQL injection
-        en_list_table = sql_new(en_qua, wiki=f"{wiki}wiki", values=(encat2,))
-        en_list = [x.get("ll_title") for x in en_list_table if x.get("ll_title")]
-    else:
+    if not en_list:
         en_list = fetch_ar_titles_based_on_en_category(encat, wiki=wiki)
 
     en_list = [x.replace("_", " ") for x in en_list]

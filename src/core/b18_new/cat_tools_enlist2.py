@@ -4,30 +4,10 @@
 import logging
 
 from ...config import settings
-from ..c18_new.cat_tools2 import Categorized_Page_Generator
-from ..wiki_api import find_LCN, get_arpage_inside_encat, sub_cats_query
+from ..cats_helpers import Categorized_Page_Generator
+from ..wiki_api import find_LCN, get_arpage_inside_encat
 
 logger = logging.getLogger(__name__)
-
-
-def get_ar_list_from_encat(cat, code="ar", typee="cat", return_list=True):
-    """
-    Retrieve a list of category members from a specified category.
-    """
-
-    if cat.startswith("Category:"):
-        cat = cat.replace("Category:", "")
-
-    if cat.startswith("تصنيف:"):
-        cat = cat.replace("تصنيف:", "")
-
-    ctype = "subcat" if typee == "cat" else "page" if typee == "page" else ""
-
-    subcategories_result = sub_cats_query("Category:" + cat, code, ctype=ctype)
-
-    categorymembers = subcategories_result.get("categorymembers", {}) if subcategories_result else {}
-
-    return categorymembers
 
 
 def MakeLitApiWay(encat, Type="cat"):

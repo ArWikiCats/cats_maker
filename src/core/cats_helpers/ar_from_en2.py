@@ -3,9 +3,9 @@
 
 import logging
 
-from ....config import settings
-from ...new_api import load_main_api
-from ...wiki_api import find_LCN
+from ...config import settings
+from ..new_api import load_main_api
+from ..wiki_api import find_LCN
 
 logger = logging.getLogger(__name__)
 
@@ -58,11 +58,3 @@ def en_category_members(enpageTitle, wiki="en"):
             en_titles.append(title)
 
     return en_titles
-
-
-def fetch_ar_titles_based_on_en_category(enpageTitle, wiki="en"):
-    en_titles = en_category_members(enpageTitle, wiki=wiki)
-
-    new_ar_list = get_ar_list_title_from_en_list(en_titles, wiki=wiki)
-
-    return new_ar_list

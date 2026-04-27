@@ -1,7 +1,4 @@
-"""
-Usage:
-from ..bots.english_page_title import get_english_page_title
-"""
+""" """
 
 import logging
 import re

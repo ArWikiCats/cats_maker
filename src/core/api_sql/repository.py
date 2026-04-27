@@ -3,8 +3,8 @@
 import logging
 from typing import List
 
-from .constants import NS_TEXT_AR, NS_TEXT_EN
 from .db_pool import db_manager
+from .utils import add_namespace_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -46,13 +46,10 @@ class CategoryRepository:
         try:
             rows = db_manager.execute_query(wiki="ar", query=_ARCAT_QUERY, params=(category_title,))
 
-            titles = []
-            for row in rows:
-                title = row["page_title"].replace(" ", "_")
-                ns = row["page_namespace"]
-                formatted_title = CategoryRepository._add_namespace_prefix(title, ns, "ar")
-                titles.append(formatted_title)
-
+            titles = [
+                add_namespace_prefix(row["page_title"].replace(" ", "_"), row["page_namespace"], lang="ar")
+                for row in rows
+            ]
             return titles
         except Exception as e:
             logger.error("Failed to fetch Arabic titles for category '%s': %s", category_title, e)
@@ -73,19 +70,3 @@ class CategoryRepository:
         except Exception as e:
             logger.error("Failed to fetch English titles for category '%s': %s", category_title, e)
             return []
-
-    @staticmethod
-    def _add_namespace_prefix(title: str, ns: int | str, lang: str = "ar") -> str:
-        """Helper to prepend namespace labels."""
-        ns_key = str(ns)
-        if not title or ns_key == "0":
-            return title
-
-        table = NS_TEXT_AR if lang == "ar" else NS_TEXT_EN
-        prefix = table.get(ns_key)
-
-        if not prefix:
-            logger.debug("No namespace label found for ns=%s lang=%s", ns_key, lang)
-            return title
-
-        return f"{prefix}:{title}"

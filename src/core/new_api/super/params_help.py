@@ -1,8 +1,4 @@
-"""
-
-from .super.params_help import PARAMS_HELPS
-
-"""
+""" """
 
 import json
 import logging

@@ -7,7 +7,7 @@ from functools import lru_cache
 
 from tqdm import tqdm
 
-from ...helps import function_timer
+from ...utils import function_timer
 
 logger = logging.getLogger(__name__)
 

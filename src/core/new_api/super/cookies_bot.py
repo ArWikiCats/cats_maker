@@ -1,9 +1,4 @@
-"""
-
-from .super.cookies_bot import get_cookies
-# cookies = get_cookies(lang, family, username)
-
-"""
+""" """
 
 import logging
 import os

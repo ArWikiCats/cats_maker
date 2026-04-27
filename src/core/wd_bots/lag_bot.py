@@ -11,7 +11,7 @@ import time
 
 import requests
 
-from ....config import settings
+from ...config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,14 @@ Find_Lag = {}
 Find_Lag_o = {1: True}
 Find_Lag[2] = time.time()
 Find_Lag[3] = 0
+
+
+def get_lag_value() -> int:
+    return FFa_lag[1]
+
+
+def get_new_sleep() -> int:
+    return newsleep[1]
 
 
 @functools.lru_cache(maxsize=1)
@@ -151,17 +159,18 @@ def do_lag():
             GG = False
 
 
-def bad_lag(nowait):
+def is_wd_lag_high() -> bool:
     if settings.wikidata.test_mode:
         return False
 
-    if nowait and FFa_lag[1] > 5:
+    if FFa_lag[1] > 5:
         return True
 
     return False
 
 
 __all__ = [
-    "bad_lag",
+    "get_new_sleep",
+    "is_wd_lag_high",
     "do_lag",
 ]

@@ -4,14 +4,46 @@ Tests for src/core/b18_new/sql_cat.py
 This module tests SQL-based category functions.
 """
 
-import pytest
-
 from src.core.b18_new.sql_cat import (
     do_sql,
+    fetch_ar_titles_based_on_en_category,
     get_ar_list,
     get_ar_list_from_en,
     make_ar_list_newcat2,
 )
+
+
+class TestFetchArTitlesBasedOnEnCategory:
+    """Tests for fetch_ar_titles_based_on_en_category function"""
+
+    def test_calls_en_category_members(self, mocker):
+        """Test that en_category_members is called"""
+        mock_en_cat = mocker.patch("src.core.b18_new.sql_cat.en_category_members", return_value=["Page1", "Page2"])
+        mocker.patch("src.core.b18_new.sql_cat.get_ar_list_title_from_en_list", return_value=["صفحة1", "صفحة2"])
+
+        result = fetch_ar_titles_based_on_en_category("Science")
+
+        mock_en_cat.assert_called_once_with("Science", wiki="en")
+
+    def test_calls_get_ar_list_title_from_en_list(self, mocker):
+        """Test that get_ar_list_title_from_en_list is called"""
+        mocker.patch("src.core.b18_new.sql_cat.en_category_members", return_value=["Page1", "Page2"])
+        mock_get_ar = mocker.patch(
+            "src.core.b18_new.sql_cat.get_ar_list_title_from_en_list", return_value=["صفحة1", "صفحة2"]
+        )
+
+        result = fetch_ar_titles_based_on_en_category("Science", wiki="en")
+
+        mock_get_ar.assert_called_once_with(["Page1", "Page2"], wiki="en")
+
+    def test_returns_arabic_titles(self, mocker):
+        """Test that Arabic titles are returned"""
+        mocker.patch("src.core.b18_new.sql_cat.en_category_members", return_value=["Science"])
+        mocker.patch("src.core.b18_new.sql_cat.get_ar_list_title_from_en_list", return_value=["علوم"])
+
+        result = fetch_ar_titles_based_on_en_category("Science")
+
+        assert "علوم" in result
 
 
 class TestGetArList:
@@ -19,16 +51,22 @@ class TestGetArList:
 
     def test_returns_list(self, mocker):
         """Test that function returns a list"""
-        mocker.patch("src.core.b18_new.sql_cat.GET_SQL", return_value=False)
+        mocker.patch(
+            "src.core.b18_new.sql_cat.db_manager.execute_query",
+            return_value=[{"page_title": "test", "page_namespace": 0}],
+        )
 
         result = get_ar_list("تصنيف:علوم")
 
         assert isinstance(result, list)
+        assert result == ["test"]
 
     def test_uses_sql_when_enabled(self, mocker):
         """Test that SQL is used when enabled"""
-        mocker.patch("src.core.b18_new.sql_cat.GET_SQL", return_value=True)
-        mock_sql = mocker.patch("src.core.b18_new.sql_cat.sql_new_title_ns", return_value=["صفحة1", "صفحة2"])
+        mock_sql = mocker.patch(
+            "src.core.b18_new.sql_cat.db_manager.execute_query",
+            return_value=[{"page_title": "صفحة1", "page_namespace": 0}],
+        )
 
         result = get_ar_list("تصنيف:علوم", us_sql=True)
 
@@ -36,15 +74,18 @@ class TestGetArList:
 
     def test_replaces_spaces_with_underscores(self, mocker):
         """Test that spaces are replaced with underscores in parameter"""
-        mocker.patch("src.core.b18_new.sql_cat.GET_SQL", return_value=True)
-        mock_sql = mocker.patch("src.core.b18_new.sql_cat.sql_new_title_ns", return_value=[])
+        mock_sql = mocker.patch(
+            "src.core.b18_new.sql_cat.db_manager.execute_query",
+            return_value=[{"page_title": "test", "page_namespace": 0}],
+        )
 
-        get_ar_list("تصنيف:علوم الحاسوب", us_sql=True)
+        result = get_ar_list("تصنيف:علوم الحاسوب", us_sql=True)
+        assert result == ["test"]
 
         # Check that the parameter is passed correctly (with underscores)
         call_kwargs = mock_sql.call_args[1]
-        assert "values" in call_kwargs
-        assert "علوم_الحاسوب" in call_kwargs["values"][0]
+        assert "params" in call_kwargs
+        assert "علوم_الحاسوب" in call_kwargs["params"][0]
 
 
 class TestGetArListFromEn:
@@ -52,7 +93,7 @@ class TestGetArListFromEn:
 
     def test_returns_list(self, mocker):
         """Test that function returns a list"""
-        mocker.patch("src.core.b18_new.sql_cat.GET_SQL", return_value=False)
+        mocker.patch("src.core.b18_new.sql_cat.db_manager.execute_query", side_effect=Exception("SQL Error"))
         mocker.patch("src.core.b18_new.sql_cat.fetch_ar_titles_based_on_en_category", return_value=[])
 
         result = get_ar_list_from_en("Science")
@@ -61,9 +102,9 @@ class TestGetArListFromEn:
 
     def test_uses_sql_when_enabled(self, mocker):
         """Test that SQL is used when enabled"""
-        mocker.patch("src.core.b18_new.sql_cat.GET_SQL", return_value=True)
         mock_sql = mocker.patch(
-            "src.core.b18_new.sql_cat.sql_new", return_value=[{"ll_title": "صفحة1"}, {"ll_title": "صفحة2"}]
+            "src.core.b18_new.sql_cat.db_manager.execute_query",
+            return_value=[{"ll_title": "صفحة1"}, {"ll_title": "صفحة2"}],
         )
 
         result = get_ar_list_from_en("Science", us_sql=True)
@@ -72,17 +113,16 @@ class TestGetArListFromEn:
 
     def test_falls_back_to_api_when_sql_disabled(self, mocker):
         """Test fallback to API when SQL is disabled"""
-        mocker.patch("src.core.b18_new.sql_cat.GET_SQL", return_value=False)
+        mocker.patch("src.core.b18_new.sql_cat.db_manager.execute_query", side_effect=Exception("SQL Error"))
         mock_api = mocker.patch("src.core.b18_new.sql_cat.fetch_ar_titles_based_on_en_category", return_value=["صفحة1"])
 
-        result = get_ar_list_from_en("Science")
+        result = get_ar_list_from_en("Science", us_sql=True)
 
         mock_api.assert_called_once()
 
     def test_replaces_underscores_in_results(self, mocker):
         """Test that underscores are replaced with spaces in results"""
-        mocker.patch("src.core.b18_new.sql_cat.GET_SQL", return_value=True)
-        mocker.patch("src.core.b18_new.sql_cat.sql_new", return_value=[{"ll_title": "صفحة_اختبار"}])
+        mocker.patch("src.core.b18_new.sql_cat.db_manager.execute_query", return_value=[{"ll_title": "صفحة_اختبار"}])
 
         result = get_ar_list_from_en("Science", us_sql=True)
 

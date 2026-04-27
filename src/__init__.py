@@ -2,6 +2,11 @@
 NOTE: ar_make_lab, create_categories_from_list, process_catagories
     is used by external scripts and should not be changed.
 
+from cats_maker_new import (
+    process_catagories,
+    create_categories_from_list,
+    ar_make_lab,
+)
 """
 
 from pathlib import Path

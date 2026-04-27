@@ -8,7 +8,6 @@ import difflib
 import logging
 
 from ....config import settings
-from ...helps.printe_helper import make_str
 
 yes_answer = ["y", "a", "", "Y", "A", "all", "aaa"]
 Save_or_Ask = {}
@@ -28,11 +27,11 @@ def showDiff(oldtext: str, newtext: str) -> None:
     )
     for line in diff:
         if line.startswith("+") and not line.startswith("+++"):
-            logger.warning(make_str(f"<<lightgreen>>{line}"))
+            logger.warning(line)
         elif line.startswith("-") and not line.startswith("---"):
-            logger.warning(make_str(f"<<lightred>>{line}"))
+            logger.warning(line)
         else:
-            logger.warning(make_str(line))
+            logger.warning(line)
 
 
 class ASK_BOT:

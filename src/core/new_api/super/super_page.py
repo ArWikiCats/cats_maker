@@ -121,8 +121,6 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
 
         self.user = ""
 
-        super().__init__(login_bot)
-
     def false_edit(self):
         # self.newtext
         # self.text

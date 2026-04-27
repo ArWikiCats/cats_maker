@@ -4,7 +4,7 @@
 import logging
 
 from ...config import settings
-from ..api_sql import GET_SQL, get_exclusive_category_titles
+from ..api_sql import CategoryComparator
 from .sql_cat import make_ar_list_newcat2
 from .sql_cat_checker import validate_categories_for_new_cat
 
@@ -16,9 +16,10 @@ pages_in_arcat_toMake = {}
 def extract_fan_page_titles(enpageTitle) -> list:
     fapages = []
 
-    if GET_SQL() and settings.database.use_sql:
+    if settings.database.use_sql:
+        comparator = CategoryComparator()
         cat2 = enpageTitle.replace("Category:", "").replace("category:", "").strip()
-        fapages = get_exclusive_category_titles(cat2, "") or []
+        fapages = comparator.get_exclusive_category_titles(cat2, "") or []
 
     logger.info(f"<<lightgreen>>Adding {len(fapages)} pages to fapage lists")
     return fapages

@@ -1,6 +1,4 @@
-"""
-from ..tools_bots.sort_bot import CatSorting
-"""
+""" """
 
 import re
 
