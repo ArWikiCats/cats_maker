@@ -4,9 +4,8 @@ Tests for src/core/mk_cats/create_category_page.py
 This module tests category page creation functionality.
 """
 
-import pytest
-
 from src.core.mk_cats.create_category_page import (
+    CategoryResult,
     add_text_to_cat,
     make_category,
     new_category,
@@ -56,7 +55,6 @@ class TestNewCategory:
 
     def test_returns_false_when_make_category_fails(self, mocker):
         """Test that new_category returns failed result when make_category fails"""
-        from src.core.mk_cats.create_category_page import CategoryResult
 
         mocker.patch(
             "src.core.mk_cats.create_category_page.make_category",
@@ -68,7 +66,6 @@ class TestNewCategory:
 
     def test_returns_true_when_make_category_succeeds(self, mocker):
         """Test that new_category returns successful result when make_category succeeds"""
-        from src.core.mk_cats.create_category_page import CategoryResult
 
         mocker.patch(
             "src.core.mk_cats.create_category_page.make_category", return_value=CategoryResult(True, "تصنيف:علوم", None)

@@ -11,8 +11,18 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# Mark all tests in this module as integration tests
-pytestmark = pytest.mark.integration
+from src.core.b18_new import sql_cat
+from src.core.mk_cats import create_categories_from_list, create_category_page, mknew
+from src.core.mk_cats.mknew import (
+    ar_make_lab,
+    clear_processing_state,
+    make_ar,
+    one_cat,
+    process_catagories,
+    scan_ar_title,
+)
+from src.core.wd_bots import wd_api_bot
+from src.core.wiki_api import himoBOT2
 
 
 class TestMainFlowIntegration:
@@ -100,7 +110,6 @@ class TestMainFlowIntegration:
 
     def test_create_categories_from_list_empty_list(self):
         """Test that create_categories_from_list handles empty list gracefully."""
-        from src.core.mk_cats import create_categories_from_list
 
         # Should not raise any exceptions
         create_categories_from_list([])
@@ -109,7 +118,6 @@ class TestMainFlowIntegration:
         self, mocker, mock_ar_make_lab, mock_check_en_temps, mock_filter_en
     ):
         """Test that create_categories_from_list iterates over all categories."""
-        from src.core.mk_cats import create_categories_from_list
 
         # Mock the entire one_cat function to track calls
         mock_one_cat = mocker.patch("src.core.mk_cats.mknew.one_cat")
@@ -122,15 +130,12 @@ class TestMainFlowIntegration:
 
     def test_one_cat_filters_empty_title(self):
         """Test that one_cat returns False for empty title."""
-        from src.core.mk_cats.mknew import one_cat
 
         result = one_cat("", 1, 1)
         assert result is False
 
     def test_one_cat_filters_duplicate_categories(self, mocker):
         """Test that duplicate categories are filtered out."""
-        from src.core.mk_cats import mknew
-        from src.core.mk_cats.mknew import clear_processing_state, one_cat
 
         # Clear processing state for this test
         clear_processing_state()
@@ -152,7 +157,6 @@ class TestMainFlowIntegration:
 
     def test_process_catagories_calls_make_ar(self, mocker, mock_all_external_services):
         """Test that process_catagories calls make_ar with correct parameters."""
-        from src.core.mk_cats.mknew import process_catagories
 
         # Mock make_ar to return an empty list (no subcategories)
         mock_make_ar = mocker.patch("src.core.mk_cats.mknew.make_ar")
@@ -168,14 +172,12 @@ class TestMainFlowIntegration:
 
     def test_make_ar_returns_empty_for_empty_ar_title(self):
         """Test that make_ar returns empty list for empty Arabic title."""
-        from src.core.mk_cats.mknew import make_ar
 
         result = make_ar("Category:Science", "")
         assert result == []
 
     def test_make_ar_returns_empty_for_whitespace_ar_title(self):
         """Test that make_ar returns empty list for whitespace Arabic title."""
-        from src.core.mk_cats.mknew import make_ar
 
         result = make_ar("Category:Science", "   ")
         assert result == []
@@ -186,7 +188,6 @@ class TestModuleInteraction:
 
     def test_wiki_api_integration_with_himoBOT2(self, mocker):
         """Test that wiki_api module functions work together."""
-        from src.core.wiki_api import himoBOT2
 
         # Mock the underlying API call
         mock_api = mocker.patch("src.core.wiki_api.himoBOT2.submitAPI")
@@ -214,14 +215,12 @@ class TestModuleInteraction:
         mock_connect.return_value = []
 
         # This tests that the modules can be imported and interact
-        from src.core.b18_new import sql_cat
 
         # The module should be importable without errors
         assert sql_cat is not None
 
     def test_mk_cats_integration_with_create_category_page(self, mocker):
         """Test that mk_cats integrates with create_category_page."""
-        from src.core.mk_cats import create_category_page
 
         # Mock all external calls in create_category_page
         mocker.patch("src.core.mk_cats.create_category_page.add_text_to_cat", return_value="Test text")
@@ -232,7 +231,6 @@ class TestModuleInteraction:
 
     def test_wd_bots_integration_with_get_bots(self, mocker):
         """Test that wd_bots module functions integrate properly."""
-        from src.core.wd_bots import wd_api_bot
 
         # Mock the underlying API call
         mock_api = mocker.patch("src.core.wd_bots.wd_api_bot.Get_infos_wikidata")
@@ -266,7 +264,6 @@ class TestCallbackIntegration:
 
     def test_create_categories_with_callback(self, mocker):
         """Test that callbacks are properly passed through the flow."""
-        from src.core.mk_cats import create_categories_from_list
 
         callback_mock = MagicMock()
 
@@ -281,7 +278,6 @@ class TestCallbackIntegration:
 
     def test_process_catagories_passes_callback_to_make_ar(self, mocker):
         """Test that process_catagories passes callback to make_ar."""
-        from src.core.mk_cats.mknew import process_catagories
 
         callback_mock = MagicMock()
 
@@ -301,7 +297,6 @@ class TestErrorHandling:
 
     def test_create_categories_handles_none_in_list(self, mocker):
         """Test that the flow handles None values in the list."""
-        from src.core.mk_cats import create_categories_from_list
 
         # Mock one_cat to track calls
         mock_one_cat = mocker.patch("src.core.mk_cats.mknew.one_cat")
@@ -315,8 +310,6 @@ class TestErrorHandling:
 
     def test_scan_ar_title_handles_repeated_titles(self):
         """Test that scan_ar_title correctly tracks repeated titles."""
-        from src.core.mk_cats import mknew
-        from src.core.mk_cats.mknew import clear_processing_state, scan_ar_title
 
         # Clear state
         clear_processing_state()
@@ -343,7 +336,6 @@ class TestDataFlowIntegration:
         mock_label.return_value = "علوم الحاسوب"
 
         # Import after patching
-        from src.core.mk_cats.mknew import ar_make_lab
 
         result = ar_make_lab("Computer science")
 
@@ -352,7 +344,6 @@ class TestDataFlowIntegration:
 
     def test_wiki_info_flows_to_category_creation(self, mocker):
         """Test that Wikipedia info flows to category creation."""
-        from src.core.wiki_api import himoBOT2
 
         # Mock API response
         mocker.patch(
