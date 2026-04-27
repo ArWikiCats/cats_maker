@@ -8,6 +8,8 @@ from typing import Any
 from ....config import settings
 from .client import WikiApiClient
 from .handel_errors import HandleErrors
+from http.cookiejar import MozillaCookieJar
+from .cookies_bot import del_cookies_file
 
 logger = logging.getLogger(__name__)
 
@@ -211,7 +213,6 @@ class Login(HandleErrors):
             code = error.get("code", "")
             if code == "assertnameduserfailed":
                 logger.warning("assertnameduserfailed" * 10)
-                from .cookies_bot import del_cookies_file
 
                 del_cookies_file(self._client.cookies_file)
                 self._client.username_in = ""
@@ -460,7 +461,6 @@ class Login(HandleErrors):
         self._client.session = load_session(lang=self.lang, family=self.family, username=self._client.username)
         self._client.cookies_file = str(get_file_name(self.lang, self.family, self._client.username))
 
-        from http.cookiejar import MozillaCookieJar
 
         self._client.session.cookies = MozillaCookieJar(self._client.cookies_file)
 
