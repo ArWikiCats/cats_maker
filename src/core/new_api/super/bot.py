@@ -9,7 +9,7 @@ import requests
 
 from ....config import settings
 from .cookies_bot import del_cookies_file, get_file_name
-from .params_help import PARAMS_HELPS
+from .params_help import ParamsHelper
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def _load_session(lang: str = "", family: str = "", username: str = "") -> reque
     return s
 
 
-class LOGIN_HELPS(PARAMS_HELPS):
+class LOGIN_HELPS(ParamsHelper):
     def __init__(self) -> None:
         self.cookie_jar = False
         self.session = None

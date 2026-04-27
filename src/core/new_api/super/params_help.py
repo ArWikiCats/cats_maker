@@ -2,21 +2,24 @@
 
 import json
 import logging
+from typing import Any
+
+import requests
 
 from ....config import settings
 
 logger = logging.getLogger(__name__)
 
 
-class PARAMS_HELPS:
+class ParamsHelper:
     def __init__(self) -> None:
         self.lang = getattr(self, "lang", "")
         self.family = getattr(self, "family", "")
         self.username = getattr(self, "username", "")
         self.url_o_print = getattr(self, "url_o_print", "")
-        # pass
 
-    def params_w(self, params) -> dict:
+    def params_w(self, params: dict) -> dict:
+        params = dict(params)
         if (
             self.family == "wikipedia"
             and self.lang == "ar"
@@ -41,7 +44,7 @@ class PARAMS_HELPS:
 
         return params
 
-    def parse_data(self, req0) -> dict:
+    def parse_data(self, req0: requests.Response | dict) -> dict:
         """
         Parse JSON response data.
         """
@@ -57,7 +60,7 @@ class PARAMS_HELPS:
             return data
         except Exception as e:
             logger.warning(f"<<red>> Error parsing response data: {e}")
-            text = str(req0.text).strip()
+            text = str(getattr(req0, "text", "").strip())
 
         valid_text = text.startswith("{") and text.endswith("}")
 
@@ -65,9 +68,14 @@ class PARAMS_HELPS:
             return {}
 
         try:
-            data = json.loads(text)
-            return data
+            return json.loads(text)
         except Exception as e:
-            logger.warning(e, self.url_o_print)
+            logger.warning(e)
+            logger.warning(self.url_o_print)
 
         return {}
+
+
+__all__ = [
+    "ParamsHelper",
+]

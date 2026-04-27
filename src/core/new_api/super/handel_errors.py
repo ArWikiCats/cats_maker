@@ -5,17 +5,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class HANDEL_ERRORS:
-    def __init__(self):
-        pass
-
-    def handel_err(
+class HandleErrors:
+    def handle_err(
         self,
         error: dict,
         function: str = "",
-        params: dict = None,
+        params: dict | None = None,
         do_error: bool = True,
-    ):
+    ) -> dict | str | bool:
         """Handle errors based on the provided error dictionary.
 
         This function processes an error dictionary and performs actions based
@@ -48,13 +45,12 @@ class HANDEL_ERRORS:
         err_code = error.get("code", "")
         err_info = error.get("info", "")
 
-        _tt = f"<<lightred>>{function} ERROR: <<defaut>>code:{err_code}."
         # ---["protectedpage", 'تأخير البوتات 3 ساعات', False]
         if err_code == "abusefilter-disallowed":
             # oioioi = {'error': {'code': 'abusefilter-disallowed', 'info': 'This', 'abusefilter': {'id': '169', 'description': 'تأخير البوتات 3 ساعات', 'actions': ['disallow']}, '*': 'See https'}, 'servedby': 'mw1374'}
 
             abusefilter = error.get("abusefilter", "")
-            description = abusefilter.get("description", "")
+            description = abusefilter.get("description", "") if isinstance(abusefilter, dict) else ""
             logger.debug(f"<<lightred>> ** abusefilter-disallowed: {description} ")
             if description in [
                 "تأخير البوتات 3 ساعات",
@@ -71,7 +67,6 @@ class HANDEL_ERRORS:
 
         if err_code == "protectedpage":
             logger.debug("<<lightred>> ** protectedpage. ")
-            # return "protectedpage"
             return False
 
         if err_code == "articleexists":
@@ -83,6 +78,13 @@ class HANDEL_ERRORS:
             return False
 
         if do_error:
-            params["data"] = {}
-            params["text"] = {}
+            if params:
+                params["data"] = {}
+                params["text"] = {}
             logger.error(f"<<lightred>>{function} ERROR: <<defaut>>info: {err_info}, {params=}")
+        return error
+
+
+__all__ = [
+    "HandleErrors",
+]

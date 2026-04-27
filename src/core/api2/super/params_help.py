@@ -45,6 +45,10 @@ class ParamsHelper:
         return params
 
     def parse_data(self, req0: requests.Response | dict) -> dict:
+        """
+        Parse JSON response data.
+        """
+        text = ""
         try:
             data = req0 if isinstance(req0, dict) else req0.json()
 
@@ -67,6 +71,7 @@ class ParamsHelper:
             return json.loads(text)
         except Exception as e:
             logger.warning(e)
+            logger.warning(self.url_o_print)
 
         return {}
 

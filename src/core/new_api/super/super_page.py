@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 from ....config import settings
 from ..api_utils import ASK_BOT, bot_May_Edit, change_codes
-from .handel_errors import HANDEL_ERRORS
+from .handel_errors import HandleErrors
 from .super_login import Login
 
 logger = logging.getLogger(__name__)
@@ -83,7 +83,7 @@ def find_edit_error(old, new):
     return False
 
 
-class MainPage(ASK_BOT, HANDEL_ERRORS):
+class MainPage(ASK_BOT, HandleErrors):
     def __init__(
         self,
         login_bot: Login,
@@ -602,7 +602,7 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
 
         if error != {}:
             print(pop)
-            er = self.handel_err(error, function="Save", params=params)
+            er = self.handle_err(error, function="Save", params=params)
 
             return er
 
@@ -672,7 +672,7 @@ class MainPage(ASK_BOT, HANDEL_ERRORS):
 
         if error != {}:
             print(pop)
-            er = self.handel_err(error, function="Create", params=params)
+            er = self.handle_err(error, function="Create", params=params)
 
             return er
 
