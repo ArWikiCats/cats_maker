@@ -8,15 +8,15 @@
 ## Dependency Map
 
 ```
-wiki_api (HTTP transport) ─┬─> new_api (OOP API wrapper) ─┬─> b18_new
+wiki_api (HTTP transport) ─┬─> new_api (OOP API wrapper) ─┬─> b18
                             │                              ├─> mk_cats
-                            │                              └─> c18_new
+                            │                              └─> c18
                             │
-api_sql (DB access) ────────┼─> b18_new
-                            ├─> c18_new
+api_sql (DB access) ────────┼─> b18
+                            ├─> c18
                             │
 wd_bots (Wikidata) ─────────┼─> mk_cats
-                            └─> c18_new
+                            └─> c18
 ```
 
 **Rule:** Always refactor a module only after all its upstream dependencies are done.
@@ -34,8 +34,8 @@ Zero-risk changes that can be done immediately, in any order:
 | 0.3 | Remove empty `__init__` methods                        | new_api                     |
 | 0.4 | Remove dead functions (`decode_bytes`, unused imports) | api_sql (**done**), new_api |
 | 0.5 | Fix mutable default args (`values=[]` → `values=()`)   | api_sql (**done**)          |
-| 0.6 | Replace mutable lists with tuples/frozensets           | mk_cats, c18_new            |
-| 0.7 | Add `__pycache__` to `.gitignore`                      | mk_cats, c18_new            |
+| 0.6 | Replace mutable lists with tuples/frozensets           | mk_cats, c18            |
+| 0.7 | Add `__pycache__` to `.gitignore`                      | mk_cats, c18            |
 | 0.8 | Run `ruff` across all modules, fix auto-fixable issues | All 7                       |
 
 **Estimated effort:** 1-2 hours. **Goal:** Get type-checking and linting baseline passing.
@@ -82,11 +82,11 @@ Zero-risk changes that can be done immediately, in any order:
 
 -   Create `src/core/constants.py` with shared namespace dicts (from api_sql + new_api)
 -   Create `src/core/utils/text.py` with `normalize_category_title()`, `clean_wiki_brackets()`, `extract_wikidata_qid()`
--   Ensure both are importable by `b18_new`, `c18_new`, `mk_cats`
+-   Ensure both are importable by `b18`, `c18`, `mk_cats`
 
 ### Step 1.4 — `wd_bots` refactoring
 
-**Why after wiki_api:** Uses `wiki_api` transport. Needed by `mk_cats` and `c18_new`.
+**Why after wiki_api:** Uses `wiki_api` transport. Needed by `mk_cats` and `c18`.
 
 **Execute per plan:** `wd_bots_refactor_plan.md`
 
@@ -120,11 +120,11 @@ Zero-risk changes that can be done immediately, in any order:
 
 ## Phase 2: Business Logic Modules
 
-### Step 2.1 — `b18_new` refactoring
+### Step 2.1 — `b18` refactoring
 
 **Why first of the three:** Lightest module, fewest dependencies.
 
-**Execute per plan:** `b18_new_refactor_plan.md`
+**Execute per plan:** `b18_refactor_plan.md`
 
 -   Phase 1: `constants.py` + `utils/text.py` (use shared utils from Step 1.3)
 -   Phase 2: Refactor `sql_cat_checker.py` → `core/category_validator.py`
@@ -134,11 +134,11 @@ Zero-risk changes that can be done immediately, in any order:
 -   Phase 6: Update `__init__.py` with deprecation shims
 -   Phase 7: Tests
 
-**Verification:** `pytest tests/b18_new/` passes, > 80% coverage.
+**Verification:** `pytest tests/b18/` passes, > 80% coverage.
 
 ### Step 2.2 — `mk_cats` refactoring
 
-**Why second:** Depends on `new_api` + `wd_bots` (both done). Used by `c18_new`.
+**Why second:** Depends on `new_api` + `wd_bots` (both done). Used by `c18`.
 
 **Execute per plan:** `mk_cats_refactor_plan.md`
 
@@ -150,11 +150,11 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Verification:** `pytest tests/mk_cats/` passes, >= 80% coverage. Integration diff on `Science` category is empty.
 
-### Step 2.3 — `c18_new` refactoring
+### Step 2.3 — `c18` refactoring
 
 **Why last:** Largest module (7+ files), highest complexity, depends on everything.
 
-**Execute per plan:** `c18_new_master_refactoring_plan.md`
+**Execute per plan:** `c18_master_refactoring_plan.md`
 
 -   Phase 1: `constants.py`, snake_case, type hints
 -   Phase 2: Deduplication — merge `ar_from_en.py` + `ar_from_en2.py`, merge templatequery files
@@ -162,7 +162,7 @@ Zero-risk changes that can be done immediately, in any order:
 -   Phase 4: Structural reorganization into `core/`, `tools/`, `io/`, `utils/`
 -   Phase 5: Tests
 
-**Verification:** `pytest tests/c18_new/` passes, >= 80% coverage. `radon cc` shows no function above grade B.
+**Verification:** `pytest tests/c18/` passes, >= 80% coverage. `radon cc` shows no function above grade B.
 
 ---
 
@@ -198,7 +198,7 @@ mypy src/core/ --ignore-missing-imports --statistics
 #    wiki_api → wd_bots → new_api
 
 # 5. Refactor downstream layers in order:
-#    b18_new → mk_cats → c18_new
+#    b18 → mk_cats → c18
 
 # 6. Validate
 pytest tests/ --cov=src/core --cov-report=term-missing

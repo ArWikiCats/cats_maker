@@ -322,7 +322,7 @@ class WikiApiHandler:
 
 
 # 1. Create a single, global instance of the new class.
-# The name LC_bot is chosen to match the original import `from c18_new import LCN_new`
+# The name LC_bot is chosen to match the original import `from c18 import LCN_new`
 LC_bot = WikiApiHandler()
 
 # 2. Re-create the old functions as wrappers that call the new methods.

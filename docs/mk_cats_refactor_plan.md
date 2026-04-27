@@ -1,6 +1,6 @@
 # mk_cats — Refactoring Plan
 
-> Companion plan to `c18_new_master_refactoring_plan.md`.
+> Companion plan to `c18_master_refactoring_plan.md`.
 > Applies the same principles — clean structure, phased execution, backward-compatible shims — to the `src/mk_cats` module.
 
 ---
@@ -22,7 +22,7 @@
 | `_get_page` caches page objects (LRU)                  | `add_bot.py:25-51`               | Dangerous for a live bot — stale page state                |
 | Tests mutate module state directly                     | test_mknew.py                    | Fragile: `_done_d.clear()` before/after every test         |
 
-**This plan reorganises the module in five sequential phases**, with the same shim pattern used in c18_new.
+**This plan reorganises the module in five sequential phases**, with the same shim pattern used in c18.
 
 ---
 
@@ -490,4 +490,4 @@ src/mk_cats/                          src/mk_cats/
 
 ---
 
-_Plan created 2026-04-26. Follows the same methodology as `c18_new_master_refactoring_plan.md`._
+_Plan created 2026-04-26. Follows the same methodology as `c18_master_refactoring_plan.md`._

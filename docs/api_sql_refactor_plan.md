@@ -366,7 +366,7 @@ The public API exported from `__init__.py` stays **identical** — no consumer c
 -   [x] `mypy src/core/api_sql --ignore-missing-imports` passes
 -   [x] `pytest tests/api_sql/` passes — 78/78 pass, 99% coverage
 -   [ ] `pytest tests/integration/test_main_flow.py` passes
--   [ ] All downstream consumers (`b18_new/sql_cat.py`, `b18_new/cat_tools_enlist.py`, `c18_new/dontadd.py`, `c18_new/cats_tools/ar_from_en.py`) continue to work with zero import changes
+-   [ ] All downstream consumers (`b18/sql_cat.py`, `b18/cat_tools_enlist.py`, `c18/dontadd.py`, `c18/cats_tools/ar_from_en.py`) continue to work with zero import changes
 
 ---
 
@@ -424,13 +424,13 @@ After refactoring, verify these consumer files still work (imports unchanged due
 
 | Consumer file                          | Symbols imported from api_sql |
 | -------------------------------------- | ----------------------------- |
-| `src/core/b18_new/sql_cat.py`          | `GET_SQL`, `sql_new_title_ns` |
-| `src/core/b18_new/cat_tools_enlist.py` | (via settings-based SQL flag) |
-| `src/core/c18_new/dontadd.py`          | (via settings-based SQL flag) |
+| `src/core/b18/sql_cat.py`          | `GET_SQL`, `sql_new_title_ns` |
+| `src/core/b18/cat_tools_enlist.py` | (via settings-based SQL flag) |
+| `src/core/c18/dontadd.py`          | (via settings-based SQL flag) |
 | `tests/integration/test_main_flow.py`  | (mock-based import test)      |
 
 No import changes are needed — `api_sql/__init__.py` re-exports all public symbols unchanged.
 
 ---
 
-_Plan created 2026-04-26. Follows same methodology as `mk_cats_refactor_plan.md` and `c18_new_master_refactoring_plan.md`._
+_Plan created 2026-04-26. Follows same methodology as `mk_cats_refactor_plan.md` and `c18_master_refactoring_plan.md`._

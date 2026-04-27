@@ -1,10 +1,10 @@
 """
-Tests for src/core/c18_new/sql_cat.py
+Tests for src/core/c18/sql_cat.py
 
 This module tests SQL-based category functions.
 """
 
-from src.core.c18_new.sql_cat import (
+from src.core.c18.sql_cat import (
     do_sql,
     fetch_ar_titles_based_on_en_category,
     get_ar_list,
@@ -18,8 +18,8 @@ class TestFetchArTitlesBasedOnEnCategory:
 
     def test_calls_en_category_members(self, mocker):
         """Test that en_category_members is called"""
-        mock_en_cat = mocker.patch("src.core.c18_new.sql_cat.en_category_members", return_value=["Page1", "Page2"])
-        mocker.patch("src.core.c18_new.sql_cat.get_ar_list_title_from_en_list", return_value=["صفحة1", "صفحة2"])
+        mock_en_cat = mocker.patch("src.core.c18.sql_cat.en_category_members", return_value=["Page1", "Page2"])
+        mocker.patch("src.core.c18.sql_cat.get_ar_list_title_from_en_list", return_value=["صفحة1", "صفحة2"])
 
         result = fetch_ar_titles_based_on_en_category("Science")
 
@@ -27,9 +27,9 @@ class TestFetchArTitlesBasedOnEnCategory:
 
     def test_calls_get_ar_list_title_from_en_list(self, mocker):
         """Test that get_ar_list_title_from_en_list is called"""
-        mocker.patch("src.core.c18_new.sql_cat.en_category_members", return_value=["Page1", "Page2"])
+        mocker.patch("src.core.c18.sql_cat.en_category_members", return_value=["Page1", "Page2"])
         mock_get_ar = mocker.patch(
-            "src.core.c18_new.sql_cat.get_ar_list_title_from_en_list", return_value=["صفحة1", "صفحة2"]
+            "src.core.c18.sql_cat.get_ar_list_title_from_en_list", return_value=["صفحة1", "صفحة2"]
         )
 
         result = fetch_ar_titles_based_on_en_category("Science", wiki="en")
@@ -38,8 +38,8 @@ class TestFetchArTitlesBasedOnEnCategory:
 
     def test_returns_arabic_titles(self, mocker):
         """Test that Arabic titles are returned"""
-        mocker.patch("src.core.c18_new.sql_cat.en_category_members", return_value=["Science"])
-        mocker.patch("src.core.c18_new.sql_cat.get_ar_list_title_from_en_list", return_value=["علوم"])
+        mocker.patch("src.core.c18.sql_cat.en_category_members", return_value=["Science"])
+        mocker.patch("src.core.c18.sql_cat.get_ar_list_title_from_en_list", return_value=["علوم"])
 
         result = fetch_ar_titles_based_on_en_category("Science")
 
@@ -52,7 +52,7 @@ class TestGetArList:
     def test_returns_list(self, mocker):
         """Test that function returns a list"""
         mocker.patch(
-            "src.core.c18_new.sql_cat.db_manager.execute_query",
+            "src.core.c18.sql_cat.db_manager.execute_query",
             return_value=[{"page_title": "test", "page_namespace": 0}],
         )
 
@@ -64,7 +64,7 @@ class TestGetArList:
     def test_uses_sql_when_enabled(self, mocker):
         """Test that SQL is used when enabled"""
         mock_sql = mocker.patch(
-            "src.core.c18_new.sql_cat.db_manager.execute_query",
+            "src.core.c18.sql_cat.db_manager.execute_query",
             return_value=[{"page_title": "صفحة1", "page_namespace": 0}],
         )
 
@@ -75,7 +75,7 @@ class TestGetArList:
     def test_replaces_spaces_with_underscores(self, mocker):
         """Test that spaces are replaced with underscores in parameter"""
         mock_sql = mocker.patch(
-            "src.core.c18_new.sql_cat.db_manager.execute_query",
+            "src.core.c18.sql_cat.db_manager.execute_query",
             return_value=[{"page_title": "test", "page_namespace": 0}],
         )
 
@@ -93,8 +93,8 @@ class TestGetArListFromEn:
 
     def test_returns_list(self, mocker):
         """Test that function returns a list"""
-        mocker.patch("src.core.c18_new.sql_cat.db_manager.execute_query", side_effect=Exception("SQL Error"))
-        mocker.patch("src.core.c18_new.sql_cat.fetch_ar_titles_based_on_en_category", return_value=[])
+        mocker.patch("src.core.c18.sql_cat.db_manager.execute_query", side_effect=Exception("SQL Error"))
+        mocker.patch("src.core.c18.sql_cat.fetch_ar_titles_based_on_en_category", return_value=[])
 
         result = get_ar_list_from_en("Science")
 
@@ -103,7 +103,7 @@ class TestGetArListFromEn:
     def test_uses_sql_when_enabled(self, mocker):
         """Test that SQL is used when enabled"""
         mock_sql = mocker.patch(
-            "src.core.c18_new.sql_cat.db_manager.execute_query",
+            "src.core.c18.sql_cat.db_manager.execute_query",
             return_value=[{"ll_title": "صفحة1"}, {"ll_title": "صفحة2"}],
         )
 
@@ -113,8 +113,8 @@ class TestGetArListFromEn:
 
     def test_falls_back_to_api_when_sql_disabled(self, mocker):
         """Test fallback to API when SQL is disabled"""
-        mocker.patch("src.core.c18_new.sql_cat.db_manager.execute_query", side_effect=Exception("SQL Error"))
-        mock_api = mocker.patch("src.core.c18_new.sql_cat.fetch_ar_titles_based_on_en_category", return_value=["صفحة1"])
+        mocker.patch("src.core.c18.sql_cat.db_manager.execute_query", side_effect=Exception("SQL Error"))
+        mock_api = mocker.patch("src.core.c18.sql_cat.fetch_ar_titles_based_on_en_category", return_value=["صفحة1"])
 
         result = get_ar_list_from_en("Science", us_sql=True)
 
@@ -122,7 +122,7 @@ class TestGetArListFromEn:
 
     def test_replaces_underscores_in_results(self, mocker):
         """Test that underscores are replaced with spaces in results"""
-        mocker.patch("src.core.c18_new.sql_cat.db_manager.execute_query", return_value=[{"ll_title": "صفحة_اختبار"}])
+        mocker.patch("src.core.c18.sql_cat.db_manager.execute_query", return_value=[{"ll_title": "صفحة_اختبار"}])
 
         result = get_ar_list_from_en("Science", us_sql=True)
 
@@ -134,8 +134,8 @@ class TestDoSql:
 
     def test_returns_list(self, mocker):
         """Test that function returns a list"""
-        mocker.patch("src.core.c18_new.sql_cat.get_ar_list", return_value=[])
-        mocker.patch("src.core.c18_new.sql_cat.get_ar_list_from_en", return_value=[])
+        mocker.patch("src.core.c18.sql_cat.get_ar_list", return_value=[])
+        mocker.patch("src.core.c18.sql_cat.get_ar_list_from_en", return_value=[])
 
         result = do_sql("Science", "علوم")
 
@@ -143,8 +143,8 @@ class TestDoSql:
 
     def test_returns_difference_of_lists(self, mocker):
         """Test that result is pages in en but not in ar"""
-        mocker.patch("src.core.c18_new.sql_cat.get_ar_list", return_value=["صفحة1", "صفحة2"])
-        mocker.patch("src.core.c18_new.sql_cat.get_ar_list_from_en", return_value=["صفحة1", "صفحة2", "صفحة3"])
+        mocker.patch("src.core.c18.sql_cat.get_ar_list", return_value=["صفحة1", "صفحة2"])
+        mocker.patch("src.core.c18.sql_cat.get_ar_list_from_en", return_value=["صفحة1", "صفحة2", "صفحة3"])
 
         result = do_sql("Science", "علوم")
 
@@ -158,7 +158,7 @@ class TestMakeArListNewcat2:
 
     def test_returns_list(self, mocker):
         """Test that function returns a list"""
-        mocker.patch("src.core.c18_new.sql_cat.do_sql", return_value=[])
+        mocker.patch("src.core.c18.sql_cat.do_sql", return_value=[])
 
         result = make_ar_list_newcat2("علوم", "Science")
 
@@ -166,7 +166,7 @@ class TestMakeArListNewcat2:
 
     def test_cleans_category_prefix(self, mocker):
         """Test that Category: prefix is cleaned"""
-        mock_do_sql = mocker.patch("src.core.c18_new.sql_cat.do_sql", return_value=[])
+        mock_do_sql = mocker.patch("src.core.c18.sql_cat.do_sql", return_value=[])
 
         make_ar_list_newcat2("تصنيف:علوم", "Category:Science")
 
@@ -176,7 +176,7 @@ class TestMakeArListNewcat2:
 
     def test_handles_duplicate_category_prefix(self, mocker):
         """Test handling of duplicate Category: prefix"""
-        mock_do_sql = mocker.patch("src.core.c18_new.sql_cat.do_sql", return_value=[])
+        mock_do_sql = mocker.patch("src.core.c18.sql_cat.do_sql", return_value=[])
 
         make_ar_list_newcat2("تصنيف:علوم", "Category:Category:Science")
 
@@ -185,7 +185,7 @@ class TestMakeArListNewcat2:
 
     def test_replaces_underscores(self, mocker):
         """Test that underscores are replaced with spaces"""
-        mock_do_sql = mocker.patch("src.core.c18_new.sql_cat.do_sql", return_value=[])
+        mock_do_sql = mocker.patch("src.core.c18.sql_cat.do_sql", return_value=[])
 
         make_ar_list_newcat2("علوم_الحاسوب", "Computer_Science")
 
@@ -195,7 +195,7 @@ class TestMakeArListNewcat2:
 
     def test_passes_wiki_parameter(self, mocker):
         """Test that wiki parameter is passed"""
-        mock_do_sql = mocker.patch("src.core.c18_new.sql_cat.do_sql", return_value=[])
+        mock_do_sql = mocker.patch("src.core.c18.sql_cat.do_sql", return_value=[])
 
         make_ar_list_newcat2("علوم", "Sciences", wiki="fr")
 

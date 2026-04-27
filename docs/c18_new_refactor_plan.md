@@ -1,4 +1,4 @@
-# c18_new — Master Refactoring Plan
+# c18 — Master Refactoring Plan
 
 > Synthesized from two prior plans. Combines Plan A's clean directory structure and concrete API
 > sketches with Plan B's phased process discipline, quick-wins, and risk mitigations.
@@ -7,7 +7,7 @@
 
 ## 1. Executive Summary
 
-The `src/core/c18_new` module drives Arabic Wikipedia category generation, cross-wiki page linking
+The `src/core/c18` module drives Arabic Wikipedia category generation, cross-wiki page linking
 (EN→AR, FR→AR), template handling, and filtering/sorting. It works, but carries visible
 technical debt:
 
@@ -37,7 +37,7 @@ These are explicitly out of scope to protect business logic stability:
 ## 3. Proposed Directory Structure
 
 ```
-src/core/c18_new/
+src/core/c18/
 ├── __init__.py                  # Export only the public interface; add __all__
 ├── constants.py                 # All magic strings, namespace IDs, template names
 ├── models.py                    # Lightweight dataclasses: WikiPage, Category, Sitelink
@@ -89,7 +89,7 @@ These are zero-risk and can be done in a single PR right now:
 
 ### Phase 1 — Code Hygiene (Week 1)
 
-**Target:** All files in `c18_new`.
+**Target:** All files in `c18`.
 
 **Tasks:**
 
@@ -147,7 +147,7 @@ Fix typos: `Skippe_Cat` → `skipped_categories`, `lenth` → `length`, `sito_co
 -   Replace every `return False` where a list or string is expected with `return []` or `return None`.
 -   Standardize `english_page_link` family to return `str | None` consistently.
 
-**Success criteria:** `ruff check src/core/c18_new` and `mypy src/core/c18_new --ignore-missing-imports`
+**Success criteria:** `ruff check src/core/c18` and `mypy src/core/c18 --ignore-missing-imports`
 pass with zero errors.
 
 ---
@@ -206,7 +206,7 @@ class TemplateCache:
     ...
 ```
 
-**Success criteria:** Code volume in `c18_new` drops by 15–20% with no functional difference.
+**Success criteria:** Code volume in `c18` drops by 15–20% with no functional difference.
 Verify with an integration run on a real category (e.g., `Science`) before and after.
 
 ---
@@ -317,7 +317,7 @@ def add_direct(text: str, content: str) -> str:
 Move `pre_text` into a separate `.txt` asset or clearly named constant. Use
 `wikitextparser` consistently instead of mixing it with `str.find`.
 
-**Success criteria:** `radon cc src/core/c18_new -s` shows the top 3 functions have dropped from
+**Success criteria:** `radon cc src/core/c18 -s` shows the top 3 functions have dropped from
 grade C/D to grade A/B (cyclomatic complexity ≤ 10).
 
 ---
@@ -382,7 +382,7 @@ All new imports use the clean paths. Integration test on a real category passes.
 
 ### Phase 5 — Testing & Validation (Week 5)
 
-**Unit tests** — one test file per new module, in `tests/c18_new/`:
+**Unit tests** — one test file per new module, in `tests/c18/`:
 
 | Function               | Test cases                                                          |
 | ---------------------- | ------------------------------------------------------------------- |
@@ -411,7 +411,7 @@ timeit.timeit(lambda: filter_category_text(big_list, ns=14, text=""), number=100
 
 Expected: ≥ 30% speedup from O(n²) → O(n).
 
-**CI/CD:** `pytest tests/c18_new/ --cov=src/core/c18_new --cov-report=term-missing` must
+**CI/CD:** `pytest tests/c18/ --cov=src/core/c18 --cov-report=term-missing` must
 show ≥ 80% coverage in GitHub Actions.
 
 ---
@@ -420,7 +420,7 @@ show ≥ 80% coverage in GitHub Actions.
 
 | Risk                                                  | Impact | Mitigation                                                                |
 | ----------------------------------------------------- | ------ | ------------------------------------------------------------------------- |
-| Breaking imports in `mk_cats` or `b18_new`            | High   | Deprecation shims for one full release cycle                              |
+| Breaking imports in `mk_cats` or `b18`            | High   | Deprecation shims for one full release cycle                              |
 | Filtering behavior change due to predicate reordering | High   | Integration diff test on real category before/after each phase            |
 | Performance regression from new-list building         | Low    | Benchmark; new-list is almost always faster than repeated `list.remove()` |
 | Losing logging context when splitting large functions | Low    | Keep `logger.info/debug` in top-level orchestrators, not in predicates    |
@@ -430,15 +430,15 @@ show ≥ 80% coverage in GitHub Actions.
 
 ## 7. Acceptance Criteria
 
--   [ ] No camelCase function names remain anywhere in `c18_new`
+-   [ ] No camelCase function names remain anywhere in `c18`
 -   [ ] `ar_from_en2.py` deleted; its logic lives in `core/category_generator.py`
 -   [ ] All hardcoded namespace IDs, template names, and category strings imported from `constants.py`
 -   [ ] `filter_category_text` is a pure function — never mutates its input
 -   [ ] `english_page_link` family returns `str | None` consistently — no `False`, no `""`
 -   [ ] `dontadd.py` split into `io/json_store.py` and `io/sql_queries.py`
--   [ ] `pytest tests/c18_new/` passes with ≥ 80% coverage
--   [ ] `ruff check src/core/c18_new` reports zero errors
--   [ ] `radon cc src/core/c18_new -s` shows no function above grade B (complexity ≤ 10)
+-   [ ] `pytest tests/c18/` passes with ≥ 80% coverage
+-   [ ] `ruff check src/core/c18` reports zero errors
+-   [ ] `radon cc src/core/c18 -s` shows no function above grade B (complexity ≤ 10)
 -   [ ] Integration diff on `Science` category is empty before → after
 
 ---

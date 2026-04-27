@@ -1,12 +1,12 @@
-# Refactoring Plan for `src/core/b18_new`
+# Refactoring Plan for `src/core/b18`
 
-> **Scope:** This plan targets the `src/core/b18_new` directory, which handles Arabic category member resolution, SQL/API category translation, and category validation.
+> **Scope:** This plan targets the `src/core/b18` directory, which handles Arabic category member resolution, SQL/API category translation, and category validation.
 
 ---
 
 ## 1. Executive Summary
 
-The `b18_new` module is responsible for:
+The `b18` module is responsible for:
 
 -   Resolving English/French category members into Arabic page titles (via SQL or API)
 -   Validating Arabic/English category pairs before creation
@@ -28,7 +28,7 @@ While functional, the module suffers from:
 ## 2. Proposed Directory Structure
 
 ```
-src/core/b18_new/
+src/core/b18/
 ├── __init__.py
 ├── constants.py              # Hardcoded template blacklists, namespace IDs
 ├── models.py                 # Small dataclasses: CategoryRef, PageRef, ValidationResult
@@ -214,7 +214,7 @@ Update `CategoryResolver` and `CategoryValidator` to accept and return these typ
 
 ### 3.9 Add Unit Tests
 
-Create a `tests/b18_new/` suite covering:
+Create a `tests/b18/` suite covering:
 
 -   `normalize_category_title` edge cases (duplicate prefixes, mixed `[[`, `_`, spaces)
 -   `CategoryResolver.diff_missing_ar_pages` with mocked SQL and API backends
@@ -264,14 +264,14 @@ Use `pytest` and `unittest.mock` to patch SQL and API calls.
 
 ## 6. Acceptance Criteria
 
--   [ ] No camelCase function names remain in `b18_new`.
+-   [ ] No camelCase function names remain in `b18`.
 -   [ ] All category-title normalization uses `utils/text.py` — no inline `.replace(...)` chains.
 -   [ ] `MakeLitApiWay` and `get_ar_list_from_encat` return `list[str]` consistently (never `False` or `{}`).
 -   [ ] `sql_cat_checker.py` duplication is eliminated; a single generic checker handles both EN and AR pages.
 -   [ ] `pages_in_arcat_toMake` is no longer a module-level mutable dict.
 -   [ ] All hardcoded template names and namespace IDs are imported from `constants.py`.
--   [ ] `py.test tests/b18_new/` passes with >80% coverage.
--   [ ] `ruff check src/core/b18_new` reports zero errors.
+-   [ ] `py.test tests/b18/` passes with >80% coverage.
+-   [ ] `ruff check src/core/b18` reports zero errors.
 
 ---
 
