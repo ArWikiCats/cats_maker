@@ -18,3 +18,4 @@ __pycache__/
 /BOTS_LOGS
 scan.py
 coverage.xml
+*.zip
