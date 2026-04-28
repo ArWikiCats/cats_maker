@@ -1,20 +1,20 @@
 """ """
 
 import functools
-import logging
 import json
-import time
-from typing import Any
-import urllib.parse
+import logging
 import os
-import requests
+import time
+import urllib.parse
 from http.cookiejar import MozillaCookieJar
+from typing import Any
+
+import requests
 
 from ....config import settings
+from .cookies_bot import del_cookies_file, get_file_name
 from .handel_errors import HandleErrors
 
-
-from .cookies_bot import del_cookies_file, get_file_name
 logger = logging.getLogger(__name__)
 
 ar_lag = {1: 3}
@@ -31,6 +31,7 @@ class Login(HandleErrors):
     """
     Represents a login session for a wiki.
     """
+
     _logins_count: int = 0
 
     def __init__(self, lang: str, family: str = "wikipedia") -> None:
@@ -297,7 +298,9 @@ class Login(HandleErrors):
         if not self._client.session:
             self._make_session()
 
-        req = self._client.session.request("POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout)
+        req = self._client.session.request(
+            "POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout
+        )
 
         if req:
             data = self.parse_data(req)

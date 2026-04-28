@@ -1,18 +1,18 @@
 """ """
 
-import os
 import logging
+import os
 import time
 import urllib.parse
+from http.cookiejar import MozillaCookieJar
 from typing import Any
 
 import requests
 
 from ....config import settings
 from .client import WikiApiClient
-from .handel_errors import HandleErrors
-from http.cookiejar import MozillaCookieJar
 from .cookies_bot import del_cookies_file, get_file_name
+from .handel_errors import HandleErrors
 
 logger = logging.getLogger(__name__)
 
@@ -299,7 +299,9 @@ class Login(HandleErrors):
         if not self._client.session:
             self._make_session()
 
-        req = self._client.session.request("POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout)
+        req = self._client.session.request(
+            "POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout
+        )
 
         if req:
             data = self.parse_data(req)

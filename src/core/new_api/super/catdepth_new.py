@@ -2,6 +2,7 @@
 
 import logging
 from functools import lru_cache
+
 from ...utils import function_timer
 from ..constants import CATEGORY_PREFIXES
 from .category_db import CategoryDepth

@@ -8,9 +8,9 @@ from pathlib import Path
 from typing import Any
 
 import requests
-from .cookies_bot import get_file_name
 
 from ....config import settings
+from .cookies_bot import get_file_name
 
 logger = logging.getLogger(__name__)
 
