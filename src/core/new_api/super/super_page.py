@@ -100,8 +100,6 @@ class MainPage(ASK_BOT, HandleErrors):
 
         self.login_bot = login_bot
 
-        self.user_login = login_bot.user_login
-
         self.title = title
         self.lang = change_codes.get(lang) or lang
         self.family = family
@@ -539,7 +537,7 @@ class MainPage(ASK_BOT, HandleErrors):
 
         message = f"Do you want to save this page? ({self.lang}:{self.title})"
 
-        user = self.meta.username or getattr(self, "user_login", "")
+        user = self.meta.username
 
         if (
             self.ask_put(
@@ -628,7 +626,7 @@ class MainPage(ASK_BOT, HandleErrors):
         if not noask:
             message = f"Do you want to create this page? ({self.lang}:{self.title})"
 
-            user = self.meta.username or getattr(self, "user_login", "")
+            user = self.meta.username
 
             if (
                 self.ask_put(nodiff=nodiff, newtext=text, message=message, job="create", username=user, summary=summary)
