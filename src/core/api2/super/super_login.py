@@ -8,8 +8,8 @@ from typing import Any
 import requests
 
 from ....config import settings
-from .client import WikiApiClient
 from .auth import AuthProvider
+from .client import WikiApiClient
 from .cookies_bot import get_file_name
 from .handel_errors import HandleErrors
 
@@ -102,6 +102,7 @@ class Login(HandleErrors):
             do_error=do_error,
             max_retry=max_retry,
         )
+
 
 __all__ = [
     "Login",

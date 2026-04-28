@@ -383,9 +383,7 @@ class WikiApiClient:
         if not self.session:
             self.session = load_session(lang=self.lang, family=self.family, username=self.username)
 
-        req = self.session.request(
-            "POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout
-        )
+        req = self.session.request("POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout)
 
         if req:
             data = self.parse_data(req)
