@@ -59,10 +59,10 @@ class Login(HandleErrors):
     def params_w(self, params: dict) -> dict:
         return self._client.params_w(params)
 
-    def parse_data(self, req0) -> dict:
-        return self._client.parse_data(req0)
-
     def filter_params(self, params: dict) -> dict:
+        """
+        Filter out unnecessary parameters.
+        """
         params["format"] = "json"
         params["utf8"] = 1
 
@@ -119,7 +119,7 @@ class Login(HandleErrors):
             logger.debug("<<red>> x-database-lag.. ")
             logger.debug(req.headers)
 
-        data = self.parse_data(req)
+        data = self._client.parse_data(req)
 
         error = data.get("error", {})
         if error and do_error:
@@ -184,7 +184,12 @@ class Login(HandleErrors):
             if not str(req0.status_code).startswith("2"):
                 logger.debug(f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}")
 
-    def post_it_parse_data(self, params, files: Any = None, timeout: int = 30) -> dict:
+    def post_it_parse_data(
+        self,
+        params: dict,
+        files: Any = None,
+        timeout: int = 30,
+    ) -> dict:
         params = self.params_w(params)
 
         if not self._client.session:
@@ -203,7 +208,7 @@ class Login(HandleErrors):
             logger.debug("<<red>> x-database-lag.. ")
             logger.debug(req.headers)
 
-        data = self.parse_data(req) or {}
+        data = self._client.parse_data(req) or {}
 
         error = data.get("error", {})
 
@@ -217,14 +222,13 @@ class Login(HandleErrors):
                 del_cookies_file(self._client.cookies_file)
                 self._client.username_in = ""
                 self._client.session = None
-                self._make_session()
                 return self.post_it_parse_data(params, files, timeout)
 
         return data
 
     def post_params(
         self,
-        params,
+        params: dict,
         Type: str = "get",
         addtoken: bool = False,
         GET_CSRF: bool = True,
@@ -264,7 +268,6 @@ class Login(HandleErrors):
             if Invalid == "Invalid CSRF token.":
                 logger.debug(f'<<red>> ** error "Invalid CSRF token.".\n{self.r3_token} ')
                 if GET_CSRF:
-                    self.r3_token = ""
                     self.r3_token = self._make_new_r3_token()
                     continue
 
@@ -306,7 +309,7 @@ class Login(HandleErrors):
         )
 
         if req:
-            data = self.parse_data(req)
+            data = self._client.parse_data(req)
 
         error = data.get("error", {})
         if error != {}:

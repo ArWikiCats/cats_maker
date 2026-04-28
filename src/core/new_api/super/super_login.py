@@ -123,7 +123,12 @@ class Login(HandleErrors):
 
         return data
 
-    def _raw_request(self, params, files=None, timeout=30):
+    def _raw_request(
+        self,
+        params: dict,
+        files: Any = None,
+        timeout: int = 30,
+    ) -> requests.Response | None:
         # TODO: ('toomanyvalues', 'Too many values supplied for parameter "titles". The limit is 50.', 'See https://en.wikipedia.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/postorius/lists/mediawiki-api-announce.lists.wikimedia.org/&gt; for notice of API deprecations and breaking changes.')
 
         if not self.user_table_done:
@@ -166,14 +171,18 @@ class Login(HandleErrors):
 
         return req0
 
-    def _handle_server_error(self, req0, action, params=None):
+    def _handle_server_error(self, req0, action: str, params=None) -> None:
         if req0 and req0.status_code:
 
             if not str(req0.status_code).startswith("2"):
                 logger.debug(f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}")
 
-    def post_it_parse_data(self, params, files=None, timeout=30) -> dict:
-
+    def post_it_parse_data(
+        self,
+        params: dict,
+        files: Any = None,
+        timeout: int = 30,
+    ) -> dict:
         params = self.params_w(params)
 
         if not self.session:
@@ -216,7 +225,7 @@ class Login(HandleErrors):
 
     def post_params(
         self,
-        params,
+        params: dict,
         Type: str = "get",
         addtoken: bool = False,
         GET_CSRF: bool = True,
@@ -255,7 +264,6 @@ class Login(HandleErrors):
             if Invalid == "Invalid CSRF token.":
                 logger.debug(f'<<red>> ** error "Invalid CSRF token.".\n{self.r3_token} ')
                 if GET_CSRF:
-                    self.r3_token = ""
                     self.r3_token = self._make_new_r3_token()
                     continue
 
@@ -389,7 +397,7 @@ class Login(HandleErrors):
 
         return jsson1.get("query", {}).get("tokens", {}).get("logintoken") or ""
 
-    def get_login_result(self, logintoken, username, password) -> bool:
+    def get_login_result(self, logintoken: str, username: str, password: str) -> bool:
         if not password:
             logger.debug("No password")
             return False

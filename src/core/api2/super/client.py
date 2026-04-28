@@ -149,7 +149,7 @@ class WikiApiClient:
 
             self.session = load_session(lang=self.lang, family=self.family, username=self.username)
 
-        req = self.session.request("POST", self.endpoint, data=self.params_w(params), timeout=timeout)
+        req = self.session.request("POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout)
 
         if req:
             data = self.parse_data(req)
@@ -205,17 +205,28 @@ class WikiApiClient:
         files: Any = None,
         timeout: int = 30,
     ) -> dict:
+        params = self.params_w(params)
         if not self.session:
 
             self.session = load_session(lang=self.lang, family=self.family, username=self.username)
 
-        req = self.session.request("POST", self.endpoint, data=self.params_w(params), timeout=timeout)
+        # req = self.session.request("POST", self.endpoint, data=params, files=files, timeout=timeout)
+        req = self._raw_request(params, files=files, timeout=timeout)
 
-        data = {}
-        if req:
-            data = self.parse_data(req)
+        if not req:
+            logger.debug("<<red>> no req0.. ")
+            return {}
+
+        if req.headers and req.headers.get("x-database-lag"):
+            logger.debug("<<red>> x-database-lag.. ")
+            logger.debug(req.headers)
+
+        data = self.parse_data(req) or {}
 
         error = data.get("error", {})
+
+        # {'code': 'assertnameduserfailed', 'info': 'You are no longer logged in as "Mr. Ibrahem", ....', '*': ''}
+
         if error:
             code = error.get("code", "")
             if code == "assertnameduserfailed":
@@ -227,6 +238,17 @@ class WikiApiClient:
                 return self.post_it_parse_data(params, files, timeout)
 
         return data
+
+    def _make_new_r3_token(self) -> str:
+        r3_params = {
+            "format": "json",
+            "action": "query",
+            "meta": "tokens",
+        }
+        req = self.post_it_parse_data(r3_params) or {}
+        if not req:
+            return ""
+        return req.get("query", {}).get("tokens", {}).get("csrftoken", "") or ""
 
     def post_params(
         self,
@@ -251,66 +273,71 @@ class WikiApiClient:
         params["token"] = self.r3_token
         params = self.filter_params(params)
 
-        data = self.make_response(params, files=files, do_error=do_error)
+        for attempt in range(5):
+            data = self._make_response_impl(params, files=files, do_error=do_error)
 
-        if not data:
-            logger.debug("<<red>> super_login(post): not data. return {}.")
-            return {}
+            if not data:
+                logger.debug("<<red>> super_login(post): not data. return {}.")
+                return {}
+
+            error = data.get("error", {})
+            if not error:
+                return data
+
+            Invalid = error.get("info", "")
+            error_code = error.get("code", "")
+
+            logger.debug(f"<<red>> super_login(post): error: {error}")
+
+            if Invalid == "Invalid CSRF token.":
+                logger.debug(f'<<red>> ** error "Invalid CSRF token.".\n{self.r3_token} ')
+                if GET_CSRF:
+                    self.r3_token = self._make_new_r3_token()
+                    continue
+
+            if error_code == "maxlag" and max_retry < 4:
+                lage = int(error.get("lag", "0"))
+                logger.debug(params)
+                logger.debug(f"<<purple>>: <<red>> {lage=} {max_retry=}, sleep: {lage + 1}")
+
+                sleep_time = min(2**attempt + lage, 30)
+                time.sleep(sleep_time)
+
+                params["maxlag"] = lage + 1
+                max_retry += 1
+                continue
+
+            return data
+
+        return {}
+
+    def _make_response_impl(
+        self,
+        params,
+        files: Any = None,
+        do_error: bool = True,
+    ) -> dict:
+        self.p_url(params)
+        data = {}
+
+        if params.get("list") == "querypage":
+            timeout = 60
+        else:
+            timeout = 30
+
+        if not self._client.session:
+            self._make_session()
+
+        req = self._client.session.request(
+            "POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout
+        )
+
+        if req:
+            data = self._client.parse_data(req)
 
         error = data.get("error", {})
         if error != {}:
-            return self._error_do(data, GET_CSRF, params, Type, addtoken, max_retry)
-
-        return data
-
-    def _make_new_r3_token(self) -> str:
-        r3_params = {
-            "format": "json",
-            "action": "query",
-            "meta": "tokens",
-        }
-        req = self.post_it_parse_data(r3_params) or {}
-        if not req:
-            return ""
-        return req.get("query", {}).get("tokens", {}).get("csrftoken", "") or ""
-
-    def _error_do(
-        self,
-        data: dict,
-        GET_CSRF: bool,
-        params: dict,
-        Type: str,
-        addtoken: bool,
-        max_retry: int,
-    ) -> dict:
-        error = data.get("error", {})
-        Invalid = error.get("info", "")
-
-        logger.debug(f"<<red>> super_login(post): error: {error}")
-
-        if Invalid == "Invalid CSRF token.":
-            logger.debug(f'<<red>> ** error "Invalid CSRF token.".\n{self.r3_token} ')
-            if GET_CSRF:
-                self.r3_token = ""
-                return self.post_params(params, Type=Type, addtoken=addtoken, GET_CSRF=False)
-
-        error_code = error.get("code", "")
-
-        if error_code == "maxlag" and max_retry < 4:
-            lage = int(error.get("lag", "0"))
-            logger.debug(params)
-            logger.debug(f"<<purple>>: <<red>> {lage=} {max_retry=}, sleep: {lage + 1}")
-
-            time.sleep(lage + 1)
-
-            params["maxlag"] = lage + 1
-
-            return self.post_params(
-                params,
-                Type=Type,
-                addtoken=addtoken,
-                max_retry=max_retry + 1,
-            )
+            return self.handle_err(error, "", params=params, do_error=do_error)
 
         return data
 
