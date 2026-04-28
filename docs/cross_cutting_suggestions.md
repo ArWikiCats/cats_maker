@@ -87,17 +87,15 @@ Consolidated dead-code removal checklist:
 
 Every module has module-level mutable state that must become instance-scoped:
 
-| Global                                         | Module                        | Plan               |
-| ---------------------------------------------- | ----------------------------- | ------------------ |
-| `Save_or_Ask` dict                             | `new_api/ask_bot.py`          | new_api (Phase 2)  |
-| `Bot_Cache`, `Created_Cache`                   | `new_api/botEdit.py`          | new_api (Phase 2)  |
-| `users_by_lang`, `logins_count`                | `new_api/bot.py`              | new_api (Phase 2)  |
-| `ar_lag`, `urls_prints`                        | `new_api/super_login.py`      | new_api (Phase 2)  |
-| `FFa_lag`, `newsleep`, `Find_Lag`              | `wd_bots/lag_bot.py`          | wd_bots (Phase 1)  |
-| `LC_bot = WikiApiHandler()`                    | `wiki_api/LCN_new.py`         | wiki_api (Phase 3) |
-| `API_n_CALLS`                                  | `wiki_api/sub_cats_bot.py`    | wiki_api (Phase 5) |
-| `pages_in_arcat_toMake` dict                   | `c18/cat_tools_enlist.py` | c18_merged (5.3.6) |
-| `_done_d`, `_new_cat_done`, `_already_created` | `mk_cats/mknew.py`            | mk_cats (5.1.4)    |
+| Global                                         | Module                     | Plan               |
+| ---------------------------------------------- | -------------------------- | ------------------ |
+| `Save_or_Ask` dict                             | `new_api/ask_bot.py`       | new_api (Phase 2)  |
+| `Bot_Cache`, `Created_Cache`                   | `new_api/botEdit.py`       | new_api (Phase 2)  |
+| `FFa_lag`, `newsleep`, `Find_Lag`              | `wd_bots/lag_bot.py`       | wd_bots (Phase 1)  |
+| `LC_bot = WikiApiHandler()`                    | `wiki_api/LCN_new.py`      | wiki_api (Phase 3) |
+| `API_n_CALLS`                                  | `wiki_api/sub_cats_bot.py` | wiki_api (Phase 5) |
+| `pages_in_arcat_toMake` dict                   | `c18/cat_tools_enlist.py`  | c18_merged (5.3.6) |
+| `_done_d`, `_new_cat_done`, `_already_created` | `mk_cats/mknew.py`         | mk_cats (5.1.4)    |
 
 ---
 

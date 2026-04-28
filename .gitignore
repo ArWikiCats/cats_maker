@@ -4,7 +4,7 @@ textfiles/Dont_add_to_these_pages.json
 *.tmp.py
 /textfiles/log_encat/**
 /textfiles/log_encat
-/old
+**/old/**
 *.lnk
 *.db
 mk_cats/desktop.ini

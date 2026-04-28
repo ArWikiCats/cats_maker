@@ -15,6 +15,7 @@ Example:
 import os
 import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -262,6 +263,13 @@ class Settings:
     range_limit: int = 5
     debug: bool = False
     log_level: str = "INFO"
+
+    dont_add_to_pages_path = os.getenv("DONT_ADD_TO_PAGES_PATH")
+
+    @staticmethod
+    def is_production() -> bool:
+        """Check if the application is running in production mode."""
+        return os.getenv("APP_ENV", "").lower() == "production"
 
     @property
     def EEn_site(self) -> WikiSiteInfo:
