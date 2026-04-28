@@ -35,7 +35,6 @@ class Login(HandleErrors):
         self.lang: str = lang
         self.family: str = family
         self.r3_token: str = ""
-        self.url_o_print: str = ""
         self.username_in: str = ""
         self.cookies_file: str = ""
         self.user_agent: str = settings.wikipedia.user_agent
@@ -75,9 +74,9 @@ class Login(HandleErrors):
                 for k, v in params.items()
                 if k not in no_url
             }
-            self.url_o_print = f"{self.endpoint}?{urllib.parse.urlencode(pams2)}".replace("&format=json", "")
+            url_o_print = f"{self.endpoint}?{urllib.parse.urlencode(pams2)}".replace("&format=json", "")
 
-            logger.debug(f"{self.url_o_print}")
+            logger.debug(f"{url_o_print}")
 
     def add_users(self, Users_tables, lang=""):
         if Users_tables:
@@ -584,7 +583,6 @@ class Login(HandleErrors):
             return json.loads(text)
         except Exception as e:
             logger.warning(e)
-            logger.warning(self.url_o_print)
 
         return {}
 
