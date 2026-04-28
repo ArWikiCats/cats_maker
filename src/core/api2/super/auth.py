@@ -173,22 +173,21 @@ class AuthProvider:
                 self.password = table["password"]
 
     def ensure_logged_in(self) -> bool:
-        from .transport import load_session
-
-        if not self.session:
-            self.session = load_session(lang=self.lang, family=self.family, username=self.username)
-
         logged_in = False
+
         if self.session.cookies:
             if self._logged_in():
                 logger.debug(f"<<green>>Cookie Already logged in with user:{self.username_in}")
                 return True
+
         logged_in = self.log_in()
+
         if logged_in and hasattr(self.session, "cookies"):
             try:
                 self.session.cookies.save(ignore_discard=True, ignore_expires=True)
             except Exception:
                 pass
+
         return logged_in
 
 

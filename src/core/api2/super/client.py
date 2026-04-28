@@ -396,6 +396,17 @@ class WikiApiClient:
 
         return data
 
+    def add_User_tables(self, family: str, table: dict, lang: str = "") -> None:
+        langx = self.lang
+        if lang and not self.family.startswith("wik"):
+            langx = lang
+
+        if family != "" and table["username"] != "" and table["password"] != "":
+            if self.family == family or (langx == "ar" and self.family.startswith("wik")):
+                self.user_table_done = True
+                self.username = table["username"]
+                self.password = table["password"]
+
 
 __all__ = [
     "WikiApiClient",
