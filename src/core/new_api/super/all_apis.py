@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 @functools.lru_cache(maxsize=1024)
-def _login(lang, family, username) -> Login:
+def _login(lang: str, family: str, username: str) -> Login:
     login_bot = Login(lang, family=family)
     logger.info(f"### <<purple>> make new bot for ({lang}.{family}.org|{username})")
     return login_bot
@@ -21,17 +21,17 @@ class ALL_APIS:
     A class that provides access to various API functionalities.
     """
 
-    def __init__(self, lang, family, username, password) -> None:
+    def __init__(self, lang: str, family: str, username: str, password: str) -> None:
         self.lang = lang
         self.family = family
         self.username = username
         self.password = password
         self.login_bot = self._login()
 
-    def MainPage(self, title, *args, **kwargs) -> super_page.MainPage:
+    def MainPage(self, title: str, *args, **kwargs) -> super_page.MainPage:
         return super_page.MainPage(self.login_bot, title, self.lang, family=self.family)
 
-    def CatDepth(self, title, sitecode="", family="", *args, **kwargs):
+    def CatDepth(self, title: str, sitecode: str = "", family: str = "", *args, **kwargs):
         return catdepth_new.subcatquery(self.login_bot, title, sitecode=self.lang, family=self.family, **kwargs)
 
     def _login(self) -> Login:

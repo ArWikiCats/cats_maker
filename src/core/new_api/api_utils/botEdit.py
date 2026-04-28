@@ -1,7 +1,5 @@
 """ """
 
-#
-#
 import datetime
 import logging
 from functools import lru_cache
@@ -11,10 +9,8 @@ import wikitextparser as wtp
 from ....config import settings
 
 logger = logging.getLogger(__name__)
-edit_username = {1: "Mr.Ibrahembot"}
-Bot_Cache = {}
-Created_Cache = {}
-stop_edit_temps = {
+
+STOP_EDIT_TEMPLATES: dict[str, list[str]] = {
     "all": ["تحرر", "قيد التطوير", "يحرر", "تطوير مقالة"],
     "تعريب": ["لا للتعريب"],
     "تقييم آلي": ["لا للتقييم الآلي"],
@@ -25,6 +21,32 @@ stop_edit_temps = {
     "tempcat": ["لا لإضافة صناديق تصفح معادلة"],
     "portal": ["لا لربط البوابات المعادل", "لا لصيانة البوابات"],
 }
+
+BOT_USERNAME = "Mr.Ibrahembot"
+Bot_Cache = {}
+_created_cache = {}
+
+
+@lru_cache(maxsize=512)
+def extract_templates_and_params(text: str) -> list[dict]:
+    result = []
+    parsed = wtp.parse(text)
+    for template in parsed.templates:
+        params = {}
+        for param in getattr(template, "arguments"):
+            value = str(param.value)
+            key = str(param.name).strip()
+            params[key] = value
+        name = str(template.normal_name()).strip()
+        result.append(
+            {
+                "name": f"قالب:{name}",
+                "namestrip": name,
+                "params": params,
+                "item": template.string,
+            }
+        )
+    return result
 
 
 def _handle_nobots_template(params, title_page, botjob, _template):
@@ -38,8 +60,8 @@ def _handle_nobots_template(params, title_page, botjob, _template):
         return False
     elif params.get("1"):
         List = [x.strip() for x in params.get("1", "").split(",")]
-        # if 'all' in List or pywikibot.calledModuleName() in List or edit_username[1] in List:
-        if "all" in List or edit_username[1] in List:
+        # if 'all' in List or pywikibot.calledModuleName() in List or BOT_USERNAME in List:
+        if "all" in List or BOT_USERNAME in List:
             logger.debug(f"<<lightred>> botEdit.py: the page has temp:({_template}), botjob:{botjob} skipp.")
             # logger.debug( 'return False 3 ' )
             # Bot_Cache[title_page] = False
@@ -68,8 +90,8 @@ def _handle_bots_template(params, title_page, botjob, title):
         if allow:
             value = [x.strip() for x in allow.split(",")]
             # if param == 'allow':
-            # 'all' in value or edit_username[1] in value is True
-            sd = "all" in value or edit_username[1] in value
+            # 'all' in value or BOT_USERNAME in value is True
+            sd = "all" in value or BOT_USERNAME in value
             if not sd:
                 logger.debug(f"<<lightred>>botEdit.py Template:({title}) has |allow={','.join(value)}.")
             else:
@@ -82,7 +104,7 @@ def _handle_bots_template(params, title_page, botjob, title):
             value = [x.strip() for x in deny.split(",")]
             # {{bots|deny=all}}
             # if param == 'deny':
-            sd = "all" not in value and edit_username[1] not in value
+            sd = "all" not in value and BOT_USERNAME not in value
             if not sd:
                 logger.debug(f"<<lightred>>botEdit.py Template:({title}) has |deny={','.join(value)}.")
             Bot_Cache[botjob][title_page] = sd
@@ -96,69 +118,36 @@ def _handle_bots_template(params, title_page, botjob, title):
     return True
 
 
-@lru_cache(maxsize=512)
-def extract_templates_and_params(text):
-    result = []
-    parsed = wtp.parse(text)
-    templates = parsed.templates
-    arguments = "arguments"
-    for template in templates:
-        params = {}
-        for param in getattr(template, arguments):
-            value = str(param.value)  # mwpfh needs upcast to str
-            key = str(param.name)
-            key = key.strip()
-            params[key] = value
-        name = template.name.strip()
-        # print('=====')
-        name = str(template.normal_name()).strip()
-        pa_item = template.string
-        # logger.debug( "<<lightyellow>> pa_item: %s" % pa_item )
-        namestrip = name
-        ficrt = {
-            "name": f"قالب:{name}",
-            "namestrip": namestrip,
-            "params": params,
-            "item": pa_item,
-        }
-        result.append(ficrt)
-    return result
-
-
-def bot_May_Edit_do(text="", title_page="", botjob="all"):
+def bot_May_Edit_do(
+    text="",
+    title_page="",
+    botjob="all",
+):
     """
     Determines if a bot is permitted to edit a page based on templates in the page text.
-
-    Checks for the presence of templates that restrict bot editing, such as those in the stop lists for the specified bot job or the global list. Handles special cases for `nobots` and `bots` templates, interpreting their parameters to allow or deny editing for specific bots or all bots. Results are cached for efficiency.
-
-    Args:
-        text: The wikitext of the page to analyze.
-        title_page: The title of the page.
-        botjob: The bot job type, used to select relevant stop templates.
-
-    Returns:
-        True if the bot is allowed to edit the page; False otherwise.
     """
     if settings.bot.force_edit:
         return True
+
     if botjob in ["", "fixref|cat|stub|tempcat|portal"]:
         botjob = "all"
+
     if botjob not in Bot_Cache:
         Bot_Cache[botjob] = {}
+
     if title_page in Bot_Cache[botjob]:
         return Bot_Cache[botjob][title_page]
+
     templates = extract_templates_and_params(text)
-    all_stop = stop_edit_temps["all"]
+    all_stop = STOP_EDIT_TEMPLATES["all"]
     for temp in templates:
-        _name, namestrip, params, _template = temp["name"], temp["namestrip"], temp["params"], temp["item"]
+        namestrip, params, _template = temp["namestrip"], temp["params"], temp["item"]
         title = namestrip
-        # logger.debug( '<<lightred>>botEdit.py title:(%s), params:(%s).' % ( title,str(params) ) )
-        restrictions = stop_edit_temps.get(botjob, [])
+        restrictions = STOP_EDIT_TEMPLATES.get(botjob, [])
         if title in restrictions or title in all_stop:
             logger.debug(f"<<lightred>> botEdit.py: the page has temp:({title}), botjob:{botjob} skipp.")
             Bot_Cache[botjob][title_page] = False
             return False
-        # logger.debug( '<<lightred>>botEdit.py title:(%s), params:(%s).' % ( title,str(params) ) )
         if title.lower() == "nobots":
             return _handle_nobots_template(params, title_page, botjob, _template)
         # {{bots|allow=<botlist>}}  منع جميع البوتات غير الموجودة في القائمة
@@ -176,14 +165,14 @@ def check_create_time(page, title_page):
 
     Returns True if the page is not in the Arabic main namespace or if the creation timestamp is missing. Returns False if the page was created less than three hours ago, caching the result for future checks.
     """
-    if title_page in Created_Cache:
-        return Created_Cache[title_page]
+    if title_page in _created_cache:
+        return _created_cache[title_page]
     ns = page.namespace()
     lang = page.lang
     if ns != 0 or lang != "ar":
         return True
     now = datetime.datetime.now(datetime.timezone.utc)
-    create_data = page.get_create_data()  # { "timestamp" : "2025-05-07T12:00:17Z", "user" : "", "anon" : "" }
+    create_data = page.get_create_data()
     delay_hours = 3
     if create_data.get("timestamp"):
         create_time = create_data["timestamp"]
@@ -201,13 +190,6 @@ def check_create_time(page, title_page):
 def check_last_edit_time(page, title_page, delay):
     """
     Checks if enough time has passed since the last non-bot edit before allowing a bot to edit.
-
-    If the last editor is a bot, editing is allowed immediately. Otherwise, returns False if the last edit was made less than the specified delay (in minutes) ago; returns True if the delay has passed or if no last edit timestamp is available.
-
-    Args:
-        page: The page object to check.
-        title_page: The title of the page.
-        delay: Minimum number of minutes that must have passed since the last edit.
     """
     userinfo = page.get_userinfo()
     if "bot" in userinfo.get("groups", []):
@@ -218,7 +200,6 @@ def check_last_edit_time(page, title_page, delay):
     if timestamp:
         ts_time = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
         diff_minutes = (now - ts_time).total_seconds() / 60
-        # logger.debug(f"<<grey>> last-edit Δ={diff_minutes:.2f} min for {title_page}")
         wait_time = delay - diff_minutes
         if diff_minutes < delay:
             logger.debug(f"<<yellow>>Page:{title_page} last edit ({timestamp}).")
@@ -229,21 +210,15 @@ def check_last_edit_time(page, title_page, delay):
     return True
 
 
-def bot_May_Edit(text="", title_page="", botjob="all", page=False, delay=0):
+def bot_May_Edit(
+    text="",
+    title_page="",
+    botjob="all",
+    page=False,
+    delay=0,
+):
     """
     Determines whether a bot is permitted to edit a page based on templates, last edit time, and creation time.
-
-    If a page object is provided and template checks pass, the function also verifies that the page was not edited or created too recently, applying namespace and language restrictions for time-based checks.
-
-    Args:
-        text: The page text to analyze for edit-blocking templates.
-        title_page: The title of the page being checked.
-        botjob: The bot job type, used to determine relevant template restrictions.
-        page: The page object, required for time-based checks.
-        delay: Minimum number of minutes since the last edit required before editing.
-
-    Returns:
-        True if the bot is allowed to edit the page; False otherwise.
     """
     check_it = bot_May_Edit_do(text=text, title_page=title_page, botjob=botjob)
     if page and check_it:
@@ -256,7 +231,15 @@ def bot_May_Edit(text="", title_page="", botjob="all", page=False, delay=0):
             if not check_time:
                 return False
         check_create = check_create_time(page, title_page)
-        Created_Cache[title_page] = check_create
+        _created_cache[title_page] = check_create
         if not check_create:
             return False
     return check_it
+
+
+__all__ = [
+    "bot_May_Edit",
+    "check_create_time",
+    "check_last_edit_time",
+    "extract_templates_and_params",
+]

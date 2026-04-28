@@ -1,8 +1,10 @@
-import os
-from functools import lru_cache
-
-from .ask_bot import ASK_BOT
-from .botEdit import bot_May_Edit
+from .ask_bot import ASK_BOT, showDiff
+from .botEdit import (
+    bot_May_Edit,
+    check_create_time,
+    check_last_edit_time,
+    extract_templates_and_params,
+)
 
 change_codes = {
     "bat_smg": "bat-smg",
@@ -19,9 +21,12 @@ change_codes = {
     "zh_yue": "zh-yue",
 }
 
-
 __all__ = [
     "ASK_BOT",
     "change_codes",
+    "showDiff",
     "bot_May_Edit",
+    "check_create_time",
+    "check_last_edit_time",
+    "extract_templates_and_params",
 ]

@@ -1,23 +1,15 @@
-"""
-
-from ...api_utils import ASK_BOT
-
-"""
+""" """
 
 import difflib
 import logging
 
 from ....config import settings
 
-yes_answer = ["y", "a", "", "Y", "A", "all", "aaa"]
-Save_or_Ask = {}
-
 logger = logging.getLogger(__name__)
 
 
 def showDiff(oldtext: str, newtext: str) -> None:
     """Show the difference between two text strings using the logger."""
-
     diff = difflib.unified_diff(
         oldtext.splitlines(),
         newtext.splitlines(),
@@ -35,23 +27,26 @@ def showDiff(oldtext: str, newtext: str) -> None:
 
 
 class ASK_BOT:
-    def __init__(self):
-        pass
+    __slots__ = ("_save_or_ask",)
 
-    def ask_put(self, nodiff=False, newtext="", text="", message="", job="Genral", username="", summary=""):
+    def __init__(self) -> None:
+        self._save_or_ask: dict[str, bool] = {}
+
+    def ask_put(
+        self,
+        nodiff: bool = False,
+        newtext: str = "",
+        text: str = "",
+        message: str = "",
+        job: str = "General",
+        username: str = "",
+        summary: str = "",
+    ) -> bool:
         """
         Prompts the user to confirm saving changes to a page, optionally displaying a diff.
-
-        If enabled by command-line arguments or parameters, shows the difference between the current and new text, displays summary information, and asks the user to accept or reject the changes. Supports skipping further prompts for subsequent edits.
-
-        Args:
-            nodiff: If True, skips displaying the diff.
-
-        Returns:
-            True if the user accepts the changes or prompting is not required; False otherwise.
         """
         message = message or "Do you want to accept these changes?"
-        if settings.bot.ask and not Save_or_Ask.get(job):
+        if settings.bot.ask and not self._save_or_ask.get(job):
             if text or newtext:
                 if not settings.bot.no_diff and not nodiff:
                     if len(newtext) < 70000 and len(text) < 70000 or settings.bot.show_diff:
@@ -65,11 +60,17 @@ class ASK_BOT:
             logger.warning(f"<<lightyellow>>ASK_BOT: {message}? (yes, no) {username=}")
             sa = input("([y]es, [N]o, [a]ll)?")
             if sa == "a":
-                Save_or_Ask[job] = True
+                self._save_or_ask[job] = True
                 logger.warning("<<lightgreen>> ---------------------------------")
                 logger.warning(f"<<lightgreen>> save all:{job} without asking.")
                 logger.warning("<<lightgreen>> ---------------------------------")
-            if sa not in yes_answer:
+            if sa not in ["y", "a", "", "Y", "A", "all", "aaa"]:
                 logger.warning("wrong answer")
                 return False
         return True
+
+
+__all__ = [
+    "ASK_BOT",
+    "showDiff",
+]
