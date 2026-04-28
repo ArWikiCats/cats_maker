@@ -97,19 +97,6 @@ class Transport:
             if not str(req0.status_code).startswith("2"):
                 logger.debug(f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}")
 
-    def post_it(
-        self,
-        params: dict,
-        files: Any = None,
-        timeout: int = 30,
-    ) -> requests.Response | None:
-        self._make_session()
-        req0 = self._raw_request(params, files=files, timeout=timeout)
-        if req0 and req0.headers and req0.headers.get("x-database-lag"):
-            logger.debug("<<red>> x-database-lag.. ")
-            logger.debug(req0.headers)
-        return req0
-
 
 __all__ = [
     "Transport",

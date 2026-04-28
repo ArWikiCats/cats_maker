@@ -20,12 +20,10 @@ functions in both `super_login.py` and `auth.py`:
 
 functions in both `super_login.py` and `transport.py`:
 
--   `def post_it`
 -   `def _raw_request`
 
 functions in both `super_login.py` and `client.py`:
 
--   `def post_it`
 -   `def filter_params`
 -   `def p_url`
 -   `def make_response`

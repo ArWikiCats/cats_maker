@@ -36,7 +36,7 @@ src/core/new_api/
 | #   | Issue                                                                                                                                                                                                          | Location                                          | Impact                                           |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------ |
 | 1   | **Fragile mixin inheritance** — `MainPage` inherits `ASK_BOT` + `HANDEL_ERRORS`; `Login` inherits `LOGIN_HELPS` + `HANDEL_ERRORS`. MRO is complex and implicit.                                                | `super_page.py`, `super_login.py`                 | Hard to follow, test, and maintain               |
-| 2   | **Global mutable state** — Module-level dicts (`Save_or_Ask`, `Bot_Cache`, `Created_Cache`, `users_by_lang`, `logins_count`, `ar_lag`, `urls_prints`) make tests fragile and stateful.                         | 6 files across the module                         | Tests must manually reset state; race conditions |
+| 2   | **Global mutable state** — Module-level dicts (`Save_or_Ask`, `Bot_Cache`, `Created_Cache`) make tests fragile and stateful.                                                                                   | 6 files across the module                         | Tests must manually reset state; race conditions |
 | 3   | **Module-level singleton** — `main_api = load_main_api()` and `MainPage = main_api.MainPage` created at import time in `pagenew.py`.                                                                           | `pagenew.py:26-28`                                | Side effects on import; hard to test             |
 | 4   | **No separation of concerns** — `bot.py` mixes HTTP session, cookies, login, and parameter handling in one 390-line file.                                                                                      | `bot.py`                                          | Low cohesion; hard to reason about               |
 | 5   | **Missing `__all__`** — Several files lack explicit `__all__`.                                                                                                                                                 | 7 files                                           | Implicit exports; unclear public API             |
@@ -124,8 +124,8 @@ Legacy files become thin shims or are removed after consumer migration:
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
 | `api_utils/ask_bot.py`   | `ASK_BOT`, `showDiff`, `yes_answer`, `Save_or_Ask` (note: `Save_or_Ask` should become instance-scoped later)                      |
 | `api_utils/botEdit.py`   | `bot_May_Edit`, `bot_May_Edit_do`, `check_create_time`, `check_last_edit_time`, `extract_templates_and_params`, `stop_edit_temps` |
-| `super/bot.py`           | `LOGIN_HELPS`, `_load_session`, `users_by_lang`, `logins_count`                                                                   |
-| `super/super_login.py`   | `Login`, `ar_lag`, `urls_prints`                                                                                                  |
+| `super/bot.py`           | `LOGIN_HELPS`, `_load_session`                                                                                                    |
+| `super/super_login.py`   | `Login`                                                                                                                           |
 | `super/super_page.py`    | `MainPage`, `Content`, `Meta`, `RevisionsData`, `LinksData`, `CategoriesData`, `TemplateData`                                     |
 | `super/catdepth_new.py`  | `CategoryDepth`, `subcatquery`, `title_process`, `ns_list`                                                                        |
 | `super/cookies_bot.py`   | `get_cookies`, `get_file_name`, `del_cookies_file`, `from_folder`                                                                 |
@@ -214,25 +214,7 @@ class BotEditChecker:
 
 `bot_May_Edit` becomes a module-level convenience function using a default instance, or consumers instantiate their own `BotEditChecker`.
 
-**5.2.3 `users_by_lang` and `logins_count` in `bot.py`**
-
-**Problem:** Global dicts shared across all sessions.
-
-**Solution:** Move to `Login` instance state. `users_by_lang` is used in `post_it` to look up `username_in` by lang — this can become a class-level dict on `Login` or be passed explicitly.
-
-```python
-class Login(LOGIN_HELPS, HANDEL_ERRORS):
-    _users_by_lang: ClassVar[dict[str, str]] = {}
-    _logins_count: ClassVar[int] = 0
 ```
-
-**5.2.4 `ar_lag` and `urls_prints` in `super_login.py`**
-
-**Problem:** Module-level dicts `ar_lag = {1: 3}` and `urls_prints = {"all": 0}`.
-
-**Solution:** Move `ar_lag` to instance state on `Login` (maxlag tracking is per-session). Move `urls_prints` to a debug utility or make instance-level.
-
-**Success criteria:** No module-level mutable state remains. All caches and counters are instance-scoped. Tests can create isolated instances without shared state.
 
 ---
 
@@ -247,8 +229,7 @@ Move HTTP session management and raw request execution from `bot.py`:
 | Code                       | New location   |
 | -------------------------- | -------------- |
 | `_load_session()` (cached) | `transport.py` |
-| `_raw_request()`            | `transport.py` |
-| `post_it()`                | `transport.py` |
+| `_raw_request()`           | `transport.py` |
 | `post_it_parse_data()`     | `transport.py` |
 | `_handle_server_error()`   | `transport.py` |
 | `make_new_session()`       | `transport.py` |
@@ -263,7 +244,6 @@ def load_session(lang: str, family: str, username: str) -> requests.Session: ...
 class Transport:
     def __init__(self, lang: str, family: str, username: str, *, user_agent: str = ""): ...
     def _raw_request(self, params: dict, files: Any = None, timeout: int = 30) -> requests.Response | None: ...
-    def post_it(self, params: dict, files: Any = None, timeout: int = 30) -> requests.Response | None: ...
     def post_it_parse_data(self, params: dict, files: Any = None, timeout: int = 30) -> dict: ...
 ```
 
@@ -277,7 +257,7 @@ Move cookie handling and login logic:
 | `get_logintoken()`           | `auth.py`    |
 | `get_login_result()`         | `auth.py`    |
 | `loged_in()` → `logged_in()` | `auth.py`    |
-| `_make_new_r3_token()`        | `auth.py`    |
+| `_make_new_r3_token()`       | `auth.py`    |
 | `add_User_tables()`          | `auth.py`    |
 | Cookie persistence calls     | `auth.py`    |
 
@@ -516,7 +496,7 @@ def api_en(monkeypatch, fake_api):
 
 | Component                   | Test cases                                                                |
 | --------------------------- | ------------------------------------------------------------------------- |
-| `transport.py` (new)        | Session creation, _raw_request success/timeout/error, post_it, parse_data  |
+| `transport.py` (new)        | Session creation, \_raw_request success/timeout/error, parse_data         |
 | `auth.py` (new)             | Login token fetch, login result, cookie load/save, re-auth flow           |
 | `MainPage.get_text`         | Page exists, page missing, redirect, redirect follow, with/without props  |
 | `MainPage.get_infos`        | Empty page, full metadata, partial data, no categories, no langlinks      |
@@ -699,10 +679,6 @@ The refactoring plan was implemented as a **new package** at `src/core/api2/`, l
 | --------------------------------------- | ---------------------------------------------------------------- |
 | `Save_or_Ask = {}`                      | `ASK_BOT._save_or_ask` (instance-level dict)                     |
 | `Bot_Cache = {}` / `Created_Cache = {}` | `BotEditChecker._bot_cache` / `._created_cache` (instance-level) |
-| `users_by_lang = {}`                    | `Login._users_by_lang` (class-level dict)                        |
-| `logins_count = {1: 0}`                 | `Login._logins_count` (class-level int)                          |
-| `ar_lag = {1: 3}`                       | `Login._ar_lag` (instance-level int)                             |
-| `urls_prints = {"all": 0}`              | `Login._url_counts` (instance-level dict)                        |
 
 ### Phase 3 (Decompose bot.py) — Completed
 

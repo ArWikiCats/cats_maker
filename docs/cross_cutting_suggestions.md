@@ -91,8 +91,6 @@ Every module has module-level mutable state that must become instance-scoped:
 | ---------------------------------------------- | -------------------------- | ------------------ |
 | `Save_or_Ask` dict                             | `new_api/ask_bot.py`       | new_api (Phase 2)  |
 | `Bot_Cache`, `Created_Cache`                   | `new_api/botEdit.py`       | new_api (Phase 2)  |
-| `users_by_lang`, `logins_count`                | `new_api/bot.py`           | new_api (Phase 2)  |
-| `ar_lag`, `urls_prints`                        | `new_api/super_login.py`   | new_api (Phase 2)  |
 | `FFa_lag`, `newsleep`, `Find_Lag`              | `wd_bots/lag_bot.py`       | wd_bots (Phase 1)  |
 | `LC_bot = WikiApiHandler()`                    | `wiki_api/LCN_new.py`      | wiki_api (Phase 3) |
 | `API_n_CALLS`                                  | `wiki_api/sub_cats_bot.py` | wiki_api (Phase 5) |

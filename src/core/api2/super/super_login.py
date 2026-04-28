@@ -18,8 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 class Login(HandleErrors):
-    _users_by_lang: dict[str, str] = {}
-    _logins_count: int = 0
 
     def __init__(self, lang: str, family: str = "wikipedia") -> None:
         self.user_login: str = ""
@@ -39,8 +37,6 @@ class Login(HandleErrors):
         )
         self._client.lang = lang
         self._client.family = family
-        self._url_counts: dict[str, int] = {}
-        self._ar_lag: int = 3
         self.headers = {"User-Agent": self.user_agent}
 
     @property
@@ -90,13 +86,7 @@ class Login(HandleErrors):
             }
             self.url_o_print = f"{self.endpoint}?{urllib.parse.urlencode(pams2)}".replace("&format=json", "")
 
-            if self.url_o_print not in self._url_counts:
-                self._url_counts[self.url_o_print] = 0
-
-            self._url_counts[self.url_o_print] += 1
-            self._url_counts["all"] = self._url_counts.get("all", 0) + 1
-
-            logger.debug(f"c: {self._url_counts[self.url_o_print]}/{self._url_counts['all']}\t {self.url_o_print}")
+            logger.debug(f"{self.url_o_print}")
 
     def make_response(
         self,
@@ -111,18 +101,6 @@ class Login(HandleErrors):
         if params.get("list") == "querypage":
             timeout = 60
 
-        req = self.post_it(params, files, timeout)
-
-        if req:
-            data = self.parse_data(req)
-
-        error = data.get("error", {})
-        if error and do_error:
-            return self.handle_err(error, "", params=params, do_error=do_error)
-
-        return data
-
-    def post_it(self, params, files: Any = None, timeout: int = 30):
         params = self.params_w(params)
 
         if not self._client.session:
@@ -131,17 +109,23 @@ class Login(HandleErrors):
         if not self._client.username_in:
             logger.debug("<<red>> no username_in.. action:" + params.get("action"))
 
-        req0 = self._raw_request(params, files=files, timeout=timeout)
+        req = self._raw_request(params, files=files, timeout=timeout)
 
-        if not req0:
-            logger.debug("<<red>> no req0.. ")
-            return req0
+        if not req:
+            logger.debug("<<red>> no req.. ")
+            return {}
 
-        if req0.headers and req0.headers.get("x-database-lag"):
+        if req.headers and req.headers.get("x-database-lag"):
             logger.debug("<<red>> x-database-lag.. ")
-            logger.debug(req0.headers)
+            logger.debug(req.headers)
 
-        return req0
+        data = self.parse_data(req)
+
+        error = data.get("error", {})
+        if error and do_error:
+            return self.handle_err(error, "", params=params, do_error=do_error)
+
+        return data
 
     def _make_session(self) -> requests.Session:
         from .transport import load_session
@@ -201,11 +185,25 @@ class Login(HandleErrors):
                 logger.debug(f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}")
 
     def post_it_parse_data(self, params, files: Any = None, timeout: int = 30) -> dict:
-        req = self.post_it(params, files, timeout)
-        data = {}
+        params = self.params_w(params)
 
-        if req:
-            data = self.parse_data(req) or {}
+        if not self._client.session:
+            self._client.session = self._make_session()
+
+        if not self._client.username_in:
+            logger.debug("<<red>> no username_in.. action:" + params.get("action"))
+
+        req = self._raw_request(params, files=files, timeout=timeout)
+
+        if not req:
+            logger.debug("<<red>> no req0.. ")
+            return {}
+
+        if req.headers and req.headers.get("x-database-lag"):
+            logger.debug("<<red>> x-database-lag.. ")
+            logger.debug(req.headers)
+
+        data = self.parse_data(req) or {}
 
         error = data.get("error", {})
 
@@ -278,8 +276,7 @@ class Login(HandleErrors):
                 sleep_time = min(2**attempt + lage, 30)
                 time.sleep(sleep_time)
 
-                self._ar_lag = lage + 1
-                params["maxlag"] = self._ar_lag
+                params["maxlag"] = lage + 1
                 max_retry += 1
                 continue
 
@@ -323,8 +320,6 @@ class Login(HandleErrors):
         """
         from .transport import load_session
 
-        Login._logins_count += 1
-        logger.debug(f"<<yellow>> {self.endpoint} count:{Login._logins_count}")
         logger.debug(f"page.py: log to {self.lang}.{self.family}.org user:{self._client.username})")
 
         if not self._client.session:
