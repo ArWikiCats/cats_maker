@@ -151,7 +151,12 @@ class Login(HandleErrors):
         self._client.cookies_file = str(get_file_name(self.lang, self.family, self._client.username))
         return self._client.session
 
-    def _raw_request(self, params, files: Any = None, timeout: int = 30):
+    def _raw_request(
+        self,
+        params: dict,
+        files: Any = None,
+        timeout: int = 30,
+    ) -> requests.Response | None:
         # TODO: ('toomanyvalues', 'Too many values supplied for parameter "titles". The limit is 50.', 'See https://en.wikipedia.org/w/api.php for API usage. Subscribe to the mediawiki-api-announce mailing list at &lt;https://lists.wikimedia.org/postorius/lists/mediawiki-api-announce.lists.wikimedia.org/&gt; for notice of API deprecations and breaking changes.')
         if not self._client.session:
             self._make_session()

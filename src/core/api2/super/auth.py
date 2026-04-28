@@ -146,7 +146,7 @@ class AuthProvider:
         self.username_in = userinfo.get("name", "")
         return True
 
-    def make_new_r3_token(self) -> str:
+    def _make_new_r3_token(self) -> str:
         r3_params = {
             "format": "json",
             "action": "query",

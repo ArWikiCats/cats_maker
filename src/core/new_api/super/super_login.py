@@ -233,7 +233,7 @@ class Login(HandleErrors):
         Make a POST request to the API endpoint with authentication token.
         """
         if not self.r3_token:
-            self.r3_token = self.make_new_r3_token()
+            self.r3_token = self._make_new_r3_token()
 
         if not self.r3_token:
             logger.warning('<<red>> self.r3_token == "" ')
@@ -328,7 +328,7 @@ class Login(HandleErrors):
                 self.username = table["username"]
                 self.password = table["password"]
 
-    def make_new_r3_token(self) -> str:
+    def _make_new_r3_token(self) -> str:
         r3_params = {
             "format": "json",
             "action": "query",

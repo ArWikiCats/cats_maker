@@ -82,7 +82,7 @@ src/core/new_api/
     ├── all_apis.py              # ALL_APIS factory (unchanged API, internally cleaner)
     ├── client.py                # WikiApiClient — merged session mgmt + params + login (was bot.py part)
     ├── auth.py                  # AuthProvider — login, tokens, cookies (extracted from bot.py)
-    ├── transport.py             # HTTP transport — Session, raw_request (extracted from bot.py)
+    ├── transport.py             # HTTP transport — Session, _raw_request (extracted from bot.py)
     ├── super_login.py           # Login class — thinner, delegates to AuthProvider + Transport
     ├── super_page.py            # MainPage — split into smaller methods, typed, no mixins
     ├── catdepth_new.py          # CategoryDepth — cleaned, shared namespace constants
@@ -247,7 +247,7 @@ Move HTTP session management and raw request execution from `bot.py`:
 | Code                       | New location   |
 | -------------------------- | -------------- |
 | `_load_session()` (cached) | `transport.py` |
-| `raw_request()`            | `transport.py` |
+| `_raw_request()`            | `transport.py` |
 | `post_it()`                | `transport.py` |
 | `post_it_parse_data()`     | `transport.py` |
 | `_handle_server_error()`   | `transport.py` |
@@ -262,7 +262,7 @@ def load_session(lang: str, family: str, username: str) -> requests.Session: ...
 
 class Transport:
     def __init__(self, lang: str, family: str, username: str, *, user_agent: str = ""): ...
-    def raw_request(self, params: dict, files: Any = None, timeout: int = 30) -> requests.Response | None: ...
+    def _raw_request(self, params: dict, files: Any = None, timeout: int = 30) -> requests.Response | None: ...
     def post_it(self, params: dict, files: Any = None, timeout: int = 30) -> requests.Response | None: ...
     def post_it_parse_data(self, params: dict, files: Any = None, timeout: int = 30) -> dict: ...
 ```
@@ -277,7 +277,7 @@ Move cookie handling and login logic:
 | `get_logintoken()`           | `auth.py`    |
 | `get_login_result()`         | `auth.py`    |
 | `loged_in()` → `logged_in()` | `auth.py`    |
-| `make_new_r3_token()`        | `auth.py`    |
+| `_make_new_r3_token()`        | `auth.py`    |
 | `add_User_tables()`          | `auth.py`    |
 | Cookie persistence calls     | `auth.py`    |
 
@@ -375,7 +375,7 @@ class MainPage:
 ```python
 def post_params(self, params, ...):
     if not self.r3_token:
-        self.r3_token = self.make_new_r3_token()
+        self.r3_token = self._make_new_r3_token()
 
     for attempt in range(5):  # max 5 attempts
         params["token"] = self.r3_token
@@ -392,7 +392,7 @@ def post_params(self, params, ...):
         # Handle CSRF
         if error.get("info") == "Invalid CSRF token.":
             self.r3_token = None
-            self.r3_token = self.make_new_r3_token()
+            self.r3_token = self._make_new_r3_token()
             continue
 
         # Handle maxlag with backoff
@@ -516,7 +516,7 @@ def api_en(monkeypatch, fake_api):
 
 | Component                   | Test cases                                                                |
 | --------------------------- | ------------------------------------------------------------------------- |
-| `transport.py` (new)        | Session creation, raw_request success/timeout/error, post_it, parse_data  |
+| `transport.py` (new)        | Session creation, _raw_request success/timeout/error, post_it, parse_data  |
 | `auth.py` (new)             | Login token fetch, login result, cookie load/save, re-auth flow           |
 | `MainPage.get_text`         | Page exists, page missing, redirect, redirect follow, with/without props  |
 | `MainPage.get_infos`        | Empty page, full metadata, partial data, no categories, no langlinks      |

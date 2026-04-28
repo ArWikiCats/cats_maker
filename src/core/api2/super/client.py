@@ -238,6 +238,9 @@ class WikiApiClient:
         do_error: bool = False,
         max_retry: int = 0,
     ) -> dict:
+        """
+        Make a POST request to the API endpoint with authentication token.
+        """
         if not self.r3_token:
             self.r3_token = self._make_new_r3_token()
 
@@ -269,8 +272,7 @@ class WikiApiClient:
         req = self.post_it_parse_data(r3_params) or {}
         if not req:
             return ""
-        csrftoken = req.get("query", {}).get("tokens", {}).get("csrftoken", "")
-        return csrftoken or ""
+        return req.get("query", {}).get("tokens", {}).get("csrftoken", "") or ""
 
     def _error_do(
         self,
