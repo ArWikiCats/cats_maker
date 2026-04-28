@@ -17,6 +17,7 @@ from .handel_errors import HandleErrors
 
 logger = logging.getLogger(__name__)
 
+
 @functools.lru_cache(maxsize=1024)
 def _load_session(lang: str = "", family: str = "", username: str = "") -> requests.Session:
     s = requests.Session()
@@ -28,6 +29,7 @@ class Login(HandleErrors):
     """
     Represents a login session for a wiki.
     """
+
     def __init__(self, lang: str, family: str = "wikipedia") -> None:
         self.user_login: str = ""
         self.lang: str = lang
