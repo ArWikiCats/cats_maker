@@ -3,14 +3,16 @@
 import functools
 import logging
 
-from . import catdepth_new, super_page
-from .super_login import Login
+from .categories import catdepth_new
+
+from .pages import super_page
+from ..new_api.super.super_login import Login
 
 logger = logging.getLogger(__name__)
 
 
 @functools.lru_cache(maxsize=1024)
-def _login(lang: str, family: str, username: str) -> Login:
+def _login(lang: str, family: str, username: str):
     login_bot = Login(lang, family=family)
     logger.info(f"### <<purple>> make new bot for ({lang}.{family}.org|{username})")
     return login_bot
@@ -34,7 +36,7 @@ class ALL_APIS:
     def CatDepth(self, title: str, sitecode: str = "", family: str = "", *args, **kwargs):
         return catdepth_new.subcatquery(self.login_bot, title, sitecode=self.lang, family=self.family, **kwargs)
 
-    def _login(self) -> Login:
+    def _login(self):
         bot = _login(self.lang, self.family, self.username)
         user_tables = {
             self.family: {

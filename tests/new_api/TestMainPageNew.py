@@ -1,6 +1,6 @@
 import pytest
 
-from src.core.new_api.factory import load_main_api
+from src.core.client_wiki.factory import load_main_api
 
 
 @pytest.fixture

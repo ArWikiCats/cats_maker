@@ -5,9 +5,8 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 
 from ....config import settings
-from ..api_utils import ASK_BOT, bot_May_Edit, change_codes
-from .handel_errors import HandleErrors
-from .super_login import Login
+from ...new_api.api_utils import ASK_BOT, bot_May_Edit, change_codes
+from ...new_api.super.handel_errors import HandleErrors
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +85,7 @@ def find_edit_error(old, new):
 class MainPage(ASK_BOT, HandleErrors):
     def __init__(
         self,
-        login_bot: Login,
+        login_bot,
         title,
         lang,
         family="wikipedia",

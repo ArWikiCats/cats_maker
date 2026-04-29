@@ -5,7 +5,7 @@ import os
 
 from dotenv import load_dotenv
 
-from .super import ALL_APIS, Login
+from .all_apis import ALL_APIS
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ def load_main_api(lang: str = "ar", family: str = "wikipedia") -> ALL_APIS:
 
 
 @functools.lru_cache(maxsize=1024)
-def load_login_bot(lang: str = "ar", family: str = "wikipedia") -> Login:
+def load_login_bot(lang: str = "ar", family: str = "wikipedia"):
     return load_main_api(lang=lang, family=family).login_bot
 
 
