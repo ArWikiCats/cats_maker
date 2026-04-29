@@ -5,6 +5,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 
 from ....config import settings
+from ...wiki_client import WikiLoginClient
 from ..api_utils import ASK_BOT, bot_May_Edit, change_codes
 from ..api_utils.handel_errors import HandleErrors
 
@@ -85,7 +86,7 @@ def find_edit_error(old, new):
 class MainPage(ASK_BOT, HandleErrors):
     def __init__(
         self,
-        login_bot,
+        login_bot: WikiLoginClient,
         title,
         lang,
         family="wikipedia",

@@ -5,8 +5,8 @@
 
 import logging
 
-
 from ...config import settings
+from ..wiki_client import WikiLoginClient
 from .lag_bot import do_lag, find_lag, get_lag_value
 
 logger = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class WD_API:
     def __init__(
         self,
-        login_bot,
+        login_bot: WikiLoginClient,
     ) -> None:
         self.login_bot = login_bot
 

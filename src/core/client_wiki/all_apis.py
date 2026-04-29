@@ -3,8 +3,8 @@
 import functools
 import logging
 
-from ..wiki_client import WikiLoginClient
 from ..new_api.super_login import Login
+from ..wiki_client import WikiLoginClient
 from .categories import catdepth_new
 from .pages import super_page
 
