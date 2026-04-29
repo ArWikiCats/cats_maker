@@ -4,13 +4,15 @@
 
 import logging
 from pathlib import Path
+from typing import Any, Optional
 
 import mwclient
 import mwclient.errors
+import requests
 
 from .config import COOKIES_DIR, DEFAULT_PATH
 from .cookies import get_cookie_path, load_into_session, save_from_session
-from .exceptions import LoginError
+from .exceptions import LoginError, WikiClientError
 from .requests_handler import wrap_session
 
 logger = logging.getLogger(__name__)
@@ -114,6 +116,120 @@ class WikiLoginClient:
         save_from_session(self._site.connection, self._cookie_path)
         logger.debug("Cookies saved to %s", self._cookie_path)
 
+
+    def client_request(
+        self,
+        params: dict,
+        method: str = "get",
+        files: Optional[Any] = None,
+    ) -> dict:
+        """
+        Send a GET or POST request to the wiki API and return the parsed JSON.
+
+        This is the low-level escape hatch for callers that need to hit the API
+        directly without going through mwclient's higher-level helpers. The
+        session's retry wrapper (CSRF refresh, maxlag backoff) is active on
+        every call made through this method.
+
+        Args:
+            params: MediaWiki API parameters as a plain dict.
+                    ``action`` and ``format`` are required by the API;
+                    ``format`` defaults to ``"json"`` if not supplied.
+            method: ``"get"`` (default) or ``"post"``. Case-insensitive.
+                    Use POST for any write operation (edits, uploads, etc.)
+                    or when the payload may exceed URL length limits.
+            files:  Optional dict of ``{field_name: file-like object}`` for
+                    multipart uploads (e.g. ``{"file": open("image.png","rb")}``).
+                    Automatically forces the method to POST when supplied.
+
+        Returns:
+            Parsed JSON response as a dict.
+
+        Raises:
+            ValueError:         If *method* is not ``"get"`` or ``"post"``.
+            WikiClientError:    Wraps API-level errors (code + info message).
+                                Note: CSRF and maxlag are handled transparently
+                                by the session wrapper before reaching here.
+            requests.HTTPError: On non-2xx HTTP responses.
+
+        Examples::
+
+            # Simple read
+            data = client.client_request({"action": "query", "titles": "Python"})
+
+            # Write — POST with auto CSRF + retry handling
+            data = client.client_request(
+                {
+                    "action": "edit",
+                    "title": "Sandbox",
+                    "text": "hello",
+                    "summary": "test",
+                    "token": client.site.get_token("csrf"),
+                },
+                method="post",
+            )
+
+            # File upload
+            with open("image.png", "rb") as fh:
+                data = client.client_request(
+                    {
+                        "action": "upload",
+                        "filename": "image.png",
+                        "comment": "upload",
+                        "token": client.site.get_token("csrf"),
+                    },
+                    method="post",
+                    files={"file": fh},
+                )
+        """
+        method = method.lower()
+        if method not in ("get", "post"):
+            raise ValueError(f"method must be 'get' or 'post', got {method!r}")
+
+        # Files can only travel via multipart POST
+        if files is not None:
+            method = "post"
+
+        # Always request JSON unless the caller explicitly overrides
+        params = {"format": "json", **params}
+
+        session: requests.Session = self._site.connection
+        api_url: str = self._site.api_url
+
+        logger.debug(
+            "%s %s params=%s files=%s",
+            method.upper(),
+            api_url,
+            # Never log token values
+            {k: ("***" if k == "token" else v) for k, v in params.items()},
+            list(files.keys()) if files else None,
+        )
+
+        if method == "get":
+            response = session.request("GET", api_url, params=params)
+        else:
+            if files:
+                # Multipart: params go as form data, files as the file part
+                response = session.request("POST", api_url, data=params, files=files)
+            else:
+                response = session.request("POST", api_url, data=params)
+
+        response.raise_for_status()
+
+        result: dict = response.json()
+
+        # Surface API-level errors as exceptions so callers don't have to
+        # inspect the dict themselves.  CSRF / maxlag are already handled by
+        # the session wrapper before we get here; this catches everything else.
+        if "error" in result:
+            error = result["error"]
+            raise WikiClientError(
+                f"API error {error.get('code', 'unknown')}: "
+                f"{error.get('info', result)}"
+            )
+
+        return result
+
     # ── Private helpers ────────────────────────────────────────────────────
 
     def _ensure_logged_in(self) -> None:
@@ -169,9 +285,12 @@ class WikiLoginClient:
         save_from_session(self._site.connection, self._cookie_path)
 
     def __repr__(self) -> str:
-        return f"WikiLoginClient(" f"lang={self.lang!r}, " f"family={self.family!r}, " f"username={self.username!r})"
-
-
+        return (
+            f"WikiLoginClient("
+            f"lang={self.lang!r}, "
+            f"family={self.family!r}, "
+            f"username={self.username!r})"
+        )
 __all__ = [
     "WikiLoginClient",
 ]
