@@ -215,7 +215,7 @@ class Login(HandleErrors):
     def post_params(
         self,
         params: dict,
-        Type: str = "get",
+        method: str = "get",
         addtoken: bool = False,
         GET_CSRF: bool = True,
         files: Any = None,
