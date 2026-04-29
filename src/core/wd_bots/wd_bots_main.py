@@ -4,17 +4,19 @@
 """
 
 import logging
-import time
+
 
 from ...config import settings
-from ..new_api import Login
 from .lag_bot import do_lag, find_lag, get_lag_value
 
 logger = logging.getLogger(__name__)
 
 
 class WD_API:
-    def __init__(self, login_bot: Login):
+    def __init__(
+        self,
+        login_bot,
+    ) -> None:
         self.login_bot = login_bot
 
         self.lang = "test" if settings.wikidata.test_mode else "www"
@@ -112,7 +114,7 @@ class WD_API:
 
         params = self.filter_data(params)
 
-        results = self.login_bot.post_params(params, do_error=False)
+        results = self.login_bot.client_request(params, do_error=False)
 
         if results.get("servedby"):
             results["servedby"] = ""

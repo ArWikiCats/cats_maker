@@ -168,7 +168,7 @@ class MainPage(ASK_BOT, HandleErrors):
             "rvdir": "newer",
         }
 
-        data = self.login_bot.post_params(params)
+        data = self.login_bot.client_request(params)
 
         pages = data.get("query", {}).get("pages", {})
 
@@ -209,7 +209,7 @@ class MainPage(ASK_BOT, HandleErrors):
 
         if redirects:
             params["redirects"] = 1
-        data = self.login_bot.post_params(params)
+        data = self.login_bot.client_request(params)
 
         pages = data.get("query", {}).get("pages", {})
 
@@ -290,7 +290,7 @@ class MainPage(ASK_BOT, HandleErrors):
 
         # _data_ = { "continue": {}, "query": { "pages": { "9124097": { "pageid": 9124097, "ns": 0, "title": "طواف العالم للدراجات 2023", "categories": [], "langlinks": [], "templates": [{ "ns": 10, "title": "قالب:-" }], "linkshere": [{ "pageid": 189150, "ns": 0, "title": "طواف فرنسا" }], "iwlinks": [{ "prefix": "commons", "*": "Category:2023_UCI_World_Tour" }], "contentmodel": "wikitext", "pagelanguage": "ar", "pagelanguagehtmlcode": "ar", "pagelanguagedir": "rtl", "touched": "2023-03-07T11:53:53Z", "lastrevid": 61366100, "length": 985, } } }, }
 
-        data = self.login_bot.post_params(params)
+        data = self.login_bot.client_request(params)
 
         # xs = { 'batchcomplete': True, 'query': { 'pages': [{ 'pageid': 151314, 'ns': 10, 'title': 'قالب:أوب', 'categories': [{ 'ns': 14, 'title': 'تصنيف:قوالب تستخدم أنماط القوالب', 'sortkey': '', 'sortkeyprefix': '', 'hidden': False }, { 'ns': 14, 'title': 'تصنيف:cc', 'sortkey': 'v', 'sortkeyprefix': 'أوب', 'hidden': True }], 'langlinks': [{ 'lang': 'bh', 'title': 'टेम्पलेट:AWB' }], 'templates': [{ 'ns': 10, 'title': 'قالب:No redirect' }], 'linkshere': [{ 'pageid': 308641, 'ns': 10, 'title': 'قالب:AWB', 'redirect': True }], 'iwlinks': [{ 'prefix': 'd', 'title': 'Q4063270' }], 'contentmodel': 'wikitext', 'pagelanguage': 'ar', 'pagelanguagehtmlcode': 'ar', 'pagelanguagedir': 'rtl', 'touched': '2023-03-05T22:10:23Z', 'lastrevid': 61388266, 'length': 3477, }] }, }
 
@@ -350,7 +350,7 @@ class MainPage(ASK_BOT, HandleErrors):
             "redirects": 1,
         }
 
-        data = self.login_bot.post_params(params)
+        data = self.login_bot.client_request(params)
 
         # _pages_ = { 'batchcomplete': '', 'query': { 'redirects': [{ 'from': 'Yemen', 'to': 'اليمن' }], 'pages': {}, 'normalized': [{ 'from': 'yemen', 'to': 'Yemen' }] } }
 
@@ -389,7 +389,7 @@ class MainPage(ASK_BOT, HandleErrors):
                 # params = {**params, **continue_params}
                 params.update(continue_params)
 
-            json1 = self.login_bot.post_params(params)
+            json1 = self.login_bot.client_request(params)
 
             continue_params = json1.get("continue", {})
 
@@ -416,7 +416,7 @@ class MainPage(ASK_BOT, HandleErrors):
                 "ususers": self.user,
             }
 
-            data = self.login_bot.post_params(params)
+            data = self.login_bot.client_request(params)
 
             # _userinfo_ = { "id": 229481, "name": "Mr. Ibrahem", "groups": ["editor", "reviewer", "rollbacker", "*", "user", "autoconfirmed"] }
 
@@ -572,7 +572,7 @@ class MainPage(ASK_BOT, HandleErrors):
 
         # params['basetimestamp'] = self.revisions_data.timestamp
 
-        pop = self.login_bot.post_params(params)
+        pop = self.login_bot.client_request(params)
 
         if not pop:
             return False
@@ -642,7 +642,7 @@ class MainPage(ASK_BOT, HandleErrors):
             "createonly": 1,
         }
 
-        pop = self.login_bot.post_params(params)
+        pop = self.login_bot.client_request(params)
 
         if not pop:
             return False
@@ -698,7 +698,7 @@ class MainPage(ASK_BOT, HandleErrors):
                     params2[k] = v
                 logger.debug(params2)
 
-            json1 = self.login_bot.post_params(params2)
+            json1 = self.login_bot.client_request(params2)
 
             if not json1:
                 logger.debug(", json1 is empty. break")

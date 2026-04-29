@@ -212,7 +212,7 @@ class Login(HandleErrors):
 
         return data
 
-    def post_params(
+    def client_request(
         self,
         params: dict,
         method: str = "get",

@@ -20,7 +20,7 @@ class NEW_API:
                 "prop": "info|pageprops",
                 "formatversion": 2,
             }
-            json1 = self.login_bot.post_params(params)
+            json1 = self.login_bot.client_request(params)
             if not json1:
                 logger.debug("<<lightred>> error when ")
                 continue

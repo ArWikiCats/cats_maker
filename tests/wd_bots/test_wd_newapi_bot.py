@@ -33,15 +33,15 @@ class TestWDAPI:
         assert hasattr(api, "handle_err_wd")
 
     def test_post_params_delegates(self, mocker):
-        """Test that post_params delegates to login_bot"""
+        """Test that client_request delegates to login_bot"""
         mock_login = mocker.MagicMock()
         mock_login.user_login = "testuser"
-        mock_login.post_params.return_value = {"result": "ok"}
+        mock_login.client_request.return_value = {"result": "ok"}
 
         api = WD_API(mock_login)
-        result = api.login_bot.post_params({"action": "query"})
+        result = api.login_bot.client_request({"action": "query"})
 
-        mock_login.post_params.assert_called()
+        mock_login.client_request.assert_called()
 
     def test_filter_data_adds_format(self, mocker):
         """Test that filter_data adds format and utf8"""
