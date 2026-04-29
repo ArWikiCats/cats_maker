@@ -5,8 +5,8 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 
 from ....config import settings
-from ...new_api.api_utils import ASK_BOT, bot_May_Edit, change_codes
-from ...new_api.super.handel_errors import HandleErrors
+from ..api_utils import ASK_BOT, bot_May_Edit, change_codes
+from ..api_utils.handel_errors import HandleErrors
 
 logger = logging.getLogger(__name__)
 
