@@ -5,8 +5,6 @@ pymysql
 jsonlines
 sqlite_utils
 requests
-pytest
-pytest-mock
 colorlog
 python-dotenv>=1.0.0
-pytest-cov
+mwclient
