@@ -4,7 +4,7 @@
 import functools
 import logging
 
-from ..core.new_api import load_main_api
+from ..core.client_wiki import load_main_api
 from ..core.new_c18 import add_text_to_template, get_dont_add_pages, sort_categories
 from ..core.utils import function_timer
 

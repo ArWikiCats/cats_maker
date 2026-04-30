@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ """
 
-from ..core.new_api import load_main_api
+from ..core.client_wiki import load_main_api
 from ..core.wd_bots import Get_P373_API
 from ..temp import main_make_temp_no_title
 from .categorytext_data import LocalLanguageLinks, category_mapping

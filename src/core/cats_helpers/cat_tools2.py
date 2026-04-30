@@ -9,7 +9,7 @@
 import logging
 
 from ...config import settings
-from ..new_api import load_main_api
+from ..client_wiki import load_main_api
 
 logger = logging.getLogger(__name__)
 

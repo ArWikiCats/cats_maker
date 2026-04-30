@@ -8,7 +8,7 @@ import logging
 from ....config import settings
 from ...api_sql import add_namespace_prefix
 from ...cats_helpers import Categorized_Page_Generator
-from ...new_api import load_main_api
+from ...client_wiki import load_main_api
 from ...wiki_api import find_LCN, get_arpage_inside_encat
 from ..constants import DEFAULT_MEMBER_NAMESPACES
 from ..io.sql_queries import fetch_ar_category_members, fetch_en_category_langlinks
