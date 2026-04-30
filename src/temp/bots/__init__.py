@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 """
 
-# (main_make_temp|MakedecadesTemp|Make_Elff_temp|Make_Cent_temp|Make_years_temp)
+# (main_make_temp|make_decades_template|make_millennium_template|make_century_template|make_years_template)
 
 بوت لإضافة قالب السنوات للتصنيفات
 
-from .temp import main_make_temp, Make_years_temp
+from .temp import main_make_temp, make_years_template
 
 """
 
@@ -13,10 +13,10 @@ import logging
 import re
 
 from .load_data import cacaca
-from .temp_cent import Make_Cent_temp
-from .temp_decades import MakedecadesTemp
-from .temp_elff import Make_Elff_temp
-from .temp_years import Make_years_temp
+from .temp_cent import make_century_template
+from .temp_decades import make_decades_template
+from .temp_elff import make_millennium_template
+from .temp_years import make_years_template
 
 logger = logging.getLogger(__name__)
 
@@ -70,19 +70,19 @@ def main_make_temp(enca, title) -> tuple[str, str]:
             t_33 = f"تصنيف:{tex}سنة {numb}"
             t_44 = f"تصنيف:{tex}عام {numb}"
             if title.startswith(t_2) or title.startswith(t_33) or title.startswith(t_44):
-                return Make_years_temp(title, tex, return_title=True)
+                return make_years_template(title, tex, return_title=True)
 
     for texd in ["تصنيف:تأسيسات عقد", "تصنيف:انحلالات عقد", "تصنيف:عقد"]:
         if title.startswith(texd):
             logger.info(f'title.startswith("{texd}" ):')
-            return MakedecadesTemp(title)
+            return make_decades_template(title)
 
     for tex in cacaca:
         if title.startswith(f"تصنيف:{tex}القرن"):
-            return Make_Cent_temp(title)
+            return make_century_template(title)
 
         if title.startswith(f"تصنيف:{tex}الألفية"):
-            return Make_Elff_temp(title)
+            return make_millennium_template(title)
 
     if re.match(r"^تصنيف\:(.*) في القرن (.*)$", title):
         return "{{تصنيف موسم}}", "تصنيف موسم"
@@ -107,10 +107,10 @@ def main_make_temp_no_title(title) -> str:
 
 
 __all__ = [
-    "MakedecadesTemp",
-    "Make_years_temp",
-    "Make_Cent_temp",
-    "Make_Elff_temp",
+    "make_decades_template",
+    "make_years_template",
+    "make_century_template",
+    "make_millennium_template",
     "main_make_temp",
     "main_make_temp_no_title",
 ]

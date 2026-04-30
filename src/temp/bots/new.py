@@ -56,7 +56,7 @@ class TemplatesMaker:
 
     # ====== الدوال الرئيسية ======
     @classmethod
-    def Make_Elff_temp(cls, title):
+    def make_millennium_template(cls, title):
         logger.info(f"<<lightblue>> :{title} ")
         title = re.sub(r"الألفية الأولى", "الألفية 1", title)
         title = re.sub(r"الألفية الثانية", "الألفية 2", title)
@@ -91,7 +91,7 @@ class TemplatesMaker:
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
     @classmethod
-    def MakedecadesTemp(cls, title):
+    def make_decades_template(cls, title):
         title = re.sub(r"_", " ", title)
         for texx, ssss in cls.cacaca.items():
             regdd = rf"{texx}عقد (\d+)( ق م| ق\.م|)"
@@ -108,7 +108,7 @@ class TemplatesMaker:
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
     @classmethod
-    def Make_Cent_temp(cls, title):
+    def make_century_template(cls, title):
         title = re.sub(r"_", " ", title)
         for texx, cttt in cls.cacaca.items():
             regex = rf"تصنيف\:{texx}القرن (\d+)( ق م| ق\.م|)( في |)(.*|)$"
@@ -125,7 +125,7 @@ class TemplatesMaker:
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
     @classmethod
-    def Make_years_temp(cls, title, tex, return_title=False):
+    def make_years_template(cls, title, tex, return_title=False):
         if "ق م" in title or "ق.م" in title:
             return ("", "") if return_title else ""
         t_1 = f"تصنيف:{tex}"
@@ -152,29 +152,29 @@ class TemplatesMaker:
             return "{{تصنيف موسم}}", "تصنيف موسم"
         for tex in ["تأسيسات ", "انحلالات "]:
             if any(title.startswith(f"تصنيف:{tex}{n}") for n in range(10)):
-                return cls.Make_years_temp(title, tex, return_title=True)
+                return cls.make_years_template(title, tex, return_title=True)
         if title.startswith("تصنيف:عقد") or title.startswith("تصنيف:تأسيسات عقد"):
-            return cls.MakedecadesTemp(title)
+            return cls.make_decades_template(title)
         if "القرن" in title:
-            return cls.Make_Cent_temp(title)
+            return cls.make_century_template(title)
         if "الألفية" in title:
-            return cls.Make_Elff_temp(title)
+            return cls.make_millennium_template(title)
         return "", ""
 
 
 bot = TemplatesMaker()
 bot._initialize_data()
 
-MakedecadesTemp = bot.MakedecadesTemp
-Make_years_temp = bot.Make_years_temp
-Make_Cent_temp = bot.Make_Cent_temp
-Make_Elff_temp = bot.Make_Elff_temp
+make_decades_template = bot.make_decades_template
+make_years_template = bot.make_years_template
+make_century_template = bot.make_century_template
+make_millennium_template = bot.make_millennium_template
 main_make_temp = bot.main_make_temp
 
 __all__ = [
-    "MakedecadesTemp",
-    "Make_years_temp",
-    "Make_Cent_temp",
-    "Make_Elff_temp",
+    "make_decades_template",
+    "make_years_template",
+    "make_century_template",
+    "make_millennium_template",
     "main_make_temp",
 ]

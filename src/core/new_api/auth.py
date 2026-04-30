@@ -37,7 +37,6 @@ class AuthProvider:
 
         if family and table["username"] and table["password"]:
             if self.family == family or (langx == "ar" and self.family.startswith("wik")):  # wiktionary
-
                 self.username = table["username"]
                 self.password = table["password"]
                 self.endpoint = f"https://{lang}.{family}.org/w/api.php"

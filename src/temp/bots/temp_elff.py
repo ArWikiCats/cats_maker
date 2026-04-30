@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 
-from .temp_elff import Make_Elff_temp
+from .temp_elff import make_millennium_template
 
 """
 
@@ -13,7 +13,7 @@ from .load_data import cacaca
 logger = logging.getLogger(__name__)
 
 
-def Make_Elff_temp(title):
+def make_millennium_template(title):
     logger.info(f" :{title} ", "blue")
 
     title = re.sub(r"الألفية الأولى", "الألفية 1", title)

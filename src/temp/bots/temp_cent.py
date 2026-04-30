@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 
-from .temp_cent import Make_Cent_temp
+from .temp_cent import make_century_template
 
 """
 
@@ -13,7 +13,7 @@ from .load_data import Baco_centries, cacaca
 logger = logging.getLogger(__name__)
 
 
-def Make_Cent_temp(title):
+def make_century_template(title):
     logger.info(f" :{title} ", "blue")
     Caa = False
     tex = ""
@@ -71,8 +71,10 @@ def Make_Cent_temp(title):
         _Baoo = re.sub(ttt, r"\g<2>", title)
         In = re.sub(ttt, r"\g<3>", title)
         bld = re.sub(ttt, r"\g<4>", title)
+
         if cent == title:
             cent = ""
+
         if bld == title:
             bld = ""
 
@@ -86,23 +88,27 @@ def Make_Cent_temp(title):
             bld = bld.strip()
             if bld.startswith("حسب"):
                 bld = bld + "|في="
+
             sdsd = str(cent - 1) + "0"
             if elff != 1 or cent == 10:
                 sdsd = str(cent - 1)
+
             if sdsd == "00":
                 sdsd = ""
+
             before = str(cent - 1)
             if before == "0":
                 before = "1 ق م"
+
             template = f"{cacaca[tex]}بلد قرن"
 
-            text = (
-                f"{{{{{template}|{sdsd}|قرن={cent}|سابق={before}|لاحق={cent + 1}|ألفية={elff}|بلد={bld}}}}}\n"  # noqa
-            )
+            text = f"{template}|{sdsd}|قرن={cent}|سابق={before}|لاحق={cent + 1}|ألفية={elff}|بلد={bld}"
+
             if not bld:
                 template = f"{cacaca[tex]}قرن"
-                text = f"{{{{{template}|{sdsd}|قرن={cent}|سابق={before}|لاحق={cent + 1}|ألفية={elff}}}}}\n"  # noqa
+                text = f"{template}|{sdsd}|قرن={cent}|سابق={before}|لاحق={cent + 1}|ألفية={elff}"
 
+            text = f"{{{{{text}}}}}\n"
             return text, template
 
     return "{{تصنيف موسم}}", "تصنيف موسم"
