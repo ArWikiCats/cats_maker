@@ -31,7 +31,7 @@ def _load_json(path: Path, empty_data: str = "list") -> list | dict:
                 json.dump(data, f)
             os.chmod(path, _STATGROUP)
         except (PermissionError, OSError) as e:
-            logger.warning(e)
+            logger.exception("Error save json file")
 
     try:
         with open(path, "r", encoding="utf-8") as f:

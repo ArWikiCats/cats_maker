@@ -362,7 +362,7 @@ class Login(HandleErrors):
         try:
             return json.loads(text)
         except Exception as e:
-            logger.warning(e)
+            logger.exception("Error loading json from text")
 
         return {}
 
@@ -380,7 +380,7 @@ class Login(HandleErrors):
                 logger.debug("We have %d cookies" % len(self.cookie_jar))
 
             except Exception as e:
-                logger.warning(e)
+                logger.exception("Error loading cookies from file")
 
         # Bind cookies once; subsequent calls for the same user reuse the same jar.
         if self.session.cookies is not self.cookie_jar:

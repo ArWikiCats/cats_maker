@@ -13,17 +13,17 @@ class AuthProvider:
         lang: str,
         family: str,
         session: requests.Session | None = None,
+        username: str | None = None,
+        password: str | None = None,
     ) -> None:
         self.lang = lang
         self.family = family
-        self.username = None
-        self.password = None
-        self.endpoint = f"https://{lang}.{family}.org/w/api.php"
+        self.username = username
+        self.password = password
+        self.endpoint = f"https://{self.lang}.{self.family}.org/w/api.php"
+
         self.session = session
         self.username_in = ""
-        self.user_table_done = False
-
-        self.cookie_jar = False
 
     def add_User_tables(self, family, table, lang="") -> None:
         langx = self.lang
@@ -35,9 +35,8 @@ class AuthProvider:
         if table["username"].find("bot") == -1 and family == "wikipedia":
             logger.info(f": {family=}, {table['username']=}")
 
-        if family != "" and table["username"] != "" and table["password"] != "":
+        if family and table["username"] and table["password"]:
             if self.family == family or (langx == "ar" and self.family.startswith("wik")):  # wiktionary
-                self.user_table_done = True
 
                 self.username = table["username"]
                 self.password = table["password"]
@@ -80,7 +79,7 @@ class AuthProvider:
                 logger.debug(f"<<red>>  {r11.status_code} Server Error: Server Hangup for url: {self.endpoint}")
 
         except Exception as e:
-            logger.warning(f"<<red>> Error getting login token: {e}")
+            logger.exception(f"<<red>> Error getting login token: {e}")
             return ""
 
         jsson1 = {}
@@ -89,7 +88,7 @@ class AuthProvider:
             jsson1 = r11.json()
         except Exception as e:
             logger.debug(r11.text)
-            logger.warning(f"<<red>> Error getting login token: {e}")
+            logger.exception(f"<<red>> Error getting login token: {e}")
             return ""
 
         return jsson1.get("query", {}).get("tokens", {}).get("logintoken") or ""
@@ -112,7 +111,7 @@ class AuthProvider:
         try:
             req = self.session.request("POST", self.endpoint, data=r2_params)
         except Exception as e:
-            logger.warning(f" {self.lang}.{self.family} login request exception: {e}")
+            logger.exception(f" {self.lang}.{self.family} login request exception: {e}")
             return False
 
         result = {}
@@ -121,7 +120,7 @@ class AuthProvider:
             try:
                 result = req.json()
             except Exception as e:
-                logger.warning(
+                logger.exception(
                     f" {self.lang}.{self.family} error parsing login response: {e} - response: {getattr(req, 'text', '')}"
                 )
                 logger.debug(req.text)
@@ -154,7 +153,7 @@ class AuthProvider:
         try:
             req = self.session.request("POST", self.endpoint, data=params)
         except Exception as e:
-            logger.warning(f" {self.lang}.{self.family} userinfo request exception: {e}")
+            logger.exception(f" {self.lang}.{self.family} userinfo request exception: {e}")
             return False
 
         json1 = {}
@@ -162,7 +161,7 @@ class AuthProvider:
             try:
                 json1 = req.json()
             except Exception as e:
-                logger.warning(
+                logger.exception(
                     f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {getattr(req, 'text', '')}"
                 )
                 logger.debug(req.text)
@@ -171,7 +170,7 @@ class AuthProvider:
         userinfo = json1.get("query", {}).get("userinfo", {})
 
         result_x = "success" if userinfo else "failed"
-        # logger.debug(json1)
+        logger.debug(result_x)
 
         if "anon" in userinfo or "temp" in userinfo:
             return False
@@ -189,7 +188,7 @@ class AuthProvider:
         try:
             req = self.session.request("POST", self.endpoint, data=r3_params)
         except Exception as e:
-            logger.warning(f" {self.lang}.{self.family} request exception: {e}")
+            logger.exception(f" {self.lang}.{self.family} request exception: {e}")
             return ""
 
         json1 = {}
@@ -197,7 +196,7 @@ class AuthProvider:
             try:
                 json1 = req.json()
             except Exception as e:
-                logger.warning(
+                logger.exception(
                     f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {getattr(req, 'text', '')}"
                 )
                 logger.debug(req.text)
@@ -209,3 +208,6 @@ class AuthProvider:
 __all__ = [
     "AuthProvider",
 ]
+
+auth = AuthProvider("ar", "wikipedia", requests.Session(), "Mr. Ibrahem", "test")
+auth.log_in()
