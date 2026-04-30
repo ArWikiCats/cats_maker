@@ -64,7 +64,7 @@ class CategoryComparator:
             # Convert AR titles to a set for O(1) lookup performance
             ar_titles_set = set(ar_titles)
 
-        logger.debug("Found %d EN titles and %d AR titles", len(en_titles), len(ar_titles))
+        logger.debug("Found %d EN titles and %d AR titles", len(en_titles), len(ar_titles_set))
 
         # Find exclusive titles
         exclusive = [t for t in en_titles if t not in ar_titles_set]
