@@ -103,13 +103,19 @@ class DatabaseManager:
             try:
                 with conn.cursor() as cursor:
                     cursor.execute(query, params)
-                    results = cursor.fetchall()
+                    try:
+                        results = cursor.fetchall()
+                    except pymysql.MySQLError as e:
+                        logger.error("Failed to fetch results from %s: %s", wiki, e)
+                        raise DatabaseFetchError(f"Failed to fetch results from {wiki}", e)
 
                     # Decode bytes to strings if necessary
                     return [
                         {k: (v.decode("utf-8") if isinstance(v, bytes) else v) for k, v in row.items()}
                         for row in results
                     ]
+            except DatabaseFetchError:
+                raise
             except pymysql.MySQLError as e:
                 logger.error("Query execution failed on %s: %s", wiki, e)
                 raise QueryExecutionError(f"Query failed on {wiki}", e)
