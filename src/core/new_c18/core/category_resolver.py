@@ -10,7 +10,7 @@ from ...api_sql import add_namespace_prefix
 from ...cats_helpers import Categorized_Page_Generator
 from ...new_api import load_main_api
 from ...wiki_api import find_LCN, get_arpage_inside_encat
-from ..constants import DEFAULT_MEMBER_NAMESPACES, STUB_MEMBER_NAMESPACES
+from ..constants import DEFAULT_MEMBER_NAMESPACES
 from ..io.sql_queries import fetch_ar_category_members, fetch_en_category_langlinks
 from ..utils.text import normalize_category_title
 

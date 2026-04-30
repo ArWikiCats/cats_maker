@@ -11,7 +11,7 @@ import mwclient
 import mwclient.errors
 import requests
 
-from .config import COOKIES_DIR, DEFAULT_PATH
+from .config import DEFAULT_PATH
 from .cookies import _delete_cookie_file, get_cookie_path, load_into_session, save_from_session
 from .exceptions import LoginError, WikiClientError
 from .requests_handler import wrap_session
