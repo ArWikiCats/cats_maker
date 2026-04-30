@@ -333,7 +333,7 @@ class WikiLoginClient:
             userinfo = result["query"]["userinfo"]
             user_id = userinfo.get("id", 0)
         except Exception as exc:
-            logger.warning("Could not check login status (%s) — attempting login", exc)
+            logger.exception("Could not check login status (%s) — attempting login", exc)
             user_id = 0
 
         if user_id != 0:

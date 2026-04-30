@@ -96,7 +96,7 @@ def _delete_cookie_file(path: Path, reason: str = "") -> None:
         path.unlink(missing_ok=True)
         logger.debug("Deleted stale cookie file %s (%s)", path, reason)
     except OSError as exc:
-        logger.warning("Could not delete cookie file %s: %s", path, exc)
+        logger.exception("Could not delete cookie file %s: %s", path, exc)
 
 
 def load_into_session(session: requests.Session, path: Path) -> bool:
@@ -123,7 +123,7 @@ def load_into_session(session: requests.Session, path: Path) -> bool:
         jar.load(ignore_discard=True, ignore_expires=True)
         logger.debug("Loaded %d cookies from %s", len(jar), path)
     except (LoadError, OSError) as exc:
-        logger.warning("Could not load cookie file %s (%s) — will require login", path, exc)
+        logger.exception("Could not load cookie file %s (%s) — will require login", path, exc)
         session.cookies = RequestsCookieJar()
         return False
 
