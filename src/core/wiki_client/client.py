@@ -167,7 +167,7 @@ class WikiLoginClient:
     def client_request(
         self,
         params: dict,
-        method: str = "get",
+        method: str = "post",
         files: Optional[Any] = None,
     ) -> dict:
         """
@@ -228,7 +228,6 @@ class WikiLoginClient:
 
         # Merge #5: inject bot flag and identity assertion for write actions
         params = self._enrich_params(params)
-        params["token"] = self._site.get_token("csrf")
 
         session: requests.Session = self._site.connection
 
@@ -245,8 +244,10 @@ class WikiLoginClient:
             if method == "get":
                 response = session.request("GET", self.api_url, params=params)
             elif files:
+                params["token"] = self._site.get_token("csrf")
                 response = session.request("POST", self.api_url, data=params, files=files)
             else:
+                params["token"] = self._site.get_token("csrf")
                 response = session.request("POST", self.api_url, data=params)
 
             response.raise_for_status()
