@@ -85,6 +85,8 @@ class AuthProvider:
 
         try:
             jsson1 = r11.json()
+        except requests.exceptions.JSONDecodeError:
+            logger.warning(f" {self.lang}.{self.family} error parsing login token response: {r11.text}")
         except Exception as e:
             logger.debug(r11.text)
             logger.exception(f"<<red>> Error getting login token: {e}")
@@ -207,6 +209,3 @@ class AuthProvider:
 __all__ = [
     "AuthProvider",
 ]
-
-auth = AuthProvider("ar", "wikipedia", requests.Session(), "Mr. Ibrahem", "test")
-auth.log_in()

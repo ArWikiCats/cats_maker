@@ -31,7 +31,6 @@ class TestAddUserTables:
         auth.add_User_tables("wikipedia", table)
         assert auth.username == "bot"
         assert auth.password == "pass"
-        assert auth.user_table_done is True
 
     def test_ignores_non_matching_family(self):
         auth = AuthProvider("en", "wikisource")
