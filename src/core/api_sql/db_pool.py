@@ -59,7 +59,7 @@ class DatabaseManager:
             logger.warning("Attempted to get DB connection in non-production environment.")
             raise DatabaseConnectionError("Database access disabled in non-production environment.")
 
-        config = self._config_loader.get_db_config(wiki)
+        config: DatabaseConfig = self._config_loader.get_db_config(wiki)
         conn = None
 
         try:
