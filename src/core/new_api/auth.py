@@ -137,6 +137,12 @@ class AuthProvider:
 
         reason = result.get("login", {}).get("reason", "")
 
+        _reasons = [
+            r"You have made too many recent login attempts. Please wait \d+ minutes before trying again\.",
+            "Incorrect username or password entered. Please try again.",
+        ]
+        logger.warning(reason)
+
         if reason == "Incorrect username or password entered. Please try again.":
             logger.debug(f"user:{username}, pass:******")
 
