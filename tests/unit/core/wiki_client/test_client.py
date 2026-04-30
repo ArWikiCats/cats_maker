@@ -272,7 +272,7 @@ class TestDoLogin:
 
     def test_login_failure_raises_login_error(self):
         client, site = _make_client()
-        site.login = MagicMock(side_effect=mwclient.errors.LoginError("bad credentials", ""))
+        site.login = MagicMock(side_effect=mwclient.errors.LoginError(code="bad credentials", info="", site=""))
         with pytest.raises(LoginError, match="Login failed"):
             client._do_login()
 
