@@ -27,7 +27,6 @@ def showDiff(oldtext: str, newtext: str) -> None:
 
 
 class ASK_BOT:
-    __slots__ = ("_save_or_ask",)
 
     def __init__(self) -> None:
         self._save_or_ask: dict[str, bool] = {}

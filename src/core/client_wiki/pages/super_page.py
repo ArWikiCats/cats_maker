@@ -118,6 +118,7 @@ class MainPage(ASK_BOT, HandleErrors):
         self.template_data = TemplateData()
 
         self.user = ""
+        super().__init__()
 
     def false_edit(self):
         # self.newtext
