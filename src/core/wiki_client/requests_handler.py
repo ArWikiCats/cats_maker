@@ -122,7 +122,7 @@ def wrap_session(session: requests.Session, site) -> None:
             if error_code == "maxlag":
                 attempt += 1
                 if attempt >= config.MAX_RETRIES:
-                    raise MaxlagError(f"Server maxlag not resolved after {config.MAX_RETRIES} " f"attempts.")
+                    raise MaxlagError(f"Server maxlag not resolved after {config.MAX_RETRIES} attempts.")
 
                 # Honour the server's Retry-After hint if present, else backoff
                 retry_after = response.headers.get(config.MAXLAG_HEADER)

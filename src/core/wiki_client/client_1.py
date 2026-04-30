@@ -228,7 +228,7 @@ class WikiLoginClient:
         # the session wrapper before we get here; this catches everything else.
         if "error" in result:
             error = result["error"]
-            raise WikiClientError(f"API error {error.get('code', 'unknown')}: " f"{error.get('info', result)}")
+            raise WikiClientError(f"API error {error.get('code', 'unknown')}: {error.get('info', result)}")
 
         return result
 
@@ -287,7 +287,7 @@ class WikiLoginClient:
         save_from_session(self._site.connection, self._cookie_path)
 
     def __repr__(self) -> str:
-        return f"WikiLoginClient(" f"lang={self.lang!r}, " f"family={self.family!r}, " f"username={self.username!r})"
+        return f"WikiLoginClient(lang={self.lang!r}, family={self.family!r}, username={self.username!r})"
 
 
 __all__ = [

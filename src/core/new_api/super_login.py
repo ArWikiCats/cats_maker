@@ -165,7 +165,6 @@ class Login(HandleErrors):
 
     def _handle_server_error(self, req0, action: str, params=None) -> None:
         if req0 and req0.status_code:
-
             if not str(req0.status_code).startswith("2"):
                 logger.debug(f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}")
 

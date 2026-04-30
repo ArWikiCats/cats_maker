@@ -264,7 +264,7 @@ class WikiLoginClient:
             if error_code == "assertnameduserfailed":
                 if attempt == 0:
                     logger.warning(
-                        "assertnameduserfailed for %s on %s.%s — " "clearing cookies and re-logging in",
+                        "assertnameduserfailed for %s on %s.%s — clearing cookies and re-logging in",
                         self.username,
                         self.lang,
                         self.family,
@@ -281,7 +281,7 @@ class WikiLoginClient:
                     )
 
             # All other errors — surface to the caller
-            raise WikiClientError(f"API error {error_code or 'unknown'}: " f"{error.get('info', error)}")
+            raise WikiClientError(f"API error {error_code or 'unknown'}: {error.get('info', error)}")
 
         # Should never be reached
         return {}
@@ -364,7 +364,7 @@ class WikiLoginClient:
         try:
             self._site.login(self.username, self._password)
         except mwclient.errors.LoginError as exc:
-            raise LoginError(f"Login failed for {self.username} on " f"{self.lang}.{self.family}: {exc}") from exc
+            raise LoginError(f"Login failed for {self.username} on {self.lang}.{self.family}: {exc}") from exc
 
         logger.info(
             "Logged in successfully as %s on %s.%s",
@@ -375,7 +375,7 @@ class WikiLoginClient:
         save_from_session(self._site.connection, self._cookie_path)
 
     def __repr__(self) -> str:
-        return f"WikiLoginClient(" f"lang={self.lang!r}, " f"family={self.family!r}, " f"username={self.username!r})"
+        return f"WikiLoginClient(lang={self.lang!r}, family={self.family!r}, username={self.username!r})"
 
 
 __all__ = [
