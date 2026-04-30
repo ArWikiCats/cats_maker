@@ -2,12 +2,62 @@
 Unit tests for src/core/wiki_client/client.py module.
 """
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, PropertyMock
 
+import mwclient.errors
 import pytest
 
 from src.core.wiki_client.client import WikiLoginClient, _get_shared_session
 from src.core.wiki_client.exceptions import LoginError, WikiClientError
+
+
+# ── Helper to construct a patched WikiLoginClient ────────────────────────────
+
+
+def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass", cookies_dir=None):
+    """Create a WikiLoginClient with all external dependencies mocked."""
+    with patch("src.core.wiki_client.client.wrap_session"), \
+         patch("src.core.wiki_client.client.load_into_session"), \
+         patch("src.core.wiki_client.client.mwclient.Site") as mock_site, \
+         patch("src.core.wiki_client.client._get_shared_session") as mock_session, \
+         patch("src.core.wiki_client.client.get_cookie_path") as mock_path:
+        mock_path.return_value = MagicMock()
+        mock_session.return_value = MagicMock()
+        site_instance = mock_site.return_value
+        site_instance.api.return_value = {"query": {"userinfo": {"id": 1}}}
+        site_instance.connection = MagicMock()
+        site_instance.api_url = "http://example.com/api"
+
+        kw = dict(lang=lang, family=family, username=username, password=password)
+        if cookies_dir is not None:
+            kw["cookies_dir"] = cookies_dir
+        client = WikiLoginClient(**kw)
+        return client, site_instance
+
+
+# ── Test _get_shared_session ─────────────────────────────────────────────────
+
+
+class TestGetSharedSession:
+    def test_returns_requests_session(self):
+        _get_shared_session.cache_clear()
+        session = _get_shared_session("en", "wikipedia", "bot")
+        assert hasattr(session, "request")
+
+    def test_caches_same_session(self):
+        _get_shared_session.cache_clear()
+        s1 = _get_shared_session("en", "wikipedia", "bot")
+        s2 = _get_shared_session("en", "wikipedia", "bot")
+        assert s1 is s2
+
+    def test_different_keys_give_different_sessions(self):
+        _get_shared_session.cache_clear()
+        s1 = _get_shared_session("en", "wikipedia", "bot1")
+        s2 = _get_shared_session("en", "wikipedia", "bot2")
+        assert s1 is not s2
+
+
+# ── Test _enrich_params ──────────────────────────────────────────────────────
 
 
 class TestEnrichParams:
@@ -48,6 +98,57 @@ class TestEnrichParams:
         assert result["bot"] == 1
         assert result["assertuser"] == "MyBot"
 
+    def test_wb_action_injects_bot_and_assertuser(self):
+        client, _ = _make_client()
+        params = {"action": "wbeditentity", "id": "Q123"}
+        result = client._enrich_params(params)
+        assert result["bot"] == 1
+        assert result["assertuser"] == "MyBot"
+
+    def test_wb_prefix_action_injects_params(self):
+        client, _ = _make_client()
+        params = {"action": "wbsetclaim", "claim": "{}"}
+        result = client._enrich_params(params)
+        assert result["bot"] == 1
+        assert result["assertuser"] == "MyBot"
+
+    def test_wikidata_family_injects_params(self):
+        client, _ = _make_client(family="wikidata")
+        params = {"action": "parse", "text": "hello"}
+        result = client._enrich_params(params)
+        assert result["bot"] == 1
+        assert result["assertuser"] == "MyBot"
+
+    def test_non_write_action_no_injection(self):
+        client, _ = _make_client()
+        params = {"action": "parse", "text": "hello"}
+        result = client._enrich_params(params)
+        assert "bot" not in result
+        assert "assertuser" not in result
+
+    def test_no_action_key_no_injection(self):
+        client, _ = _make_client()
+        params = {"titles": "Python"}
+        result = client._enrich_params(params)
+        assert "bot" not in result
+        assert "assertuser" not in result
+
+    def test_does_not_override_existing_bot(self):
+        client, _ = _make_client()
+        params = {"action": "edit", "bot": 0}
+        result = client._enrich_params(params)
+        assert result["bot"] == 0
+
+    def test_empty_username_no_injection(self):
+        client, _ = _make_client(username="")
+        params = {"action": "edit", "title": "Test"}
+        result = client._enrich_params(params)
+        assert "bot" not in result
+        assert "assertuser" not in result
+
+
+# ── Test client_request ──────────────────────────────────────────────────────
+
 
 class TestClientRequest:
     def test_invalid_method_raises(self):
@@ -78,9 +179,136 @@ class TestClientRequest:
             site_instance.connection.request.return_value = response
 
             client = WikiLoginClient("en", "wikipedia", "bot", "pass")
-            # The wrapped request may handle CSRF, so we test the unwrapped path
             with pytest.raises(WikiClientError):
                 client.client_request({"action": "edit"})
+
+    def test_get_request(self):
+        client, site = _make_client()
+        response = MagicMock()
+        response.raise_for_status = MagicMock()
+        response.json.return_value = {"query": {"pages": {"1": {"title": "Python"}}}}
+        site.connection.request.return_value = response
+
+        result = client.client_request({"action": "query", "titles": "Python"}, method="get")
+        assert "query" in result
+        site.connection.request.assert_called_once()
+
+    def test_post_request(self):
+        client, site = _make_client()
+        response = MagicMock()
+        response.raise_for_status = MagicMock()
+        response.json.return_value = {"edit": {"result": "Success"}}
+        site.connection.request.return_value = response
+
+        result = client.client_request({"action": "edit", "title": "Test"}, method="post")
+        assert "edit" in result
+
+    def test_files_forces_post(self):
+        client, site = _make_client()
+        response = MagicMock()
+        response.raise_for_status = MagicMock()
+        response.json.return_value = {"upload": {"result": "Success"}}
+        site.connection.request.return_value = response
+
+        mock_file = MagicMock()
+        result = client.client_request(
+            {"action": "upload", "filename": "test.png"},
+            method="get",
+            files={"file": mock_file},
+        )
+        assert "upload" in result
+
+    def test_success_response_no_error(self):
+        client, site = _make_client()
+        response = MagicMock()
+        response.raise_for_status = MagicMock()
+        response.json.return_value = {"query": {"userinfo": {"id": 42}}}
+        site.connection.request.return_value = response
+
+        result = client.client_request({"action": "query", "meta": "userinfo"})
+        assert result["query"]["userinfo"]["id"] == 42
+
+
+# ── Test _ensure_logged_in ───────────────────────────────────────────────────
+
+
+class TestEnsureLoggedIn:
+    def test_skips_login_when_session_valid(self):
+        client, site = _make_client()
+        # uid != 0 means session is valid
+        site.api.return_value = {"query": {"userinfo": {"id": 42}}}
+        site.login = MagicMock()
+        client._ensure_logged_in()
+        site.login.assert_not_called()
+
+    def test_logs_in_when_anonymous(self):
+        client, site = _make_client()
+        site.api.return_value = {"query": {"userinfo": {"id": 0}}}
+        site.login = MagicMock()
+        with patch("src.core.wiki_client.client.save_from_session"):
+            client._ensure_logged_in()
+        site.login.assert_called_once()
+
+    def test_logs_in_on_api_exception(self):
+        client, site = _make_client()
+        site.api.side_effect = Exception("connection error")
+        site.login = MagicMock()
+        with patch("src.core.wiki_client.client.save_from_session"):
+            client._ensure_logged_in()
+        site.login.assert_called_once()
+
+
+# ── Test _do_login ───────────────────────────────────────────────────────────
+
+
+class TestDoLogin:
+    def test_login_success(self):
+        client, site = _make_client()
+        site.login = MagicMock()
+        with patch("src.core.wiki_client.client.save_from_session") as mock_save:
+            client._do_login()
+        site.login.assert_called_once_with("MyBot", "pass")
+        mock_save.assert_called_once()
+
+    def test_login_failure_raises_login_error(self):
+        client, site = _make_client()
+        site.login = MagicMock(side_effect=mwclient.errors.LoginError("bad credentials"))
+        with pytest.raises(LoginError, match="Login failed"):
+            client._do_login()
+
+
+# ── Test login() public method ───────────────────────────────────────────────
+
+
+class TestLoginPublic:
+    def test_login_calls_do_login(self):
+        client, site = _make_client()
+        with patch.object(client, "_do_login") as mock_do:
+            client.login()
+            mock_do.assert_called_once()
+
+
+# ── Test save_cookies() ──────────────────────────────────────────────────────
+
+
+class TestSaveCookies:
+    def test_save_cookies_calls_save_from_session(self):
+        client, site = _make_client()
+        with patch("src.core.wiki_client.client.save_from_session") as mock_save:
+            client.save_cookies()
+            mock_save.assert_called_once()
+
+
+# ── Test site property ───────────────────────────────────────────────────────
+
+
+class TestSiteProperty:
+    def test_site_returns_mwclient_site(self):
+        client, site = _make_client()
+        assert client.site is site
+
+
+# ── Test __repr__ ────────────────────────────────────────────────────────────
 
 
 class TestRepr:
@@ -95,3 +323,38 @@ class TestRepr:
         assert "WikiLoginClient" in repr(client)
         assert "en" in repr(client)
         assert "MyBot" in repr(client)
+
+    def test_repr_contains_family(self):
+        client, _ = _make_client(family="wiktionary")
+        r = repr(client)
+        assert "wiktionary" in r
+
+
+# ── Test __init__ with cookies_dir ───────────────────────────────────────────
+
+
+class TestInitCookiesDir:
+    def test_passes_cookies_dir_to_get_cookie_path(self):
+        with patch("src.core.wiki_client.client.wrap_session"), \
+             patch("src.core.wiki_client.client.load_into_session"), \
+             patch("src.core.wiki_client.client.mwclient.Site") as mock_site, \
+             patch("src.core.wiki_client.client._get_shared_session"), \
+             patch("src.core.wiki_client.client.get_cookie_path") as mock_path:
+            mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
+            mock_path.return_value = MagicMock()
+
+            WikiLoginClient("en", "wikipedia", "bot", "pass", cookies_dir="/tmp/cookies")
+            mock_path.assert_called_once_with("/tmp/cookies", "wikipedia", "en", "bot")
+
+    def test_default_cookies_dir_is_none(self):
+        with patch("src.core.wiki_client.client.wrap_session"), \
+             patch("src.core.wiki_client.client.load_into_session"), \
+             patch("src.core.wiki_client.client.mwclient.Site") as mock_site, \
+             patch("src.core.wiki_client.client._get_shared_session"), \
+             patch("src.core.wiki_client.client.get_cookie_path") as mock_path:
+            mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
+            mock_path.return_value = MagicMock()
+
+            WikiLoginClient("en", "wikipedia", "bot", "pass")
+            args = mock_path.call_args[0]
+            assert args[0] is None
