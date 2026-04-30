@@ -302,6 +302,10 @@ class Login(HandleErrors):
         return data
 
     def add_User_tables(self, family, table, lang="") -> None:
+        if not self.auth:
+            self.lang = lang
+            self.family = family
+            self._make_session()
         self.auth.add_User_tables(family, table, lang)
 
     def params_w(self, params: dict) -> dict:
