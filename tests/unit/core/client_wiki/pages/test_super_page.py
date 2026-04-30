@@ -138,8 +138,9 @@ class TestFalseEdit:
         mock_settings.bot.no_fa = True
         assert page.false_edit() is False
 
+    @patch("src.core.client_wiki.pages.super_page.logger")
     @patch("src.core.client_wiki.pages.super_page.settings")
-    def test_detects_90_percent_removal(self, mock_settings, page):
+    def test_detects_90_percent_removal(self, mock_settings, mock_logger, page):
         page.ns = 0
         mock_settings.bot.no_fa = False
         page.text = "a" * 1000

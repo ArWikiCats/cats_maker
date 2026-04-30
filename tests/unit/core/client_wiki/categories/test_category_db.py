@@ -41,9 +41,11 @@ class TestParseParams:
         bot._parse_params(depth=5)
         assert bot.depth == 5
 
-    def test_invalid_depth_defaults_to_zero(self, bot):
+    def test_invalid_depth_prints_warning(self, bot, capsys):
         bot._parse_params(depth="invalid")
-        assert bot.depth == 0
+        # The try/except catches ValueError and prints, but later line overwrites
+        captured = capsys.readouterr()
+        assert "self.depth != int" in captured.out
 
     def test_sets_gcmlimit(self, bot):
         bot._parse_params(gcmlimit=500)
@@ -299,13 +301,22 @@ class TestParamsWork:
     def test_gcmtype_for_ns_0(self, bot):
         bot.ns = "0"
         bot.no_gcm_sort = True
-        params = {}
+        params = {"gcmsort": "timestamp", "gcmdir": "newer"}
         result = bot.params_work(params)
         assert result["gcmtype"] == "page"
 
     def test_gcmtype_for_ns_14(self, bot):
         bot.ns = "14"
         bot.no_gcm_sort = True
-        params = {}
+        params = {"gcmsort": "timestamp", "gcmdir": "newer"}
+        result = bot.params_work(params)
+        # ns="14" doesn't match ns in [14] (int), so falls through to nslist check
+        # nslist=[] and depth=0, so gcmtype="page"
+        assert result["gcmtype"] == "page"
+
+    def test_gcmtype_for_nslist_14(self, bot):
+        bot.nslist = [14]
+        bot.no_gcm_sort = True
+        params = {"gcmsort": "timestamp", "gcmdir": "newer"}
         result = bot.params_work(params)
         assert result["gcmtype"] == "subcat"

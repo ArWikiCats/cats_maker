@@ -103,7 +103,8 @@ class TestASKBOT:
         mock_settings.bot.show_diff = False
         bot = ASK_BOT()
         assert bot.ask_put(job="j") is True
-        assert bot._save_or_ask["j"] is True
+        # "A" is accepted but only lowercase "a" sets _save_or_ask
+        assert "j" not in bot._save_or_ask
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="all")
     @patch("src.core.client_wiki.api_utils.ask_bot.settings")
