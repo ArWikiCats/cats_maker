@@ -114,7 +114,7 @@ class WD_API:
 
         params = self.filter_data(params)
 
-        results = self.login_bot.client_request(params, do_error=False)
+        results = self.login_bot.client_request(params)
 
         if results.get("servedby"):
             results["servedby"] = ""
