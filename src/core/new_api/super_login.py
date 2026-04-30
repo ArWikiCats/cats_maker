@@ -288,7 +288,11 @@ class Login(HandleErrors):
             self._make_session()
 
         req = self.auth.session.request(
-            "POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout
+            "POST",
+            self.endpoint,
+            data=self.params_w(params),
+            files=files,
+            timeout=timeout,
         )
 
         if req:
