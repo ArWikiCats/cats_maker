@@ -43,7 +43,6 @@ class Login(HandleErrors):
         self.auth = None
         # self.auth = AuthProvider()
 
-
         super().__init__()
 
     def filter_params(self, params: dict) -> dict:
@@ -285,10 +284,10 @@ class Login(HandleErrors):
         else:
             timeout = 30
 
-        if not self._client.session:
+        if not self.auth.session:
             self._make_session()
 
-        req = self._client.session.request(
+        req = self.auth.session.request(
             "POST", self.endpoint, data=self.params_w(params), files=files, timeout=timeout
         )
 
