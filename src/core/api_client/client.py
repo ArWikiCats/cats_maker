@@ -580,7 +580,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
             body = self.client_request(page_params)
 
             if not body:
-                logger.debug("post_continue: empty response, stopping")
+                logger.debug("empty response, stopping")
                 break
 
             continue_params = {}
@@ -600,13 +600,13 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
                             data = data.get(_p_2, _p_2_empty)
 
             if not data:
-                logger.debug("post_continue: no data in response, stopping")
+                logger.debug("no data in response, stopping")
                 break
 
-            logger.debug("post_continue: +%d items (total %d)", len(data), len(results))
+            logger.debug("+%d items (total %d)", len(data), len(results))
 
             if Max <= len(results) > 1:
-                logger.debug("post_continue: Max=%d reached, stopping", Max)
+                logger.debug("Max=%d reached, stopping", Max)
                 break
 
             if isinstance(results, list):
@@ -614,7 +614,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
             else:
                 results = {**results, **data}
 
-        logger.debug("post_continue: done, %d total results", len(results))
+        logger.debug("done, %d total results", len(results))
         return results
 
     # ── Private helpers ────────────────────────────────────────────────────
