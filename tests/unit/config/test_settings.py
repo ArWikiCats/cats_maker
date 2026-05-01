@@ -577,14 +577,15 @@ class TestDontAddToPagesPath:
     def test_dont_add_to_pages_path_attribute_exists(self):
         """Test that Settings has dont_add_to_pages_path attribute."""
         s = Settings()
-        assert hasattr(s, "dont_add_to_pages_path")
+        assert hasattr(s, "paths")
+        assert hasattr(s.paths, "dont_add_to_pages_path")
 
     def test_dont_add_to_pages_path_env(self, monkeypatch):
         """Test dont_add_to_pages_path reads from DONT_ADD_TO_PAGES_PATH env var."""
         monkeypatch.setenv("DONT_ADD_TO_PAGES_PATH", "/some/path")
         # Since dont_add_to_pages_path is a class attribute set at import time,
         # we verify it by checking the class-level attribute.
-        assert Settings.dont_add_to_pages_path is not None
+        assert Settings.paths.dont_add_to_pages_path is not None
 
 
 class TestProcessArgv:

@@ -10,6 +10,8 @@ import mwclient
 import mwclient.errors
 import requests
 
+from src.config import settings
+
 from .config import COOKIES_DIR
 from .cookies import get_cookie_path, load_into_session, save_from_session
 from .exceptions import LoginError, WikiClientError
@@ -46,7 +48,7 @@ class WikiLoginClient:
         family: str,
         username: str,
         password: str,
-        cookies_dir: str = COOKIES_DIR,
+        cookies_dir: str = settings.paths.cookies_dir,
     ) -> None:
         """
         Initialise the client, load any saved cookies, and ensure the session
@@ -58,7 +60,7 @@ class WikiLoginClient:
             username:    Bot / user account name.
             password:    Account password (or bot password).
             cookies_dir: Directory where cookie files are stored.
-                         Defaults to config.COOKIES_DIR ("cookies/").
+                         Defaults to settings.paths.cookies_dir.
         """
         self.lang = lang
         self.family = family
