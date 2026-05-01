@@ -1,4 +1,4 @@
-# wiki_client/cookies.py
+# api_client/cookies.py
 # Pure functions for loading and saving a MozillaCookieJar.
 # No class, no state — compose with anything that holds a requests.Session.
 

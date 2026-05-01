@@ -1,4 +1,4 @@
-# wiki_client/requests_handler.py
+# api_client/requests_handler.py
 # Wraps the requests.Session used internally by mwclient.Site so that every
 # API call gets automatic CSRF token refresh and maxlag backoff — transparently,
 # with no changes needed in calling code.

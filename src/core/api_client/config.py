@@ -1,4 +1,4 @@
-# wiki_client/config.py
+# api_client/config.py
 # All tuneable constants. No logic lives here.
 
 MAX_RETRIES: int = 5

@@ -1,5 +1,5 @@
 """
-Unit tests for src/core/wiki_client/requests_handler.py module.
+Unit tests for src/core/api_client/requests_handler.py module.
 """
 
 from unittest.mock import MagicMock, patch
@@ -81,7 +81,7 @@ class TestWrappedRequest:
         with pytest.raises(CSRFError):
             session.request("POST", "http://example.com")
 
-    @patch("src.core.wiki_client.requests_handler.time.sleep")
+    @patch("src.core.api_client.requests_handler.time.sleep")
     def test_raises_maxlag_error_after_max_retries(self, mock_sleep):
         session = MagicMock(spec=requests.Session)
         site = MagicMock()

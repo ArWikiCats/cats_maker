@@ -1,5 +1,5 @@
 """
-Unit tests for src/core/wiki_client/cookies.py module.
+Unit tests for src/core/api_client/cookies.py module.
 """
 
 import os

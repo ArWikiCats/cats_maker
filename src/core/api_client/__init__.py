@@ -1,4 +1,4 @@
-# wiki_client/__init__.py
+# api_client/__init__.py
 # Public surface of the package.
 # Import WikiLoginClient and all exception types from here.
 

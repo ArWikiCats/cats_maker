@@ -21,10 +21,10 @@ def disable_network(mocker):
     mocker.patch("requests.post", side_effect=Exception("Network disabled in tests"))
     mocker.patch("urllib.request.urlopen", side_effect=Exception("Network disabled in tests"))
     mocker.patch(
-        "src.core.wiki_client.client.mwclient.client.requests.get", side_effect=Exception("Network disabled in tests")
+        "src.core.api_client.client.mwclient.client.requests.get", side_effect=Exception("Network disabled in tests")
     )
     mocker.patch(
-        "src.core.wiki_client.client.mwclient.client.requests.post", side_effect=Exception("Network disabled in tests")
+        "src.core.api_client.client.mwclient.client.requests.post", side_effect=Exception("Network disabled in tests")
     )
 
 
