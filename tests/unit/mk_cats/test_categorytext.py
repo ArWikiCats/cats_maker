@@ -17,7 +17,6 @@ from src.mk_cats.categorytext import (
     get_page_link_data,
 )
 
-
 # ===== Tests for get_page_link_data =====
 
 

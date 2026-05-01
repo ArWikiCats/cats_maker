@@ -6,8 +6,8 @@ from src.core.wiki_client.exceptions import (
     CookieError,
     CSRFError,
     LoginError,
-    MaxRetriesExceeded,
     MaxlagError,
+    MaxRetriesExceeded,
     WikiClientError,
 )
 

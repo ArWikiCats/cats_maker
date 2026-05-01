@@ -264,9 +264,7 @@ class TestGetText:
 
 class TestGetRedirectTarget:
     def test_returns_target(self, page):
-        page.login_bot.client_request.return_value = {
-            "query": {"redirects": [{"from": "Yemen", "to": "اليمن"}]}
-        }
+        page.login_bot.client_request.return_value = {"query": {"redirects": [{"from": "Yemen", "to": "اليمن"}]}}
         assert page.get_redirect_target() == "اليمن"
 
     def test_no_redirect(self, page):
@@ -314,9 +312,7 @@ class TestSave:
         mock_settings.bot.ask = False
         mock_settings.bot.no_fa = False
         page.ns = 14
-        page.login_bot.client_request.return_value = {
-            "error": {"code": "protectedpage", "info": "Protected"}
-        }
+        page.login_bot.client_request.return_value = {"error": {"code": "protectedpage", "info": "Protected"}}
         result = page.save(newtext="new text")
         assert result is False
 
@@ -348,9 +344,7 @@ class TestCreate:
     @patch("src.core.client_wiki.pages.super_page.settings")
     def test_create_failure(self, mock_settings, page):
         mock_settings.bot.ask = False
-        page.login_bot.client_request.return_value = {
-            "error": {"code": "articleexists", "info": "Already exists"}
-        }
+        page.login_bot.client_request.return_value = {"error": {"code": "articleexists", "info": "Already exists"}}
         result = page.Create(text="content")
         assert result == "articleexists"
 
@@ -365,9 +359,7 @@ class TestCreate:
 class TestPostContinue:
     def test_single_page(self, page):
         params = {"action": "query", "prop": "links"}
-        page.login_bot.client_request.return_value = {
-            "query": {"links": [{"title": "Link1"}]}
-        }
+        page.login_bot.client_request.return_value = {"query": {"links": [{"title": "Link1"}]}}
         result = page.post_continue(params, "query")
         assert len(result) == 1
 

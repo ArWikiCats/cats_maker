@@ -3,12 +3,12 @@ Unit tests for src/temp/bots/new.py module.
 """
 
 from src.temp.bots.new import (
-    make_century_template,
-    make_millennium_template,
-    make_decades_template,
-    make_years_template,
     TemplatesMaker,
     main_make_temp,
+    make_century_template,
+    make_decades_template,
+    make_millennium_template,
+    make_years_template,
 )
 
 

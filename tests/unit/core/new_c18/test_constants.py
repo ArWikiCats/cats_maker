@@ -6,9 +6,7 @@ This module tests category filtering functions.
 
 import pytest
 
-
-from src.core.new_c18.constants import PRE_TEXT, TO_SEARCH, TOSEARCH_AND_REPLACE
-from src.core.new_c18.constants import FALSE_TEMPLATES, SKIPPED_CATEGORIES
+from src.core.new_c18.constants import FALSE_TEMPLATES, PRE_TEXT, SKIPPED_CATEGORIES, TO_SEARCH, TOSEARCH_AND_REPLACE
 
 
 class TestSkippedCategories:

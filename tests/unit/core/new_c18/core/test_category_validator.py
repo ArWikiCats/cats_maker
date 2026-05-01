@@ -76,8 +76,10 @@ class TestCheckPageStatus:
             "isRedirectPage": False,
             "templates": {"Template:Nobots"},
         }
-        with patch("src.core.new_c18.core.category_validator.settings") as mock_settings, \
-             patch("src.core.new_c18.core.category_validator._get_false_templates", return_value=frozenset(["nobots"])):
+        with (
+            patch("src.core.new_c18.core.category_validator.settings") as mock_settings,
+            patch("src.core.new_c18.core.category_validator._get_false_templates", return_value=frozenset(["nobots"])),
+        ):
             mock_settings.category.keep = False
             result = _check_page_status("en", "Category:Test", None, frozenset())
             assert result.valid is False
