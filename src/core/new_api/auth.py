@@ -121,10 +121,11 @@ class AuthProvider:
             try:
                 result = req.json()
             except Exception as e:
+                req_text = getattr(req, 'text', '')
                 logger.exception(
-                    f" {self.lang}.{self.family} error parsing login response: {e} - response: {getattr(req, 'text', '')}"
+                    f" {self.lang}.{self.family} error parsing login response: {e} - response: {req_text}"
                 )
-                logger.debug(req.text)
+                logger.debug(req_text)
                 return False
 
         login_result = result.get("login", {}).get("result", "")
@@ -168,10 +169,9 @@ class AuthProvider:
             try:
                 json1 = req.json()
             except Exception as e:
-                logger.exception(
-                    f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {getattr(req, 'text', '')}"
-                )
-                logger.debug(req.text)
+                req_text = getattr(req, 'text', '')
+                logger.exception(f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {req_text}")
+                logger.debug(req_text)
                 return False
 
         userinfo = json1.get("query", {}).get("userinfo", {})
@@ -203,10 +203,11 @@ class AuthProvider:
             try:
                 json1 = req.json()
             except Exception as e:
+                req_text = getattr(req, 'text', '')
                 logger.exception(
-                    f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {getattr(req, 'text', '')}"
+                    f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {req_text}"
                 )
-                logger.debug(req.text)
+                logger.debug(req_text)
                 return False
 
         return json1.get("query", {}).get("tokens", {}).get("csrftoken", "") or ""
