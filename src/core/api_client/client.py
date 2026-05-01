@@ -446,7 +446,12 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         without creating a new WikiLoginClient instance.
         """
         if not self._site.logged_in:
-            logger.info("Forcing re-login for %s on %s.%s", self.username, self.lang, self.family)
+            logger.info(
+                "Forcing re-login for %s on %s.%s",
+                self.username,
+                self.lang,
+                self.family,
+            )
             self._do_login()
 
     def client_request(
