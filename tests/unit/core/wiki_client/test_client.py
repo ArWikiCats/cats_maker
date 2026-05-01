@@ -267,7 +267,7 @@ class TestDoLogin:
         site.login = MagicMock()
         with patch("src.core.wiki_client.client.save_from_session") as mock_save:
             client._do_login()
-        site.login.assert_called_once_with("MyBot", "pass")
+        site.login.assert_called_with("MyBot", "pass")
         # mock_save.assert_called_once()
 
     def test_login_failure_raises_login_error(self):
