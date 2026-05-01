@@ -18,30 +18,265 @@ data = client.client_request(
         "title": "Sandbox",
         "text": "hello",
         "summary": "test",
-        "token": client.site.get_token("csrf"),
     },
     method="post",
 )
 """
 
+from __future__ import annotations
+
+import copy
 import http.cookiejar
 import logging
+import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import mwclient
 import mwclient.errors
 import requests
 
 from ...config import settings
+from . import config
 from .cookies import (
     _delete_cookie_file,
     get_cookie_path,
 )
-from .exceptions import LoginError, WikiClientError
-from .requests_handler import wrap_session
+from .exceptions import (
+    CSRFError,
+    LoginError,
+    MaxlagError,
+    WikiClientError,
+)
 
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# RequestsHandler — transport + retry layer
+# ---------------------------------------------------------------------------
+
+
+class RequestsHandler:
+    """
+    Owns a requests.Session and drives every HTTP call through a unified
+    retry loop that handles:
+
+    - CSRF / bad token        → refresh token, reinject, retry
+    - maxlag                  → exponential back-off, retry
+    - assertnameduserfailed   → delegate re-login hook, retry once
+    """
+
+    # ------------------------------------------------------------------
+    # Abstract-ish contract that subclasses must satisfy
+    # ------------------------------------------------------------------
+
+    @property
+    def _session(self) -> requests.Session:
+        raise NotImplementedError
+
+    def _refresh_csrf_token(self) -> str:
+        raise NotImplementedError
+
+    def _on_assertnameduserfailed(self) -> None:
+        raise NotImplementedError
+
+    # ------------------------------------------------------------------
+    # Core request execution — the only method that touches the network
+    # ------------------------------------------------------------------
+
+    def _execute_request(
+        self,
+        method: str,
+        url: str,
+        *,
+        params: Optional[dict] = None,
+        data: Optional[dict] = None,
+        files: Optional[Any] = None,
+    ) -> requests.Response:
+        return self._session.request(
+            method,
+            url,
+            params=params,
+            data=data,
+            files=files,
+        )
+
+    # ------------------------------------------------------------------
+    # Retry loop
+    # ------------------------------------------------------------------
+
+    def _request_with_retry(
+        self,
+        method: str,
+        url: str,
+        *,
+        params: Optional[dict] = None,
+        data: Optional[dict] = None,
+        files: Optional[Any] = None,
+        assertnameduser_retries: int = 1,
+    ) -> dict:
+        """
+        Execute a request and automatically retry on transient API errors.
+
+        Works on copies of params/data so per-retry mutations never bleed
+        into the caller's dict.
+
+        Raises:
+            CSRFError:          After exhausting CSRF token retries.
+            MaxlagError:        After exhausting maxlag retries.
+            WikiClientError:    On assertnameduserfailed or other API errors.
+            requests.HTTPError: On non-2xx HTTP responses.
+        """
+        # Defensive copies — don't mutate the caller's dicts across retries
+        working_params = dict(params) if params else {}
+        working_data = dict(data) if data else {}
+
+        attempt = 0
+        named_user_attempts = 0
+
+        while attempt < config.MAX_RETRIES:
+            response = self._execute_request(
+                method,
+                url,
+                params=working_params or None,
+                data=working_data or None,
+                files=files,
+            )
+            response.raise_for_status()
+
+            # Only inspect JSON responses — pass everything else straight through
+            if "application/json" not in response.headers.get("Content-Type", ""):
+                return {}
+
+            try:
+                body: dict = response.json()
+            except ValueError:
+                return {}
+
+            error = body.get("error", {})
+            if not error:
+                return body  # ← happy path
+
+            error_code: str = error.get("code", "")
+            error_info: str = error.get("info", "")
+
+            # ── CSRF ──────────────────────────────────────────────────────
+            if self._is_csrf_error(error_code, error_info):
+                attempt += 1
+                if attempt >= config.MAX_RETRIES:
+                    raise CSRFError(
+                        f"CSRF token remained invalid after {config.MAX_RETRIES} "
+                        f"attempts. Last error: {error_info or error_code}"
+                    )
+                working_data, working_params = self._handle_csrf(
+                    error_code, error_info, attempt, working_data, working_params
+                )
+                continue
+
+            # ── maxlag ────────────────────────────────────────────────────
+            if error_code == "maxlag":
+                attempt += 1
+                if attempt >= config.MAX_RETRIES:
+                    raise MaxlagError(f"Server maxlag not resolved after {config.MAX_RETRIES} attempts.")
+                self._handle_maxlag(response, attempt)
+                continue
+
+            # ── assertnameduserfailed ─────────────────────────────────────
+            if error_code == "assertnameduserfailed":
+                if named_user_attempts >= assertnameduser_retries:
+                    raise WikiClientError("assertnameduserfailed persists after re-login")
+                named_user_attempts += 1
+                logger.warning(
+                    "assertnameduserfailed — attempting recovery (try %d/%d)",
+                    named_user_attempts,
+                    assertnameduser_retries,
+                )
+                self._on_assertnameduserfailed()
+                attempt = 0  # Reset CSRF/maxlag budget after re-login
+                continue
+
+            # ── No retryable error — surface to the caller ────────────────
+            raise WikiClientError(f"API error {error_code}: {error_info}")
+
+        raise MaxlagError(f"Exceeded {config.MAX_RETRIES} retries without a successful response.")
+
+    # ------------------------------------------------------------------
+    # Protected CSRF helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _is_csrf_error(code: str, info: str) -> bool:
+        return code in ("badtoken", "notoken") or info == "Invalid CSRF token."
+
+    def _handle_csrf(
+        self,
+        error_code: str,
+        error_info: str,
+        attempt: int,
+        data: dict,
+        params: dict,
+    ) -> tuple[dict, dict]:
+        """Refresh the CSRF token and reinject it into whichever dict carries it.
+
+        Returns updated (data, params) copies — never mutates in place.
+        """
+        logger.debug(
+            "CSRF error (%s) — refreshing token (attempt %d/%d)",
+            error_code or error_info,
+            attempt,
+            config.MAX_RETRIES,
+        )
+        try:
+            new_token = self._refresh_csrf_token()
+        except Exception as exc:
+            raise CSRFError(f"Failed to refresh CSRF token: {exc}") from exc
+
+        return self._inject_token(new_token, data, params)
+
+    @staticmethod
+    def _inject_token(token: str, data: dict, params: dict) -> tuple[dict, dict]:
+        """Return (data, params) copies with ``token`` updated to *token*.
+
+        Only one dict should ever carry the key; we update the first match.
+        """
+        for bucket_name, bucket in (("data", data), ("params", params)):
+            if "token" in bucket:
+                bucket = dict(bucket)
+                bucket["token"] = token
+                logger.debug("Injected new CSRF token into %s", bucket_name)
+                if bucket_name == "data":
+                    return bucket, params
+                return data, bucket
+        return data, params
+
+    # ------------------------------------------------------------------
+    # Protected maxlag helper
+    # ------------------------------------------------------------------
+
+    def _handle_maxlag(self, response: requests.Response, attempt: int) -> None:
+        """Sleep for the server-requested delay (or exponential back-off)."""
+        retry_after = response.headers.get(config.MAXLAG_HEADER)
+        try:
+            delay = float(retry_after) if retry_after is not None else None
+        except ValueError:
+            delay = None
+
+        if delay is None:
+            delay = config.BACKOFF_BASE * (2**attempt)
+
+        logger.debug(
+            "maxlag — sleeping %.1f s (attempt %d/%d)",
+            delay,
+            attempt,
+            config.MAX_RETRIES,
+        )
+        time.sleep(delay)
+
+
+# ---------------------------------------------------------------------------
+# CookiesClient — cookie I/O helpers
+# ---------------------------------------------------------------------------
 
 
 class CookiesClient:
