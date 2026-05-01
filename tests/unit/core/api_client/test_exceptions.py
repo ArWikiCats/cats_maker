@@ -1,8 +1,8 @@
 """
-Unit tests for src/core/wiki_client/exceptions.py module.
+Unit tests for src/core/api_client/exceptions.py module.
 """
 
-from src.core.wiki_client.exceptions import (
+from src.core.api_client.exceptions import (
     CookieError,
     CSRFError,
     LoginError,

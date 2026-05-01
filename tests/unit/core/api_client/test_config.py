@@ -1,8 +1,8 @@
 """
-Unit tests for src/core/wiki_client/config.py module.
+Unit tests for src/core/api_client/config.py module.
 """
 
-from src.core.wiki_client.config import BACKOFF_BASE, COOKIES_DIR, MAX_RETRIES, MAXLAG_HEADER
+from src.core.api_client.config import BACKOFF_BASE, COOKIES_DIR, MAX_RETRIES, MAXLAG_HEADER
 
 
 class TestConfig:

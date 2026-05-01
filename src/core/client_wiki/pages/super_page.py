@@ -5,7 +5,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 
 from ....config import settings
-from ...wiki_client import WikiLoginClient
+from ...api_client import WikiLoginClient
 from ..api_utils import ASK_BOT, bot_May_Edit, change_codes
 from ..api_utils.handel_errors import HandleErrors
 

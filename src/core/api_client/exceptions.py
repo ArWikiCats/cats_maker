@@ -1,9 +1,9 @@
-# wiki_client/exceptions.py
+# api_client/exceptions.py
 # Typed exceptions so callers can catch specific failure modes.
 
 
 class WikiClientError(Exception):
-    """Base exception for all wiki_client errors."""
+    """Base exception for all api_client errors."""
 
 
 class LoginError(WikiClientError):
