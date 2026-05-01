@@ -280,9 +280,10 @@ class RequestsHandler:
 
 
 class CookiesClient:
+    """Static helpers for loading and persisting LWP cookie jars."""
 
     @staticmethod
-    def save_cookies(cj) -> None:
+    def save_cookies(cj: http.cookiejar.LWPCookieJar) -> None:
         """
         Persist the current session cookies to disk immediately.
 
@@ -290,24 +291,32 @@ class CookiesClient:
         to checkpoint the session after a long batch of writes.
         """
         try:
+            # Save cookies to disk, ignoring discard and expire attributes
             cj.save(ignore_discard=True, ignore_expires=True)
+            # Log successful cookie save operation
             logger.debug("Cookies saved to _cookie_path")
-        except Exception as e:
+        except Exception:
+            # Log any exceptions that occur during cookie saving
             logger.exception("Failed to save cookies")
 
     @staticmethod
-    def _make_cookiejar(cookie_path) -> http.cookiejar.LWPCookieJar:
+    def _make_cookiejar(cookie_path: Path) -> http.cookiejar.LWPCookieJar:
+        # Create a new LWPCookieJar instance with the specified path
         cj = http.cookiejar.LWPCookieJar(cookie_path)
-
         if cookie_path.exists():
             try:
                 cj.load(ignore_discard=True, ignore_expires=True)
-            except Exception as e:
-                logger.error("Error loading cookies: %s", e)
+            except Exception as exc:
+                logger.error("Error loading cookies: %s", exc)
         return cj
 
 
-class WikiLoginClient(CookiesClient):
+# ---------------------------------------------------------------------------
+# WikiLoginClient — business layer
+# ---------------------------------------------------------------------------
+
+
+class WikiLoginClient(CookiesClient, RequestsHandler):
     """
     A thin wrapper around mwclient.Site that:
 
