@@ -500,8 +500,6 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         # Always request JSON and inject write-action safety params
         params = self._enrich_params({"format": "json", **params})
 
-        session: requests.Session = self._site.connection
-
         logger.debug(
             "%s %s params=%s files=%s",
             method.upper(),
@@ -511,50 +509,113 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
             list(files.keys()) if files else None,
         )
 
-        # Merge #4: assertnameduserfailed recovery — retry once after re-login
-        for attempt in range(2):
-            if method == "get":
-                response = session.request("GET", self.api_url, params=params)
+        if method == "get":
+            return self._request_with_retry(
+                "GET",
+                self.api_url,
+                params=params,
+            )
+        else:
+            # Always fetch a fresh CSRF token for POST — the retry loop will
+            # refresh it automatically on CSRF errors.
+            params["token"] = self._site.get_token("csrf")
+            return self._request_with_retry(
+                "POST",
+                self.api_url,
+                data=params,
+                files=files,
+            )
+
+    def post_continue(
+        self,
+        params: dict,
+        action: str,
+        _p_: str = "pages",
+        p_empty: Optional[Union[list, dict]] = None,
+        Max: int = 500_000,
+        first: bool = False,
+        _p_2: str = "",
+        _p_2_empty: Optional[Union[list, dict]] = None,
+    ) -> Union[list, dict]:
+        """
+        Handles MediaWiki API continuation queries.
+        Should mimic behavior of old Login.post_continue.
+
+        Args:
+            params:      Base API parameters.
+            action:      Top-level JSON key to extract results from
+                         (e.g. ``"query"``, ``"wbsearchentities"``).
+            _p_:         Sub-key inside *action* (default ``"pages"``).
+            p_empty:     Seed value for the accumulator (list or dict).
+            Max:         Stop accumulating after this many results.
+            first:       Return only the first element of the result list.
+            _p_2:        Secondary sub-key when *first* is True.
+            _p_2_empty:  Seed for secondary accumulator.
+
+        Returns:
+            Accumulated results as a list or dict, depending on *p_empty*.
+        """
+        logger.debug("post_continue start. action=%s _p_=%s", action, _p_)
+
+        if isinstance(Max, str) and Max.isdigit():
+            Max = int(Max)
+        if Max == 0:
+            Max = 500_000
+
+        p_empty = p_empty if p_empty is not None else []
+        _p_2_empty = _p_2_empty if _p_2_empty is not None else []
+
+        results = p_empty
+        continue_params: dict = {}
+        iterations = 0
+
+        while continue_params or iterations == 0:
+            page_params = copy.deepcopy(params)
+            iterations += 1
+
+            if continue_params:
+                logger.debug("Applying continue_params: %s", continue_params)
+                page_params.update(continue_params)
+
+            body = self.client_request(page_params)
+
+            if not body:
+                logger.debug("post_continue: empty response, stopping")
+                break
+
+            continue_params = {}
+
+            if action == "wbsearchentities":
+                data = body.get("search", [])
             else:
-                params["token"] = self._site.get_token("csrf")
-                response = session.request("POST", self.api_url, data=params, files=files)
+                continue_params = body.get("continue", {})
+                data = body.get(action, {}).get(_p_, p_empty)
 
-            response.raise_for_status()
+                if _p_ == "querypage":
+                    data = data.get("results", [])
+                elif first:
+                    if isinstance(data, list) and data:
+                        data = data[0]
+                        if _p_2:
+                            data = data.get(_p_2, _p_2_empty)
 
-            result: dict = response.json()
+            if not data:
+                logger.debug("post_continue: no data in response, stopping")
+                break
 
-            error = result.get("error", {})
-            if not error:
-                return result
+            logger.debug("post_continue: +%d items (total %d)", len(data), len(results))
 
-            error_code = error.get("code", "")
-            error_info = error.get("info", error)
+            if Max <= len(results) > 1:
+                logger.debug("post_continue: Max=%d reached, stopping", Max)
+                break
 
-            # ── assertnameduserfailed: session expired silently mid-run ────
-            # Matches super_login.py post_it_parse_data recovery logic.
-            if error_code == "assertnameduserfailed":
-                if attempt == 0:
-                    logger.warning(
-                        "assertnameduserfailed for %s on %s.%s — clearing cookies and re-logging in",
-                        self.username,
-                        self.lang,
-                        self.family,
-                    )
-                    # Nuke the stale cookie file and the cached session
-                    _delete_cookie_file(self._cookie_path, reason="assertnameduserfailed")
-                    self._do_login()
-                    continue  # retry the original request
-                else:
-                    raise WikiClientError(
-                        f"assertnameduserfailed persists after re-login for "
-                        f"{self.username} on {self.lang}.{self.family}"
-                    )
+            if isinstance(results, list):
+                results.extend(data)
+            else:
+                results = {**results, **data}
 
-            # All other errors — surface to the caller
-            raise WikiClientError(f"API error {error_code}: {error_info}")
-
-        # Should never be reached
-        return {}
+        logger.debug("post_continue: done, %d total results", len(results))
+        return results
 
     # ── Private helpers ────────────────────────────────────────────────────
 
