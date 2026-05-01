@@ -1,32 +1,26 @@
 """
-Refactored API client.
-
-Hierarchy
----------
-  RequestsHandler          — transport layer: session, retry loop, CSRF/maxlag/backoff
-      └── WikiLoginClient  — business layer: auth, cookie persistence, param enrichment
 
 Examples::
 
-    client = WikiLoginClient(
-        lang="en",
-        family="wikipedia",
-        username="MyBot",
-        password="s3cr3t",
-    )
-    # Simple read
-    data = client.client_request({"action": "query", "titles": "Python"})
+client = WikiLoginClient(
+    lang="en",
+    family="wikipedia",
+    username="MyBot",
+    password="s3cr3t",
+)
+# Simple read
+data = client.client_request({"action": "query", "titles": "Python"})
 
-    # Write — POST with auto CSRF + retry
-    data = client.client_request(
-        {
-            "action": "edit",
-            "title": "Sandbox",
-            "text": "hello",
-            "summary": "test",
-        },
-        method="post",
-    )
+# Write — POST with auto CSRF + retry handling
+data = client.client_request(
+    {
+        "action": "edit",
+        "title": "Sandbox",
+        "text": "hello",
+        "summary": "test",
+    },
+    method="post",
+)
 """
 
 from __future__ import annotations
@@ -42,6 +36,7 @@ import mwclient
 import mwclient.errors
 import requests
 
+from ...config import settings
 from . import config
 from .cookies import _delete_cookie_file, get_cookie_path
 from .exceptions import CSRFError, LoginError, MaxlagError, WikiClientError
@@ -50,48 +45,35 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# RequestsHandler — transport + retry layer
+# RequestsHandler — طبقة النقل وإعادة المحاولة
 # ---------------------------------------------------------------------------
 
 
 class RequestsHandler:
     """
-    Owns a ``requests.Session`` and drives every HTTP call through a unified
-    retry loop that handles:
+    تمتلك requests.Session وتُشغّل كل طلب HTTP عبر حلقة إعادة محاولة موحّدة تتعامل مع:
 
-    - CSRF / bad token  → refresh token, reinject, retry
-    - maxlag            → exponential back-off, retry
-    - assertnameduserfailed → delegate re-login hook, retry
-
-    Subclasses must supply ``_session`` (a ``requests.Session``) and may
-    override ``_on_assertnameduserfailed`` to implement session recovery.
+    - CSRF / bad token        → تحديث التوكن، حقنه من جديد، إعادة المحاولة
+    - maxlag                  → انتظار تدريجي أسّي، إعادة المحاولة
+    - assertnameduserfailed   → تفويض خطّاف إعادة تسجيل الدخول، إعادة المحاولة مرة واحدة
     """
 
     # ------------------------------------------------------------------
-    # Abstract-ish contract that subclasses must satisfy
+    # عقد يجب أن تُوفّره الكلاسات الفرعية
     # ------------------------------------------------------------------
 
     @property
     def _session(self) -> requests.Session:
-        """The live ``requests.Session``.  Subclasses must assign this."""
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _refresh_csrf_token(self) -> str:
-        """
-        Fetch and return a fresh CSRF token.
-        Subclasses override this to call ``site.get_token("csrf", force=True)``.
-        """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     def _on_assertnameduserfailed(self) -> None:
-        """
-        Called when the API returns ``assertnameduserfailed``.
-        Subclasses implement session-recovery logic (re-login, cookie reset).
-        """
-        raise NotImplementedError  # pragma: no cover
+        raise NotImplementedError
 
     # ------------------------------------------------------------------
-    # Core request execution — the only method that touches the network
+    # تنفيذ الطلب الأساسي — النقطة الوحيدة التي تلمس الشبكة
     # ------------------------------------------------------------------
 
     def _execute_request(
@@ -103,10 +85,6 @@ class RequestsHandler:
         data: Optional[dict] = None,
         files: Optional[Any] = None,
     ) -> requests.Response:
-        """
-        Send one HTTP request through the session with no retry logic.
-        Returns the raw ``requests.Response``.
-        """
         return self._session.request(
             method,
             url,
@@ -116,7 +94,7 @@ class RequestsHandler:
         )
 
     # ------------------------------------------------------------------
-    # Retry loop  (called by WikiLoginClient.client_request)
+    # حلقة إعادة المحاولة
     # ------------------------------------------------------------------
 
     def _request_with_retry(
@@ -130,25 +108,17 @@ class RequestsHandler:
         assertnameduser_retries: int = 1,
     ) -> dict:
         """
-        Execute a request and automatically retry on transient API errors.
+        نفّذ الطلب وأعد المحاولة تلقائياً عند أخطاء API العابرة.
 
-        Retry conditions (each counted against ``config.MAX_RETRIES``):
-          - CSRF / bad token  → ``_handle_csrf``  → inject new token, retry
-          - maxlag            → ``_handle_maxlag`` → sleep, retry
-          - assertnameduserfailed → ``_on_assertnameduserfailed`` → retry once
-
-        All other errors bubble up unchanged.
-
-        Returns:
-            Parsed JSON response dict.
+        يعمل على نسخ من params/data حتى لا تتلوّث المعاملات الأصلية للمُستدعي.
 
         Raises:
-            CSRFError, MaxlagError: after exhausting retries.
-            WikiClientError:        on assertnameduserfailed after recovery.
-            requests.HTTPError:     on non-2xx HTTP status.
+            CSRFError:          بعد استنفاد محاولات التوكن.
+            MaxlagError:        بعد استنفاد محاولات maxlag.
+            WikiClientError:    عند assertnameduserfailed أو أخطاء API أخرى.
+            requests.HTTPError: عند استجابات غير 2xx.
         """
-        # Mutable copies so per-retry mutations (token reinject) stay local
-        # to this call and don't bleed into the caller's dict.
+        # نسخ دفاعي — لا نُلوّث قواميس المُستدعي عبر المحاولات
         working_params = dict(params) if params else {}
         working_data = dict(data) if data else {}
 
@@ -165,9 +135,8 @@ class RequestsHandler:
             )
             response.raise_for_status()
 
-            # Non-JSON responses (e.g. uploads returning HTML) go straight back
-            content_type = response.headers.get("Content-Type", "")
-            if "application/json" not in content_type:
+            # الاستجابات غير JSON تمرّ مباشرةً
+            if "application/json" not in response.headers.get("Content-Type", ""):
                 return {}
 
             try:
@@ -177,7 +146,7 @@ class RequestsHandler:
 
             error = body.get("error", {})
             if not error:
-                return body  # ← happy path
+                return body  # ← المسار السعيد
 
             error_code: str = error.get("code", "")
             error_info: str = error.get("info", "")
@@ -218,11 +187,10 @@ class RequestsHandler:
                     assertnameduser_retries,
                 )
                 self._on_assertnameduserfailed()
-                # Reset the retry counter so maxlag/csrf budget is fresh
-                attempt = 0
+                attempt = 0  # نُعيد ميزانية CSRF/maxlag من الصفر بعد إعادة الدخول
                 continue
 
-            # ── any other error — let the caller decide ───────────────────
+            # ── أي خطأ آخر — نرفعه للمُستدعي ────────────────────────────
             raise WikiClientError(f"API error {error_code}: {error_info}")
 
         raise MaxlagError(
@@ -230,7 +198,7 @@ class RequestsHandler:
         )
 
     # ------------------------------------------------------------------
-    # Protected CSRF helpers
+    # مساعدات CSRF
     # ------------------------------------------------------------------
 
     @staticmethod
@@ -245,11 +213,7 @@ class RequestsHandler:
         data: dict,
         params: dict,
     ) -> tuple[dict, dict]:
-        """
-        Refresh the CSRF token and reinject it into whichever dict carries it.
-
-        Returns updated (data, params) copies — never mutates in place.
-        """
+        """حدّث التوكن واحقنه في القاموس الصحيح. يُعيد (data, params) جديدتين."""
         logger.debug(
             "CSRF error (%s) — refreshing token (attempt %d/%d)",
             error_code or error_info,
@@ -261,18 +225,11 @@ class RequestsHandler:
         except Exception as exc:
             raise CSRFError(f"Failed to refresh CSRF token: {exc}") from exc
 
-        # Reinject into whichever dict holds the token key
-        data, params = self._inject_token(new_token, data, params)
-        return data, params
+        return self._inject_token(new_token, data, params)
 
     @staticmethod
-    def _inject_token(
-        token: str, data: dict, params: dict
-    ) -> tuple[dict, dict]:
-        """
-        Return (data, params) copies with ``token`` updated to *token*.
-        Only one dict should ever carry the key; we update the first match.
-        """
+    def _inject_token(token: str, data: dict, params: dict) -> tuple[dict, dict]:
+        """أعِد نسختين مُحدَّثتين من (data, params) مع التوكن الجديد."""
         for bucket_name, bucket in (("data", data), ("params", params)):
             if "token" in bucket:
                 bucket = dict(bucket)
@@ -284,13 +241,11 @@ class RequestsHandler:
         return data, params
 
     # ------------------------------------------------------------------
-    # Protected maxlag helper
+    # مساعد maxlag
     # ------------------------------------------------------------------
 
     def _handle_maxlag(self, response: requests.Response, attempt: int) -> None:
-        """
-        Sleep for the server-requested delay (or exponential back-off).
-        """
+        """نم للمدة التي طلبها السيرفر أو استخدم الانتظار الأسّي."""
         retry_after = response.headers.get(config.MAXLAG_HEADER)
         try:
             delay = float(retry_after) if retry_after is not None else None
@@ -310,19 +265,19 @@ class RequestsHandler:
 
 
 # ---------------------------------------------------------------------------
-# CookiesClient — isolated cookie I/O (unchanged from original)
+# CookiesClient — إدارة الكوكيز
 # ---------------------------------------------------------------------------
 
 
 class CookiesClient:
-    """Static helpers for loading and persisting LWP cookie jars."""
+    """مساعدات ساكنة لتحميل وحفظ LWP cookie jars."""
 
     @staticmethod
     def save_cookies(cj: http.cookiejar.LWPCookieJar) -> None:
-        """Flush the cookie jar to disk."""
+        """احفظ الكوكيز على القرص فوراً."""
         try:
             cj.save(ignore_discard=True, ignore_expires=True)
-            logger.debug("Cookies saved")
+            logger.debug("Cookies saved to _cookie_path")
         except Exception:
             logger.exception("Failed to save cookies")
 
@@ -338,31 +293,24 @@ class CookiesClient:
 
 
 # ---------------------------------------------------------------------------
-# WikiLoginClient — business layer
+# WikiLoginClient — طبقة الأعمال
 # ---------------------------------------------------------------------------
 
 
 class WikiLoginClient(CookiesClient, RequestsHandler):
     """
-    A thin wrapper around ``mwclient.Site`` that:
+    غلاف رفيع حول mwclient.Site يوفّر:
 
-    - Persists the session across script runs via a Mozilla cookie jar.
-    - Skips the login round-trip when saved cookies are still valid.
-    - Transparently retries requests on CSRF errors and server maxlag.
-    - Recovers if the session expires mid-run (``assertnameduserfailed``).
-    - Injects ``bot=1`` and ``assertuser`` into all write-action requests.
+    - استمرارية الجلسة عبر تشغيلات متعددة باستخدام Mozilla cookie jar.
+    - تخطّي تسجيل الدخول عند وجود كوكيز صالحة.
+    - إعادة المحاولة تلقائياً عند أخطاء CSRF ومشاكل maxlag.
+    - الاسترداد التلقائي عند انتهاء الجلسة (assertnameduserfailed).
+    - حقن bot=1 و assertuser في طلبات الكتابة.
 
-    ``RequestsHandler`` provides the transport/retry layer; this class owns
-    only auth logic, parameter enrichment, and continuation pagination.
-
-    Usage::
-
-        client = WikiLoginClient(lang="en", family="wikipedia",
-                                 username="MyBot", password="s3cr3t")
-        data = client.client_request({"action": "query", "titles": "Python"})
+    RequestsHandler تتولى طبقة النقل/إعادة المحاولة؛
+    هذه الكلاس تختص بالمصادقة وإثراء المعاملات والتصفّح المتواصل.
     """
 
-    # Write actions that need bot=1 and assertuser injected
     _WRITE_ACTIONS: frozenset[str] = frozenset(
         {
             "edit", "create", "upload", "delete", "move",
@@ -379,22 +327,22 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         family: str,
         username: str,
         password: str,
-        cookies_dir: Optional[str] = None,
+        cookies_dir: str = settings.paths.cookies_dir,
     ) -> None:
         """
-        Initialise the client, load saved cookies, and authenticate.
+        هيّئ الكلاينت، حمّل الكوكيز المحفوظة، وتحقق من المصادقة.
 
         Args:
-            lang:        Language code, e.g. ``"en"``, ``"de"``.
-            family:      Site family, e.g. ``"wikipedia"``, ``"wikidata"``.
-            username:    Bot / user account name.
-            password:    Account password or bot password.
-            cookies_dir: Directory for cookie files; defaults to config value.
+            lang:        رمز اللغة، مثل "en"، "ar".
+            family:      عائلة الموقع، مثل "wikipedia"، "wikidata".
+            username:    اسم حساب البوت أو المستخدم.
+            password:    كلمة المرور أو bot password.
+            cookies_dir: مجلد ملفات الكوكيز. الافتراضي: settings.paths.cookies_dir.
         """
         self.lang = lang
         self.family = family
         self.username = username
-        self._password = password  # never log or expose
+        self._password = password  # خاص — لا يُسجَّل أبداً
 
         self._cookie_path: Path = get_cookie_path(cookies_dir, family, lang, username)
 
@@ -406,37 +354,30 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         except mwclient.errors.InvalidSiteIdError:
             raise WikiClientError(f"Invalid site ID: {self.lang}.{self.family}")
 
-        # Attach persisted cookies to the site's session
+        # ربط الكوكيز المحفوظة بالجلسة
         self.cj = self._make_cookiejar(self._cookie_path)
         self._site.connection.cookies = self.cj
 
-        # Authenticate if cookies alone are not enough
-        if not self._site.logged_in:
-            try:
-                self.login()
-            except LoginError:
-                logger.warning(
-                    "Initial login failed for %s. Will retry on first request.",
-                    self.username,
-                )
+        # التحقق من المصادقة — RequestsHandler يتولى الطبقة التحتية
+        self._ensure_logged_in()
 
     # ------------------------------------------------------------------
-    # RequestsHandler contract — concrete implementations
+    # تنفيذ عقد RequestsHandler
     # ------------------------------------------------------------------
 
     @property
     def _session(self) -> requests.Session:
-        """The mwclient-managed session."""
+        """جلسة mwclient الداخلية."""
         return self._site.connection
 
     def _refresh_csrf_token(self) -> str:
-        """Force mwclient to fetch a fresh CSRF token from the server."""
+        """اطلب توكن CSRF جديداً من السيرفر."""
         return self._site.get_token("csrf", force=True)
 
     def _on_assertnameduserfailed(self) -> None:
         """
-        Session expired mid-run: nuke stale cookies and re-authenticate.
-        Called by the base-class retry loop; never call directly.
+        انتهت الجلسة في منتصف التشغيل:
+        احذف الكوكيز القديمة وأعد تسجيل الدخول.
         """
         logger.warning(
             "assertnameduserfailed for %s on %s.%s — clearing cookies and re-logging in",
@@ -446,24 +387,25 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         self._do_login()
 
     # ------------------------------------------------------------------
-    # Public interface
+    # الواجهة العامة
     # ------------------------------------------------------------------
 
     @property
     def site(self) -> mwclient.Site:
-        """The underlying ``mwclient.Site`` — use for high-level wiki access."""
+        """mwclient.Site الأساسي — استخدمه للوصول رفيع المستوى."""
         return self._site
 
-    def login(self, force: bool = False) -> None:
+    def login(self) -> None:
         """
-        Authenticate the session.
+        أجبر على تسجيل دخول جديد بغض النظر عن حالة الكوكيز.
 
-        Args:
-            force: Re-authenticate even if already logged in.
+        استدعِ هذا إذا علمت أن الجلسة انتهت وتريد إعادة المصادقة
+        دون إنشاء WikiLoginClient جديد.
         """
-        if force or not self._site.logged_in:
+        if not self._site.logged_in:
             logger.info(
-                "Logging in as %s on %s.%s", self.username, self.lang, self.family
+                "Forcing re-login for %s on %s.%s",
+                self.username, self.lang, self.family,
             )
             self._do_login()
 
@@ -474,26 +416,25 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         files: Optional[Any] = None,
     ) -> dict:
         """
-        Send a GET or POST request to the wiki API and return parsed JSON.
+        أرسل طلب GET أو POST إلى wiki API وأعِد JSON المُحلَّل.
 
-        CSRF tokens, maxlag backoff, and ``assertnameduserfailed`` recovery are
-        all handled transparently by the ``RequestsHandler`` base class.
+        معالجة CSRF وmaxlag وassertnameduserfailed تتم تلقائياً
+        عبر RequestsHandler دون أي تدخل من المُستدعي.
 
         Args:
-            params: MediaWiki API parameters. ``format`` defaults to ``"json"``.
-            method: ``"get"`` or ``"post"`` (case-insensitive).
-                    Files automatically force POST.
-            files:  ``{field_name: file-like}`` for multipart uploads.
+            params: معاملات MediaWiki API. format يُضبط على "json" افتراضياً.
+            method: "get" أو "post" (غير حساس للحالة). الملفات تُجبر POST.
+            files:  {field_name: file-like} للرفع متعدد الأجزاء.
 
         Returns:
-            Parsed JSON response dict.
+            قاموس JSON للاستجابة.
 
         Raises:
-            ValueError:         On invalid *method*.
-            CSRFError:          CSRF token invalid after all retries.
-            MaxlagError:        Server maxlag unresolved after all retries.
-            WikiClientError:    On other API-level errors.
-            requests.HTTPError: On non-2xx HTTP responses.
+            ValueError:         عند method غير صالح.
+            CSRFError:          بعد استنفاد محاولات التوكن.
+            MaxlagError:        بعد استنفاد محاولات maxlag.
+            WikiClientError:    عند أخطاء API الأخرى.
+            requests.HTTPError: عند استجابات غير 2xx.
         """
         method = method.lower()
         if method not in ("get", "post"):
@@ -502,7 +443,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         if files is not None:
             method = "post"
 
-        # Ensure JSON response and inject write-action safety params
+        # ضمان JSON وحقن معاملات الأمان
         params = self._enrich_params({"format": "json", **params})
 
         logger.debug(
@@ -520,11 +461,8 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
                 params=params,
             )
         else:
-            # Fetch a CSRF token now if the caller didn't supply one.
-            # The retry loop will refresh it automatically on CSRF errors.
-            if "token" not in params:
-                params["token"] = self._site.get_token("csrf")
-
+            # دائماً نجلب توكن جديداً لطلبات POST — حلقة الإعادة ستُجدّده عند الحاجة
+            params["token"] = self._site.get_token("csrf")
             return self._request_with_retry(
                 "POST",
                 self.api_url,
@@ -544,24 +482,22 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         _p_2_empty: Optional[Union[list, dict]] = None,
     ) -> Union[list, dict]:
         """
-        Drive a MediaWiki API continuation query to completion.
+        أدِر استعلام continuation في MediaWiki API حتى اكتماله.
 
-        Iterates the ``continue`` token until all pages are fetched or *Max*
-        results have been collected.
+        يُكرّر على رمز continue حتى جلب كل الصفحات أو بلوغ Max نتيجة.
 
         Args:
-            params:     Base API parameters.
-            action:     Top-level JSON key to extract results from
-                        (e.g. ``"query"``, ``"wbsearchentities"``).
-            _p_:        Sub-key inside *action* (default ``"pages"``).
-            p_empty:    Seed value for the accumulator (list or dict).
-            Max:        Stop accumulating after this many results.
-            first:      Return only the first element of the result list.
-            _p_2:       Secondary sub-key when *first* is True.
-            _p_2_empty: Seed for secondary accumulator.
+            params:      معاملات API الأساسية.
+            action:      المفتاح الرئيسي في JSON لاستخراج النتائج (مثل "query").
+            _p_:         المفتاح الفرعي داخل action (افتراضي "pages").
+            p_empty:     القيمة الابتدائية للمجمّع (list أو dict).
+            Max:         توقف بعد هذا العدد من النتائج.
+            first:       أعِد العنصر الأول فقط من القائمة.
+            _p_2:        مفتاح فرعي ثانوي عند first=True.
+            _p_2_empty:  قيمة ابتدائية للمجمّع الثانوي.
 
         Returns:
-            Accumulated results as a list or dict, depending on *p_empty*.
+            النتائج المجمّعة كـ list أو dict حسب p_empty.
         """
         logger.debug("post_continue start. action=%s _p_=%s", action, _p_)
 
@@ -611,7 +547,9 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
                 logger.debug("post_continue: no data in response, stopping")
                 break
 
-            logger.debug("post_continue: +%d items (total %d)", len(data), len(results))
+            logger.debug(
+                "post_continue: +%d items (total %d)", len(data), len(results)
+            )
 
             if Max <= len(results) > 1:
                 logger.debug("post_continue: Max=%d reached, stopping", Max)
@@ -626,13 +564,15 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         return results
 
     # ------------------------------------------------------------------
-    # Private helpers
+    # المساعدات الخاصة
     # ------------------------------------------------------------------
 
     def _ensure_logged_in(self) -> None:
-        """Verify the session is authenticated; attempt cookie-based revival."""
+        """تحقق من المصادقة؛ حاول إحياء الجلسة عبر الكوكيز أولاً."""
         if self._site.logged_in:
-            logger.info("Session already authenticated (logged_in=%s)", self._site.logged_in)
+            logger.info(
+                "Session already authenticated (logged_in=%s)", self._site.logged_in
+            )
             return
         if self._cookie_path.exists():
             try:
@@ -645,16 +585,17 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
             except Exception as exc:
                 logger.error("site_init failed: %s", exc)
 
+        # لا نُسجّل الدخول تلقائياً — المُستدعي يستدعي login() عند الحاجة
+
     def _enrich_params(self, params: dict) -> dict:
         """
-        Inject write-action safety parameters.
+        حقن معاملات أمان طلبات الكتابة.
 
-        For write actions:
-          - ``bot=1``        marks edits as bot edits in recent changes.
-          - ``assertuser``   ensures the API rejects requests from the wrong
-                             account (guards against accidental edits).
+        لطلبات الكتابة:
+          - bot=1        يُعلّم التعديلات كبوت في سجل التغييرات.
+          - assertuser   يُرفض الطلب إذا لم يتطابق المستخدم مع الجلسة.
 
-        Query actions have write-only keys scrubbed instead.
+        طلبات القراءة (query) تُنظَّف من المفاتيح الخاصة بالكتابة.
         """
         params = dict(params)
         action = params.get("action", "")
@@ -677,10 +618,10 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
 
     def _do_login(self) -> None:
         """
-        Execute the mwclient login handshake and persist the resulting cookies.
+        نفّذ مصافحة تسجيل الدخول عبر mwclient واحفظ الكوكيز الناتجة.
 
         Raises:
-            LoginError: if mwclient rejects the credentials.
+            LoginError: إذا رفض mwclient بيانات الاعتماد.
         """
         try:
             self._site.login(self.username, self._password)
