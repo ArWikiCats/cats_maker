@@ -170,18 +170,14 @@ class RequestsHandler:
             if error_code == "maxlag":
                 attempt += 1
                 if attempt >= config.MAX_RETRIES:
-                    raise MaxlagError(
-                        f"Server maxlag not resolved after {config.MAX_RETRIES} attempts."
-                    )
+                    raise MaxlagError(f"Server maxlag not resolved after {config.MAX_RETRIES} attempts.")
                 self._handle_maxlag(response, attempt)
                 continue
 
             # ── assertnameduserfailed ─────────────────────────────────────
             if error_code == "assertnameduserfailed":
                 if named_user_attempts >= assertnameduser_retries:
-                    raise WikiClientError(
-                        "assertnameduserfailed persists after re-login"
-                    )
+                    raise WikiClientError("assertnameduserfailed persists after re-login")
                 named_user_attempts += 1
                 logger.warning(
                     "assertnameduserfailed — attempting recovery (try %d/%d)",
@@ -195,9 +191,7 @@ class RequestsHandler:
             # ── No retryable error — surface to the caller ────────────────
             raise WikiClientError(f"API error {error_code}: {error_info}")
 
-        raise MaxlagError(
-            f"Exceeded {config.MAX_RETRIES} retries without a successful response."
-        )
+        raise MaxlagError(f"Exceeded {config.MAX_RETRIES} retries without a successful response.")
 
     # ------------------------------------------------------------------
     # Protected CSRF helpers
@@ -261,7 +255,7 @@ class RequestsHandler:
             delay = None
 
         if delay is None:
-            delay = config.BACKOFF_BASE * (2 ** attempt)
+            delay = config.BACKOFF_BASE * (2**attempt)
 
         logger.debug(
             "maxlag — sleeping %.1f s (attempt %d/%d)",
@@ -327,11 +321,22 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
 
     _WRITE_ACTIONS: frozenset[str] = frozenset(
         {
-            "edit", "create", "upload", "delete", "move",
-            "wbeditentity", "wbsetclaim", "wbcreateclaim",
-            "wbsetreference", "wbremovereferences", "wbsetaliases",
-            "wbsetdescription", "wbsetlabel", "wbsetsitelink",
-            "wbmergeitems", "wbcreateredirect",
+            "edit",
+            "create",
+            "upload",
+            "delete",
+            "move",
+            "wbeditentity",
+            "wbsetclaim",
+            "wbcreateclaim",
+            "wbsetreference",
+            "wbremovereferences",
+            "wbsetaliases",
+            "wbsetdescription",
+            "wbsetlabel",
+            "wbsetsitelink",
+            "wbmergeitems",
+            "wbcreateredirect",
         }
     )
 
@@ -399,7 +404,9 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         """
         logger.warning(
             "assertnameduserfailed for %s on %s.%s — clearing cookies and re-logging in",
-            self.username, self.lang, self.family,
+            self.username,
+            self.lang,
+            self.family,
         )
         _delete_cookie_file(self._cookie_path, reason="assertnameduserfailed")
         self._do_login()
@@ -423,7 +430,9 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         if not self._site.logged_in:
             logger.info(
                 "Forcing re-login for %s on %s.%s",
-                self.username, self.lang, self.family,
+                self.username,
+                self.lang,
+                self.family,
             )
             self._do_login()
 
@@ -576,9 +585,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
                 logger.debug("post_continue: no data in response, stopping")
                 break
 
-            logger.debug(
-                "post_continue: +%d items (total %d)", len(data), len(results)
-            )
+            logger.debug("post_continue: +%d items (total %d)", len(data), len(results))
 
             if Max <= len(results) > 1:
                 logger.debug("post_continue: Max=%d reached, stopping", Max)
@@ -599,17 +606,13 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         Check whether the current session is authenticated.
         """
         if self._site.logged_in:
-            logger.info(
-                "Session already authenticated (logged_in=%s)", self._site.logged_in
-            )
+            logger.info("Session already authenticated (logged_in=%s)", self._site.logged_in)
             return
         if self._cookie_path.exists():
             try:
                 self._site.site_init()
                 if self._site.logged_in:
-                    logger.info(
-                        "Revived session via cookies as %s", self._site.username
-                    )
+                    logger.info("Revived session via cookies as %s", self._site.username)
                     return
             except Exception as exc:
                 logger.error("site_init failed: %s", exc)
@@ -641,11 +644,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
             return params
 
         # Inject bot marker and identity assertion for all write actions
-        is_write = (
-            action in self._WRITE_ACTIONS
-            or action.startswith("wb")
-            or self.family == "wikidata"
-        )
+        is_write = action in self._WRITE_ACTIONS or action.startswith("wb") or self.family == "wikidata"
         if is_write and self.username:
             params.setdefault("bot", 1)
             params.setdefault("assertuser", self.username)
@@ -662,22 +661,19 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         try:
             self._site.login(self.username, self._password)
         except mwclient.errors.LoginError as exc:
-            raise LoginError(
-                f"Login failed for {self.username} on {self.lang}.{self.family}: {exc}"
-            ) from exc
+            raise LoginError(f"Login failed for {self.username} on {self.lang}.{self.family}: {exc}") from exc
 
         if self._site.logged_in:
             logger.info(
                 "Logged in successfully as %s on %s.%s",
-                self.username, self.lang, self.family,
+                self.username,
+                self.lang,
+                self.family,
             )
             self.save_cookies(self.cj)
 
     def __repr__(self) -> str:
-        return (
-            f"WikiLoginClient(lang={self.lang!r}, family={self.family!r}, "
-            f"username={self.username!r})"
-        )
+        return f"WikiLoginClient(lang={self.lang!r}, family={self.family!r}, " f"username={self.username!r})"
 
 
 __all__ = [
