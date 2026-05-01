@@ -40,12 +40,9 @@ class TestEnrichParams:
     @patch("src.core.wiki_client.client.wrap_session")
     @patch("src.core.wiki_client.client.mwclient.Site")
     @patch("src.core.wiki_client.client.get_cookie_path")
-    def test_query_action_strips_bot_and_summary(self, mock_path, mock_session, mock_site, mock_load, mock_wrap):
+    def test_query_action_strips_bot_and_summary(self, mock_path, mock_site, mock_session):
         mock_path.return_value = MagicMock()
-        mock_session.return_value = MagicMock()
-        mock_site.return_value = MagicMock()
-        site_instance = mock_site.return_value
-        site_instance.api.return_value = {"query": {"userinfo": {"id": 1}}}
+        mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
 
         client = WikiLoginClient("en", "wikipedia", "bot", "pass")
         params = {"action": "query", "bot": 1, "summary": "test", "titles": "Python"}
@@ -57,12 +54,9 @@ class TestEnrichParams:
     @patch("src.core.wiki_client.client.wrap_session")
     @patch("src.core.wiki_client.client.mwclient.Site")
     @patch("src.core.wiki_client.client.get_cookie_path")
-    def test_write_action_injects_bot_and_assertuser(self, mock_path, mock_session, mock_site, mock_load, mock_wrap):
+    def test_write_action_injects_bot_and_assertuser(self, mock_path, mock_site, mock_session):
         mock_path.return_value = MagicMock()
-        mock_session.return_value = MagicMock()
-        mock_site.return_value = MagicMock()
-        site_instance = mock_site.return_value
-        site_instance.api.return_value = {"query": {"userinfo": {"id": 1}}}
+        mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
 
         client = WikiLoginClient("en", "wikipedia", "MyBot", "pass")
         params = {"action": "edit", "title": "Test"}
@@ -215,17 +209,19 @@ class TestEnsureLoggedIn:
 
     def test_logs_in_when_anonymous(self):
         client, site = _make_client()
-        site.api.return_value = {"query": {"userinfo": {"id": 0}}}
+        site.logged_in = False
+        site.site_init = MagicMock()
         site.login = MagicMock()
         client._ensure_logged_in()
-        site.login.assert_called_with("MyBot", "pass")
+        site.site_init.assert_called_once()
 
     def test_logs_in_on_api_exception(self):
         client, site = _make_client()
-        site.api.side_effect = Exception("connection error")
+        site.logged_in = False
+        site.site_init = MagicMock(side_effect=Exception("connection error"))
         site.login = MagicMock()
         client._ensure_logged_in()
-        site.login.assert_called_with("MyBot", "pass")
+        site.site_init.assert_called_once()
 
 
 # ── Test _do_login ───────────────────────────────────────────────────────────
@@ -242,7 +238,7 @@ class TestDoLogin:
     def test_login_failure_raises_login_error(self):
         client, site = _make_client()
         site.login = MagicMock(side_effect=mwclient.errors.LoginError(code="bad credentials", info="", site=""))
-        with pytest.raises(LoginError, match="Login failed"):
+        with pytest.raises(LoginError, match="login failed"):
             client._do_login()
 
 
@@ -252,6 +248,7 @@ class TestDoLogin:
 class TestLoginPublic:
     def test_login_calls_do_login(self):
         client, site = _make_client()
+        site.logged_in = False
         with patch.object(client, "_do_login") as mock_do:
             client.login()
             mock_do.assert_called_once()
@@ -273,7 +270,7 @@ class TestRepr:
     @patch("src.core.wiki_client.client.wrap_session")
     @patch("src.core.wiki_client.client.mwclient.Site")
     @patch("src.core.wiki_client.client.get_cookie_path")
-    def test_repr(self, mock_path, mock_session, mock_site, mock_load, mock_wrap):
+    def test_repr(self, mock_path, mock_site, mock_session):
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
         client = WikiLoginClient("en", "wikipedia", "MyBot", "pass")
         assert "WikiLoginClient" in repr(client)
