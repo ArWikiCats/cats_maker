@@ -21,7 +21,7 @@ _COOKIE_MAX_AGE_DAYS = 3
 
 
 def get_cookie_path(
-    cookies_dir: str | None,
+    cookies_dir: str,
     family: str,
     lang: str,
     username: str,
@@ -42,11 +42,7 @@ def get_cookie_path(
     spaces replaced with underscores; bot-password suffix (@...) stripped.
     """
     # ── Resolve base directory ─────────────────────────────────────────────
-    if cookies_dir:
-        base = Path(cookies_dir)
-    else:
-        home = os.getenv("HOME")
-        base = Path(home) / "cookies" if home else Path(__file__).parent / "cookies"
+    base = Path(cookies_dir)
 
     base.mkdir(parents=True, exist_ok=True)
 

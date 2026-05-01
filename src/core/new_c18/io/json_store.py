@@ -16,7 +16,7 @@ from .sql_queries import fetch_dont_add_pages
 
 logger = logging.getLogger(__name__)
 
-_FILENAME_JSON = settings.dont_add_to_pages_path
+_FILENAME_JSON = settings.paths.dont_add_to_pages_path
 _STATGROUP = stat.S_IRWXU | stat.S_IRWXG
 
 
