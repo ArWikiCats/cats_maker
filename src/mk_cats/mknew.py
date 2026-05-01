@@ -5,7 +5,7 @@ python3 core8/pwb.py mk_cats/mknew
 import logging
 
 from ..config import settings
-from ..core.new_api import load_main_api
+from ..core.client_wiki import load_main_api
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
 from ..core.wd_bots import Get_Sitelinks_From_wikidata, add_labels, log_to_wikidata, log_to_wikidata_qid
 from ..core.wiki_api import find_Page_Cat_without_hidden

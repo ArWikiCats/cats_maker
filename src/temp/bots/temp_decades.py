@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 
-from .temp_decades import MakedecadesTemp
+from .temp_decades import make_decades_template
 
 """
 
@@ -13,7 +13,7 @@ from .load_data import Baco_decades, cacaca
 logger = logging.getLogger(__name__)
 
 
-def MakedecadesTemp(title):
+def make_decades_template(title):
     Caa = False
     logger.info(f" :{title} ", "blue")
     tex = ""

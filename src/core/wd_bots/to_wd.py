@@ -8,7 +8,7 @@ import json
 import logging
 import time
 
-from ..new_api import load_login_bot
+from ..client_wiki import load_login_bot
 from .lag_bot import get_new_sleep, is_wd_lag_high
 from .wd_bots_main import WD_API
 

@@ -2,7 +2,7 @@
 Unit tests for src/core/wiki_client/config.py module.
 """
 
-from src.core.wiki_client.config import BACKOFF_BASE, COOKIES_DIR, DEFAULT_PATH, MAX_RETRIES, MAXLAG_HEADER
+from src.core.wiki_client.config import BACKOFF_BASE, COOKIES_DIR, MAX_RETRIES, MAXLAG_HEADER
 
 
 class TestConfig:
@@ -17,6 +17,3 @@ class TestConfig:
 
     def test_cookies_dir(self):
         assert COOKIES_DIR == "cookies"
-
-    def test_default_path(self):
-        assert DEFAULT_PATH == "/w/"

@@ -2,6 +2,8 @@
 Tests for the centralized settings configuration module.
 """
 
+import sys
+
 import pytest
 
 from src.config import (
@@ -13,7 +15,7 @@ from src.config import (
     WikiSiteInfo,
     settings,
 )
-from src.config.settings import _safe_int
+from src.config.settings import _safe_int, default_user_agent
 
 
 class TestSafeInt:
@@ -515,3 +517,328 @@ class TestMinMembersEnvVar:
 
         s = Settings()
         assert s.category.min_members == 10  # Default value
+
+
+class TestDefaultUserAgent:
+    """Tests for default_user_agent() function."""
+
+    def test_with_home_set(self, monkeypatch):
+        """Test user agent uses last path component of HOME."""
+        monkeypatch.setenv("HOME", "/data/project/mybot")
+        result = default_user_agent()
+        assert result == "mybot bot/1.0 (https://mybot.toolforge.org/; tools.mybot@toolforge.org)"
+
+    def test_with_home_empty(self, monkeypatch):
+        """Test user agent uses 'himo' when HOME is empty."""
+        monkeypatch.setenv("HOME", "")
+        result = default_user_agent()
+        assert result == "himo bot/1.0 (https://himo.toolforge.org/; tools.himo@toolforge.org)"
+
+    def test_with_home_unset(self, monkeypatch):
+        """Test user agent uses 'himo' when HOME is not set."""
+        monkeypatch.delenv("HOME", raising=False)
+        result = default_user_agent()
+        assert result == "himo bot/1.0 (https://himo.toolforge.org/; tools.himo@toolforge.org)"
+
+    def test_home_with_trailing_slash(self, monkeypatch):
+        """Test user agent strips trailing slash from HOME."""
+        monkeypatch.setenv("HOME", "/data/project/mybot/")
+        result = default_user_agent()
+        assert result == "mybot bot/1.0 (https://mybot.toolforge.org/; tools.mybot@toolforge.org)"
+
+
+class TestIsProduction:
+    """Tests for Settings.is_production() static method."""
+
+    def test_returns_true_when_production(self, monkeypatch):
+        """Test returns True when APP_ENV=production."""
+        monkeypatch.setenv("APP_ENV", "production")
+        assert Settings.is_production() is True
+
+    def test_returns_true_case_insensitive(self, monkeypatch):
+        """Test returns True for mixed case APP_ENV=Production."""
+        monkeypatch.setenv("APP_ENV", "Production")
+        assert Settings.is_production() is True
+
+    def test_returns_false_when_not_set(self, monkeypatch):
+        """Test returns False when APP_ENV is not set."""
+        monkeypatch.delenv("APP_ENV", raising=False)
+        assert Settings.is_production() is False
+
+    def test_returns_false_when_development(self, monkeypatch):
+        """Test returns False when APP_ENV=development."""
+        monkeypatch.setenv("APP_ENV", "development")
+        assert Settings.is_production() is False
+
+
+class TestDontAddToPagesPath:
+    """Tests for dont_add_to_pages_path attribute."""
+
+    def test_dont_add_to_pages_path_attribute_exists(self):
+        """Test that Settings has dont_add_to_pages_path attribute."""
+        s = Settings()
+        assert hasattr(s, "paths")
+        assert hasattr(s.paths, "dont_add_to_pages_path")
+
+
+class TestProcessArgv:
+    """Tests for Settings._process_argv() method via sys.argv."""
+
+    def test_range_limit(self, monkeypatch):
+        """Test -range:10 sets range_limit."""
+        monkeypatch.setattr(sys, "argv", ["test", "-range:10"])
+        s = Settings()
+        assert s.range_limit == 10
+
+    def test_debug_flag(self, monkeypatch):
+        """Test DEBUG sets debug=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "DEBUG"])
+        s = Settings()
+        assert s.debug is True
+
+    def test_debug_long_flag(self, monkeypatch):
+        """Test --debug sets debug=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "--debug"])
+        s = Settings()
+        assert s.debug is True
+
+    def test_nosql(self, monkeypatch):
+        """Test -nosql sets use_sql=False."""
+        monkeypatch.setattr(sys, "argv", ["test", "-nosql"])
+        s = Settings()
+        assert s.database.use_sql is False
+
+    def test_usesql(self, monkeypatch):
+        """Test usesql sets use_sql=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "usesql"])
+        s = Settings()
+        assert s.database.use_sql is True
+
+    def test_testwikidata(self, monkeypatch):
+        """Test testwikidata sets test_mode and endpoint."""
+        monkeypatch.setattr(sys, "argv", ["test", "testwikidata"])
+        s = Settings()
+        assert s.wikidata.test_mode is True
+        assert s.wikidata.endpoint == "https://test.wikidata.org/w/api.php"
+
+    def test_ask(self, monkeypatch):
+        """Test ask sets bot.ask=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "ask"])
+        s = Settings()
+        assert s.bot.ask is True
+
+    def test_stubs(self, monkeypatch):
+        """Test -stubs sets category.stubs=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "-stubs"])
+        s = Settings()
+        assert s.category.stubs is True
+
+    def test_stubs_alternative(self, monkeypatch):
+        """Test stubs (without dash) sets category.stubs=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "stubs"])
+        s = Settings()
+        assert s.category.stubs is True
+
+    def test_minmembers(self, monkeypatch):
+        """Test -minmembers:5 sets min_members."""
+        monkeypatch.setattr(sys, "argv", ["test", "-minmembers:5"])
+        s = Settings()
+        assert s.category.min_members == 5
+
+    def test_min_members_with_dash(self, monkeypatch):
+        """Test -min-members:7 sets min_members."""
+        monkeypatch.setattr(sys, "argv", ["test", "-min-members:7"])
+        s = Settings()
+        assert s.category.min_members == 7
+
+    def test_family_wikiquote(self, monkeypatch):
+        """Test -family:wikiquote sets custom_family."""
+        monkeypatch.setattr(sys, "argv", ["test", "-family:wikiquote"])
+        s = Settings()
+        assert s.site.custom_family == "wikiquote"
+
+    def test_family_wikisource(self, monkeypatch):
+        """Test -family:wikisource sets custom_family."""
+        monkeypatch.setattr(sys, "argv", ["test", "-family:wikisource"])
+        s = Settings()
+        assert s.site.custom_family == "wikisource"
+
+    def test_family_invalid_ignored(self, monkeypatch):
+        """Test -family:wikipedia does not set custom_family (not in allowed list)."""
+        monkeypatch.setattr(sys, "argv", ["test", "-family:wikipedia"])
+        s = Settings()
+        assert s.site.custom_family == ""
+
+    def test_uselang(self, monkeypatch):
+        """Test -uselang:de sets custom_lang and make_new_cat=False."""
+        monkeypatch.setattr(sys, "argv", ["test", "-uselang:de"])
+        s = Settings()
+        assert s.site.custom_lang == "de"
+        assert s.category.make_new_cat is False
+
+    def test_slang(self, monkeypatch):
+        """Test -slang:fr sets secondary_lang and related settings."""
+        monkeypatch.setattr(sys, "argv", ["test", "-slang:fr"])
+        s = Settings()
+        assert s.site.secondary_lang == "fr"
+        assert s.site.secondary_family == "wikipedia"
+        assert s.site.use_secondary is True
+        assert s.category.make_new_cat is False
+
+    def test_to_limit_offset_calculation(self, monkeypatch):
+        """Test to_limit is adjusted by offset."""
+        monkeypatch.setattr(sys, "argv", ["test", "-to:100", "-offset:20"])
+        s = Settings()
+        # to_limit should be 100 + 20 = 120
+        assert s.query.to_limit == 120
+
+    def test_to_limit_without_offset(self, monkeypatch):
+        """Test to_limit without offset."""
+        monkeypatch.setattr(sys, "argv", ["test", "-to:50"])
+        s = Settings()
+        assert s.query.to_limit == 50
+
+    def test_depth(self, monkeypatch):
+        """Test depth:3 sets query.depth."""
+        monkeypatch.setattr(sys, "argv", ["test", "depth:3"])
+        s = Settings()
+        assert s.query.depth == 3
+
+    def test_nons10(self, monkeypatch):
+        """Test nons10 sets ns_no_10."""
+        monkeypatch.setattr(sys, "argv", ["test", "nons10"])
+        s = Settings()
+        assert s.query.ns_no_10 is True
+
+    def test_ns_only_14_not_reached(self, monkeypatch):
+        """Test ns:14 does not set ns_only_14 due to partition splitting on ':'.
+
+        The source checks arg_name == 'ns:14' but partition(':') on 'ns:14'
+        yields arg_name='ns', so this branch is unreachable.
+        """
+        monkeypatch.setattr(sys, "argv", ["test", "ns:14"])
+        s = Settings()
+        assert s.query.ns_only_14 is False
+
+    def test_workfr(self, monkeypatch):
+        """Test workfr sets work_fr."""
+        monkeypatch.setattr(sys, "argv", ["test", "workfr"])
+        s = Settings()
+        assert s.category.work_fr is True
+
+    def test_descqs(self, monkeypatch):
+        """Test descqs sets descqs."""
+        monkeypatch.setattr(sys, "argv", ["test", "descqs"])
+        s = Settings()
+        assert s.category.descqs is True
+
+    def test_nodiff(self, monkeypatch):
+        """Test nodiff sets bot.no_diff=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "nodiff"])
+        s = Settings()
+        assert s.bot.no_diff is True
+
+    def test_diff(self, monkeypatch):
+        """Test diff sets bot.show_diff=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "diff"])
+        s = Settings()
+        assert s.bot.show_diff is True
+
+    def test_nofa(self, monkeypatch):
+        """Test nofa sets bot.no_fa=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "nofa"])
+        s = Settings()
+        assert s.bot.no_fa is True
+
+    def test_botedit(self, monkeypatch):
+        """Test botedit sets bot.force_edit=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "botedit"])
+        s = Settings()
+        assert s.bot.force_edit is True
+
+    def test_nologin(self, monkeypatch):
+        """Test nologin sets bot.no_login=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "nologin"])
+        s = Settings()
+        assert s.bot.no_login is True
+
+    def test_nocookies(self, monkeypatch):
+        """Test nocookies sets bot.no_cookies=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "nocookies"])
+        s = Settings()
+        assert s.bot.no_cookies is True
+
+    def test_keep(self, monkeypatch):
+        """Test keep sets category.keep=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "keep"])
+        s = Settings()
+        assert s.category.keep is True
+
+    def test_nowetry(self, monkeypatch):
+        """Test -nowetry sets category.we_try=False."""
+        monkeypatch.setattr(sys, "argv", ["test", "-nowetry"])
+        s = Settings()
+        assert s.category.we_try is False
+
+    def test_nodontadd(self, monkeypatch):
+        """Test nodontadd sets category.no_dontadd=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "nodontadd"])
+        s = Settings()
+        assert s.category.no_dontadd is True
+
+    def test_testadd(self, monkeypatch):
+        """Test testadd sets category.test_add=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "testadd"])
+        s = Settings()
+        assert s.category.test_add is True
+
+    def test_test_category(self, monkeypatch):
+        """Test test sets category.test_mode=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "test"])
+        s = Settings()
+        assert s.category.test_mode is True
+
+    def test_printurl(self, monkeypatch):
+        """Test printurl sets debug_config.print_url=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "printurl"])
+        s = Settings()
+        assert s.debug_config.print_url is True
+
+    def test_dopost(self, monkeypatch):
+        """Test dopost sets debug_config.do_post=True."""
+        monkeypatch.setattr(sys, "argv", ["test", "dopost"])
+        s = Settings()
+        assert s.debug_config.do_post is True
+
+    def test_maxlag2(self, monkeypatch):
+        """Test maxlag2 sets wikidata.maxlag=1."""
+        monkeypatch.setattr(sys, "argv", ["test", "maxlag2"])
+        s = Settings()
+        assert s.wikidata.maxlag == 1
+
+    def test_offset(self, monkeypatch):
+        """Test -offset:5 sets query.offset."""
+        monkeypatch.setattr(sys, "argv", ["test", "-offset:5"])
+        s = Settings()
+        assert s.query.offset == 5
+
+    def test_offset_short(self, monkeypatch):
+        """Test -off:10 sets query.offset."""
+        monkeypatch.setattr(sys, "argv", ["test", "-off:10"])
+        s = Settings()
+        assert s.query.offset == 10
+
+    def test_multiple_args(self, monkeypatch):
+        """Test multiple arguments can be set simultaneously."""
+        monkeypatch.setattr(sys, "argv", ["test", "DEBUG", "-nosql", "-range:20", "ask"])
+        s = Settings()
+        assert s.debug is True
+        assert s.database.use_sql is False
+        assert s.range_limit == 20
+        assert s.bot.ask is True
+
+    def test_dontMakeNewCat(self, monkeypatch):
+        """Test -dontMakeNewCat sets make_new_cat=False."""
+        monkeypatch.setattr(sys, "argv", ["test", "-dontMakeNewCat"])
+        s = Settings()
+        assert s.category.make_new_cat is False

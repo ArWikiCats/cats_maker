@@ -89,3 +89,48 @@ class TestJsonStore:
         path.write_text("[]", encoding="utf-8")
         store = JsonStore(path)
         assert store.is_stale(days=1) is False
+
+
+class TestLoadJsonEdgeCases:
+    def test_creates_parent_directory(self, tmp_path):
+        """Test that _load_json creates parent directory for missing file."""
+        path = tmp_path / "subdir" / "test.json"
+        assert not path.parent.exists()
+        result = _load_json(path)
+        assert path.parent.exists()
+        assert result == []
+
+    def test_permission_error_on_read(self, tmp_path):
+        """Test that PermissionError during read is caught."""
+        path = tmp_path / "test.json"
+        path.write_text("[]", encoding="utf-8")
+        with patch("builtins.open", side_effect=PermissionError("denied")):
+            result = _load_json(path)
+        # Should return empty data since the read failed
+        assert result == []
+
+
+class TestSaveJsonEdgeCases:
+    def test_permission_error_retry_path(self, tmp_path):
+        """Test that PermissionError triggers retry path."""
+        path = tmp_path / "test.json"
+        call_count = 0
+        original_open = open
+
+        def mock_open(*args, **kwargs):
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise PermissionError("denied")
+            return original_open(*args, **kwargs)
+
+        with patch("builtins.open", side_effect=mock_open):
+            _save_json(["data"], path)
+        # The retry should have succeeded
+        assert call_count >= 2
+
+    def test_oserror_on_write(self, tmp_path):
+        """Test that OSError during write is caught."""
+        path = tmp_path / "test.json"
+        with patch("builtins.open", side_effect=OSError("disk full")):
+            _save_json(["data"], path)  # Should not raise

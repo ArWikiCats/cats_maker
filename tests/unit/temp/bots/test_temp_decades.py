@@ -1,16 +1,16 @@
 #!/usr/bin/python3
 """
-Test file for MakedecadesTemp function
+Test file for make_decades_template function
 """
 
 import sys
 from pathlib import Path
 
-from src.temp.bots import MakedecadesTemp
+from src.temp.bots import make_decades_template
 
 
 def test_makedecades_temp_basic():
-    result = MakedecadesTemp("تصنيف:عقد 2010 في أوقيانوسيا")
+    result = make_decades_template("تصنيف:عقد 2010 في أوقيانوسيا")
 
     assert isinstance(result, tuple)
     assert result[0] == "{{تصنيف عقد|قرن=21|عقد=2010|بلد=أوقيانوسيا}}"
@@ -18,7 +18,7 @@ def test_makedecades_temp_basic():
 
 
 def test_makedecades_temp_with_foundation():
-    result = MakedecadesTemp("تصنيف:تأسيسات عقد 2010 في أوقيانوسيا")
+    result = make_decades_template("تصنيف:تأسيسات عقد 2010 في أوقيانوسيا")
 
     assert isinstance(result, tuple)
     assert result[0] == "{{تأسيس عقد|قرن=21|عقد=2010|بلد=أوقيانوسيا}}"
@@ -26,7 +26,7 @@ def test_makedecades_temp_with_foundation():
 
 
 def test_makedecades_temp_foundation_by_country():
-    result = MakedecadesTemp("تصنيف:تأسيسات عقد 2010 حسب البلد")
+    result = make_decades_template("تصنيف:تأسيسات عقد 2010 حسب البلد")
 
     assert isinstance(result, tuple)
     assert result[0] == "{{تأسيس عقد|قرن=21|عقد=2010|حسب=حسب البلد}}"
@@ -34,7 +34,7 @@ def test_makedecades_temp_foundation_by_country():
 
 
 def test_makedecades_temp_with_dissolution():
-    result = MakedecadesTemp("تصنيف:انحلالات عقد 2010 في أوقيانوسيا")
+    result = make_decades_template("تصنيف:انحلالات عقد 2010 في أوقيانوسيا")
 
     assert isinstance(result, tuple)
     assert result[0] == "{{انحلال عقد|قرن=21|عقد=2010|بلد=أوقيانوسيا}}"
@@ -42,7 +42,7 @@ def test_makedecades_temp_with_dissolution():
 
 
 def test_makedecades_temp_dissolution_by_country():
-    result = MakedecadesTemp("تصنيف:انحلالات عقد 2010 حسب البلد")
+    result = make_decades_template("تصنيف:انحلالات عقد 2010 حسب البلد")
 
     assert isinstance(result, tuple)
     assert result[0] == "{{انحلال عقد|قرن=21|عقد=2010|حسب=حسب البلد}}"
@@ -50,7 +50,7 @@ def test_makedecades_temp_dissolution_by_country():
 
 
 def test_makedecades_temp_dissolution_only():
-    result = MakedecadesTemp("تصنيف:انحلالات عقد 2010")
+    result = make_decades_template("تصنيف:انحلالات عقد 2010")
 
     assert isinstance(result, tuple)
     assert result[0] == "{{انحلال عقد|قرن=21|عقد=2010}}"
@@ -58,7 +58,7 @@ def test_makedecades_temp_dissolution_only():
 
 
 def test_makedecades_temp_foundation_only():
-    result = MakedecadesTemp("تصنيف:تأسيسات عقد 2010")
+    result = make_decades_template("تصنيف:تأسيسات عقد 2010")
 
     assert isinstance(result, tuple)
     assert result[0] == "{{تأسيس عقد|قرن=21|عقد=2010}}"
@@ -66,7 +66,7 @@ def test_makedecades_temp_foundation_only():
 
 
 def test_makedecades_temp_by_country_only():
-    result = MakedecadesTemp("تصنيف:عقد 2010 حسب البلد")
+    result = make_decades_template("تصنيف:عقد 2010 حسب البلد")
 
     assert isinstance(result, tuple)
     assert result[0] == "{{تصنيف عقد|قرن=21|عقد=2010|حسب=حسب البلد}}"
@@ -74,7 +74,7 @@ def test_makedecades_temp_by_country_only():
 
 
 def test_makedecades_temp_decade_only():
-    result = MakedecadesTemp("تصنيف:عقد 2010")
+    result = make_decades_template("تصنيف:عقد 2010")
 
     assert isinstance(result, tuple)
     assert result[0] == "{{تصنيف عقد|قرن=21|عقد=2010}}"

@@ -3,12 +3,12 @@ Unit tests for src/temp/bots/new.py module.
 """
 
 from src.temp.bots.new import (
-    Make_Cent_temp,
-    Make_Elff_temp,
-    MakedecadesTemp,
-    Make_years_temp,
     TemplatesMaker,
     main_make_temp,
+    make_century_template,
+    make_decades_template,
+    make_millennium_template,
+    make_years_template,
 )
 
 
@@ -55,52 +55,52 @@ class TestInitializeData:
 
 class TestMakeElffTemp:
     def test_millennium_1(self):
-        result, temp = Make_Elff_temp("تصنيف:الألفية الأولى")
+        result, temp = make_millennium_template("تصنيف:الألفية الأولى")
         assert "الألفية 1" in result
 
     def test_millennium_2(self):
-        result, temp = Make_Elff_temp("تصنيف:الألفية الثانية")
+        result, temp = make_millennium_template("تصنيف:الألفية الثانية")
         assert "الألفية 2" in result
 
     def test_millennium_3(self):
-        result, temp = Make_Elff_temp("تصنيف:الألفية الثالثة")
+        result, temp = make_millennium_template("تصنيف:الألفية الثالثة")
         assert "الألفية 3" in result
 
     def test_non_millennium_returns_season(self):
-        result, temp = Make_Elff_temp("تصنيف:علوم")
+        result, temp = make_millennium_template("تصنيف:علوم")
         assert "تصنيف موسم" in result
 
 
-class TestMakedecadesTemp:
+class Testmake_decades_template:
     def test_basic_decade(self):
-        result, temp = MakedecadesTemp("تصنيف:عقد 1990")
+        result, temp = make_decades_template("تصنيف:عقد 1990")
         assert "عقد" in result
 
     def test_non_decade_returns_season(self):
-        result, temp = MakedecadesTemp("تصنيف:علوم")
+        result, temp = make_decades_template("تصنيف:علوم")
         assert "تصنيف موسم" in result
 
 
 class TestMakeCentTemp:
     def test_basic_century(self):
-        result, temp = Make_Cent_temp("تصنيف:القرن 19")
+        result, temp = make_century_template("تصنيف:القرن 19")
         assert "قرن" in result
 
     def test_non_century_still_matches_broadly(self):
-        # Make_Cent_temp uses re.sub which returns the original string if no match
+        # make_century_template uses re.sub which returns the original string if no match
         # The if-dee check then passes because the original string is truthy
-        result, temp = Make_Cent_temp("تصنيف:علوم")
+        result, temp = make_century_template("تصنيف:علوم")
         # Due to the regex logic, non-century titles still produce output
         assert isinstance(result, str)
 
 
 class TestMakeYearsTemp:
     def test_returns_empty_for_bc(self):
-        result = Make_years_temp("تصنيف:100 ق م", "تأسيسات ")
+        result = make_years_template("تصنيف:100 ق م", "تأسيسات ")
         assert result == ""
 
     def test_non_year_returns_season(self):
-        result = Make_years_temp("تصنيف:علوم", "تأسيسات ")
+        result = make_years_template("تصنيف:علوم", "تأسيسات ")
         assert "تصنيف موسم" in result
 
 

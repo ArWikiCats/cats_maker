@@ -15,7 +15,6 @@ Example:
 import os
 import sys
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -24,6 +23,13 @@ try:
     load_dotenv()
 except Exception:
     load_dotenv("$HOME/.env")
+
+
+@dataclass(frozen=True)
+class Paths:
+    cookies_dir: str
+    dont_add_to_pages_path: str
+    arwikicats_path: str
 
 
 def _safe_int(value: str, default: int) -> int:
@@ -259,12 +265,16 @@ class Settings:
     query: QueryConfig = field(default_factory=QueryConfig)
     site: SiteConfig = field(default_factory=SiteConfig)
 
+    paths: Paths = Paths(
+        cookies_dir=os.getenv("COOKIES_DIR"),
+        dont_add_to_pages_path=os.getenv("DONT_ADD_TO_PAGES_PATH"),
+        arwikicats_path=os.getenv("ARWIKICATS_PATH"),
+    )
+
     # Global settings
     range_limit: int = 5
     debug: bool = False
     log_level: str = "INFO"
-
-    dont_add_to_pages_path = os.getenv("DONT_ADD_TO_PAGES_PATH")
 
     @staticmethod
     def is_production() -> bool:

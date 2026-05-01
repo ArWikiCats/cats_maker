@@ -16,7 +16,7 @@ from .sql_queries import fetch_dont_add_pages
 
 logger = logging.getLogger(__name__)
 
-_FILENAME_JSON = settings.dont_add_to_pages_path
+_FILENAME_JSON = settings.paths.dont_add_to_pages_path
 _STATGROUP = stat.S_IRWXU | stat.S_IRWXG
 
 
@@ -31,7 +31,7 @@ def _load_json(path: Path, empty_data: str = "list") -> list | dict:
                 json.dump(data, f)
             os.chmod(path, _STATGROUP)
         except (PermissionError, OSError) as e:
-            logger.warning(e)
+            logger.exception("Error save json file")
 
     try:
         with open(path, "r", encoding="utf-8") as f:

@@ -122,7 +122,7 @@ def wrap_session(session: requests.Session, site) -> None:
             if error_code == "maxlag":
                 attempt += 1
                 if attempt >= config.MAX_RETRIES:
-                    raise MaxlagError(f"Server maxlag not resolved after {config.MAX_RETRIES} " f"attempts.")
+                    raise MaxlagError(f"Server maxlag not resolved after {config.MAX_RETRIES} attempts.")
 
                 # Honour the server's Retry-After hint if present, else backoff
                 retry_after = response.headers.get(config.MAXLAG_HEADER)
@@ -142,6 +142,27 @@ def wrap_session(session: requests.Session, site) -> None:
                 )
                 time.sleep(delay)
                 continue  # retry after backoff
+
+            # ----------------------------------------------------------------
+            # assertnameduserfailed
+            # ----------------------------------------------------------------
+            if error_code == "assertnameduserfailed":
+                attempt += 1
+                if attempt >= config.MAX_RETRIES:
+                    raise CSRFError(f"Session assertion failed after {config.MAX_RETRIES} attempts.")
+
+                logger.debug(
+                    "assertnameduserfailed — retrying (attempt %d/%d)",
+                    attempt,
+                    config.MAX_RETRIES,
+                )
+                delay = config.BACKOFF_BASE * (2 ** attempt)
+                time.sleep(delay)
+                # TODO: del cookies file, create new session, site login
+
+                continue  # retry after backoff
+
+            # ----------------------------------------------------------------
 
             # ----------------------------------------------------------------
             # No retryable error — return the response as-is

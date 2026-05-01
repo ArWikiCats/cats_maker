@@ -122,3 +122,41 @@ class TestBlacklistIntegrity:
         """Test that blacklist has a minimum number of items"""
         # Based on the source, there should be at least 10 items
         assert len(global_False_entemps) >= 10
+
+
+class TestStubsBranch:
+    """Test the stubs conditional branch in skip_cats module."""
+
+    def test_stubs_true_removes_entries(self):
+        """Test that when stubs=True, Hiddencat/WPSS-cat/Stub Category are removed."""
+        import importlib
+
+        from src.core.utils import skip_cats as sc_module
+
+        original_stubs = sc_module.settings.category.stubs
+        try:
+            sc_module.settings.category.stubs = True
+            importlib.reload(sc_module)
+            assert "Hiddencat" not in sc_module.global_False_entemps
+            assert "WPSS-cat" not in sc_module.global_False_entemps
+            assert "Stub Category" not in sc_module.global_False_entemps
+        finally:
+            sc_module.settings.category.stubs = original_stubs
+            importlib.reload(sc_module)
+
+    def test_stubs_false_keeps_entries(self):
+        """Test that when stubs=False, entries remain in the list."""
+        import importlib
+
+        from src.core.utils import skip_cats as sc_module
+
+        original_stubs = sc_module.settings.category.stubs
+        try:
+            sc_module.settings.category.stubs = False
+            importlib.reload(sc_module)
+            assert "Hiddencat" in sc_module.global_False_entemps
+            assert "WPSS-cat" in sc_module.global_False_entemps
+            assert "Stub Category" in sc_module.global_False_entemps
+        finally:
+            sc_module.settings.category.stubs = original_stubs
+            importlib.reload(sc_module)

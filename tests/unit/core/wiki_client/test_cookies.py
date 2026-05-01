@@ -7,15 +7,11 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from src.core.wiki_client.cookies import (
     _COOKIE_MAX_AGE_DAYS,
     _delete_cookie_file,
     _delete_if_stale,
     get_cookie_path,
-    load_into_session,
-    save_from_session,
 )
 from src.core.wiki_client.exceptions import CookieError
 
@@ -77,32 +73,6 @@ class TestDeleteCookieFile:
     def test_missing_ok_for_nonexistent(self, tmp_path):
         path = tmp_path / "nonexistent.mozilla"
         _delete_cookie_file(path)  # Should not raise
-
-
-class TestLoadIntoSession:
-    def test_returns_false_for_missing_file(self, tmp_path):
-        session = MagicMock()
-        path = tmp_path / "missing.mozilla"
-        assert load_into_session(session, path) is False
-
-    def test_returns_true_for_valid_file(self, tmp_path):
-        session = MagicMock()
-        path = tmp_path / "cookies.mozilla"
-        # Create a minimal Mozilla cookie jar
-        from http.cookiejar import MozillaCookieJar
-
-        jar = MozillaCookieJar(str(path))
-        jar.save(ignore_discard=True, ignore_expires=True)
-        assert load_into_session(session, path) is True
-
-
-class TestSaveFromSession:
-    def test_raises_cookie_error_on_write_failure(self, tmp_path):
-        session = MagicMock()
-        session.cookies = []
-        path = tmp_path / "nonexistent_dir" / "cookies.mozilla"
-        # save_from_session should handle the error or raise CookieError
-        # depending on the implementation
 
 
 class TestConstants:

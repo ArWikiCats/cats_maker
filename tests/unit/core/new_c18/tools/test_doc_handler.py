@@ -7,6 +7,7 @@ This module tests functions for adding text/categories to template pages.
 import re
 
 import pytest
+
 from src.core.new_c18.tools.doc_handler import (
     add_direct,
     add_text_to_template,
@@ -14,6 +15,7 @@ from src.core.new_c18.tools.doc_handler import (
     add_to_text_temps,
     find_doc_and_add,
 )
+
 
 class TestAddToTextTemps:
     """Tests for add_to_text_temps function"""

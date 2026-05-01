@@ -4,7 +4,7 @@
 import logging
 from typing import NamedTuple, Optional
 
-from ..core.new_api import load_main_api
+from ..core.client_wiki import load_main_api
 from ..core.utils import skip_encats
 from ..temp import main_make_temp_no_title
 from . import categorytext

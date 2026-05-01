@@ -1,21 +1,12 @@
 """ """
 
-import functools
 import logging
 
-from ..new_api.super_login import Login
 from ..wiki_client import WikiLoginClient
 from .categories import catdepth_new
 from .pages import super_page
 
 logger = logging.getLogger(__name__)
-
-
-@functools.lru_cache(maxsize=1024)
-def _login(lang: str, family: str, username: str):
-    login_bot = Login(lang, family=family)
-    logger.info(f"### <<purple>> make new bot for ({lang}.{family}.org|{username})")
-    return login_bot
 
 
 class ALL_APIS:
@@ -28,8 +19,7 @@ class ALL_APIS:
         self.family = family
         self.username = username
         self.password = password
-        # self.login_bot = self._login()
-        self.login_bot = self._login2()
+        self.login_bot = self._login()
 
     def MainPage(self, title: str, *args, **kwargs) -> super_page.MainPage:
         return super_page.MainPage(self.login_bot, title, self.lang, family=self.family)
@@ -37,18 +27,7 @@ class ALL_APIS:
     def CatDepth(self, title: str, sitecode: str = "", family: str = "", *args, **kwargs):
         return catdepth_new.subcatquery(self.login_bot, title, sitecode=self.lang, family=self.family, **kwargs)
 
-    def _login(self):
-        bot = _login(self.lang, self.family, self.username)
-        user_tables = {
-            self.family: {
-                "username": self.username,
-                "password": self.password,
-            }
-        }
-        bot.add_users(user_tables, lang=self.lang)
-        return bot
-
-    def _login2(self) -> WikiLoginClient:
+    def _login(self) -> WikiLoginClient:
         client = WikiLoginClient(
             lang=self.lang,
             family=self.family,

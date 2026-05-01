@@ -52,7 +52,7 @@ def sub_cats_query(enlink, sitecode, ctype=""):
 
     try:
         api = submitAPI(params, sitecode, "wikipedia") or {}
-    except Exception as exc:
+    except Exception:
         logger.exception(
             "sub_cats_query failed: sitecode=%s enlink=%s ctype=%s",
             sitecode,
