@@ -134,10 +134,12 @@ class TestClientRequest:
             site_instance.api.return_value = {"query": {"userinfo": {"id": 1}}}
             site_instance.connection = MagicMock()
             site_instance.api_url = "http://example.com/api"
+            site_instance.get_token = MagicMock(return_value="test_token")
 
             response = MagicMock()
             response.raise_for_status = MagicMock()
             response.json.return_value = {"error": {"code": "badtoken", "info": "Invalid token"}}
+            response.headers = {"Content-Type": "application/json"}
             site_instance.connection.request.return_value = response
 
             client = WikiLoginClient("en", "wikipedia", "bot", "pass")
@@ -149,6 +151,7 @@ class TestClientRequest:
         response = MagicMock()
         response.raise_for_status = MagicMock()
         response.json.return_value = {"query": {"pages": {"1": {"title": "Python"}}}}
+        response.headers = {"Content-Type": "application/json"}
         site.connection.request.return_value = response
 
         result = client.client_request({"action": "query", "titles": "Python"}, method="get")
@@ -160,6 +163,7 @@ class TestClientRequest:
         response = MagicMock()
         response.raise_for_status = MagicMock()
         response.json.return_value = {"edit": {"result": "Success"}}
+        response.headers = {"Content-Type": "application/json"}
         site.connection.request.return_value = response
 
         result = client.client_request({"action": "edit", "title": "Test"}, method="post")
@@ -170,6 +174,7 @@ class TestClientRequest:
         response = MagicMock()
         response.raise_for_status = MagicMock()
         response.json.return_value = {"upload": {"result": "Success"}}
+        response.headers = {"Content-Type": "application/json"}
         site.connection.request.return_value = response
 
         mock_file = MagicMock()
@@ -185,6 +190,7 @@ class TestClientRequest:
         response = MagicMock()
         response.raise_for_status = MagicMock()
         response.json.return_value = {"query": {"userinfo": {"id": 42}}}
+        response.headers = {"Content-Type": "application/json"}
         site.connection.request.return_value = response
 
         result = client.client_request({"action": "query", "meta": "userinfo"})
