@@ -6,11 +6,11 @@ import json
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import pytest
 
-from src.core.new_c18.io.json_store import JsonStore, _load_json, _save_json
+from src.core.new_c18.io.json_store import JsonStore, _load_json, _save_json, get_dont_add_pages
 
 
 class TestLoadJson:
@@ -134,3 +134,105 @@ class TestSaveJsonEdgeCases:
         path = tmp_path / "test.json"
         with patch("builtins.open", side_effect=OSError("disk full")):
             _save_json(["data"], path)  # Should not raise
+
+
+class TestGetDontAddPages:
+    """Tests for get_dont_add_pages function"""
+
+    def test_returns_empty_when_no_dontadd_enabled(self, mocker):
+        """Test that empty list is returned when no_dontadd is True"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", True)
+
+        result = get_dont_add_pages()
+        assert result == []
+
+    def test_returns_empty_when_test_mode_enabled(self, mocker):
+        """Test that empty list is returned when test_mode is True"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", True)
+
+        result = get_dont_add_pages()
+        assert result == []
+
+    def test_returns_empty_when_not_production_and_no_test_add(self, mocker):
+        """Test that empty list is returned in non-production without test_add"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=False)
+
+        result = get_dont_add_pages()
+        assert result == []
+
+    def test_returns_empty_when_filename_none(self, mocker):
+        """Test that empty list is returned when _FILENAME_JSON is None"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
+        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
+        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", None)
+
+        result = get_dont_add_pages()
+        assert result == []
+
+    def test_loads_from_cache_when_fresh(self, tmp_path, mocker):
+        """Test that cached data is returned when not stale"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
+        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
+        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", str(tmp_path / "cache.json"))
+        mocker.patch("src.core.new_c18.io.json_store.fetch_dont_add_pages", return_value=["Page1", "Page2"])
+
+        path = tmp_path / "cache.json"
+        path.write_text(json.dumps(["Page1", "Page2"]), encoding="utf-8")
+
+        result = get_dont_add_pages()
+        assert result == ["Page1", "Page2"]
+
+    def test_refreshes_from_sql_when_stale(self, tmp_path, mocker):
+        """Test that data is refreshed from SQL when stale"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
+        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
+        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", str(tmp_path / "cache.json"))
+
+        path = tmp_path / "cache.json"
+        old_time = datetime.now() - timedelta(days=2)
+        path.write_text(json.dumps(["OldPage"]), encoding="utf-8")
+        os.utime(path, (old_time.timestamp(), old_time.timestamp()))
+
+        mock_fetch = mocker.patch("src.core.new_c18.io.json_store.fetch_dont_add_pages", return_value=["NewPage1", "NewPage2"])
+
+        result = get_dont_add_pages()
+
+        mock_fetch.assert_called_once()
+        assert result == ["NewPage1", "NewPage2"]
+
+    def test_returns_list_when_data_is_list(self, tmp_path, mocker):
+        """Test that list is returned when data is a list"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
+        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
+        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", str(tmp_path / "cache.json"))
+        mocker.patch("src.core.new_c18.io.json_store.fetch_dont_add_pages", return_value=["Page1"])
+
+        path = tmp_path / "cache.json"
+        path.write_text("invalid json that will return []", encoding="utf-8")
+
+        result = get_dont_add_pages()
+        assert result == ["Page1"]
+
+    def test_returns_empty_when_fetch_returns_dict(self, tmp_path, mocker):
+        """Test that empty list is returned when fetch returns dict instead of list"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
+        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
+        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", str(tmp_path / "cache.json"))
+        mocker.patch("src.core.new_c18.io.json_store.fetch_dont_add_pages", return_value={"key": "value"})
+
+        result = get_dont_add_pages()
+        assert result == []

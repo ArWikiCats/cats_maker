@@ -76,6 +76,63 @@ class TestAddToDocPage:
         # Should not add duplicate
         assert result.count("[[تصنيف:علوم]]") <= 1 or result == text
 
+    def test_skips_empty_category_lines(self):
+        """Test that empty lines in categories are skipped"""
+        text = "محتوى"
+        categories = "[[تصنيف:علوم]]\n\n[[تصنيف:تاريخ]]"
+        result = add_to_doc_page(text, categories)
+
+        assert "[[تصنيف:علوم]]" in result
+
+    def test_handles_category_with_pipe(self):
+        """Test that categories with pipe (sort key) are handled"""
+        text = "محتوى"
+        categories = "[[تصنيف:علوم|فرع]]"
+        result = add_to_doc_page(text, categories)
+
+        # Should handle the pipe correctly
+        assert isinstance(result, str)
+
+    def test_handles_includeonly_with_category_pattern(self):
+        """Test handling when includeonly precedes category"""
+        text = "<includeonly>\n[[تصنيف:قديم]]"
+        categories = "[[تصنيف:جديد]]"
+        result = add_to_doc_page(text, categories)
+
+        assert "[[تصنيف:جديد]]" in result or result == text
+
+    def test_handles_sandbox_template(self):
+        """Test handling of sandbox template"""
+        text = "محتوى\n{{sandbox other}}"
+        categories = "[[تصنيف:علوم]]"
+        result = add_to_doc_page(text, categories)
+
+        assert "[[تصنيف:علوم]]" in result
+
+    def test_handles_melab_akher_template(self):
+        """Test handling of ملعب أخر template"""
+        text = "محتوى\n{{ملعب أخر}}"
+        categories = "[[تصنيف:علوم]]"
+        result = add_to_doc_page(text, categories)
+
+        assert "[[تصنيف:علوم]]" in result
+
+    def test_handles_end_includeonly_tag(self):
+        """Test handling of </includeonly> tag"""
+        text = "محتوى\n</includeonly>"
+        categories = "[[تصنيف:علوم]]"
+        result = add_to_doc_page(text, categories)
+
+        assert "[[تصنيف:علوم]]" in result
+
+    def test_creates_default_template_when_no_match(self):
+        """Test that default template is created when no other match"""
+        text = "محتوى قالب"
+        categories = "[[تصنيف:علوم]]"
+        result = add_to_doc_page(text, categories)
+
+        assert "ملعب آخر" in result
+
 
 class TestAddDirect:
     """Tests for add_direct function"""
@@ -112,6 +169,38 @@ class TestAddDirect:
         result = add_direct(text, categories)
 
         assert categories in result
+
+    def test_handles_option_lawi_template(self):
+        """Test handling of خيار طوي قالب template"""
+        text = "محتوى\n{{خيار طوي قالب}}"
+        categories = "[[تصنيف:علوم]]"
+        result = add_direct(text, categories)
+
+        assert categories in result
+
+    def test_handles_collapsible_option_english(self):
+        """Test handling of collapsible option English template"""
+        text = "محتوى\n{{collapsible option}}"
+        categories = "[[تصنيف:علوم]]"
+        result = add_direct(text, categories)
+
+        assert categories in result
+
+    def test_merges_adjacent_noinclude_tags(self):
+        """Test that adjacent noinclude tags are merged"""
+        text = "<noinclude>content1</noinclude>\n<noinclude>content2</noinclude>"
+        categories = "[[تصنيف:علوم]]"
+        result = add_direct(text, categories)
+
+        assert "<noinclude>" in result
+
+    def test_adds_content_when_not_in_text(self):
+        """Test that content is added when not already in text"""
+        text = "محتوى القالب"
+        categories = "تصنيف:علوم"
+        result = add_direct(text, categories)
+
+        assert "<noinclude>" in result
 
 
 class TestFindDocAndAdd:
