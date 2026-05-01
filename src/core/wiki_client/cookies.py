@@ -132,6 +132,34 @@ def load_into_session(session: requests.Session, path: Path) -> bool:
     return True
 
 
+def load_cookies(path: Path):
+    """
+    Load a Mozilla cookie file
+    """
+    jar = MozillaCookieJar(str(path))
+
+    if not path.exists():
+        logger.debug("Cookie file not found: %s — will require login", path)
+        return False
+
+    try:
+        # ignore_discard=True:  keep session cookies that have no expiry set
+        # ignore_expires=True:  load all cookies; stale ones were already
+        #                       removed by _delete_if_stale in get_cookie_path
+        jar.load(ignore_discard=True, ignore_expires=True)
+        logger.debug("Loaded %d cookies from %s", len(jar), path)
+    except (LoadError, OSError) as exc:
+        logger.exception("Could not load cookie file %s (%s) — will require login", path, exc)
+        return False
+
+    # requests.Session.cookies expects a RequestsCookieJar for full dict-style
+    # access (.get(), ["key"], iteration). Copy all cookies from the Mozilla
+    # jar into one so the session behaves normally.
+    rcj = RequestsCookieJar()
+    rcj.update(jar)
+    return rcj
+
+
 def save_from_session(session: requests.Session, path: Path) -> None:
     """
     Save the current session cookies to a Mozilla cookie file.
@@ -162,6 +190,7 @@ def save_from_session(session: requests.Session, path: Path) -> None:
 
 
 __all__ = [
+    "load_cookies",
     "get_cookie_path",
     "load_into_session",
     "save_from_session",

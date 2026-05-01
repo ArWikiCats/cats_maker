@@ -10,10 +10,11 @@ import mwclient
 import mwclient.errors
 import requests
 
-from src.config import settings
+from ...config import settings
 
-from .config import COOKIES_DIR
-from .cookies import get_cookie_path, load_into_session, save_from_session
+from .cookies import (
+    _delete_cookie_file, get_cookie_path, load_into_session, save_from_session, load_cookies,
+)
 from .exceptions import LoginError, WikiClientError
 from .requests_handler import wrap_session
 
@@ -75,21 +76,19 @@ class WikiLoginClient:
         # e.g. ("wikipedia", "en") → en.wikipedia.org
         logger.debug("Creating mwclient.Site for %s.%s", lang, family)
         try:
-            self._site = mwclient.Site(
-                f"{self.lang}.{self.family}.org",
-            )
+            self._site = mwclient.Site(f"{self.lang}.{self.family}.org")
         except mwclient.errors.InvalidSiteIdError:
             raise WikiClientError(f"Invalid site ID: {self.lang}.{self.family}")
 
         # ── Inject saved cookies ───────────────────────────────────────────
         # mwclient stores its requests.Session at site.connection.
-        load_into_session(self._site.connection, self._cookie_path)
+        # load_into_session(self._site.connection, self._cookie_path)
 
         # ── Wrap the session with retry / CSRF / maxlag logic ──────────────
-        wrap_session(self._site.connection, self._site)
+        # wrap_session(self._site.connection, self._site)
 
         # ── Authenticate if necessary ──────────────────────────────────────
-        self._ensure_logged_in()
+        # self._ensure_logged_in()
 
     # ── Public properties ──────────────────────────────────────────────────
 
@@ -245,6 +244,12 @@ class WikiLoginClient:
         - If the loaded cookies are still valid, skip the login round-trip.
         - If not (anonymous session or expired cookies), perform a fresh login.
         """
+        if self._site.logged_in:
+            logger.info(f"Session already authenticated as {self._site.username} on {self.lang}.{self.family}")
+            return
+        else:
+            ...
+
         try:
             result = self._site.api("query", meta="userinfo")
             user_id = result["query"]["userinfo"]["id"]
@@ -277,8 +282,9 @@ class WikiLoginClient:
         Raises:
             LoginError: if mwclient rejects the credentials.
         """
+        self._site.login(self.username, self._password, cookies=load_cookies(self._cookie_path))
         try:
-            self._site.login(self.username, self._password)
+            self._site.login(self.username, self._password, cookies=load_cookies(self._cookie_path))
         except mwclient.errors.LoginError as exc:
             raise LoginError(f"Login failed for {self.username} on {self.lang}.{self.family}: {exc}") from exc
 

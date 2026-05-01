@@ -13,7 +13,9 @@ import requests
 
 from ...config import settings
 
-from .cookies import _delete_cookie_file, get_cookie_path, load_into_session, save_from_session
+from .cookies import (
+    _delete_cookie_file, get_cookie_path, load_into_session, save_from_session, load_cookies,
+)
 from .exceptions import LoginError, WikiClientError
 from .requests_handler import wrap_session
 
@@ -116,7 +118,6 @@ class WikiLoginClient:
         # ── Shared / cached session ────────────────────────────────────────
         # Merge #3: reuse the same session for the same (lang, family, user)
         shared_session = _get_shared_session(lang, family, username)
-
         shared_session.auth = requests.auth.HTTPBasicAuth(self.username, self._password)
         # ── mwclient Site ──────────────────────────────────────────────────
         # Pass our shared session in so mwclient doesn't create its own.
@@ -135,7 +136,7 @@ class WikiLoginClient:
         wrap_session(self._site.connection, self._site)
 
         # ── Authenticate if necessary ──────────────────────────────────────
-        self._ensure_logged_in()
+        # self._ensure_logged_in()
 
     # ── Public properties ──────────────────────────────────────────────────
 
@@ -363,9 +364,9 @@ class WikiLoginClient:
         Raises:
             LoginError: if mwclient rejects the credentials.
         """
-        self._site.login(self.username, self._password)
+        self._site.login(self.username, self._password, cookies=load_cookies(self._cookie_path))
         try:
-            self._site.login(self.username, self._password)
+            self._site.login(self.username, self._password, cookies=load_cookies(self._cookie_path))
         except mwclient.errors.LoginError as exc:
             raise LoginError(f"Login failed for {self.username} on {self.lang}.{self.family}: {exc}") from exc
 
