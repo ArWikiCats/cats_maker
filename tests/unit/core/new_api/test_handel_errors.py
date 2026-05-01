@@ -1,12 +1,12 @@
 """
-Unit tests for src/core/new_api/handel_errors.py module.
+Unit tests for src/core/client_wiki/api_utils/handel_errors.py module.
 """
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.core.new_api.handel_errors import HandleErrors
+from src.core.client_wiki.api_utils.handel_errors import HandleErrors
 
 
 class TestHandleErr:

@@ -25,7 +25,7 @@ class AuthProvider:
         self.session = session
         self.username_in = ""
 
-    def add_User_tables(self, family, table, lang="") -> None:
+    def add_user_tables(self, family, table, lang="") -> None:
         langx = self.lang
 
         # for example family=toolforge, lang in (medwiki, mdwikicx)
@@ -33,7 +33,7 @@ class AuthProvider:
             langx = lang
 
         if table["username"].find("bot") == -1 and family == "wikipedia":
-            logger.info(f": {family=}, {table['username']=}")
+            logger.info(f"{family=}, {table['username']=}")
 
         if family and table["username"] and table["password"]:
             if self.family == family or (langx == "ar" and self.family.startswith("wik")):  # wiktionary
@@ -88,16 +88,16 @@ class AuthProvider:
             jsson1 = r11.json()
         except requests.exceptions.JSONDecodeError:
             logger.warning(f" {self.lang}.{self.family} error parsing login token response: {r11.text}")
-        except Exception as e:
+        except Exception:
             logger.debug(r11.text)
-            logger.exception(f"<<red>> Error getting login token: {e}")
+            logger.exception("<<red>> Error getting login token")
             return ""
 
         return jsson1.get("query", {}).get("tokens", {}).get("logintoken") or ""
 
     def get_login_result(self, logintoken: str, username: str, password: str) -> bool:
         if not password:
-            logger.debug("No password")
+            logger.warning("No password")
             return False
 
         r2_params = {
@@ -112,8 +112,8 @@ class AuthProvider:
 
         try:
             req = self.session.request("POST", self.endpoint, data=r2_params)
-        except Exception as e:
-            logger.exception(f" {self.lang}.{self.family} login request exception: {e}")
+        except Exception:
+            logger.exception(f" {self.lang}.{self.family} login request exception")
             return False
 
         result = {}

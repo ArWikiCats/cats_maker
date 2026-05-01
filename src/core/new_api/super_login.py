@@ -29,9 +29,17 @@ def _load_session(lang: str = "", family: str = "", username: str = "") -> reque
 class Login(HandleErrors):
     """
     Represents a login session for a wiki.
+
+    Attributes:
+        lang: Language code for the wiki.
+        family: Wiki family (e.g., 'wikipedia', 'wikidata').
     """
 
-    def __init__(self, lang: str, family: str = "wikipedia") -> None:
+    def __init__(
+        self,
+        lang: str,
+        family: str = "wikipedia",
+    ) -> None:
         self.lang: str = lang
         self.family: str = family
         self.r3_token: str = ""
@@ -62,6 +70,9 @@ class Login(HandleErrors):
         return params
 
     def p_url(self, params: dict) -> None:
+        """
+        Print the URL for debugging purposes.
+        """
         if settings.debug_config.print_url:
             no_url = ["lgpassword", "format"]
             no_remove = ["titles", "title"]
@@ -72,12 +83,12 @@ class Login(HandleErrors):
             }
             url_o_print = f"{self.endpoint}?{urllib.parse.urlencode(pams2)}".replace("&format=json", "")
 
-            logger.debug(f"{url_o_print}")
+            logger.info(url_o_print)
 
-    def add_users(self, Users_tables, lang=""):
-        if Users_tables:
-            for family, user_tab in Users_tables.items():
-                self.add_User_tables(family, user_tab, lang=lang)
+    def add_users(self, users_tables, lang=""):
+        if users_tables:
+            for family, user_tab in users_tables.items():
+                self.add_user_tables(family, user_tab, lang=lang)
 
     def make_response(
         self,
@@ -86,6 +97,9 @@ class Login(HandleErrors):
         timeout: int = 30,
         do_error: bool = True,
     ) -> dict:
+        """
+        Make a POST request to the API endpoint.
+        """
         self.p_url(params)
         data = {}
 
@@ -101,10 +115,6 @@ class Login(HandleErrors):
         if not req:
             logger.debug("<<red>> no req.. ")
             return {}
-
-        if req.headers and req.headers.get("x-database-lag"):
-            logger.debug("<<red>> x-database-lag.. ")
-            logger.debug(req.headers)
 
         data = self.parse_data(req)
 
@@ -167,48 +177,6 @@ class Login(HandleErrors):
         if req0 and req0.status_code:
             if not str(req0.status_code).startswith("2"):
                 logger.debug(f"<<red>>  {req0.status_code} Server Error: Server Hangup for url: {self.endpoint}")
-
-    def post_it_parse_data(
-        self,
-        params: dict,
-        files: Any = None,
-        timeout: int = 30,
-    ) -> dict:
-        params = self.params_w(params)
-
-        if not self.session:
-            self._make_session()
-
-        req = self._raw_request(params, files=files, timeout=timeout)
-
-        if not req:
-            logger.debug("<<red>> no req.. ")
-            return {}
-
-        if req.headers and req.headers.get("x-database-lag"):
-            logger.debug("<<red>> x-database-lag.. ")
-            logger.debug(req.headers)
-
-        data = self.parse_data(req) or {}
-
-        error = data.get("error", {})
-
-        # {'code': 'assertnameduserfailed', 'info': 'You are no longer logged in as "Mr. Ibrahem", ....', '*': ''}
-
-        if error:
-            code = error.get("code", "")
-
-            if code == "assertnameduserfailed":
-                logger.warning("assertnameduserfailed" * 10)
-
-                del_cookies_file(self.cookies_file)
-
-                _load_session.cache_clear()
-                self._make_session()
-
-                return self.post_it_parse_data(params, files, timeout)
-
-        return data
 
     def client_request(
         self,
@@ -303,12 +271,12 @@ class Login(HandleErrors):
 
         return data
 
-    def add_User_tables(self, family, table, lang="") -> None:
+    def add_user_tables(self, family, table, lang="") -> None:
         if not self.auth:
             self.lang = lang
             self.family = family
             self._make_session()
-        self.auth.add_User_tables(family, table, lang)
+        self.auth.add_user_tables(family, table, lang)
 
     def params_w(self, params: dict) -> dict:
         params = dict(params)
@@ -361,7 +329,7 @@ class Login(HandleErrors):
 
         try:
             return json.loads(text)
-        except Exception as e:
+        except Exception:
             logger.exception("Error loading json from text")
 
         return {}
@@ -381,8 +349,8 @@ class Login(HandleErrors):
                 if len(jar) < 8:
                     self.cookie_jar = MozillaCookieJar(self.cookies_file)
 
-            except Exception as e:
-                logger.warning("Error loading cookies from file")
+            except Exception:
+                logger.exception("Error loading cookies from file")
 
         # Bind cookies once; subsequent calls for the same user reuse the same jar.
         if self.session.cookies is not self.cookie_jar:

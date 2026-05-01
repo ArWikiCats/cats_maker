@@ -365,7 +365,7 @@ class WikiLoginClient(CookiesClient):
                 self.lang,
                 self.family,
             )
-            self.save_cookies()
+            self.save_cookies(self.cj)
 
     def __repr__(self) -> str:
         return f"WikiLoginClient(lang={self.lang!r}, family={self.family!r}, username={self.username!r})"

@@ -28,20 +28,20 @@ class TestAddUserTables:
     def test_sets_credentials_for_matching_family(self):
         auth = AuthProvider("ar", "wikipedia")
         table = {"username": "bot", "password": "pass"}
-        auth.add_User_tables("wikipedia", table)
+        auth.add_user_tables("wikipedia", table)
         assert auth.username == "bot"
         assert auth.password == "pass"
 
     def test_ignores_non_matching_family(self):
         auth = AuthProvider("en", "wikisource")
         table = {"username": "bot", "password": "pass"}
-        auth.add_User_tables("wikipedia", table)
+        auth.add_user_tables("wikipedia", table)
         assert auth.username is None
 
     def test_empty_family_ignored(self):
         auth = AuthProvider("ar", "wikipedia")
         table = {"username": "bot", "password": "pass"}
-        auth.add_User_tables("", table)
+        auth.add_user_tables("", table)
         assert auth.username is None
 
 
