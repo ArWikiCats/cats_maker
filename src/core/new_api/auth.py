@@ -122,10 +122,8 @@ class AuthProvider:
             try:
                 result = req.json()
             except Exception as e:
-                req_text = getattr(req, 'text', '')
-                logger.exception(
-                    f" {self.lang}.{self.family} error parsing login response: {e} - response: {req_text}"
-                )
+                req_text = getattr(req, "text", "")
+                logger.exception(f" {self.lang}.{self.family} error parsing login response: {e} - response: {req_text}")
                 logger.debug(req_text)
                 return False
 
@@ -169,8 +167,10 @@ class AuthProvider:
             try:
                 json1 = req.json()
             except Exception as e:
-                req_text = getattr(req, 'text', '')
-                logger.exception(f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {req_text}")
+                req_text = getattr(req, "text", "")
+                logger.exception(
+                    f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {req_text}"
+                )
                 logger.debug(req_text)
                 return False
 
@@ -208,7 +208,7 @@ class AuthProvider:
             try:
                 json1 = req.json()
             except Exception as e:
-                req_text = getattr(req, 'text', '')
+                req_text = getattr(req, "text", "")
                 logger.exception(
                     f" {self.lang}.{self.family} error parsing userinfo response: {e} - response: {req_text}"
                 )

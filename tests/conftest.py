@@ -20,13 +20,19 @@ def disable_network(mocker):
     mocker.patch("requests.get", side_effect=Exception("Network disabled in tests"))
     mocker.patch("requests.post", side_effect=Exception("Network disabled in tests"))
     mocker.patch("urllib.request.urlopen", side_effect=Exception("Network disabled in tests"))
-    mocker.patch("src.core.wiki_client.client.mwclient.client.requests.get", side_effect=Exception("Network disabled in tests"))
-    mocker.patch("src.core.wiki_client.client.mwclient.client.requests.post", side_effect=Exception("Network disabled in tests"))
+    mocker.patch(
+        "src.core.wiki_client.client.mwclient.client.requests.get", side_effect=Exception("Network disabled in tests")
+    )
+    mocker.patch(
+        "src.core.wiki_client.client.mwclient.client.requests.post", side_effect=Exception("Network disabled in tests")
+    )
 
 
 @pytest.fixture(autouse=True)
 def stop_nets():
     disable_socket(allow_unix_socket=True)
+
+
 # ===== Shared Test Data Fixtures =====
 
 

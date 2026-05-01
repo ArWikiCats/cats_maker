@@ -23,9 +23,10 @@ data = client.client_request(
     method="post",
 )
 """
+
+import http.cookiejar
 import logging
 from pathlib import Path
-import http.cookiejar
 from typing import Any, Optional
 
 import mwclient
@@ -33,7 +34,6 @@ import mwclient.errors
 import requests
 
 from ...config import settings
-
 from .cookies import (
     _delete_cookie_file,
     get_cookie_path,
@@ -356,7 +356,7 @@ class WikiLoginClient(CookiesClient):
         try:
             self._site.login(self.username, self._password)
         except mwclient.errors.LoginError as exc:
-            raise LoginError(f"Login failed for {self.username} on {self.lang}.{self.family}: {exc}") from exc
+            raise LoginError(f"login failed for {self.username} on {self.lang}.{self.family}: {exc}") from exc
 
         if self._site.logged_in:
             logger.info(
