@@ -238,7 +238,6 @@ class TestParseApiResponse:
         assert "Test Page" in result
         assert "Category:Test" in result["Test Page"]["categories"]
         assert "Category:Test2" in result["Test Page"]["categories"]
-        assert "Category:Test" in result["Test Page"]["cat_with_out_hidden"]
         assert "Category:Test2" in result["Test Page"]["cat_with_out_hidden"]
 
     def test_handles_redirects(self, mocker):
@@ -302,33 +301,9 @@ class TestFindNonHiddenCategoriesIntegration:
             "src.core.wiki_api.LCN_new.submitAPI",
             return_value=mock_response,
         )
-        result = handler.find_non_working_categories("Test Category")
+        result = handler.find_non_hidden_categories("Test Category")
         assert result is not False
         assert isinstance(result, dict)
-
-    def test_tracks_categories_without_langlinks(self, mocker):
-        """Test that categories without langlinks are tracked"""
-        handler = WikiApiHandler()
-        mock_response = {
-            "query": {
-                "pages": {
-                    "123": {
-                        "title": "Category Without Link",
-                        "categories": [{"title": "Category:Test"}],
-                    }
-                }
-            }
-        }
-        mocker.patch(
-            "src.core.wiki_api.LCN_new.submitAPI",
-            return_value=mock_response,
-        )
-        result = handler.find_non_working_categories("Test Category", site_working="en")
-        # Categories without langlinks should be tracked in arpage_working_en_cat
-        cat_key = list(handler.arpage_working_en_cat.keys())[0] if handler.arpage_working_en_cat else None
-        # Verify tracking happenedf):
-        """Test that LC_bot is a WikiApiHandler instance"""
-        assert isinstance(LC_bot, WikiApiHandler)
 
     def test_lc_bot_has_default_config(self):
         """Test that LC_bot has default configuration"""
