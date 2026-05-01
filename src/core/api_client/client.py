@@ -38,8 +38,16 @@ import requests
 
 from ...config import settings
 from . import config
-from .cookies import _delete_cookie_file, get_cookie_path
-from .exceptions import CSRFError, LoginError, MaxlagError, WikiClientError
+from .cookies import (
+    _delete_cookie_file,
+    get_cookie_path,
+)
+from .exceptions import (
+    CSRFError,
+    LoginError,
+    MaxlagError,
+    WikiClientError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -283,13 +291,17 @@ class CookiesClient:
         to checkpoint the session after a long batch of writes.
         """
         try:
+            # Save cookies to disk, ignoring discard and expire attributes
             cj.save(ignore_discard=True, ignore_expires=True)
+            # Log successful cookie save operation
             logger.debug("Cookies saved to _cookie_path")
         except Exception:
+            # Log any exceptions that occur during cookie saving
             logger.exception("Failed to save cookies")
 
     @staticmethod
     def _make_cookiejar(cookie_path: Path) -> http.cookiejar.LWPCookieJar:
+        # Create a new LWPCookieJar instance with the specified path
         cj = http.cookiejar.LWPCookieJar(cookie_path)
         if cookie_path.exists():
             try:
@@ -366,9 +378,12 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         self.username = username
         self._password = password  # kept private — never log or expose this
 
+        # ── Cookie path ────────────────────────────────────────────────────
         self._cookie_path: Path = get_cookie_path(cookies_dir, family, lang, username)
 
+        # ── mwclient Site ──────────────────────────────────────────────────
         logger.debug("Creating mwclient.Site for %s.%s", lang, family)
+
         self.api_url = f"https://{self.lang}.{self.family}.org/w/api.php"
 
         try:
@@ -380,6 +395,9 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         # mwclient stores its requests.Session at site.connection.
         self.cj = self._make_cookiejar(self._cookie_path)
         self._site.connection.cookies = self.cj
+
+        # ── Wrap the session with retry / CSRF / maxlag logic ──────────────
+        # wrap_session(self._site.connection, self._site)
 
         # ── Authenticate if necessary ──────────────────────────────────────
         self._ensure_logged_in()
@@ -606,7 +624,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         Check whether the current session is authenticated.
         """
         if self._site.logged_in:
-            logger.info("Session already authenticated (logged_in=%s)", self._site.logged_in)
+            logger.info(f"Session already authenticated {self._site.logged_in=}")
             return
         if self._cookie_path.exists():
             try:
@@ -614,8 +632,8 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
                 if self._site.logged_in:
                     logger.info("Revived session via cookies as %s", self._site.username)
                     return
-            except Exception as exc:
-                logger.error("site_init failed: %s", exc)
+            except Exception:
+                logger.exception("Error in site_init")
 
         # if not self._site.logged_in: self._do_login()
         # don't login yet, user can use login() method
@@ -661,7 +679,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         try:
             self._site.login(self.username, self._password)
         except mwclient.errors.LoginError as exc:
-            raise LoginError(f"Login failed for {self.username} on {self.lang}.{self.family}: {exc}") from exc
+            raise LoginError(f"login failed for {self.username} on {self.lang}.{self.family}: {exc}") from exc
 
         if self._site.logged_in:
             logger.info(
@@ -673,7 +691,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
             self.save_cookies(self.cj)
 
     def __repr__(self) -> str:
-        return f"WikiLoginClient(lang={self.lang!r}, family={self.family!r}, " f"username={self.username!r})"
+        return f"WikiLoginClient(lang={self.lang!r}, family={self.family!r}, username={self.username!r})"
 
 
 __all__ = [
