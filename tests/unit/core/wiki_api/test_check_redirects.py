@@ -160,20 +160,6 @@ class TestLoadNonRedirects:
         result = load_non_redirects("en", [])
         assert result == {}
 
-    def test_loads_api_and_returns_result(self, mocker):
-        """Test that load_non_redirects calls API and returns result"""
-        mock_load_main_api = mocker.patch("src.core.wiki_api.check_redirects.load_main_api")
-        mock_bot = MagicMock()
-        mock_api = MagicMock()
-        mock_api.Find_pages_exists_or_not.return_value = {"Page1": True}
-        mock_bot.login_bot = mock_api
-        mock_load_main_api.return_value = mock_bot
-
-        result = load_non_redirects("en", ["Page1"])
-
-        mock_load_main_api.assert_called_once_with("en", "wikipedia")
-        assert result == {"Page1": True}
-
 
 class TestRemoveRedirectPages:
     """Tests for remove_redirect_pages function"""

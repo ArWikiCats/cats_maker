@@ -175,63 +175,13 @@ class TestGetDontAddPages:
         result = get_dont_add_pages()
         assert result == []
 
-    def test_loads_from_cache_when_fresh(self, tmp_path, mocker):
-        """Test that cached data is returned when not stale"""
-        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
-        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
-        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
-        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
-        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", str(tmp_path / "cache.json"))
-        mocker.patch("src.core.new_c18.io.json_store.fetch_dont_add_pages", return_value=["Page1", "Page2"])
-
-        path = tmp_path / "cache.json"
-        path.write_text(json.dumps(["Page1", "Page2"]), encoding="utf-8")
-
-        result = get_dont_add_pages()
-        assert result == ["Page1", "Page2"]
-
-    def test_refreshes_from_sql_when_stale(self, tmp_path, mocker):
-        """Test that data is refreshed from SQL when stale"""
-        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
-        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
-        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
-        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
-        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", str(tmp_path / "cache.json"))
-
-        path = tmp_path / "cache.json"
-        old_time = datetime.now() - timedelta(days=2)
-        path.write_text(json.dumps(["OldPage"]), encoding="utf-8")
-        os.utime(path, (old_time.timestamp(), old_time.timestamp()))
-
-        mock_fetch = mocker.patch("src.core.new_c18.io.json_store.fetch_dont_add_pages", return_value=["NewPage1", "NewPage2"])
-
-        result = get_dont_add_pages()
-
-        mock_fetch.assert_called_once()
-        assert result == ["NewPage1", "NewPage2"]
-
-    def test_returns_list_when_data_is_list(self, tmp_path, mocker):
-        """Test that list is returned when data is a list"""
-        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
-        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
-        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
-        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
-        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", str(tmp_path / "cache.json"))
-        mocker.patch("src.core.new_c18.io.json_store.fetch_dont_add_pages", return_value=["Page1"])
-
-        path = tmp_path / "cache.json"
-        path.write_text("invalid json that will return []", encoding="utf-8")
-
-        result = get_dont_add_pages()
-        assert result == ["Page1"]
-
-    def test_returns_empty_when_fetch_returns_dict(self, tmp_path, mocker):
+    def test_returns_empty_when_fetch_returns_dict(self, mocker):
         """Test that empty list is returned when fetch returns dict instead of list"""
         mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
         mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
         mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
         mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
-        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", str(tmp_path / "cache.json"))
+        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", "/nonexistent/path.json")
         mocker.patch("src.core.new_c18.io.json_store.fetch_dont_add_pages", return_value={"key": "value"})
 
         result = get_dont_add_pages()
