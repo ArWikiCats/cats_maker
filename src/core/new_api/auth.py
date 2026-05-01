@@ -47,11 +47,12 @@ class AuthProvider:
         """
         # time.sleep(0.5)
         logger.debug(f"<<yellow>> {self.endpoint}")
-        logger.debug(f"page.py: log to {self.lang}.{self.family}.org user:{self.username})")
+        logger.debug(f"login to {self.lang}.{self.family}.org user:{self.username})")
 
         logintoken = self.get_logintoken()
 
         if not logintoken:
+            logger.warning("<<red>> new_api login failed: no logintoken")
             return False
 
         success = self.get_login_result(logintoken, self.username, self.password)
@@ -133,8 +134,7 @@ class AuthProvider:
         success = login_result.lower() == "success"
 
         if success:
-            self.loged_in()
-            return True
+            return self.loged_in()
 
         reason = result.get("login", {}).get("reason", "")
 
@@ -176,13 +176,18 @@ class AuthProvider:
 
         userinfo = json1.get("query", {}).get("userinfo", {})
 
-        result_x = "success" if userinfo else "failed"
-        logger.debug(result_x)
+        # {'id': 0, 'name': '176.123.28.168', 'anon': '', 'groups': ['*'], 'rights': ['patrolmarks', 'createaccount', 'read', 'edit', 'createpage', 'createtalk', 'viewmyprivateinfo', 'editmyprivateinfo', 'editmyoptions', 'abusefilter-log-detail', 'urlshortener-create-url', 'centralauth-merge', 'abusefilter-view', 'abusefilter-log', 'echo-read-notifications', 'flow-hide', 'flow-edit-title']}
 
         if "anon" in userinfo or "temp" in userinfo:
+            logger.info("not logged in")
             return False
 
         self.username_in = userinfo.get("name", "")
+        logger.info(f"logged in as {self.username_in}")
+
+        if self.username_in != self.username:
+            logger.warning(f"logged in as {self.username_in} instead of {self.username}")
+            return False
 
         return True
 

@@ -127,6 +127,7 @@ class WikiLoginClient:
         self._site = mwclient.Site(
             f"{self.lang}.{self.family}.org",
             pool=shared_session,  # inject the shared session
+            # do_init=True,
         )
 
         # ── Inject saved cookies ───────────────────────────────────────────

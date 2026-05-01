@@ -380,7 +380,7 @@ class Login(HandleErrors):
                 logger.debug("We have %d cookies" % len(self.cookie_jar))
 
             except Exception as e:
-                logger.exception("Error loading cookies from file")
+                logger.warning("Error loading cookies from file")
 
         # Bind cookies once; subsequent calls for the same user reuse the same jar.
         if self.session.cookies is not self.cookie_jar:
@@ -389,7 +389,7 @@ class Login(HandleErrors):
     def ensure_logged_in(self) -> bool:
         logged_in = False
 
-        if self.cookie_jar:
+        if self.session.cookies:
             if self.auth.loged_in():
                 logged_in = True
                 logger.debug(f"<<green>>Cookie Already logged in with user:{self.username_in}")
@@ -397,7 +397,7 @@ class Login(HandleErrors):
             logged_in = self.auth.login()
 
         if logged_in:
-            self.cookie_jar.save(ignore_discard=True, ignore_expires=True)
+            self.session.cookies.save(ignore_discard=True, ignore_expires=True)
 
 
 __all__ = [
