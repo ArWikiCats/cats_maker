@@ -5,7 +5,7 @@ from directory_tree import DisplayTree
 work_path = Path(__file__).parent.parent / "src"
 tree_save_path = Path(__file__).parent.parent / "tree.md"
 
-ignoreList = ["__pycache__", "old", "app1.py", "example.env", "*.html"]
+ignoreList = ["__pycache__", "old", "app1.py", "example.env", "*.html", "*.zip"]
 
 tree: str = DisplayTree(
     dirPath=str(work_path),
