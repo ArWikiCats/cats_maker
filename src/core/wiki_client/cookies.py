@@ -118,6 +118,10 @@ def load_into_session(session: requests.Session, path: Path) -> bool:
         #                       removed by _delete_if_stale in get_cookie_path
         jar.load(ignore_discard=True, ignore_expires=True)
         logger.debug("Loaded %d cookies from %s", len(jar), path)
+        if len(jar) < 8:
+            session.cookies = RequestsCookieJar()
+            return False
+
     except (LoadError, OSError) as exc:
         logger.exception("Could not load cookie file %s (%s) — will require login", path, exc)
         session.cookies = RequestsCookieJar()
@@ -148,6 +152,8 @@ def load_cookies(path: Path):
         #                       removed by _delete_if_stale in get_cookie_path
         jar.load(ignore_discard=True, ignore_expires=True)
         logger.debug("Loaded %d cookies from %s", len(jar), path)
+        if len(jar) < 8:
+            return False
     except (LoadError, OSError) as exc:
         logger.exception("Could not load cookie file %s (%s) — will require login", path, exc)
         return False

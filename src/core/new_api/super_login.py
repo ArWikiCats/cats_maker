@@ -376,8 +376,10 @@ class Login(HandleErrors):
         if os.path.exists(self.cookies_file) and self.family != "mdwiki":
             logger.debug("Load cookies from file, including session cookies")
             try:
-                self.cookie_jar.load(ignore_discard=True, ignore_expires=True)
+                jar = self.cookie_jar.load(ignore_discard=True, ignore_expires=True)
                 logger.debug("We have %d cookies" % len(self.cookie_jar))
+                if len(jar) < 8:
+                    self.cookie_jar = MozillaCookieJar(self.cookies_file)
 
             except Exception as e:
                 logger.warning("Error loading cookies from file")
