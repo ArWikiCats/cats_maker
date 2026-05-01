@@ -309,8 +309,10 @@ class WikiLoginClient(CookiesClient):
         if self._cookie_path.exists():
             try:
                 self._site.site_init()
-                print(f"{self._site.logged_in=}")
-                print(f"{self._site.username=}")
+                if self._site.logged_in:
+                    print(f"{self._site.logged_in=}")
+                    print(f"{self._site.username=}")
+                    return
             except Exception as e:
                 logger.error("Error in site_init: %s", e)
 
