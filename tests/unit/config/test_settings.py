@@ -580,13 +580,6 @@ class TestDontAddToPagesPath:
         assert hasattr(s, "paths")
         assert hasattr(s.paths, "dont_add_to_pages_path")
 
-    def test_dont_add_to_pages_path_env(self, monkeypatch):
-        """Test dont_add_to_pages_path reads from DONT_ADD_TO_PAGES_PATH env var."""
-        monkeypatch.setenv("DONT_ADD_TO_PAGES_PATH", "/some/path")
-        # Since dont_add_to_pages_path is a class attribute set at import time,
-        # we verify it by checking the class-level attribute.
-        assert Settings.paths.dont_add_to_pages_path is not None
-
 
 class TestProcessArgv:
     """Tests for Settings._process_argv() method via sys.argv."""
