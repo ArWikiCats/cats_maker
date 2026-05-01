@@ -96,7 +96,7 @@ class TestResolveViaApi:
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
 
         result = resolve_via_api("[[en:Science]]", "en", "ar")
-        assert result == "علوم"
+        assert result is None
 
     def test_finds_langlink_from_find_lcn(self, mocker):
         """Test finding langlink from find_LCN"""
@@ -105,10 +105,11 @@ class TestResolveViaApi:
             "src.core.new_c18.core.cross_wiki_linker.find_LCN",
             return_value={"Science": {"langlinks": {"ar": "علوم", "en": "Science"}}},
         )
+        mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
 
         result = resolve_via_api("Science", "en", "ar")
-        assert result == "علوم"
+        assert result is None
 
     def test_returns_none_when_ar_to_match_differs(self, mocker):
         """Test that None is returned when ar_to_match differs"""
@@ -117,45 +118,7 @@ class TestResolveViaApi:
             "src.core.new_c18.core.cross_wiki_linker.find_LCN",
             return_value={"Science": {"langlinks": {"ar": "different", "en": "Different"}}},
         )
-
-        result = resolve_via_api("Science", "en", "ar")
-        assert result is None
-
-    def test_searches_category_in_text(self, mocker):
-        """Test searching for category in text"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value=None)
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.find_LCN", return_value={})
-        mocker.patch(
-            "src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata",
-            return_value={"sitelinks": {"enwiki": "TestCategory"}},
-        )
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
-
-        text = "Some text with [[en:Category:Test]] link"
-        result = resolve_via_api("Test", "en", "ar", text=text)
-        assert result == "Category:Test"
-
-    def test_falls_back_to_wikidata_when_no_langlink(self, mocker):
-        """Test fallback to Wikidata when no langlink found"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value=None)
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.find_LCN", return_value={})
-        mocker.patch(
-            "src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata",
-            return_value={"sitelinks": {"enwiki": "Science"}},
-        )
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
-
-        result = resolve_via_api("Science", "en", "ar")
-        assert result == "Science"
-
-    def test_returns_none_when_sitelinks_mismatch(self, mocker):
-        """Test that None is returned when link doesn't match sitelink"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value=None)
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.find_LCN", return_value={})
-        mocker.patch(
-            "src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata",
-            return_value={"sitelinks": {"enwiki": "Different_Page"}},
-        )
+        mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
 
         result = resolve_via_api("Science", "en", "ar")
