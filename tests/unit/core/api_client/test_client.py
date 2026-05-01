@@ -40,7 +40,7 @@ class TestEnrichParams:
 
     @patch("src.core.api_client.client.mwclient.Site")
     @patch("src.core.api_client.client.get_cookie_path")
-    def test_query_action_strips_bot_and_summary(self, mock_path, mock_site, mock_session):
+    def test_query_action_strips_bot_and_summary(self, mock_path, mock_site):
         mock_path.return_value = MagicMock()
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
 
@@ -53,7 +53,7 @@ class TestEnrichParams:
 
     @patch("src.core.api_client.client.mwclient.Site")
     @patch("src.core.api_client.client.get_cookie_path")
-    def test_write_action_injects_bot_and_assertuser(self, mock_path, mock_site, mock_session):
+    def test_write_action_injects_bot_and_assertuser(self, mock_path, mock_site):
         mock_path.return_value = MagicMock()
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
 
@@ -269,7 +269,7 @@ class TestRepr:
 
     @patch("src.core.api_client.client.mwclient.Site")
     @patch("src.core.api_client.client.get_cookie_path")
-    def test_repr(self, mock_path, mock_site, mock_session):
+    def test_repr(self, mock_path, mock_site):
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
         client = WikiLoginClient("en", "wikipedia", "MyBot", "pass")
         assert "WikiLoginClient" in repr(client)

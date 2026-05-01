@@ -410,7 +410,7 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         self._site.connection.cookies = self.cj
 
         # ── Wrap the session with retry / CSRF / maxlag logic ──────────────
-        wrap_session(self._site.connection, self._site)
+        # wrap_session(self._site.connection, self._site)
 
         # ── Authenticate if necessary ──────────────────────────────────────
         self._ensure_logged_in()
