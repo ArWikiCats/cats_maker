@@ -5,7 +5,7 @@ import logging
 
 from tqdm import tqdm
 
-from ...wiki_client import WikiLoginClient
+from ...api_client import WikiLoginClient
 
 logger = logging.getLogger(__name__)
 

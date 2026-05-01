@@ -6,7 +6,7 @@
 import logging
 
 from ...config import settings
-from ..wiki_client import WikiLoginClient
+from ..api_client import WikiLoginClient
 from .lag_bot import do_lag, find_lag, get_lag_value
 
 logger = logging.getLogger(__name__)

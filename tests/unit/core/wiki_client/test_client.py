@@ -7,8 +7,8 @@ from unittest.mock import MagicMock, PropertyMock, patch
 import mwclient.errors
 import pytest
 
-from src.core.wiki_client.client import WikiLoginClient
-from src.core.wiki_client.exceptions import LoginError, WikiClientError
+from src.core.api_client.client import WikiLoginClient
+from src.core.api_client.exceptions import LoginError, WikiClientError
 
 # ── Helper to construct a patched WikiLoginClient ────────────────────────────
 

@@ -7,8 +7,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from src.core.wiki_client.exceptions import CSRFError, MaxlagError
-from src.core.wiki_client.requests_handler import _replace_token, wrap_session
+from src.core.api_client.exceptions import CSRFError, MaxlagError
+from src.core.api_client.requests_handler import _replace_token, wrap_session
 
 
 class TestReplaceToken:
