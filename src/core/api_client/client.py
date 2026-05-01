@@ -326,44 +326,31 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
     - Recovers automatically if the session expires mid-run
       (assertnameduserfailed).
     - Injects bot=1 and assertuser into all write-action requests.
-    - Reuses the same requests.Session across instances for the same wiki+user.
 
-    Usage
-    -----
-        client = WikiLoginClient(
-            lang="en",
-            family="wikipedia",
-            username="MyBot",
-            password="s3cr3t",
-        )
-        page = client.site.pages["Python"]
-        print(page.text())
-
-        # Direct API call
-        data = client.client_request({"action": "query", "titles": "Python"})
-
-    The `site` property exposes the full mwclient.Site API.
+    RequestsHandler provides the transport/retry layer; this class owns
+    only auth logic, parameter enrichment, and continuation pagination.
     """
 
-    # Write actions that need bot=1 and assertuser injected
-    _WRITE_ACTIONS = {
-        "edit",
-        "create",
-        "upload",
-        "delete",
-        "move",
-        "wbeditentity",
-        "wbsetclaim",
-        "wbcreateclaim",
-        "wbsetreference",
-        "wbremovereferences",
-        "wbsetaliases",
-        "wbsetdescription",
-        "wbsetlabel",
-        "wbsetsitelink",
-        "wbmergeitems",
-        "wbcreateredirect",
-    }
+    _WRITE_ACTIONS: frozenset[str] = frozenset(
+        {
+            "edit",
+            "create",
+            "upload",
+            "delete",
+            "move",
+            "wbeditentity",
+            "wbsetclaim",
+            "wbcreateclaim",
+            "wbsetreference",
+            "wbremovereferences",
+            "wbsetaliases",
+            "wbsetdescription",
+            "wbsetlabel",
+            "wbsetsitelink",
+            "wbmergeitems",
+            "wbcreateredirect",
+        }
+    )
 
     def __init__(
         self,
@@ -415,6 +402,33 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         # ── Authenticate if necessary ──────────────────────────────────────
         self._ensure_logged_in()
 
+    # ------------------------------------------------------------------
+    # RequestsHandler contract — concrete implementations
+    # ------------------------------------------------------------------
+
+    @property
+    def _session(self) -> requests.Session:
+        """The mwclient-managed session."""
+        return self._site.connection
+
+    def _refresh_csrf_token(self) -> str:
+        """Force mwclient to fetch a fresh CSRF token from the server."""
+        return self._site.get_token("csrf", force=True)
+
+    def _on_assertnameduserfailed(self) -> None:
+        """
+        Session expired mid-run: nuke stale cookies and re-authenticate.
+        Called by the base-class retry loop; never call directly.
+        """
+        logger.warning(
+            "assertnameduserfailed for %s on %s.%s — clearing cookies and re-logging in",
+            self.username,
+            self.lang,
+            self.family,
+        )
+        _delete_cookie_file(self._cookie_path, reason="assertnameduserfailed")
+        self._do_login()
+
     # ── Public properties ──────────────────────────────────────────────────
 
     @property
@@ -445,15 +459,15 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         Send a GET or POST request to the wiki API and return the parsed JSON.
 
         This is the low-level escape hatch for callers that need to hit the API
-        directly without going through mwclient's higher-level helpers. The
-        session's retry wrapper (CSRF refresh, maxlag backoff) is active on
-        every call made through this method.
+        directly without going through mwclient's higher-level helpers. CSRF
+        refresh, maxlag backoff, and assertnameduserfailed recovery are all
+        handled transparently by the RequestsHandler base class.
 
         Args:
             params: MediaWiki API parameters as a plain dict.
                     ``action`` and ``format`` are required by the API;
                     ``format`` defaults to ``"json"`` if not supplied.
-            method: ``"get"`` (default) or ``"post"``. Case-insensitive.
+            method: ``"get"`` or ``"post"``. Case-insensitive.
                     Use POST for any write operation (edits, uploads, etc.)
                     or when the payload may exceed URL length limits.
             files:  Optional dict of ``{field_name: file-like object}`` for
@@ -465,11 +479,10 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
 
         Raises:
             ValueError:         If *method* is not ``"get"`` or ``"post"``.
-            WikiClientError:    Wraps API-level errors (code + info message).
-                                Note: CSRF and maxlag are handled transparently
-                                by the session wrapper before reaching here.
+            CSRFError:          CSRF token invalid after all retries.
+            MaxlagError:        Server maxlag unresolved after all retries.
+            WikiClientError:    On other API-level errors.
             requests.HTTPError: On non-2xx HTTP responses.
-
         """
         method = method.lower()
         if method not in ("get", "post"):
@@ -479,11 +492,8 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         if files is not None:
             method = "post"
 
-        # Always request JSON unless the caller explicitly overrides
-        params = {"format": "json", **params}
-
-        # Merge #5: inject bot flag and identity assertion for write actions
-        params = self._enrich_params(params)
+        # Always request JSON and inject write-action safety params
+        params = self._enrich_params({"format": "json", **params})
 
         session: requests.Session = self._site.connection
 
@@ -554,18 +564,17 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
             try:
                 self._site.site_init()
                 if self._site.logged_in:
-                    print(f"{self._site.logged_in=}")
-                    print(f"{self._site.username=}")
+                    logger.info("Revived session via cookies as %s", self._site.username)
                     return
-            except Exception as e:
-                logger.error("Error in site_init: %s", e)
+            except Exception:
+                logger.exception("Error in site_init")
 
         # if not self._site.logged_in: self._do_login()
         # don't login yet, user can use login() method
 
     def _enrich_params(self, params: dict) -> dict:
         """
-        Merge #5: inject write-action safety params.
+        Inject write-action safety params.
 
         For any action that modifies wiki content:
           - ``bot=1``        marks edits as bot edits in the recent-changes log.
@@ -588,7 +597,6 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
 
         # Inject bot marker and identity assertion for all write actions
         is_write = action in self._WRITE_ACTIONS or action.startswith("wb") or self.family == "wikidata"
-
         if is_write and self.username:
             params.setdefault("bot", 1)
             params.setdefault("assertuser", self.username)
@@ -621,5 +629,6 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
 
 
 __all__ = [
+    "RequestsHandler",
     "WikiLoginClient",
 ]

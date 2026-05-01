@@ -16,7 +16,6 @@ from src.core.api_client.exceptions import LoginError, WikiClientError
 def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass", cookies_dir=None):
     """Create a WikiLoginClient with all external dependencies mocked."""
     with (
-
         patch("src.core.api_client.client.mwclient.Site") as mock_site,
         patch("src.core.api_client.client.get_cookie_path") as mock_path,
     ):
@@ -118,7 +117,6 @@ class TestEnrichParams:
 class TestClientRequest:
     def test_invalid_method_raises(self):
         with (
-
             patch("src.core.api_client.client.mwclient.Site") as mock_site,
             patch("src.core.api_client.client.get_cookie_path"),
         ):
@@ -129,7 +127,6 @@ class TestClientRequest:
 
     def test_api_error_raises_wiki_client_error(self):
         with (
-
             patch("src.core.api_client.client.mwclient.Site") as mock_site,
             patch("src.core.api_client.client.get_cookie_path"),
         ):
@@ -288,7 +285,6 @@ class TestRepr:
 class TestInitCookiesDir:
     def test_passes_cookies_dir_to_get_cookie_path(self):
         with (
-
             patch("src.core.api_client.client.mwclient.Site") as mock_site,
             patch("src.core.api_client.client.get_cookie_path") as mock_path,
         ):
@@ -300,7 +296,6 @@ class TestInitCookiesDir:
 
     def test_default_cookies_dir_is_default_value(self):
         with (
-
             patch("src.core.api_client.client.mwclient.Site") as mock_site,
             patch("src.core.api_client.client.get_cookie_path") as mock_path,
         ):
