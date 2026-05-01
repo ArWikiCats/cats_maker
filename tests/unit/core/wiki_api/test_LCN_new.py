@@ -194,3 +194,143 @@ class TestGlobalLCBot:
         """Test that LC_bot has default configuration"""
         assert LC_bot.family == "wikipedia"
         assert LC_bot.en_site_config["code"] == "en"
+
+
+class TestParseApiResponse:
+    """Tests for _parse_api_response method"""
+
+    def test_parses_langlinks_correctly(self, mocker):
+        """Test that langlinks are parsed correctly from API response"""
+        handler = WikiApiHandler()
+        query = {
+            "pages": {
+                "123": {
+                    "title": "Test Page",
+                    "langlinks": [
+                        {"lang": "ar", "*": "صفحة اختبار"},
+                        {"lang": "fr", "*": "Page de test"},
+                    ],
+                }
+            },
+            "redirects": [],
+        }
+        result = handler._parse_api_response(query, "en", "langlinks")
+        assert "Test Page" in result
+        assert result["Test Page"]["langlinks"]["ar"] == "صفحة اختبار"
+        assert result["Test Page"]["langlinks"]["fr"] == "Page de test"
+
+    def test_parses_categories_correctly(self, mocker):
+        """Test that categories are parsed correctly from API response"""
+        handler = WikiApiHandler()
+        query = {
+            "pages": {
+                "123": {
+                    "title": "Test Page",
+                    "categories": [
+                        {"title": "Category:Test", "hidden": ""},
+                        {"title": "Category:Test2"},
+                    ],
+                }
+            },
+            "redirects": [],
+        }
+        result = handler._parse_api_response(query, "en", "categories")
+        assert "Test Page" in result
+        assert "Category:Test" in result["Test Page"]["categories"]
+        assert "Category:Test2" in result["Test Page"]["categories"]
+        assert "Category:Test" in result["Test Page"]["cat_with_out_hidden"]
+        assert "Category:Test2" in result["Test Page"]["cat_with_out_hidden"]
+
+    def test_handles_redirects(self, mocker):
+        """Test that redirects are handled correctly"""
+        handler = WikiApiHandler()
+        query = {
+            "pages": {
+                "456": {"title": "Redirect Target", "langlinks": []},
+            },
+            "redirects": [{"from": "Original Page", "to": "Redirect Target"}],
+        }
+        result = handler._parse_api_response(query, "en", "langlinks")
+        assert "Original Page" in result
+        assert result["Original Page"]["redirect"] == "Redirect Target"
+
+    def test_parses_templates(self, mocker):
+        """Test that templates are parsed correctly"""
+        handler = WikiApiHandler()
+        query = {
+            "pages": {
+                "123": {
+                    "title": "Test Page",
+                    "templates": [
+                        {"title": "Template:Test1"},
+                        {"title": "Template:Test2"},
+                    ],
+                }
+            },
+            "redirects": [],
+        }
+        result = handler._parse_api_response(query, "en", "templates")
+        assert "Test Page" in result
+        assert "Template:Test1" in result["Test Page"]["templates"]
+        assert "Template:Test2" in result["Test Page"]["templates"]
+
+
+class TestFindNonHiddenCategoriesIntegration:
+    """Integration tests for find_working categories with API responses"""
+
+    def test_handles_pages_with_categories(self, mocker):
+        """Test handling pages with categories data"""
+        handler = WikiApiHandler()
+        mock_response = {
+            "query": {
+                "pages": {
+                    "789": {
+                        "title": "Test Category",
+                        "ns": 14,
+                        "categories": [
+                            {"title": "Category:SubCat1"},
+                            {"title": "Category:SubCat2", "hidden": ""},
+                        ],
+                        "langlinks": [
+                            {"lang": "ar", "*": "تصنيف فرعي 1"},
+                        ],
+                    }
+                }
+            }
+        }
+        mocker.patch(
+            "src.core.wiki_api.LCN_new.submitAPI",
+            return_value=mock_response,
+        )
+        result = handler.find_non_working_categories("Test Category")
+        assert result is not False
+        assert isinstance(result, dict)
+
+    def test_tracks_categories_without_langlinks(self, mocker):
+        """Test that categories without langlinks are tracked"""
+        handler = WikiApiHandler()
+        mock_response = {
+            "query": {
+                "pages": {
+                    "123": {
+                        "title": "Category Without Link",
+                        "categories": [{"title": "Category:Test"}],
+                    }
+                }
+            }
+        }
+        mocker.patch(
+            "src.core.wiki_api.LCN_new.submitAPI",
+            return_value=mock_response,
+        )
+        result = handler.find_non_working_categories("Test Category", site_working="en")
+        # Categories without langlinks should be tracked in arpage_working_en_cat
+        cat_key = list(handler.arpage_working_en_cat.keys())[0] if handler.arpage_working_en_cat else None
+        # Verify tracking happenedf):
+        """Test that LC_bot is a WikiApiHandler instance"""
+        assert isinstance(LC_bot, WikiApiHandler)
+
+    def test_lc_bot_has_default_config(self):
+        """Test that LC_bot has default configuration"""
+        assert LC_bot.family == "wikipedia"
+        assert LC_bot.en_site_config["code"] == "en"
