@@ -16,7 +16,6 @@ from src.core.api_client.exceptions import LoginError, WikiClientError
 def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass", cookies_dir=None):
     """Create a WikiLoginClient with all external dependencies mocked."""
     with (
-        patch("src.core.api_client.client.wrap_session"),
         patch("src.core.api_client.client.mwclient.Site") as mock_site,
         patch("src.core.api_client.client.get_cookie_path") as mock_path,
     ):
@@ -37,10 +36,10 @@ def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass
 
 
 class TestEnrichParams:
-    @patch("src.core.api_client.client.wrap_session")
+
     @patch("src.core.api_client.client.mwclient.Site")
     @patch("src.core.api_client.client.get_cookie_path")
-    def test_query_action_strips_bot_and_summary(self, mock_path, mock_site, mock_session):
+    def test_query_action_strips_bot_and_summary(self, mock_path, mock_site):
         mock_path.return_value = MagicMock()
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
 
@@ -51,10 +50,9 @@ class TestEnrichParams:
         assert "summary" not in result
         assert result["titles"] == "Python"
 
-    @patch("src.core.api_client.client.wrap_session")
     @patch("src.core.api_client.client.mwclient.Site")
     @patch("src.core.api_client.client.get_cookie_path")
-    def test_write_action_injects_bot_and_assertuser(self, mock_path, mock_site, mock_session):
+    def test_write_action_injects_bot_and_assertuser(self, mock_path, mock_site):
         mock_path.return_value = MagicMock()
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
 
@@ -119,7 +117,6 @@ class TestEnrichParams:
 class TestClientRequest:
     def test_invalid_method_raises(self):
         with (
-            patch("src.core.api_client.client.wrap_session"),
             patch("src.core.api_client.client.mwclient.Site") as mock_site,
             patch("src.core.api_client.client.get_cookie_path"),
         ):
@@ -130,7 +127,6 @@ class TestClientRequest:
 
     def test_api_error_raises_wiki_client_error(self):
         with (
-            patch("src.core.api_client.client.wrap_session"),
             patch("src.core.api_client.client.mwclient.Site") as mock_site,
             patch("src.core.api_client.client.get_cookie_path"),
         ):
@@ -138,10 +134,12 @@ class TestClientRequest:
             site_instance.api.return_value = {"query": {"userinfo": {"id": 1}}}
             site_instance.connection = MagicMock()
             site_instance.api_url = "http://example.com/api"
+            site_instance.get_token = MagicMock(return_value="test_token")
 
             response = MagicMock()
             response.raise_for_status = MagicMock()
             response.json.return_value = {"error": {"code": "badtoken", "info": "Invalid token"}}
+            response.headers = {"Content-Type": "application/json"}
             site_instance.connection.request.return_value = response
 
             client = WikiLoginClient("en", "wikipedia", "bot", "pass")
@@ -153,6 +151,7 @@ class TestClientRequest:
         response = MagicMock()
         response.raise_for_status = MagicMock()
         response.json.return_value = {"query": {"pages": {"1": {"title": "Python"}}}}
+        response.headers = {"Content-Type": "application/json"}
         site.connection.request.return_value = response
 
         result = client.client_request({"action": "query", "titles": "Python"}, method="get")
@@ -164,6 +163,7 @@ class TestClientRequest:
         response = MagicMock()
         response.raise_for_status = MagicMock()
         response.json.return_value = {"edit": {"result": "Success"}}
+        response.headers = {"Content-Type": "application/json"}
         site.connection.request.return_value = response
 
         result = client.client_request({"action": "edit", "title": "Test"}, method="post")
@@ -174,6 +174,7 @@ class TestClientRequest:
         response = MagicMock()
         response.raise_for_status = MagicMock()
         response.json.return_value = {"upload": {"result": "Success"}}
+        response.headers = {"Content-Type": "application/json"}
         site.connection.request.return_value = response
 
         mock_file = MagicMock()
@@ -189,6 +190,7 @@ class TestClientRequest:
         response = MagicMock()
         response.raise_for_status = MagicMock()
         response.json.return_value = {"query": {"userinfo": {"id": 42}}}
+        response.headers = {"Content-Type": "application/json"}
         site.connection.request.return_value = response
 
         result = client.client_request({"action": "query", "meta": "userinfo"})
@@ -267,10 +269,10 @@ class TestSiteProperty:
 
 
 class TestRepr:
-    @patch("src.core.api_client.client.wrap_session")
+
     @patch("src.core.api_client.client.mwclient.Site")
     @patch("src.core.api_client.client.get_cookie_path")
-    def test_repr(self, mock_path, mock_site, mock_session):
+    def test_repr(self, mock_path, mock_site):
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
         client = WikiLoginClient("en", "wikipedia", "MyBot", "pass")
         assert "WikiLoginClient" in repr(client)
@@ -289,7 +291,6 @@ class TestRepr:
 class TestInitCookiesDir:
     def test_passes_cookies_dir_to_get_cookie_path(self):
         with (
-            patch("src.core.api_client.client.wrap_session"),
             patch("src.core.api_client.client.mwclient.Site") as mock_site,
             patch("src.core.api_client.client.get_cookie_path") as mock_path,
         ):
@@ -301,7 +302,6 @@ class TestInitCookiesDir:
 
     def test_default_cookies_dir_is_default_value(self):
         with (
-            patch("src.core.api_client.client.wrap_session"),
             patch("src.core.api_client.client.mwclient.Site") as mock_site,
             patch("src.core.api_client.client.get_cookie_path") as mock_path,
         ):

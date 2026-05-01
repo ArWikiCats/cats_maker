@@ -6,11 +6,11 @@ import json
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import pytest
 
-from src.core.new_c18.io.json_store import JsonStore, _load_json, _save_json
+from src.core.new_c18.io.json_store import JsonStore, _load_json, _save_json, get_dont_add_pages
 
 
 class TestLoadJson:
@@ -134,3 +134,55 @@ class TestSaveJsonEdgeCases:
         path = tmp_path / "test.json"
         with patch("builtins.open", side_effect=OSError("disk full")):
             _save_json(["data"], path)  # Should not raise
+
+
+class TestGetDontAddPages:
+    """Tests for get_dont_add_pages function"""
+
+    def test_returns_empty_when_no_dontadd_enabled(self, mocker):
+        """Test that empty list is returned when no_dontadd is True"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", True)
+
+        result = get_dont_add_pages()
+        assert result == []
+
+    def test_returns_empty_when_test_mode_enabled(self, mocker):
+        """Test that empty list is returned when test_mode is True"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", True)
+
+        result = get_dont_add_pages()
+        assert result == []
+
+    def test_returns_empty_when_not_production_and_no_test_add(self, mocker):
+        """Test that empty list is returned in non-production without test_add"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=False)
+
+        result = get_dont_add_pages()
+        assert result == []
+
+    def test_returns_empty_when_filename_none(self, mocker):
+        """Test that empty list is returned when _FILENAME_JSON is None"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
+        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
+        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", None)
+
+        result = get_dont_add_pages()
+        assert result == []
+
+    def test_returns_empty_when_fetch_returns_dict(self, mocker):
+        """Test that empty list is returned when fetch returns dict instead of list"""
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.no_dontadd", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_mode", False)
+        mocker.patch("src.core.new_c18.io.json_store.settings.category.test_add", True)
+        mocker.patch("src.core.new_c18.io.json_store.settings.is_production", return_value=True)
+        mocker.patch("src.core.new_c18.io.json_store._FILENAME_JSON", "/nonexistent/path.json")
+        mocker.patch("src.core.new_c18.io.json_store.fetch_dont_add_pages", return_value={"key": "value"})
+
+        result = get_dont_add_pages()
+        assert result == []
