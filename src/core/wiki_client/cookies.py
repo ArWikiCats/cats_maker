@@ -62,7 +62,7 @@ def get_cookie_path(
 
     # ── Stale / empty file guard (from your check_if_file_is_old) ─────────
     _delete_if_stale(file_path)
-
+    file_path.parent.mkdir(parents=True, exist_ok=True)
     return file_path
 
 

@@ -144,6 +144,19 @@ def wrap_session(session: requests.Session, site) -> None:
                 continue  # retry after backoff
 
             # ----------------------------------------------------------------
+            # assertnameduserfailed
+            # ----------------------------------------------------------------
+            if error_code == "assertnameduserfailed":
+                attempt += 1
+                if attempt >= config.MAX_RETRIES:
+                    raise MaxlagError(f"Error assertnameduserfailed not resolved after {config.MAX_RETRIES} attempts.")
+
+                # TODO: del cookies file, create new session, site login
+                continue  # retry after backoff
+
+            # ----------------------------------------------------------------
+
+            # ----------------------------------------------------------------
             # No retryable error — return the response as-is
             # ----------------------------------------------------------------
             return response
