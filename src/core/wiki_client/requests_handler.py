@@ -149,9 +149,17 @@ def wrap_session(session: requests.Session, site) -> None:
             if error_code == "assertnameduserfailed":
                 attempt += 1
                 if attempt >= config.MAX_RETRIES:
-                    raise MaxlagError(f"Error assertnameduserfailed not resolved after {config.MAX_RETRIES} attempts.")
+                    raise CSRFError(f"Session assertion failed after {config.MAX_RETRIES} attempts.")
 
+                logger.debug(
+                    "assertnameduserfailed — retrying (attempt %d/%d)",
+                    attempt,
+                    config.MAX_RETRIES,
+                )
+                delay = config.BACKOFF_BASE * (2 ** attempt)
+                time.sleep(delay)
                 # TODO: del cookies file, create new session, site login
+
                 continue  # retry after backoff
 
             # ----------------------------------------------------------------

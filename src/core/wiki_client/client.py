@@ -316,6 +316,9 @@ class WikiLoginClient(CookiesClient):
             except Exception as e:
                 logger.error("Error in site_init: %s", e)
 
+        # if not self._site.logged_in: self._do_login()
+        # don't login yet, user can use login() method
+
     def _enrich_params(self, params: dict) -> dict:
         """
         Merge #5: inject write-action safety params.
