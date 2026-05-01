@@ -394,7 +394,7 @@ class Login(HandleErrors):
                 logged_in = True
                 logger.debug(f"<<green>>Cookie Already logged in with user:{self.username_in}")
         else:
-            logged_in = self.auth.log_in()
+            logged_in = self.auth.login()
 
         if logged_in:
             self.cookie_jar.save(ignore_discard=True, ignore_expires=True)

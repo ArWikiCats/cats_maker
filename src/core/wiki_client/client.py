@@ -11,7 +11,8 @@ import mwclient
 import mwclient.errors
 import requests
 
-from .config import DEFAULT_PATH
+from ...config import settings
+
 from .cookies import _delete_cookie_file, get_cookie_path, load_into_session, save_from_session
 from .exceptions import LoginError, WikiClientError
 from .requests_handler import wrap_session
@@ -29,6 +30,7 @@ logger = logging.getLogger(__name__)
 def _get_shared_session(lang: str, family: str, username: str) -> requests.Session:
     """Return (and cache) a requests.Session for the given wiki + user."""
     session = requests.Session()
+    session.headers.update({"User-Agent": settings.wikipedia.user_agent})
     logger.debug("Created new session for %s.%s user=%s", lang, family, username)
     return session
 
@@ -115,6 +117,7 @@ class WikiLoginClient:
         # Merge #3: reuse the same session for the same (lang, family, user)
         shared_session = _get_shared_session(lang, family, username)
 
+        shared_session.auth = requests.auth.HTTPBasicAuth(self.username, self._password)
         # ── mwclient Site ──────────────────────────────────────────────────
         # Pass our shared session in so mwclient doesn't create its own.
         logger.debug("Creating mwclient.Site for %s.%s", lang, family)
@@ -122,7 +125,6 @@ class WikiLoginClient:
         self.api_url = f"https://{self.lang}.{self.family}.org/w/api.php"
         self._site = mwclient.Site(
             f"{self.lang}.{self.family}.org",
-            path=DEFAULT_PATH,
             pool=shared_session,  # inject the shared session
         )
 
@@ -361,6 +363,7 @@ class WikiLoginClient:
         Raises:
             LoginError: if mwclient rejects the credentials.
         """
+        self._site.login(self.username, self._password)
         try:
             self._site.login(self.username, self._password)
         except mwclient.errors.LoginError as exc:

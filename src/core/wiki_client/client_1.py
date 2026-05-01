@@ -10,7 +10,7 @@ import mwclient
 import mwclient.errors
 import requests
 
-from .config import COOKIES_DIR, DEFAULT_PATH
+from .config import COOKIES_DIR
 from .cookies import get_cookie_path, load_into_session, save_from_session
 from .exceptions import LoginError, WikiClientError
 from .requests_handler import wrap_session
@@ -72,10 +72,12 @@ class WikiLoginClient:
         # mwclient.Site accepts a (family, lang) tuple to build the hostname.
         # e.g. ("wikipedia", "en") → en.wikipedia.org
         logger.debug("Creating mwclient.Site for %s.%s", lang, family)
-        self._site = mwclient.Site(
-            (family, lang),
-            path=DEFAULT_PATH,
-        )
+        try:
+            self._site = mwclient.Site(
+                f"{self.lang}.{self.family}.org",
+            )
+        except mwclient.errors.InvalidSiteIdError:
+            raise WikiClientError(f"Invalid site ID: {self.lang}.{self.family}")
 
         # ── Inject saved cookies ───────────────────────────────────────────
         # mwclient stores its requests.Session at site.connection.

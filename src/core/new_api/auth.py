@@ -41,7 +41,7 @@ class AuthProvider:
                 self.password = table["password"]
                 self.endpoint = f"https://{lang}.{family}.org/w/api.php"
 
-    def log_in(self) -> bool:
+    def login(self) -> bool:
         """
         Log in to the wiki and get authentication token.
         """
