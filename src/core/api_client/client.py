@@ -428,8 +428,8 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
         self.api_url = f"https://{self.lang}.{self.family}.org/w/api.php"
 
         try:
-            self._site = mwclient.Site(f"{self.lang}.{self.family}.org")
-        except mwclient.errors.InvalidSiteIdError:
+            self._site = mwclient.Site(f"{self.lang}.{self.family}.org", do_init=False)
+        except Exception:
             raise WikiClientError(f"Invalid site ID: {self.lang}.{self.family}")
 
         # ── Inject saved cookies ───────────────────────────────────────────

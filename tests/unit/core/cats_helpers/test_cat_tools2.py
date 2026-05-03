@@ -4,6 +4,8 @@ Tests for cat_tools2.py
 This module tests category page generation functions.
 """
 
+from unittest.mock import MagicMock
+
 import pytest
 
 from src.core.cats_helpers.cat_tools2 import Categorized_Page_Generator
