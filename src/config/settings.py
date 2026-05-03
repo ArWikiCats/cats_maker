@@ -87,6 +87,21 @@ class WikidataConfig:
 
 
 @dataclass
+class ApiClientConfig:
+    """Configuration for the API client.
+
+    Attributes:
+        max_retries: Maximum number of retries for API requests
+        backoff_base: Base delay for exponential backoff
+        maxlag_header: Header name for server maxlag retry-after
+    """
+
+    max_retries: int = 5
+    backoff_base: int = 1
+    maxlag_header: str = "Retry-After"
+
+
+@dataclass
 class DatabaseConfig:
     """Configuration for database connections.
 
@@ -258,6 +273,7 @@ class Settings:
 
     wikipedia: WikipediaConfig = field(default_factory=WikipediaConfig)
     wikidata: WikidataConfig = field(default_factory=WikidataConfig)
+    api_client: ApiClientConfig = field(default_factory=ApiClientConfig)
     database: DatabaseConfig = field(default_factory=DatabaseConfig)
     debug_config: DebugConfig = field(default_factory=DebugConfig)
     bot: BotConfig = field(default_factory=BotConfig)
@@ -323,47 +339,57 @@ class Settings:
     def _process_env_vars(self):
         """Load configuration from environment variables."""
         # Wikipedia config
-        if os.environ.get("WIKIPEDIA_AR_CODE"):
+        if os.getenv("WIKIPEDIA_AR_CODE"):
             self.wikipedia.ar_code = os.environ["WIKIPEDIA_AR_CODE"]
-        if os.environ.get("WIKIPEDIA_EN_CODE"):
+        if os.getenv("WIKIPEDIA_EN_CODE"):
             self.wikipedia.en_code = os.environ["WIKIPEDIA_EN_CODE"]
-        if os.environ.get("WIKIPEDIA_AR_FAMILY"):
+        if os.getenv("WIKIPEDIA_AR_FAMILY"):
             self.wikipedia.ar_family = os.environ["WIKIPEDIA_AR_FAMILY"]
-        if os.environ.get("WIKIPEDIA_EN_FAMILY"):
+        if os.getenv("WIKIPEDIA_EN_FAMILY"):
             self.wikipedia.en_family = os.environ["WIKIPEDIA_EN_FAMILY"]
-        if os.environ.get("WIKIPEDIA_USER_AGENT"):
+        if os.getenv("WIKIPEDIA_USER_AGENT"):
             self.wikipedia.user_agent = os.environ["WIKIPEDIA_USER_AGENT"]
-        if os.environ.get("WIKIPEDIA_TIMEOUT"):
+        if os.getenv("WIKIPEDIA_TIMEOUT"):
             self.wikipedia.default_timeout = _safe_int(os.environ["WIKIPEDIA_TIMEOUT"], self.wikipedia.default_timeout)
 
         # Wikidata config
-        if os.environ.get("WIKIDATA_ENDPOINT"):
+        if os.getenv("WIKIDATA_ENDPOINT"):
             self.wikidata.endpoint = os.environ["WIKIDATA_ENDPOINT"]
-        if os.environ.get("WIKIDATA_SPARQL_ENDPOINT"):
+        if os.getenv("WIKIDATA_SPARQL_ENDPOINT"):
             self.wikidata.sparql_endpoint = os.environ["WIKIDATA_SPARQL_ENDPOINT"]
-        if os.environ.get("WIKIDATA_TIMEOUT"):
+        if os.getenv("WIKIDATA_TIMEOUT"):
             self.wikidata.timeout = _safe_int(os.environ["WIKIDATA_TIMEOUT"], self.wikidata.timeout)
-        if os.environ.get("WIKIDATA_MAXLAG"):
+        if os.getenv("WIKIDATA_MAXLAG"):
             self.wikidata.maxlag = _safe_int(os.environ["WIKIDATA_MAXLAG"], self.wikidata.maxlag)
 
+        # API Client config
+        if os.getenv("API_CLIENT_MAX_RETRIES"):
+            self.api_client.max_retries = _safe_int(os.environ["API_CLIENT_MAX_RETRIES"], self.api_client.max_retries)
+        if os.getenv("API_CLIENT_BACKOFF_BASE"):
+            self.api_client.backoff_base = _safe_int(
+                os.environ["API_CLIENT_BACKOFF_BASE"], self.api_client.backoff_base
+            )
+        if os.getenv("API_CLIENT_MAXLAG_HEADER"):
+            self.api_client.maxlag_header = os.environ["API_CLIENT_MAXLAG_HEADER"]
+
         # Database config
-        if os.environ.get("DATABASE_HOST"):
+        if os.getenv("DATABASE_HOST"):
             self.database.host = os.environ["DATABASE_HOST"]
-        if os.environ.get("DATABASE_PORT"):
+        if os.getenv("DATABASE_PORT"):
             self.database.port = _safe_int(os.environ["DATABASE_PORT"], self.database.port)
-        if os.environ.get("DATABASE_USE_SQL"):
+        if os.getenv("DATABASE_USE_SQL"):
             self.database.use_sql = os.environ["DATABASE_USE_SQL"].lower() in ("true", "1", "yes")
 
         # Global settings
-        if os.environ.get("RANGE_LIMIT"):
+        if os.getenv("RANGE_LIMIT"):
             self.range_limit = _safe_int(os.environ["RANGE_LIMIT"], self.range_limit)
-        if os.environ.get("DEBUG"):
+        if os.getenv("DEBUG"):
             self.debug = os.environ["DEBUG"].lower() in ("true", "1", "yes")
-        if os.environ.get("LOG_LEVEL"):
+        if os.getenv("LOG_LEVEL"):
             self.log_level = os.environ["LOG_LEVEL"]
 
         # Category config
-        if os.environ.get("MIN_MEMBERS"):
+        if os.getenv("MIN_MEMBERS"):
             self.category.min_members = _safe_int(os.environ["MIN_MEMBERS"], self.category.min_members)
 
     def _process_argv(self):
