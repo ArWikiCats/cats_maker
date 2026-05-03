@@ -4,8 +4,9 @@ Tests for check_redirects.py
 This module tests Wikipedia API helper functions.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from src.core.wiki_api.check_redirects import NEW_API, load_non_redirects, remove_redirect_pages
 

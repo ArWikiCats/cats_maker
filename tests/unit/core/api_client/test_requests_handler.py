@@ -124,7 +124,9 @@ class TestAssertNamedUserFailed:
         assert_failed_response = MagicMock()
         assert_failed_response.raise_for_status = MagicMock()
         assert_failed_response.headers = {"Content-Type": "application/json"}
-        assert_failed_response.json.return_value = {"error": {"code": "assertnameduserfailed", "info": "Session expired"}}
+        assert_failed_response.json.return_value = {
+            "error": {"code": "assertnameduserfailed", "info": "Session expired"}
+        }
 
         success_response = MagicMock()
         success_response.raise_for_status = MagicMock()
@@ -230,9 +232,7 @@ class TestPostContinue:
         response = MagicMock()
         response.raise_for_status = MagicMock()
         response.headers = {"Content-Type": "application/json"}
-        response.json.return_value = {
-            "query": {"pages": {"1": {"title": "Test"}}}
-        }
+        response.json.return_value = {"query": {"pages": {"1": {"title": "Test"}}}}
         site.connection.request.return_value = response
 
         result = client.post_continue({"action": "query"}, "query", p_empty={})
@@ -244,17 +244,12 @@ class TestPostContinue:
         first_response = MagicMock()
         first_response.raise_for_status = MagicMock()
         first_response.headers = {"Content-Type": "application/json"}
-        first_response.json.return_value = {
-            "query": {"pages": {"1": {"title": "Test1"}}},
-            "continue": {"gpsoffset": 1}
-        }
+        first_response.json.return_value = {"query": {"pages": {"1": {"title": "Test1"}}}, "continue": {"gpsoffset": 1}}
 
         second_response = MagicMock()
         second_response.raise_for_status = MagicMock()
         second_response.headers = {"Content-Type": "application/json"}
-        second_response.json.return_value = {
-            "query": {"pages": {"2": {"title": "Test2"}}}
-        }
+        second_response.json.return_value = {"query": {"pages": {"2": {"title": "Test2"}}}}
 
         site.connection.request.side_effect = [first_response, second_response]
 
@@ -267,8 +262,9 @@ class TestCookieLoading:
 
     @patch("src.core.api_client.client.http.cookiejar.LWPCookieJar")
     def test_make_cookiejar_loads_existing_cookies(self, mock_jar_class):
-        from src.core.api_client.client import CookiesClient
         from pathlib import Path
+
+        from src.core.api_client.client import CookiesClient
 
         mock_cj = MagicMock()
         mock_jar_class.return_value = mock_cj
