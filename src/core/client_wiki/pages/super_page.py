@@ -24,7 +24,7 @@ class Content:
 
 @dataclass
 class Meta:
-    is_Disambig: bool = False
+    is_disambig: bool = False
     can_be_edit: bool = False
     # ns: int = 0
     userinfo: dict = field(default_factory=dict)
@@ -437,12 +437,12 @@ class MainPage(AskBot, HandleErrors):
 
     def isDisambiguation(self):
         # if the title ends with '(توضيح)' or '(disambiguation)'
-        self.meta.is_Disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
+        self.meta.is_disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
 
-        if self.meta.is_Disambig:
+        if self.meta.is_disambig:
             logger.debug(f'<<lightred>> page "{self.title}" is Disambiguation / توضيح')
 
-        return self.meta.is_Disambig
+        return self.meta.is_disambig
 
     def get_categories(self, with_hidden=False):
         # if not self.categories_data.categories: self.get_infos()

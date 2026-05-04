@@ -39,7 +39,7 @@ class TestDataclasses:
 
     def test_meta_defaults(self):
         m = Meta()
-        assert m.is_Disambig is False
+        assert m.is_disambig is False
         assert m.can_be_edit is False
         assert m.Exists == ""
         assert m.wikibase_item == ""
