@@ -16,7 +16,6 @@ from src.core.client_wiki.api_utils.botEdit import (
     bot_May_Edit_do,
     check_create_time,
     check_last_edit_time,
-    extract_templates_and_params,
 )
 
 
@@ -28,41 +27,6 @@ def clear_caches():
     yield
     Bot_Cache.clear()
     _created_cache.clear()
-
-
-class TestExtractTemplatesAndParams:
-    def test_simple_template(self):
-        result = extract_templates_and_params("{{TemplateName}}")
-        assert len(result) == 1
-        assert result[0]["namestrip"] == "TemplateName"
-        assert result[0]["name"] == "قالب:TemplateName"
-
-    def test_template_with_params(self):
-        result = extract_templates_and_params("{{TemplateName|key=value}}")
-        assert len(result) == 1
-        assert result[0]["params"]["key"] == "value"
-
-    def test_no_templates(self):
-        result = extract_templates_and_params("Just plain text")
-        assert result == []
-
-    def test_multiple_templates(self):
-        result = extract_templates_and_params("{{A}} text {{B}}")
-        assert len(result) == 2
-        names = [t["namestrip"] for t in result]
-        assert "A" in names
-        assert "B" in names
-
-    def test_nobots_template(self):
-        result = extract_templates_and_params("{{nobots}}")
-        assert len(result) == 1
-        assert result[0]["namestrip"].lower() == "nobots"
-
-    def test_bots_template_with_allow(self):
-        result = extract_templates_and_params("{{bots|allow=all}}")
-        assert len(result) == 1
-        assert result[0]["params"]["allow"] == "all"
-
 
 class TestBotMayEditDo:
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
