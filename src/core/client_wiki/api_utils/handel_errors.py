@@ -81,7 +81,7 @@ class HandleErrors:
             if params:
                 params["data"] = {}
                 params["text"] = {}
-            logger.error(f"<<lightred>>{function} ERROR: <<defaut>>info: {err_info}, {params=}")
+            logger.error(f"<<lightred>>{function} ERROR: <<default>>info: {err_info}, {params=}")
         return error
 
 

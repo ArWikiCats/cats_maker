@@ -58,6 +58,7 @@ def subcatquery(login_bot, title: str, sitecode: str = SITECODE, family: str = F
             f"<<lightyellow>> catdepth_new.py sub cat query for {sitecode}:{title}, depth:{args2['depth']}, ns:{args2['ns']}, onlyns:{args2['onlyns']}"
         )
 
+    logger.info(f"starting subcategory query: {sitecode}:{title}")
     bot = CategoryDepth(login_bot, title, **kwargs)
     result = bot.subcatquery_()
 

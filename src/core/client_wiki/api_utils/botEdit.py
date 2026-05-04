@@ -33,7 +33,7 @@ def extract_templates_and_params(text: str) -> list[dict]:
     parsed = wtp.parse(text)
     for template in parsed.templates:
         params = {}
-        for param in getattr(template, "arguments"):
+        for param in template.arguments:
             value = str(param.value)
             key = str(param.name).strip()
             params[key] = value
@@ -55,7 +55,7 @@ def _handle_nobots_template(params, title_page, botjob, _template):
     # منع جميع البوتات
     if not params:
         logger.debug(f"<<lightred>> botEdit.py: the page has temp:({_template}), botjob:{botjob} skipp.")
-        # logger.debug( 'return False 2 ' )
+        logger.debug(f"nobots active - blocking bot {botjob} on {title_page}")
         Bot_Cache[botjob][title_page] = False
         return False
     elif params.get("1"):
@@ -63,7 +63,7 @@ def _handle_nobots_template(params, title_page, botjob, _template):
         # if 'all' in List or pywikibot.calledModuleName() in List or BOT_USERNAME in List:
         if "all" in List or BOT_USERNAME in List:
             logger.debug(f"<<lightred>> botEdit.py: the page has temp:({_template}), botjob:{botjob} skipp.")
-            # logger.debug( 'return False 3 ' )
+            logger.debug(f"bot {BOT_USERNAME} in nobots list - blocking {title_page}")
             # Bot_Cache[title_page] = False
             Bot_Cache[botjob][title_page] = False
             return False
@@ -74,7 +74,7 @@ def _handle_nobots_template(params, title_page, botjob, _template):
 
 def _handle_bots_template(params, title_page, botjob, title):
     """Handle bots template logic."""
-    # logger.debug( 'title == (%s) ' % title )
+    logger.debug(f"handling bots template for {title}")
     # {{bots}}                  السماح لجميع البوتات
     if not params:
         Bot_Cache[botjob][title_page] = False
@@ -171,12 +171,12 @@ def check_create_time(page, title_page):
     lang = page.lang
     if ns != 0 or lang != "ar":
         return True
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     create_data = page.get_create_data()
     delay_hours = 3
     if create_data.get("timestamp"):
         create_time = create_data["timestamp"]
-        ts_c_time = datetime.datetime.strptime(create_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
+        ts_c_time = datetime.datetime.strptime(create_time, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.UTC)
         diff = (now - ts_c_time).total_seconds() / (60 * 60)
         user = create_data.get("user", "")
         wait_time = delay_hours - diff
@@ -196,9 +196,9 @@ def check_last_edit_time(page, title_page, delay):
         return True
     # example: 2025-05-07T12:00:17Z
     timestamp = page.get_timestamp()
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     if timestamp:
-        ts_time = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
+        ts_time = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.UTC)
         diff_minutes = (now - ts_time).total_seconds() / 60
         wait_time = delay - diff_minutes
         if diff_minutes < delay:
