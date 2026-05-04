@@ -20,7 +20,7 @@ def clear_lru_caches():
 
 
 class TestLoadMainApi:
-    @patch("src.core.client_wiki.factory.ALL_APIS")
+    @patch("src.core.client_wiki.factory.AllAPIS")
     def test_creates_all_apis_instance(self, mock_all_apis):
         mock_instance = MagicMock()
         mock_all_apis.return_value = mock_instance
@@ -32,14 +32,14 @@ class TestLoadMainApi:
         mock_all_apis.assert_called_once_with(lang="ar", family="wikipedia", username="testuser", password="testpass")
         assert result == mock_instance
 
-    @patch("src.core.client_wiki.factory.ALL_APIS")
+    @patch("src.core.client_wiki.factory.AllAPIS")
     def test_default_params(self, mock_all_apis):
         mock_all_apis.return_value = MagicMock()
         with patch("src.core.client_wiki.factory.username", "u"), patch("src.core.client_wiki.factory.password", "p"):
             load_main_api()
         mock_all_apis.assert_called_once_with(lang="ar", family="wikipedia", username="u", password="p")
 
-    @patch("src.core.client_wiki.factory.ALL_APIS")
+    @patch("src.core.client_wiki.factory.AllAPIS")
     def test_caches_result(self, mock_all_apis):
         mock_all_apis.return_value = MagicMock()
         with patch("src.core.client_wiki.factory.username", "u"), patch("src.core.client_wiki.factory.password", "p"):
