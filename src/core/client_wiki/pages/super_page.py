@@ -67,7 +67,7 @@ class CategoriesData:
 @dataclass
 class TemplateData:
     templates: dict = field(default_factory=dict)
-    templates_API: dict = field(default_factory=dict)
+    templates_api: dict = field(default_factory=dict)
 
 
 def find_edit_error(old, new):
@@ -77,7 +77,7 @@ def find_edit_error(old, new):
     }
     for phrase in conversion_phrases:
         if phrase in old and phrase not in new:
-            print(f"ar_err.py found ({phrase}) in old but not in new. return True")
+            logger.info(f"ar_err.py found ({phrase}) in old but not in new. return True")
             return True
 
     return False
@@ -141,7 +141,7 @@ class MainPage(AskBot, HandleErrors):
         if len(self.newtext) < 0.1 * len(self.text):
             text_err = f"Edit will remove 90% of the text. {len(self.newtext)} < 0.1 * {len(self.text)}"
             text_err += f"title: {self.title}, summary: {self.content.summary}"
-            logger.warning("", text=text_err)
+            logger.warning(text_err)
             return True
 
         if self.lang == "ar" and self.ns == 0:
@@ -170,7 +170,7 @@ class MainPage(AskBot, HandleErrors):
             "rvdir": "newer",
         }
 
-        data = self.login_bot.client_request(params)
+        data = self.login_bot.client_request(params, method="get")
 
         pages = data.get("query", {}).get("pages", {})
 
@@ -211,7 +211,7 @@ class MainPage(AskBot, HandleErrors):
 
         if redirects:
             params["redirects"] = 1
-        data = self.login_bot.client_request(params)
+        data = self.login_bot.client_request(params, method="get")
 
         pages = data.get("query", {}).get("pages", {})
 
@@ -292,7 +292,7 @@ class MainPage(AskBot, HandleErrors):
 
         # _data_ = { "continue": {}, "query": { "pages": { "9124097": { "pageid": 9124097, "ns": 0, "title": "طواف العالم للدراجات 2023", "categories": [], "langlinks": [], "templates": [{ "ns": 10, "title": "قالب:-" }], "linkshere": [{ "pageid": 189150, "ns": 0, "title": "طواف فرنسا" }], "iwlinks": [{ "prefix": "commons", "*": "Category:2023_UCI_World_Tour" }], "contentmodel": "wikitext", "pagelanguage": "ar", "pagelanguagehtmlcode": "ar", "pagelanguagedir": "rtl", "touched": "2023-03-07T11:53:53Z", "lastrevid": 61366100, "length": 985, } } }, }
 
-        data = self.login_bot.client_request(params)
+        data = self.login_bot.client_request(params, method="get")
 
         # xs = { 'batchcomplete': True, 'query': { 'pages': [{ 'pageid': 151314, 'ns': 10, 'title': 'قالب:أوب', 'categories': [{ 'ns': 14, 'title': 'تصنيف:قوالب تستخدم أنماط القوالب', 'sortkey': '', 'sortkeyprefix': '', 'hidden': False }, { 'ns': 14, 'title': 'تصنيف:cc', 'sortkey': 'v', 'sortkeyprefix': 'أوب', 'hidden': True }], 'langlinks': [{ 'lang': 'bh', 'title': 'टेम्पलेट:AWB' }], 'templates': [{ 'ns': 10, 'title': 'قالب:No redirect' }], 'linkshere': [{ 'pageid': 308641, 'ns': 10, 'title': 'قالب:AWB', 'redirect': True }], 'iwlinks': [{ 'prefix': 'd', 'title': 'Q4063270' }], 'contentmodel': 'wikitext', 'pagelanguage': 'ar', 'pagelanguagehtmlcode': 'ar', 'pagelanguagedir': 'rtl', 'touched': '2023-03-05T22:10:23Z', 'lastrevid': 61388266, 'length': 3477, }] }, }
 
@@ -335,7 +335,7 @@ class MainPage(AskBot, HandleErrors):
         if ta.get("templates", []) != []:
             # 'templates': [{'ns': 10, 'title': 'قالب:No redirect'}],
 
-            self.template_data.templates_API = [ta["title"] for ta in ta.get("templates", [])]
+            self.template_data.templates_api = [ta["title"] for ta in ta.get("templates", [])]
 
         # "linkshere": [{"pageid": 189150,"ns": 0,"title": "طواف فرنسا"}, {"pageid": 308641,"ns": 10,"title": "قالب:AWB","redirect": ""}]
         self.links_data.links_here = ta.get("linkshere", [])
@@ -352,7 +352,7 @@ class MainPage(AskBot, HandleErrors):
             "redirects": 1,
         }
 
-        data = self.login_bot.client_request(params)
+        data = self.login_bot.client_request(params, method="get")
 
         # _pages_ = { 'batchcomplete': '', 'query': { 'redirects': [{ 'from': 'Yemen', 'to': 'اليمن' }], 'pages': {}, 'normalized': [{ 'from': 'yemen', 'to': 'Yemen' }] } }
 
@@ -391,7 +391,7 @@ class MainPage(AskBot, HandleErrors):
                 # params = {**params, **continue_params}
                 params.update(continue_params)
 
-            json1 = self.login_bot.client_request(params)
+            json1 = self.login_bot.client_request(params, method="get")
 
             continue_params = json1.get("continue", {})
 
@@ -418,7 +418,7 @@ class MainPage(AskBot, HandleErrors):
                 "ususers": self.user,
             }
 
-            data = self.login_bot.client_request(params)
+            data = self.login_bot.client_request(params, method="get")
 
             # _userinfo_ = { "id": 229481, "name": "Mr. Ibrahem", "groups": ["editor", "reviewer", "rollbacker", "*", "user", "autoconfirmed"] }
 
@@ -502,13 +502,16 @@ class MainPage(AskBot, HandleErrors):
     def exists(self):
         if not self.meta.Exists:
             self.get_text()
+
         if not self.meta.Exists:
-            logger.debug(f'page "{self.title}" not in {self.lang}:{self.family}')
+            logger.info(f'page "{self.title}" not in {self.lang}:{self.family}')
+        logger.debug(f"page exists: {self.meta.Exists}")
         return self.meta.Exists
 
     def namespace(self):
         if self.ns is False:
             self.get_text()
+        logger.debug(f"namespace: {self.ns}")
         return self.ns
 
     def save(self, newtext="", summary="", nocreate=1, minor="0", tags="", nodiff=False):
@@ -589,7 +592,7 @@ class MainPage(AskBot, HandleErrors):
             self.text = newtext
             self.user = ""
             logger.warning(f"<<lightgreen>> ** true .. [[{self.lang}:{self.family}:{self.title}]] ")
-            # logger.debug('Done True...')
+            logger.debug(f"save success for {self.title}")
 
             self.revisions_data.pageid = edit.get("pageid") or self.revisions_data.pageid
             self.revisions_data.revid = edit.get("newrevid") or self.revisions_data.revid
@@ -600,7 +603,7 @@ class MainPage(AskBot, HandleErrors):
             return True
 
         if error != {}:
-            print(pop)
+            logger.debug(pop)
             er = self.handle_err(error, function="Save", params=params)
 
             return er
@@ -630,7 +633,14 @@ class MainPage(AskBot, HandleErrors):
             user = self.meta.username
 
             if (
-                self.ask_put(nodiff=nodiff, newtext=text, message=message, job="create", username=user, summary=summary)
+                self.ask_put(
+                    nodiff=nodiff,
+                    newtext=text,
+                    message=message,
+                    job="create",
+                    username=user,
+                    summary=summary,
+                )
                 is False
             ):
                 return False
@@ -659,7 +669,7 @@ class MainPage(AskBot, HandleErrors):
             self.text = text
 
             logger.warning(f"<<lightgreen>> ** true .. [[{self.lang}:{self.family}:{self.title}]] ")
-            # logger.debug('Done True... time.sleep() ')
+            logger.debug(f"create success for {self.title}")
 
             self.revisions_data.pageid = edit.get("pageid") or self.revisions_data.pageid
             self.revisions_data.revid = edit.get("newrevid") or self.revisions_data.revid
@@ -670,9 +680,8 @@ class MainPage(AskBot, HandleErrors):
             return True
 
         if error != {}:
-            print(pop)
+            logger.debug(pop)
             er = self.handle_err(error, function="Create", params=params)
-
             return er
 
         return False
@@ -685,7 +694,7 @@ class MainPage(AskBot, HandleErrors):
         logger.debug("_______________________")
         logger.debug(f", start. {action=}, links")
 
-        Max = 500000
+        max = 500000
         results = []
         continue_params = {}
         d = 0
@@ -715,8 +724,8 @@ class MainPage(AskBot, HandleErrors):
 
             logger.debug(f"post continue, len:{len(data)}, all: {len(results)}")
 
-            if Max <= len(results) and len(results) > 1:
-                logger.debug(f"post continue, {Max=} <= {len(results)=}. break")
+            if len(results) >= max:
+                logger.debug(f"post continue, {max=} <= {len(results)=}. break")
                 break
 
             results.extend(data)

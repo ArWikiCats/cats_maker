@@ -64,7 +64,7 @@ class TestDataclasses:
     def test_template_data_defaults(self):
         t = TemplateData()
         assert t.templates == {}
-        assert t.templates_API == {}
+        assert t.templates_api == {}
 
 
 class TestFindEditError:
@@ -410,7 +410,7 @@ class TestGetInfos:
         assert "تصنيف:A" in page.categories_data.categories
         assert "تصنيف:B" in page.categories_data.hidden_categories
         assert page.langlinks == {"en": "Test"}
-        assert page.template_data.templates_API == ["قالب:T"]
+        assert page.template_data.templates_api == ["قالب:T"]
 
 
 class TestGetExtlinks:
