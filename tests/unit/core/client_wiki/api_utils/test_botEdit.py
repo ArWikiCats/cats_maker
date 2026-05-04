@@ -13,9 +13,9 @@ from src.core.client_wiki.api_utils.botEdit import (
     Bot_Cache,
     _created_cache,
     bot_May_Edit,
-    bot_May_Edit_do,
     check_create_time,
     check_last_edit_time,
+    is_bot_edit_allowed,
 )
 
 
@@ -28,76 +28,77 @@ def clear_caches():
     Bot_Cache.clear()
     _created_cache.clear()
 
+
 class TestBotMayEditDo:
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_force_edit_returns_true(self, mock_settings):
         mock_settings.bot.force_edit = True
-        assert bot_May_Edit_do(text="any", title_page="Page") is True
+        assert is_bot_edit_allowed(text="any", title_page="Page") is True
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_empty_text_returns_true(self, mock_settings):
         mock_settings.bot.force_edit = False
-        assert bot_May_Edit_do(text="", title_page="Page") is True
+        assert is_bot_edit_allowed(text="", title_page="Page") is True
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_text_with_stop_template(self, mock_settings):
         mock_settings.bot.force_edit = False
         text = "{{تحرر}}"
-        assert bot_May_Edit_do(text=text, title_page="Page") is False
+        assert is_bot_edit_allowed(text=text, title_page="Page") is False
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_text_with_nobots(self, mock_settings):
         mock_settings.bot.force_edit = False
         text = "{{nobots}}"
-        assert bot_May_Edit_do(text=text, title_page="Page") is False
+        assert is_bot_edit_allowed(text=text, title_page="Page") is False
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_text_with_nobots_allow_bot(self, mock_settings):
         mock_settings.bot.force_edit = False
         text = f"{{{{nobots|{BOT_USERNAME}}}}}"
-        assert bot_May_Edit_do(text=text, title_page="Page") is False
+        assert is_bot_edit_allowed(text=text, title_page="Page") is False
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_text_with_bots_allow_all(self, mock_settings):
         mock_settings.bot.force_edit = False
         text = "{{bots|allow=all}}"
-        assert bot_May_Edit_do(text=text, title_page="Page") is True
+        assert is_bot_edit_allowed(text=text, title_page="Page") is True
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_text_with_bots_deny_all(self, mock_settings):
         mock_settings.bot.force_edit = False
         text = "{{bots|deny=all}}"
-        assert bot_May_Edit_do(text=text, title_page="Page") is False
+        assert is_bot_edit_allowed(text=text, title_page="Page") is False
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_text_with_bots_deny_bot(self, mock_settings):
         mock_settings.bot.force_edit = False
         text = f"{{{{bots|deny={BOT_USERNAME}}}}}"
-        assert bot_May_Edit_do(text=text, title_page="Page") is False
+        assert is_bot_edit_allowed(text=text, title_page="Page") is False
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_cached_result_returned(self, mock_settings):
         mock_settings.bot.force_edit = False
         Bot_Cache["all"] = {"CachedPage": True}
-        assert bot_May_Edit_do(text="anything", title_page="CachedPage") is True
+        assert is_bot_edit_allowed(text="anything", title_page="CachedPage") is True
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_empty_botjob_defaults_to_all(self, mock_settings):
         mock_settings.bot.force_edit = False
         text = "{{تحرر}}"
-        assert bot_May_Edit_do(text=text, title_page="Page", botjob="") is False
+        assert is_bot_edit_allowed(text=text, title_page="Page", botjob="") is False
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_custom_botjob_with_matching_template(self, mock_settings):
         mock_settings.bot.force_edit = False
         text = "{{لا للتعريب}}"
-        assert bot_May_Edit_do(text=text, title_page="Page", botjob="تعريب") is False
+        assert is_bot_edit_allowed(text=text, title_page="Page", botjob="تعريب") is False
 
     @patch("src.core.client_wiki.api_utils.botEdit.settings")
     def test_text_with_no_restrictions(self, mock_settings):
         mock_settings.bot.force_edit = False
         text = "{{SomeAllowedTemplate|param=value}}"
-        assert bot_May_Edit_do(text=text, title_page="Page") is True
+        assert is_bot_edit_allowed(text=text, title_page="Page") is True
 
 
 class TestCheckCreateTime:

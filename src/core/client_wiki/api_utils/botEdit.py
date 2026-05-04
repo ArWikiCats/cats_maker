@@ -118,7 +118,7 @@ def _handle_bots_template(params, title_page, botjob, title):
     return True
 
 
-def bot_May_Edit_do(
+def is_bot_edit_allowed(
     text="",
     title_page="",
     botjob="all",
@@ -220,7 +220,7 @@ def bot_May_Edit(
     """
     Determines whether a bot is permitted to edit a page based on templates, last edit time, and creation time.
     """
-    check_it = bot_May_Edit_do(text=text, title_page=title_page, botjob=botjob)
+    check_it = is_bot_edit_allowed(text=text, title_page=title_page, botjob=botjob)
     if page and check_it:
         if delay and isinstance(delay, int):
             ns = page.namespace()

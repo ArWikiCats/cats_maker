@@ -1,13 +1,13 @@
 """ """
 
-import logging
 import functools
+import logging
 import os
 
 from dotenv import load_dotenv
 
-from .all_apis import AllAPIS
 from ..api_client import WikiLoginClient
+from .all_apis import AllAPIS
 
 logger = logging.getLogger(__name__)
 

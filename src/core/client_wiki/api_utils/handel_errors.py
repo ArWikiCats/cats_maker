@@ -1,4 +1,14 @@
-""" """
+"""
+from ...core.exceptions import (
+    AbuseFilterError,
+    ApiError,
+    ArticleExistsError,
+    MaxLagError,
+    NoSuchEntityError,
+    ProtectedPageError,
+    parse_api_error,
+)
+"""
 
 import logging
 
@@ -6,6 +16,21 @@ logger = logging.getLogger(__name__)
 
 
 class HandleErrors:
+    """
+    Error handler for MediaWiki API errors.
+
+    Handles API error responses and converts them to appropriate
+    exceptions or return values.
+    """
+
+    def __init__(self) -> None:
+        """
+        Initialize the error handler.
+
+        Args:
+            config: Optional BotConfig for behavior settings.
+        """
+
     def handle_err(
         self,
         error: dict,
@@ -45,8 +70,10 @@ class HandleErrors:
         err_code = error.get("code", "")
         err_info = error.get("info", "")
 
-        # ---["protectedpage", 'تأخير البوتات 3 ساعات', False]
+        _tt = f"<<lightred>>{function} ERROR: <<default>>code:{err_code}."
+        # ["protectedpage", "تأخير البوتات 3 ساعات", False]
         if err_code == "abusefilter-disallowed":
+
             # oioioi = {'error': {'code': 'abusefilter-disallowed', 'info': 'This', 'abusefilter': {'id': '169', 'description': 'تأخير البوتات 3 ساعات', 'actions': ['disallow']}, '*': 'See https'}, 'servedby': 'mw1374'}
 
             abusefilter = error.get("abusefilter", "")

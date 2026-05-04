@@ -1,7 +1,7 @@
 """ """
 
+import functools
 import logging
-from functools import lru_cache
 
 from ...utils import function_timer
 from ..constants import CATEGORY_PREFIXES
@@ -13,7 +13,7 @@ SITECODE = "en"
 FAMILY = "wikipedia"
 
 
-@lru_cache(maxsize=256)
+@functools.lru_cache(maxsize=256)
 def title_process(title: str, sitecode: str) -> str:
     prefixes = CATEGORY_PREFIXES
     start_prefixes = prefixes.get(sitecode)
