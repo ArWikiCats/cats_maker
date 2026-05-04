@@ -1,4 +1,4 @@
-from .ask_bot import ASK_BOT, showDiff
+from .ask_bot import AskBot, showDiff
 from .botEdit import (
     bot_May_Edit,
     check_create_time,
@@ -22,7 +22,7 @@ change_codes = {
 }
 
 __all__ = [
-    "ASK_BOT",
+    "AskBot",
     "change_codes",
     "showDiff",
     "bot_May_Edit",
