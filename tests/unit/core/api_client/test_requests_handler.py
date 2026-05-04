@@ -185,7 +185,10 @@ class TestHandleMaxlag:
         response.headers = {"Retry-After": "not_a_number"}
 
         with patch("src.core.api_client.client.time.sleep") as mock_sleep:
-            with patch("src.core.api_client.client.config.BACKOFF_BASE", 1):
+            with patch("src.core.api_client.client.settings") as mock_settings:
+                mock_settings.api_client.backoff_base = 1
+                mock_settings.api_client.maxlag_header = "Retry-After"
+                mock_settings.api_client.max_retries = 5
                 client._handle_maxlag(response, 1)
                 mock_sleep.assert_called_with(2.0)  # 1 * 2^1
 
@@ -195,7 +198,10 @@ class TestHandleMaxlag:
         response.headers = {}
 
         with patch("src.core.api_client.client.time.sleep") as mock_sleep:
-            with patch("src.core.api_client.client.config.BACKOFF_BASE", 1):
+            with patch("src.core.api_client.client.settings") as mock_settings:
+                mock_settings.api_client.backoff_base = 1
+                mock_settings.api_client.maxlag_header = "Retry-After"
+                mock_settings.api_client.max_retries = 5
                 client._handle_maxlag(response, 2)
                 mock_sleep.assert_called_with(4.0)  # 1 * 2^2
 

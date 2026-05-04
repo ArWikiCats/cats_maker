@@ -10,49 +10,38 @@ from src.core.client_wiki.api_utils.ask_bot import AskBot, showDiff
 
 
 class TestShowDiff:
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_logs_lines(self, mock_logger):
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_calls_pywikibot(self, mock_show_diff):
         showDiff("old line", "new line")
-        assert mock_logger.warning.called
+        mock_show_diff.assert_called_once_with("old line", "new line")
 
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_no_changes(self, mock_logger):
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_no_changes(self, mock_show_diff):
         showDiff("same text", "same text")
-        # No diff lines for identical text
-        mock_logger.warning.assert_not_called()
+        mock_show_diff.assert_called_once_with("same text", "same text")
 
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_multiline(self, mock_logger):
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_multiline(self, mock_show_diff):
         old = "line1\nline2\nline3"
         new = "line1\nmodified\nline3"
         showDiff(old, new)
-        assert mock_logger.warning.called
+        mock_show_diff.assert_called_once_with(old, new)
 
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_plus_lines(self, mock_logger):
-        """Verify lines starting with '+' (not '+++') are logged via the + branch."""
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_plus_lines(self, mock_show_diff):
+        """Verify showDiff delegates to pywikibot.showDiff with correct arguments."""
         old = "aaa"
         new = "bbb"
         showDiff(old, new)
-        # The diff should contain a line starting with + and a line starting with -
-        # We verify logger was called (branches 21-26 all call logger.warning)
-        assert mock_logger.warning.call_count >= 2
-        logged_args = [call.args[0] for call in mock_logger.warning.call_args_list]
-        plus_lines = [l for l in logged_args if l.startswith("+") and not l.startswith("+++")]
-        minus_lines = [l for l in logged_args if l.startswith("-") and not l.startswith("---")]
-        assert len(plus_lines) >= 1, "Expected at least one '+' line"
-        assert len(minus_lines) >= 1, "Expected at least one '-' line"
+        mock_show_diff.assert_called_once_with("aaa", "bbb")
 
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_header_lines_else_branch(self, mock_logger):
-        """Verify header lines (--- and +++) go through the else branch."""
-        old = "aaa\nbbb"
-        new = "aaa\nccc"
-        showDiff(old, new)
-        logged_args = [call.args[0] for call in mock_logger.warning.call_args_list]
-        # Header lines start with '---' and '+++' and should hit the else branch
-        header_lines = [l for l in logged_args if l.startswith("---") or l.startswith("+++")]
-        assert len(header_lines) >= 1, "Expected at least one header line in else branch"
+    @patch("src.core.client_wiki.api_utils.ask_bot.sys")
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_nodiff_in_argv_skips(self, mock_show_diff, mock_sys):
+        """When 'nodiff' is in sys.argv, showDiff should not call pywikibot."""
+        mock_sys.argv = ["script.py", "nodiff"]
+        showDiff("aaa", "bbb")
+        mock_show_diff.assert_not_called()
 
 
 class TestASKBOT:
