@@ -211,12 +211,12 @@ def check_last_edit_time(page, title_page, delay):
 
 
 def bot_May_Edit(
-    text="",
-    title_page="",
-    botjob="all",
+    text: str = "",
+    title_page: str = "",
+    botjob: str = "all",
     page=False,
-    delay=0,
-):
+    delay: int = 0,
+) -> bool:
     """
     Determines whether a bot is permitted to edit a page based on templates, last edit time, and creation time.
     """

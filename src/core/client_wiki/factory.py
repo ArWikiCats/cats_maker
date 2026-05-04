@@ -5,7 +5,7 @@ import os
 
 from dotenv import load_dotenv
 
-from .all_apis import ALL_APIS
+from .all_apis import AllAPIS
 
 load_dotenv()
 
@@ -14,8 +14,8 @@ password = os.getenv("WIKIPEDIA_BOT_PASSWORD", "")
 
 
 @functools.lru_cache(maxsize=1024)
-def load_main_api(lang: str = "ar", family: str = "wikipedia") -> ALL_APIS:
-    return ALL_APIS(
+def load_main_api(lang: str = "ar", family: str = "wikipedia") -> AllAPIS:
+    return AllAPIS(
         lang=lang,
         family=family,
         username=username,

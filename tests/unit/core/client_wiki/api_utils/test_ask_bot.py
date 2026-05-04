@@ -6,73 +6,63 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.core.client_wiki.api_utils.ask_bot import ASK_BOT, showDiff
+from src.core.client_wiki.api_utils import ask_bot
+from src.core.client_wiki.api_utils.ask_bot import AskBot, showDiff
 
 
 class TestShowDiff:
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_logs_lines(self, mock_logger):
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_calls_pywikibot(self, mock_show_diff):
         showDiff("old line", "new line")
-        assert mock_logger.warning.called
+        mock_show_diff.assert_called_once_with("old line", "new line")
 
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_no_changes(self, mock_logger):
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_no_changes(self, mock_show_diff):
         showDiff("same text", "same text")
-        # No diff lines for identical text
-        mock_logger.warning.assert_not_called()
+        mock_show_diff.assert_called_once_with("same text", "same text")
 
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_multiline(self, mock_logger):
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_multiline(self, mock_show_diff):
         old = "line1\nline2\nline3"
         new = "line1\nmodified\nline3"
         showDiff(old, new)
-        assert mock_logger.warning.called
+        mock_show_diff.assert_called_once_with(old, new)
 
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_plus_lines(self, mock_logger):
-        """Verify lines starting with '+' (not '+++') are logged via the + branch."""
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_plus_lines(self, mock_show_diff):
+        """Verify showDiff delegates to pywikibot.showDiff with correct arguments."""
         old = "aaa"
         new = "bbb"
         showDiff(old, new)
-        # The diff should contain a line starting with + and a line starting with -
-        # We verify logger was called (branches 21-26 all call logger.warning)
-        assert mock_logger.warning.call_count >= 2
-        logged_args = [call.args[0] for call in mock_logger.warning.call_args_list]
-        plus_lines = [l for l in logged_args if l.startswith("+") and not l.startswith("+++")]
-        minus_lines = [l for l in logged_args if l.startswith("-") and not l.startswith("---")]
-        assert len(plus_lines) >= 1, "Expected at least one '+' line"
-        assert len(minus_lines) >= 1, "Expected at least one '-' line"
+        mock_show_diff.assert_called_once_with("aaa", "bbb")
 
-    @patch("src.core.client_wiki.api_utils.ask_bot.logger")
-    def test_show_diff_header_lines_else_branch(self, mock_logger):
-        """Verify header lines (--- and +++) go through the else branch."""
-        old = "aaa\nbbb"
-        new = "aaa\nccc"
-        showDiff(old, new)
-        logged_args = [call.args[0] for call in mock_logger.warning.call_args_list]
-        # Header lines start with '---' and '+++' and should hit the else branch
-        header_lines = [l for l in logged_args if l.startswith("---") or l.startswith("+++")]
-        assert len(header_lines) >= 1, "Expected at least one header line in else branch"
+    @patch("src.core.client_wiki.api_utils.ask_bot.sys")
+    @patch("src.core.client_wiki.api_utils.ask_bot.pywikibot.showDiff")
+    def test_show_diff_nodiff_in_argv_skips(self, mock_show_diff, mock_sys):
+        """When 'nodiff' is in sys.argv, showDiff should not call pywikibot."""
+        mock_sys.argv = ["script.py", "nodiff"]
+        showDiff("aaa", "bbb")
+        mock_show_diff.assert_not_called()
 
 
 class TestASKBOT:
     def test_init(self):
-        bot = ASK_BOT()
-        assert bot._save_or_ask == {}
+        bot = AskBot()
+        assert ask_bot._save_or_ask == {}
 
     @patch("src.core.client_wiki.api_utils.ask_bot.settings")
     def test_ask_put_returns_true_when_ask_false(self, mock_settings):
         mock_settings.bot.ask = False
         mock_settings.bot.no_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         assert bot.ask_put() is True
 
     @patch("src.core.client_wiki.api_utils.ask_bot.settings")
     def test_ask_put_returns_true_when_job_saved(self, mock_settings):
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = False
-        bot = ASK_BOT()
-        bot._save_or_ask["myjob"] = True
+        bot = AskBot()
+        ask_bot._save_or_ask["myjob"] = True
         assert bot.ask_put(job="myjob") is True
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="y")
@@ -81,7 +71,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         assert bot.ask_put() is True
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="n")
@@ -90,7 +80,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         assert bot.ask_put() is False
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="a")
@@ -99,9 +89,9 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         assert bot.ask_put(job="testjob") is True
-        assert bot._save_or_ask["testjob"] is True
+        assert ask_bot._save_or_ask["testjob"] is True
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="")
     @patch("src.core.client_wiki.api_utils.ask_bot.settings")
@@ -109,7 +99,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         assert bot.ask_put() is True
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="Y")
@@ -118,7 +108,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         assert bot.ask_put() is True
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="A")
@@ -127,10 +117,10 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         assert bot.ask_put(job="j") is True
         # "A" is accepted but only lowercase "a" sets _save_or_ask
-        assert "j" not in bot._save_or_ask
+        assert "j" not in ask_bot._save_or_ask
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="all")
     @patch("src.core.client_wiki.api_utils.ask_bot.settings")
@@ -138,7 +128,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         assert bot.ask_put(job="j") is True
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="aaa")
@@ -148,7 +138,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         assert bot.ask_put() is True
 
     @patch("src.core.client_wiki.api_utils.ask_bot.input", return_value="y")
@@ -159,7 +149,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = False
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         result = bot.ask_put(text="old text", newtext="new text")
         assert result is True
         mock_showdiff.assert_called_once_with("old text", "new text")
@@ -172,7 +162,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = False
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         result = bot.ask_put(nodiff=True, text="old", newtext="new")
         assert result is True
         mock_showdiff.assert_not_called()
@@ -186,7 +176,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = False
         mock_settings.bot.show_diff = True
-        bot = ASK_BOT()
+        bot = AskBot()
         large_text = "x" * 70001
         result = bot.ask_put(text=large_text, newtext="small")
         assert result is True
@@ -201,7 +191,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = False
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         large_text = "x" * 70001
         result = bot.ask_put(text=large_text, newtext="small")
         assert result is True
@@ -216,7 +206,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         result = bot.ask_put(summary="Fixed typo")
         assert result is True
         mock_logger.warning.assert_any_call("-Edit summary: Fixed typo")
@@ -225,11 +215,11 @@ class TestASKBOT:
     @patch("src.core.client_wiki.api_utils.ask_bot.settings")
     @patch("src.core.client_wiki.api_utils.ask_bot.logger")
     def test_ask_put_logs_username(self, mock_logger, mock_settings, mock_input):
-        """When username is provided, it should appear in the ASK_BOT prompt."""
+        """When username is provided, it should appear in the AskBot prompt."""
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         result = bot.ask_put(username="TestUser")
         assert result is True
         logged_messages = [str(c) for c in mock_logger.warning.call_args_list]
@@ -243,7 +233,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         result = bot.ask_put(summary="")
         assert result is True
         logged_messages = [str(c) for c in mock_logger.warning.call_args_list]
@@ -257,7 +247,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         result = bot.ask_put()
         assert result is True
         logged_messages = [str(c) for c in mock_logger.warning.call_args_list]
@@ -271,7 +261,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = True
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         result = bot.ask_put(message="Save this?")
         assert result is True
         logged_messages = [str(c) for c in mock_logger.warning.call_args_list]
@@ -285,7 +275,7 @@ class TestASKBOT:
         mock_settings.bot.ask = True
         mock_settings.bot.no_diff = False
         mock_settings.bot.show_diff = False
-        bot = ASK_BOT()
+        bot = AskBot()
         result = bot.ask_put(text="abc", newtext="abcde")
         assert result is True
         logged_messages = [str(c) for c in mock_logger.warning.call_args_list]

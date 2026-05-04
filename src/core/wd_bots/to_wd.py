@@ -10,7 +10,7 @@ import time
 
 from ..client_wiki import load_login_bot
 from .lag_bot import get_new_sleep, is_wd_lag_high
-from .wd_bots_main import WD_API
+from .wd_bots_main import WdAPI
 
 logger = logging.getLogger(__name__)
 
@@ -119,9 +119,9 @@ def after_success() -> None:
 
 
 @functools.lru_cache(maxsize=1024)
-def get_session_post(www="www") -> WD_API:
+def get_session_post(www="www") -> WdAPI:
     login_bot = load_login_bot(lang=www, family="wikidata")
-    return WD_API(login_bot)
+    return WdAPI(login_bot)
 
 
 def post_wd_params(params) -> bool:

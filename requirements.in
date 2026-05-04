@@ -8,3 +8,4 @@ requests
 colorlog
 python-dotenv>=1.0.0
 mwclient
+pywikibot

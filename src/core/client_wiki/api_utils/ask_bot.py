@@ -1,34 +1,25 @@
 """ """
 
-import difflib
 import logging
+import sys
+
+import pywikibot
 
 from ....config import settings
 
 logger = logging.getLogger(__name__)
+_save_or_ask: dict[str, bool] = {}
 
 
-def showDiff(oldtext: str, newtext: str) -> None:
-    """Show the difference between two text strings using the logger."""
-    diff = difflib.unified_diff(
-        oldtext.splitlines(),
-        newtext.splitlines(),
-        lineterm="",
-        fromfile="Old Text",
-        tofile="New Text",
-    )
-    for line in diff:
-        if line.startswith("+") and not line.startswith("+++"):
-            logger.warning(line)
-        elif line.startswith("-") and not line.startswith("---"):
-            logger.warning(line)
-        else:
-            logger.warning(line)
+def showDiff(text_a: str, text_b: str) -> None:
+    if "nodiff" in sys.argv:
+        return
+    pywikibot.showDiff(text_a, text_b)
 
 
-class ASK_BOT:
+class AskBot:
     def __init__(self) -> None:
-        self._save_or_ask: dict[str, bool] = {}
+        pass
 
     def ask_put(
         self,
@@ -44,7 +35,7 @@ class ASK_BOT:
         Prompts the user to confirm saving changes to a page, optionally displaying a diff.
         """
         message = message or "Do you want to accept these changes?"
-        if settings.bot.ask and not self._save_or_ask.get(job):
+        if settings.bot.ask and not _save_or_ask.get(job):
             if text or newtext:
                 if not settings.bot.no_diff and not nodiff:
                     if len(newtext) < 70000 and len(text) < 70000 or settings.bot.show_diff:
@@ -55,10 +46,10 @@ class ASK_BOT:
                 logger.warning(f"len of text: {len(text):,}, len of newtext: {len(newtext):,}")
             if summary:
                 logger.warning(f"-Edit summary: {summary}")
-            logger.warning(f"<<lightyellow>>ASK_BOT: {message}? (yes, no) {username=}")
+            logger.warning(f"<<lightyellow>>AskBot: {message}? (yes, no) {username=}")
             sa = input("([y]es, [N]o, [a]ll)?")
             if sa == "a":
-                self._save_or_ask[job] = True
+                _save_or_ask[job] = True
                 logger.warning("<<lightgreen>> ---------------------------------")
                 logger.warning(f"<<lightgreen>> save all:{job} without asking.")
                 logger.warning("<<lightgreen>> ---------------------------------")
@@ -69,6 +60,6 @@ class ASK_BOT:
 
 
 __all__ = [
-    "ASK_BOT",
+    "AskBot",
     "showDiff",
 ]

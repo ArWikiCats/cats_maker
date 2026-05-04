@@ -5,28 +5,28 @@ TODO: write tests
 
 import pytest
 
-from src.core.wd_bots.wd_bots_main import WD_API
+from src.core.wd_bots.wd_bots_main import WdAPI
 
 
 class TestWDAPI:
-    """Tests for WD_API class"""
+    """Tests for WdAPI class"""
 
     def test_instantiation(self, mocker):
-        """Test that WD_API can be instantiated"""
+        """Test that WdAPI can be instantiated"""
         mock_login = mocker.MagicMock()
         mock_login.user_login = "testuser"
 
-        api = WD_API(mock_login)
+        api = WdAPI(mock_login)
 
         assert api is not None
         assert api.login_bot == mock_login
 
     def test_inherits_error_handler(self, mocker):
-        """Test that WD_API inherits from WD_ERRORS_HANDLER"""
+        """Test that WdAPI inherits from WD_ERRORS_HANDLER"""
         mock_login = mocker.MagicMock()
         mock_login.user_login = "testuser"
 
-        api = WD_API(mock_login)
+        api = WdAPI(mock_login)
 
         # Should have methods from WD_ERRORS_HANDLER
         assert hasattr(api, "handle_err_wd")
@@ -37,7 +37,7 @@ class TestWDAPI:
         mock_login.user_login = "testuser"
         mock_login.client_request.return_value = {"result": "ok"}
 
-        api = WD_API(mock_login)
+        api = WdAPI(mock_login)
         result = api.login_bot.client_request({"action": "query"})
 
         mock_login.client_request.assert_called()
@@ -49,7 +49,7 @@ class TestWDAPI:
         mocker.patch("src.core.wd_bots.wd_bots_main.do_lag")
         mocker.patch("src.core.wd_bots.wd_bots_main.get_lag_value", return_value=5)
 
-        api = WD_API(mock_login)
+        api = WdAPI(mock_login)
         data = {"action": "wbeditentity"}
         result = api.filter_data(data)
 

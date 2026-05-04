@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 from ....config import settings
 from ...api_client import WikiLoginClient
-from ..api_utils import ASK_BOT, bot_May_Edit, change_codes
+from ..api_utils import AskBot, bot_May_Edit, change_codes
 from ..api_utils.handel_errors import HandleErrors
 
 logger = logging.getLogger(__name__)
@@ -83,7 +83,7 @@ def find_edit_error(old, new):
     return False
 
 
-class MainPage(ASK_BOT, HandleErrors):
+class MainPage(AskBot, HandleErrors):
     def __init__(
         self,
         login_bot: WikiLoginClient,
