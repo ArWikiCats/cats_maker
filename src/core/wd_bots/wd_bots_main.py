@@ -12,7 +12,7 @@ from .lag_bot import do_lag, find_lag, get_lag_value
 logger = logging.getLogger(__name__)
 
 
-class WD_API:
+class WdAPI:
     def __init__(
         self,
         login_bot: WikiLoginClient,
@@ -152,5 +152,5 @@ class WD_API:
 
 
 __all__ = [
-    "WD_API",
+    "WdAPI",
 ]

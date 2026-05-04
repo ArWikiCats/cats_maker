@@ -6,19 +6,19 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.core.wd_bots.wd_bots_main import WD_API
+from src.core.wd_bots.wd_bots_main import WdAPI
 
 
 @pytest.fixture
 def mock_wd_api():
-    """Create a WD_API instance for testing"""
+    """Create a WdAPI instance for testing"""
     _mock = MagicMock()
     _mock.user_login = "test"
-    return WD_API(_mock)
+    return WdAPI(_mock)
 
 
 class TestWDErrorsHandler:
-    """Tests for WD_API class"""
+    """Tests for WdAPI class"""
 
     def test_handle_abusefilter_error(self, mock_wd_api):
         """Test handling of abusefilter-disallowed error"""
