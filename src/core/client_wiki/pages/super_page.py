@@ -1,8 +1,8 @@
 """ """
 
 import logging
-from typing import Any, Dict, Optional, Union
 from copy import deepcopy
+from typing import Any, Dict, Optional, Union
 
 from ....config import settings
 from ...api_client import WikiLoginClient
@@ -277,27 +277,30 @@ class MainPage(HandleErrors, AskBot):
         self.meta.is_redirect = True if "redirect" in ta else False
 
         for cat in ta.get("categories", []):
+
             # _cat_ = { "ns": 14, "title": "تصنيف:بوابة سباق الدراجات الهوائية/مقالات متعلقة", "sortkey": "d8b7", "sortkeyprefix": "", "hidden": True }
 
             if "sortkey" in cat:
                 del cat["sortkey"]
 
-            tit = cat["title"]
+            category_title = cat["title"]
 
-            self.categories_data.all_categories_with_hidden[tit] = cat
+            self.categories_data.all_categories_with_hidden[category_title] = cat
 
             if cat.get("hidden") is True:
-                self.categories_data.hidden_categories[tit] = cat
+                self.categories_data.hidden_categories[category_title] = cat
             else:
                 del cat["hidden"]
-                self.categories_data.categories[tit] = cat
+                self.categories_data.categories[category_title] = cat
 
         if ta.get("langlinks", []) != []:
+
             # {"lang": "ca", "*": "UCI World Tour 2023"} or {'lang': 'bh', 'title': 'टेम्पलेट:AWB'}
 
             self.langlinks = {ta["lang"]: ta.get("*") or ta.get("title") for ta in ta.get("langlinks", [])}
 
         if ta.get("templates", []) != []:
+
             # 'templates': [{'ns': 10, 'title': 'قالب:No redirect'}],
 
             self.template_data.templates_api = [ta["title"] for ta in ta.get("templates", [])]
@@ -350,6 +353,7 @@ class MainPage(HandleErrors, AskBot):
         d = 0
 
         while continue_params != {} or d == 0:
+
             d += 1
 
             if continue_params:
@@ -469,8 +473,7 @@ class MainPage(HandleErrors, AskBot):
             self.get_text()
 
         if not self.meta.Exists:
-            logger.info(f'page "{self.title}" not in {self.lang}:{self.family}')
-        logger.debug(f"page exists: {self.meta.Exists}")
+            logger.info(f'page "{self.title}" not exists in {self.lang}:{self.family}')
         return self.meta.Exists
 
     def namespace(self):
@@ -479,7 +482,15 @@ class MainPage(HandleErrors, AskBot):
         logger.debug(f"namespace: {self.ns}")
         return self.ns
 
-    def save(self, newtext="", summary="", nocreate=1, minor="0", tags="", nodiff=False):
+    def save(
+        self,
+        newtext="",
+        summary="",
+        nocreate=1,
+        minor="0",
+        tags="",
+        nodiff=False,
+    ) -> bool | str:
         """
         Saves new text to the page, updating its content and metadata.
 
@@ -575,7 +586,13 @@ class MainPage(HandleErrors, AskBot):
 
         return False
 
-    def Create(self, text="", summary="", nodiff="", noask=False) -> bool:
+    def create(
+        self,
+        text="",
+        summary="",
+        nodiff="",
+        noask=False,
+    ) -> bool:
         """
         Creates a new page with the specified text and summary.
 
@@ -651,65 +668,69 @@ class MainPage(HandleErrors, AskBot):
 
         return False
 
-    def post_continue(
+    def Create(
         self,
-        params,
-        action,
-    ) -> list:
-        logger.debug("_______________________")
-        logger.debug(f", start. {action=}, links")
+        text="",
+        summary="",
+        nodiff="",
+        noask=False,
+    ) -> bool:
+        return self.create(text=text, summary=summary, nodiff=nodiff, noask=noask)
 
-        max = 500000
-        results = []
-        continue_params = {}
-        d = 0
-
-        while continue_params != {} or d == 0:
-            params2 = deepcopy(params)
-            d += 1
-
-            if continue_params:
-                logger.debug("continue_params:")
-                for k, v in continue_params.items():
-                    params2[k] = v
-                logger.debug(params2)
-
-            json1 = self.login_bot.client_request(params2)
-
-            if not json1:
-                logger.debug(", json1 is empty. break")
-                break
-
-            continue_params = json1.get("continue", {})
-            data = json1.get(action, {}).get("links", [])
-
-            if not data:
-                logger.debug("post continue, data is empty. break")
-                break
-
-            logger.debug(f"post continue, len:{len(data)}, all: {len(results)}")
-
-            if len(results) >= max:
-                logger.debug(f"post continue, {max=} <= {len(results)=}. break")
-                break
-
-            results.extend(data)
-
-        logger.debug(f"post continue, {len(results)=}")
-        return results
-
-    def page_links(self):
+    def page_links(self) -> list:
+        """
+        Get the links on the page.
+        Return:
+            list: A list of links on the page, where each link is represented as a dictionary containing its namespace, title, and existence status.
+        Example of returned data:
+            [
+                {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True},
+                {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}
+            ]
+        """
         params = {
             "action": "parse",
             "prop": "links",
             "formatversion": "2",
             "page": self.title,
         }
+        # data = self.client_request(params)
+        # data = data.get('parse', {}).get('links', [])
 
-        data = self.post_continue(params, "parse")
+        data: list = self.post_continue(params, "parse", _p_="links", p_empty=[])
 
         # [{'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True}, {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}]
 
         self.links_data.links2 = data
 
         return self.links_data.links2
+
+    def post_continue(
+        self,
+        params,
+        action,
+        _p_="pages",
+        p_empty=None,
+        max=500000,
+        first=False,
+        _p_2="",
+        _p_2_empty=None,
+        **kwargs,
+    ):
+        return self.login_bot.post_continue(
+            params,
+            action,
+            _p_=_p_,
+            p_empty=p_empty,
+            max=max,
+            first=first,
+            _p_2=_p_2,
+            _p_2_empty=_p_2_empty,
+            **kwargs,
+        )
+
+    def __getitem__(self, key):
+        if key == "q":
+            return self.get_qid()
+        else:
+            raise  # noqa: PLE0704
