@@ -90,7 +90,6 @@ class CategoryDepth:
         self.without_lang = kwargs.get("without_lang") or ""
         self.with_lang = kwargs.get("with_lang") or ""
 
-        self.depth = kwargs.get("depth") or 0
         self.ns = str(kwargs.get("ns") or "all")
         self.nslist = kwargs.get("nslist") or []
 
