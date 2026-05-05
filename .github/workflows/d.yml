@@ -19,7 +19,7 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             become ${{ secrets.TOOL1 }} bash -lc "
-              shs/update_cats_maker.sh &&
+              shs/update_cats_maker_new.sh &&
               echo \"Updated on: $(date '+%Y-%m-%d %H:%M:%S')\" > ~/update_cats_maker_from_github &&
               echo ''
             "
