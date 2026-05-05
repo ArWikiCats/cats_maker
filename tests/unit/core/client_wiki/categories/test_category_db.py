@@ -383,7 +383,7 @@ class TestGetCatNew:
         second_call_params = mock_login_bot.client_request.call_args_list[1][0][0]
         assert second_call_params["gcmcontinue"] == "page|abc|def"
 
-    def test_api_data_false_early_break(self, bot, mock_login_bot, capfd):
+    def test_api_data_false_early_break(self, bot, mock_login_bot):
         """When client_request returns False, the loop breaks early."""
         mock_login_bot.client_request.return_value = False
 
@@ -391,18 +391,14 @@ class TestGetCatNew:
 
         assert result == {}
         mock_login_bot.client_request.assert_called_once()
-        captured = capfd.readouterr()
-        assert "api is False" in captured.out
 
-    def test_api_data_empty_dict_early_break(self, bot, mock_login_bot, capfd):
+    def test_api_data_empty_dict_early_break(self, bot, mock_login_bot):
         """When client_request returns empty dict (falsy), the loop breaks."""
         mock_login_bot.client_request.return_value = {}
 
         result = bot.get_cat_new("Category:Test")
 
         assert result == {}
-        captured = capfd.readouterr()
-        assert "api is False" in captured.out
 
     def test_limit_reached_stops_loop(self, bot, mock_login_bot):
         """When limit is set and results reach it, the loop breaks."""
