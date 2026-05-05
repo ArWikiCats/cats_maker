@@ -2,72 +2,15 @@
 
 import logging
 from copy import deepcopy
-from dataclasses import dataclass, field
+from typing import Any, Dict, Optional, Union
 
 from ....config import settings
 from ...api_client import WikiLoginClient
 from ..api_utils import AskBot, bot_May_Edit, change_codes
 from ..api_utils.handel_errors import HandleErrors
+from .data import CategoriesData, Content, LinksData, Meta, RevisionsData, TemplateData
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class Content:
-    # text: str = ""
-    # newtext: str = ""
-    text_html: str = ""
-    summary: str = ""
-    words: int = 0
-    length: int = 0
-
-
-@dataclass
-class Meta:
-    is_Disambig: bool = False
-    can_be_edit: bool = False
-    # ns: int = 0
-    userinfo: dict = field(default_factory=dict)
-    create_data: dict = field(default_factory=dict)
-    info: dict = field(default_factory=lambda: {"done": False})
-    username: str = ""
-    Exists: str = ""
-    is_redirect: str = ""
-    flagged: str = ""
-    wikibase_item: str = ""
-
-
-@dataclass
-class RevisionsData:
-    revid: str = ""
-    newrevid: str = ""
-    pageid: str = ""
-    timestamp: str = ""
-    revisions: list = field(default_factory=list)
-    touched: str = ""
-
-
-@dataclass
-class LinksData:
-    back_links: list = field(default_factory=list)
-    extlinks: list = field(default_factory=list)
-    iwlinks: list = field(default_factory=list)
-    links_here: list = field(default_factory=list)
-    links: list = field(default_factory=list)
-    links2: list = field(default_factory=list)
-
-
-@dataclass
-class CategoriesData:
-    categories: dict = field(default_factory=dict)
-    hidden_categories: dict = field(default_factory=dict)
-    all_categories_with_hidden: dict = field(default_factory=dict)
-
-
-@dataclass
-class TemplateData:
-    templates: dict = field(default_factory=dict)
-    templates_API: dict = field(default_factory=dict)
 
 
 def find_edit_error(old, new):
@@ -77,20 +20,26 @@ def find_edit_error(old, new):
     }
     for phrase in conversion_phrases:
         if phrase in old and phrase not in new:
-            print(f"ar_err.py found ({phrase}) in old but not in new. return True")
+            logger.info(f"ar_err.py found ({phrase}) in old but not in new. return True")
             return True
 
     return False
 
 
-class MainPage(AskBot, HandleErrors):
+class MainPage(HandleErrors, AskBot):
+    """
+    Main page class for interacting with MediaWiki pages.
+
+    Provides methods for reading, editing, and managing wiki pages.
+    """
+
     def __init__(
         self,
         login_bot: WikiLoginClient,
-        title,
-        lang,
-        family="wikipedia",
-    ):
+        title: str,
+        lang: str = "",
+        family: str = "wikipedia",
+    ) -> None:
         # print(f"class MainPage: {lang=}")
         """
         Initializes a MainPage instance for interacting with a MediaWiki page.
@@ -100,15 +49,15 @@ class MainPage(AskBot, HandleErrors):
 
         self.login_bot = login_bot
 
-        self.title = title
-        self.lang = change_codes.get(lang) or lang
-        self.family = family
-        self.endpoint = f"https://{self.lang}.{self.family}.org/w/api.php"
+        self.title: str = title
+        self.lang: str = change_codes.get(lang) or lang
+        self.family: str = family
+        self.endpoint: str = f"https://{self.lang}.{self.family}.org/w/api.php"
 
-        self.text = ""
-        self.newtext = ""
-        self.ns = False
-        self.langlinks = {}
+        self.text: str = ""
+        self.newtext: str = ""
+        self.ns: Union[bool, int] = False
+        self.langlinks: Dict[str, str] = {}
 
         self.meta = Meta()
         self.content = Content()
@@ -117,10 +66,26 @@ class MainPage(AskBot, HandleErrors):
         self.categories_data = CategoriesData()
         self.template_data = TemplateData()
 
-        self.user = ""
+        self.user: str = ""
+
         super().__init__()
 
-    def false_edit(self):
+    def client_request(
+        self,
+        params: Dict[str, Any],
+        method: str = "get",
+        files: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> Dict[str, Any]:
+
+        return self.login_bot.client_request(
+            params,
+            method=method,
+            files=files,
+            **kwargs,
+        )
+
+    def false_edit(self) -> bool:
         # self.newtext
         # self.text
         """
@@ -141,7 +106,7 @@ class MainPage(AskBot, HandleErrors):
         if len(self.newtext) < 0.1 * len(self.text):
             text_err = f"Edit will remove 90% of the text. {len(self.newtext)} < 0.1 * {len(self.text)}"
             text_err += f"title: {self.title}, summary: {self.content.summary}"
-            logger.warning("", text=text_err)
+            logger.exception(text_err)
             return True
 
         if self.lang == "ar" and self.ns == 0:
@@ -170,7 +135,7 @@ class MainPage(AskBot, HandleErrors):
             "rvdir": "newer",
         }
 
-        data = self.login_bot.client_request(params)
+        data = self.login_bot.client_request(params, method="get")
 
         pages = data.get("query", {}).get("pages", {})
 
@@ -211,7 +176,7 @@ class MainPage(AskBot, HandleErrors):
 
         if redirects:
             params["redirects"] = 1
-        data = self.login_bot.client_request(params)
+        data = self.login_bot.client_request(params, method="get")
 
         pages = data.get("query", {}).get("pages", {})
 
@@ -292,7 +257,7 @@ class MainPage(AskBot, HandleErrors):
 
         # _data_ = { "continue": {}, "query": { "pages": { "9124097": { "pageid": 9124097, "ns": 0, "title": "طواف العالم للدراجات 2023", "categories": [], "langlinks": [], "templates": [{ "ns": 10, "title": "قالب:-" }], "linkshere": [{ "pageid": 189150, "ns": 0, "title": "طواف فرنسا" }], "iwlinks": [{ "prefix": "commons", "*": "Category:2023_UCI_World_Tour" }], "contentmodel": "wikitext", "pagelanguage": "ar", "pagelanguagehtmlcode": "ar", "pagelanguagedir": "rtl", "touched": "2023-03-07T11:53:53Z", "lastrevid": 61366100, "length": 985, } } }, }
 
-        data = self.login_bot.client_request(params)
+        data = self.login_bot.client_request(params, method="get")
 
         # xs = { 'batchcomplete': True, 'query': { 'pages': [{ 'pageid': 151314, 'ns': 10, 'title': 'قالب:أوب', 'categories': [{ 'ns': 14, 'title': 'تصنيف:قوالب تستخدم أنماط القوالب', 'sortkey': '', 'sortkeyprefix': '', 'hidden': False }, { 'ns': 14, 'title': 'تصنيف:cc', 'sortkey': 'v', 'sortkeyprefix': 'أوب', 'hidden': True }], 'langlinks': [{ 'lang': 'bh', 'title': 'टेम्पलेट:AWB' }], 'templates': [{ 'ns': 10, 'title': 'قالب:No redirect' }], 'linkshere': [{ 'pageid': 308641, 'ns': 10, 'title': 'قالب:AWB', 'redirect': True }], 'iwlinks': [{ 'prefix': 'd', 'title': 'Q4063270' }], 'contentmodel': 'wikitext', 'pagelanguage': 'ar', 'pagelanguagehtmlcode': 'ar', 'pagelanguagedir': 'rtl', 'touched': '2023-03-05T22:10:23Z', 'lastrevid': 61388266, 'length': 3477, }] }, }
 
@@ -312,30 +277,33 @@ class MainPage(AskBot, HandleErrors):
         self.meta.is_redirect = True if "redirect" in ta else False
 
         for cat in ta.get("categories", []):
+
             # _cat_ = { "ns": 14, "title": "تصنيف:بوابة سباق الدراجات الهوائية/مقالات متعلقة", "sortkey": "d8b7", "sortkeyprefix": "", "hidden": True }
 
             if "sortkey" in cat:
                 del cat["sortkey"]
 
-            tit = cat["title"]
+            category_title = cat["title"]
 
-            self.categories_data.all_categories_with_hidden[tit] = cat
+            self.categories_data.all_categories_with_hidden[category_title] = cat
 
             if cat.get("hidden") is True:
-                self.categories_data.hidden_categories[tit] = cat
+                self.categories_data.hidden_categories[category_title] = cat
             else:
                 del cat["hidden"]
-                self.categories_data.categories[tit] = cat
+                self.categories_data.categories[category_title] = cat
 
         if ta.get("langlinks", []) != []:
+
             # {"lang": "ca", "*": "UCI World Tour 2023"} or {'lang': 'bh', 'title': 'टेम्पलेट:AWB'}
 
             self.langlinks = {ta["lang"]: ta.get("*") or ta.get("title") for ta in ta.get("langlinks", [])}
 
         if ta.get("templates", []) != []:
+
             # 'templates': [{'ns': 10, 'title': 'قالب:No redirect'}],
 
-            self.template_data.templates_API = [ta["title"] for ta in ta.get("templates", [])]
+            self.template_data.templates_api = [ta["title"] for ta in ta.get("templates", [])]
 
         # "linkshere": [{"pageid": 189150,"ns": 0,"title": "طواف فرنسا"}, {"pageid": 308641,"ns": 10,"title": "قالب:AWB","redirect": ""}]
         self.links_data.links_here = ta.get("linkshere", [])
@@ -352,7 +320,7 @@ class MainPage(AskBot, HandleErrors):
             "redirects": 1,
         }
 
-        data = self.login_bot.client_request(params)
+        data = self.login_bot.client_request(params, method="get")
 
         # _pages_ = { 'batchcomplete': '', 'query': { 'redirects': [{ 'from': 'Yemen', 'to': 'اليمن' }], 'pages': {}, 'normalized': [{ 'from': 'yemen', 'to': 'Yemen' }] } }
 
@@ -385,13 +353,14 @@ class MainPage(AskBot, HandleErrors):
         d = 0
 
         while continue_params != {} or d == 0:
+
             d += 1
 
             if continue_params:
                 # params = {**params, **continue_params}
                 params.update(continue_params)
 
-            json1 = self.login_bot.client_request(params)
+            json1 = self.login_bot.client_request(params, method="get")
 
             continue_params = json1.get("continue", {})
 
@@ -418,7 +387,7 @@ class MainPage(AskBot, HandleErrors):
                 "ususers": self.user,
             }
 
-            data = self.login_bot.client_request(params)
+            data = self.login_bot.client_request(params, method="get")
 
             # _userinfo_ = { "id": 229481, "name": "Mr. Ibrahem", "groups": ["editor", "reviewer", "rollbacker", "*", "user", "autoconfirmed"] }
 
@@ -437,12 +406,12 @@ class MainPage(AskBot, HandleErrors):
 
     def isDisambiguation(self):
         # if the title ends with '(توضيح)' or '(disambiguation)'
-        self.meta.is_Disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
+        self.meta.is_disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
 
-        if self.meta.is_Disambig:
+        if self.meta.is_disambig:
             logger.debug(f'<<lightred>> page "{self.title}" is Disambiguation / توضيح')
 
-        return self.meta.is_Disambig
+        return self.meta.is_disambig
 
     def get_categories(self, with_hidden=False):
         # if not self.categories_data.categories: self.get_infos()
@@ -502,16 +471,26 @@ class MainPage(AskBot, HandleErrors):
     def exists(self):
         if not self.meta.Exists:
             self.get_text()
+
         if not self.meta.Exists:
-            logger.debug(f'page "{self.title}" not in {self.lang}:{self.family}')
+            logger.info(f'page "{self.title}" not exists in {self.lang}:{self.family}')
         return self.meta.Exists
 
     def namespace(self):
         if self.ns is False:
             self.get_text()
+        logger.debug(f"namespace: {self.ns}")
         return self.ns
 
-    def save(self, newtext="", summary="", nocreate=1, minor="0", tags="", nodiff=False):
+    def save(
+        self,
+        newtext="",
+        summary="",
+        nocreate=1,
+        minor="0",
+        tags="",
+        nodiff=False,
+    ) -> bool | str:
         """
         Saves new text to the page, updating its content and metadata.
 
@@ -589,7 +568,7 @@ class MainPage(AskBot, HandleErrors):
             self.text = newtext
             self.user = ""
             logger.warning(f"<<lightgreen>> ** true .. [[{self.lang}:{self.family}:{self.title}]] ")
-            # logger.debug('Done True...')
+            logger.debug(f"save success for {self.title}")
 
             self.revisions_data.pageid = edit.get("pageid") or self.revisions_data.pageid
             self.revisions_data.revid = edit.get("newrevid") or self.revisions_data.revid
@@ -600,14 +579,20 @@ class MainPage(AskBot, HandleErrors):
             return True
 
         if error != {}:
-            print(pop)
+            logger.debug(pop)
             er = self.handle_err(error, function="Save", params=params)
 
             return er
 
         return False
 
-    def Create(self, text="", summary="", nodiff="", noask=False) -> bool:
+    def create(
+        self,
+        text="",
+        summary="",
+        nodiff="",
+        noask=False,
+    ) -> bool:
         """
         Creates a new page with the specified text and summary.
 
@@ -630,7 +615,14 @@ class MainPage(AskBot, HandleErrors):
             user = self.meta.username
 
             if (
-                self.ask_put(nodiff=nodiff, newtext=text, message=message, job="create", username=user, summary=summary)
+                self.ask_put(
+                    nodiff=nodiff,
+                    newtext=text,
+                    message=message,
+                    job="create",
+                    username=user,
+                    summary=summary,
+                )
                 is False
             ):
                 return False
@@ -659,7 +651,7 @@ class MainPage(AskBot, HandleErrors):
             self.text = text
 
             logger.warning(f"<<lightgreen>> ** true .. [[{self.lang}:{self.family}:{self.title}]] ")
-            # logger.debug('Done True... time.sleep() ')
+            logger.debug(f"create success for {self.title}")
 
             self.revisions_data.pageid = edit.get("pageid") or self.revisions_data.pageid
             self.revisions_data.revid = edit.get("newrevid") or self.revisions_data.revid
@@ -670,72 +662,75 @@ class MainPage(AskBot, HandleErrors):
             return True
 
         if error != {}:
-            print(pop)
+            logger.debug(pop)
             er = self.handle_err(error, function="Create", params=params)
-
             return er
 
         return False
 
-    def post_continue(
+    def Create(
         self,
-        params,
-        action,
-    ) -> list:
-        logger.debug("_______________________")
-        logger.debug(f", start. {action=}, links")
+        text="",
+        summary="",
+        nodiff="",
+        noask=False,
+    ) -> bool:
+        return self.create(text=text, summary=summary, nodiff=nodiff, noask=noask)
 
-        Max = 500000
-        results = []
-        continue_params = {}
-        d = 0
-
-        while continue_params != {} or d == 0:
-            params2 = deepcopy(params)
-            d += 1
-
-            if continue_params:
-                logger.debug("continue_params:")
-                for k, v in continue_params.items():
-                    params2[k] = v
-                logger.debug(params2)
-
-            json1 = self.login_bot.client_request(params2)
-
-            if not json1:
-                logger.debug(", json1 is empty. break")
-                break
-
-            continue_params = json1.get("continue", {})
-            data = json1.get(action, {}).get("links", [])
-
-            if not data:
-                logger.debug("post continue, data is empty. break")
-                break
-
-            logger.debug(f"post continue, len:{len(data)}, all: {len(results)}")
-
-            if Max <= len(results) and len(results) > 1:
-                logger.debug(f"post continue, {Max=} <= {len(results)=}. break")
-                break
-
-            results.extend(data)
-
-        logger.debug(f"post continue, {len(results)=}")
-        return results
-
-    def page_links(self):
+    def page_links(self) -> list:
+        """
+        Get the links on the page.
+        Return:
+            list: A list of links on the page, where each link is represented as a dictionary containing its namespace, title, and existence status.
+        Example of returned data:
+            [
+                {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True},
+                {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}
+            ]
+        """
         params = {
             "action": "parse",
             "prop": "links",
             "formatversion": "2",
             "page": self.title,
         }
+        # data = self.client_request(params)
+        # data = data.get('parse', {}).get('links', [])
 
-        data = self.post_continue(params, "parse")
+        data: list = self.post_continue(params, "parse", _p_="links", p_empty=[])
 
         # [{'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True}, {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}]
 
         self.links_data.links2 = data
 
         return self.links_data.links2
+
+    def post_continue(
+        self,
+        params,
+        action,
+        _p_="pages",
+        p_empty=None,
+        max=500000,
+        first=False,
+        _p_2="",
+        _p_2_empty=None,
+        **kwargs,
+    ):
+        return self.login_bot.post_continue(
+            params,
+            action,
+            _p_=_p_,
+            p_empty=p_empty,
+            max=max,
+            first=first,
+            _p_2=_p_2,
+            _p_2_empty=_p_2_empty,
+            **kwargs,
+        )
+
+    def __getitem__(self, key):
+        if key == "q":
+            return self.get_qid()
+        else:
+            raise  # noqa: PLE0704

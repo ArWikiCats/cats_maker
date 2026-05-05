@@ -1,7 +1,7 @@
 """ """
 
+import functools
 import logging
-from functools import lru_cache
 
 from ...utils import function_timer
 from ..constants import CATEGORY_PREFIXES
@@ -13,7 +13,7 @@ SITECODE = "en"
 FAMILY = "wikipedia"
 
 
-@lru_cache(maxsize=256)
+@functools.lru_cache(maxsize=256)
 def title_process(title: str, sitecode: str) -> str:
     prefixes = CATEGORY_PREFIXES
     start_prefixes = prefixes.get(sitecode)
@@ -58,6 +58,7 @@ def subcatquery(login_bot, title: str, sitecode: str = SITECODE, family: str = F
             f"<<lightyellow>> catdepth_new.py sub cat query for {sitecode}:{title}, depth:{args2['depth']}, ns:{args2['ns']}, onlyns:{args2['onlyns']}"
         )
 
+    logger.info(f"starting subcategory query: {sitecode}:{title}")
     bot = CategoryDepth(login_bot, title, **kwargs)
     result = bot.subcatquery_()
 

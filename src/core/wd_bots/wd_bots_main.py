@@ -58,7 +58,7 @@ class WdAPI:
         err_code = error.get("code", "")
         err_info = error.get("info", "")
 
-        tt = f"<<lightred>>{function} ERROR: <<defaut>>code:{err_code}."
+        tt = f"<<lightred>>{function} ERROR: <<default>>code:{err_code}."
         logger.debug(tt)
         # ---["protectedpage", 'تأخير البوتات 3 ساعات', False]
         if err_code == "abusefilter-disallowed":
@@ -96,7 +96,7 @@ class WdAPI:
         if params is not None:
             params["data"] = {}
 
-        logger.debug(f"<<lightred>>{function} ERROR: <<defaut>>info: {err_info}, {params=}")
+        logger.debug(f"<<lightred>>{function} ERROR: <<default>>info: {err_info}, {params=}")
 
     def post_to_newapi(
         self,

@@ -12,6 +12,12 @@ logger = logging.getLogger(__name__)
 class AllAPIS:
     """
     A class that provides access to various API functionalities.
+    Usage:
+        from newapi import AllAPIS
+        main_api = AllAPIS(lang='en', family='wikipedia', username='your_username', password='your_password')
+        page = main_api.MainPage('Main Page Title')
+        cat_members = main_api.CatDepth('Category Title')
+        new_api = main_api.NewApi()
     """
 
     def __init__(self, lang: str, family: str, username: str, password: str) -> None:

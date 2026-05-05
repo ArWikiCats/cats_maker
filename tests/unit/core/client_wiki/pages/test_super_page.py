@@ -20,7 +20,13 @@ from src.core.client_wiki.pages.super_page import (
 
 @pytest.fixture
 def mock_login_bot():
-    return MagicMock()
+    from src.core.api_client.client import WikiLoginClient
+
+    mock = MagicMock(spec=WikiLoginClient)
+    mock.client_request = MagicMock()
+    # Bind the real post_continue so delegation from MainPage works
+    mock.post_continue = WikiLoginClient.post_continue.__get__(mock, WikiLoginClient)
+    return mock
 
 
 @pytest.fixture
@@ -39,7 +45,7 @@ class TestDataclasses:
 
     def test_meta_defaults(self):
         m = Meta()
-        assert m.is_Disambig is False
+        assert m.is_disambig is False
         assert m.can_be_edit is False
         assert m.Exists == ""
         assert m.wikibase_item == ""
@@ -64,7 +70,7 @@ class TestDataclasses:
     def test_template_data_defaults(self):
         t = TemplateData()
         assert t.templates == {}
-        assert t.templates_API == {}
+        assert t.templates_api == {}
 
 
 class TestFindEditError:
@@ -360,7 +366,7 @@ class TestPostContinue:
     def test_single_page(self, page):
         params = {"action": "query", "prop": "links"}
         page.login_bot.client_request.return_value = {"query": {"links": [{"title": "Link1"}]}}
-        result = page.post_continue(params, "query")
+        result = page.post_continue(params, "query", _p_="links")
         assert len(result) == 1
 
     def test_with_continuation(self, page):
@@ -369,7 +375,7 @@ class TestPostContinue:
             {"continue": {"continue": "x"}, "query": {"links": [{"title": "L1"}]}},
             {"query": {"links": [{"title": "L2"}]}},
         ]
-        result = page.post_continue(params, "query")
+        result = page.post_continue(params, "query", _p_="links")
         assert len(result) == 2
 
     def test_empty_response_breaks(self, page):
@@ -410,7 +416,7 @@ class TestGetInfos:
         assert "تصنيف:A" in page.categories_data.categories
         assert "تصنيف:B" in page.categories_data.hidden_categories
         assert page.langlinks == {"en": "Test"}
-        assert page.template_data.templates_API == ["قالب:T"]
+        assert page.template_data.templates_api == ["قالب:T"]
 
 
 class TestGetExtlinks:
