@@ -20,7 +20,13 @@ from src.core.client_wiki.pages.super_page import (
 
 @pytest.fixture
 def mock_login_bot():
-    return MagicMock()
+    from src.core.api_client.client import WikiLoginClient
+
+    mock = MagicMock(spec=WikiLoginClient)
+    mock.client_request = MagicMock()
+    # Bind the real post_continue so delegation from MainPage works
+    mock.post_continue = WikiLoginClient.post_continue.__get__(mock, WikiLoginClient)
+    return mock
 
 
 @pytest.fixture
