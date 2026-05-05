@@ -360,7 +360,7 @@ class TestPostContinue:
     def test_single_page(self, page):
         params = {"action": "query", "prop": "links"}
         page.login_bot.client_request.return_value = {"query": {"links": [{"title": "Link1"}]}}
-        result = page.post_continue(params, "query")
+        result = page.post_continue(params, "query", _p_="links")
         assert len(result) == 1
 
     def test_with_continuation(self, page):
@@ -369,7 +369,7 @@ class TestPostContinue:
             {"continue": {"continue": "x"}, "query": {"links": [{"title": "L1"}]}},
             {"query": {"links": [{"title": "L2"}]}},
         ]
-        result = page.post_continue(params, "query")
+        result = page.post_continue(params, "query", _p_="links")
         assert len(result) == 2
 
     def test_empty_response_breaks(self, page):

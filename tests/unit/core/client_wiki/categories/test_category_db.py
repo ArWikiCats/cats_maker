@@ -2,6 +2,7 @@
 Unit tests for src/core/client_wiki/categories/category_db.py module.
 """
 
+import logging
 from unittest.mock import MagicMock
 
 import pytest
@@ -41,11 +42,10 @@ class TestParseParams:
         bot._parse_params(depth=5)
         assert bot.depth == 5
 
-    def test_invalid_depth_prints_warning(self, bot, capsys):
+    def test_invalid_depth_prints_warning(self, bot, caplog):
         bot._parse_params(depth="invalid")
-        # The try/except catches ValueError and prints, but later line overwrites
-        captured = capsys.readouterr()
-        assert "self.depth != int" in captured.out
+        assert "self.depth != int" in caplog.text
+        assert bot.depth == 0
 
     def test_sets_gcmlimit(self, bot):
         bot._parse_params(gcmlimit=500)
@@ -382,26 +382,26 @@ class TestGetCatNew:
         second_call_params = mock_login_bot.client_request.call_args_list[1][0][0]
         assert second_call_params["gcmcontinue"] == "page|abc|def"
 
-    def test_api_data_false_early_break(self, bot, mock_login_bot, capsys):
+    def test_api_data_false_early_break(self, bot, mock_login_bot, caplog):
         """When client_request returns False, the loop breaks early."""
+        caplog.set_level(logging.INFO)
         mock_login_bot.client_request.return_value = False
 
         result = bot.get_cat_new("Category:Test")
 
         assert result == {}
         mock_login_bot.client_request.assert_called_once()
-        captured = capsys.readouterr()
-        assert "api is False" in captured.out
+        assert "api is False" in caplog.text
 
-    def test_api_data_empty_dict_early_break(self, bot, mock_login_bot, capsys):
+    def test_api_data_empty_dict_early_break(self, bot, mock_login_bot, caplog):
         """When client_request returns empty dict (falsy), the loop breaks."""
+        caplog.set_level(logging.INFO)
         mock_login_bot.client_request.return_value = {}
 
         result = bot.get_cat_new("Category:Test")
 
         assert result == {}
-        captured = capsys.readouterr()
-        assert "api is False" in captured.out
+        assert "api is False" in caplog.text
 
     def test_limit_reached_stops_loop(self, bot, mock_login_bot):
         """When limit is set and results reach it, the loop breaks."""
