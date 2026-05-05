@@ -2,7 +2,6 @@
 Unit tests for src/core/client_wiki/categories/category_db.py module.
 """
 
-import logging
 from unittest.mock import MagicMock
 
 import pytest
@@ -42,9 +41,10 @@ class TestParseParams:
         bot._parse_params(depth=5)
         assert bot.depth == 5
 
-    def test_invalid_depth_prints_warning(self, bot, caplog):
+    def test_invalid_depth_prints_warning(self, bot, capsys):
         bot._parse_params(depth="invalid")
-        assert "self.depth != int" in caplog.text
+        captured = capsys.readouterr()
+        assert "self.depth != int" in captured.out
         assert bot.depth == 0
 
     def test_sets_gcmlimit(self, bot):
