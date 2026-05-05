@@ -1,73 +1,16 @@
 """ """
 
 import logging
+from typing import Any, Dict, Optional, Union
 from copy import deepcopy
-from dataclasses import dataclass, field
 
 from ....config import settings
 from ...api_client import WikiLoginClient
 from ..api_utils import AskBot, bot_May_Edit, change_codes
 from ..api_utils.handel_errors import HandleErrors
+from .data import CategoriesData, Content, LinksData, Meta, RevisionsData, TemplateData
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class Content:
-    # text: str = ""
-    # newtext: str = ""
-    text_html: str = ""
-    summary: str = ""
-    words: int = 0
-    length: int = 0
-
-
-@dataclass
-class Meta:
-    is_disambig: bool = False
-    can_be_edit: bool = False
-    # ns: int = 0
-    userinfo: dict = field(default_factory=dict)
-    create_data: dict = field(default_factory=dict)
-    info: dict = field(default_factory=lambda: {"done": False})
-    username: str = ""
-    Exists: str = ""
-    is_redirect: str = ""
-    flagged: str = ""
-    wikibase_item: str = ""
-
-
-@dataclass
-class RevisionsData:
-    revid: str = ""
-    newrevid: str = ""
-    pageid: str = ""
-    timestamp: str = ""
-    revisions: list = field(default_factory=list)
-    touched: str = ""
-
-
-@dataclass
-class LinksData:
-    back_links: list = field(default_factory=list)
-    extlinks: list = field(default_factory=list)
-    iwlinks: list = field(default_factory=list)
-    links_here: list = field(default_factory=list)
-    links: list = field(default_factory=list)
-    links2: list = field(default_factory=list)
-
-
-@dataclass
-class CategoriesData:
-    categories: dict = field(default_factory=dict)
-    hidden_categories: dict = field(default_factory=dict)
-    all_categories_with_hidden: dict = field(default_factory=dict)
-
-
-@dataclass
-class TemplateData:
-    templates: dict = field(default_factory=dict)
-    templates_api: dict = field(default_factory=dict)
 
 
 def find_edit_error(old, new):
@@ -83,14 +26,20 @@ def find_edit_error(old, new):
     return False
 
 
-class MainPage(AskBot, HandleErrors):
+class MainPage(HandleErrors, AskBot):
+    """
+    Main page class for interacting with MediaWiki pages.
+
+    Provides methods for reading, editing, and managing wiki pages.
+    """
+
     def __init__(
         self,
         login_bot: WikiLoginClient,
-        title,
-        lang,
-        family="wikipedia",
-    ):
+        title: str,
+        lang: str = "",
+        family: str = "wikipedia",
+    ) -> None:
         # print(f"class MainPage: {lang=}")
         """
         Initializes a MainPage instance for interacting with a MediaWiki page.
@@ -100,15 +49,15 @@ class MainPage(AskBot, HandleErrors):
 
         self.login_bot = login_bot
 
-        self.title = title
-        self.lang = change_codes.get(lang) or lang
-        self.family = family
-        self.endpoint = f"https://{self.lang}.{self.family}.org/w/api.php"
+        self.title: str = title
+        self.lang: str = change_codes.get(lang) or lang
+        self.family: str = family
+        self.endpoint: str = f"https://{self.lang}.{self.family}.org/w/api.php"
 
-        self.text = ""
-        self.newtext = ""
-        self.ns = False
-        self.langlinks = {}
+        self.text: str = ""
+        self.newtext: str = ""
+        self.ns: Union[bool, int] = False
+        self.langlinks: Dict[str, str] = {}
 
         self.meta = Meta()
         self.content = Content()
@@ -117,10 +66,26 @@ class MainPage(AskBot, HandleErrors):
         self.categories_data = CategoriesData()
         self.template_data = TemplateData()
 
-        self.user = ""
+        self.user: str = ""
+
         super().__init__()
 
-    def false_edit(self):
+    def client_request(
+        self,
+        params: Dict[str, Any],
+        method: str = "get",
+        files: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> Dict[str, Any]:
+
+        return self.login_bot.client_request(
+            params,
+            method=method,
+            files=files,
+            **kwargs,
+        )
+
+    def false_edit(self) -> bool:
         # self.newtext
         # self.text
         """
@@ -141,7 +106,7 @@ class MainPage(AskBot, HandleErrors):
         if len(self.newtext) < 0.1 * len(self.text):
             text_err = f"Edit will remove 90% of the text. {len(self.newtext)} < 0.1 * {len(self.text)}"
             text_err += f"title: {self.title}, summary: {self.content.summary}"
-            logger.warning(text_err)
+            logger.exception(text_err)
             return True
 
         if self.lang == "ar" and self.ns == 0:
