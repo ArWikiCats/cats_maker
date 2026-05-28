@@ -125,18 +125,21 @@ def get_session_post(www="www") -> WdAPI:
 
 
 def post_wd_params(params) -> bool:
-    wd_api = get_session_post()
-    result = wd_api.post_to_newapi(
-        params=params,
-    )
+    try:
+        wd_api = get_session_post()
+        result = wd_api.post_to_newapi(
+            params=params,
+        )
 
-    success = result.get("success", 0)
-    if success == 1:
-        after_success()
-        logger.warning("<<lightgreen>> ** true.")
-        return True
+        success = result.get("success", 0)
+        if success == 1:
+            after_success()
+            logger.warning("<<lightgreen>> ** true.")
+            return True
 
-    outbot_json(result)
+        outbot_json(result)
+    except Exception as e:
+        logger.error(f"<<lightred>> ** error. : {e}")
 
     return False
 
@@ -279,7 +282,8 @@ def log_to_wikidata_qid(artitle, qid) -> None:
 
 
 def log_to_wikidata(artitle, entitle) -> None:
-    cd = add_sitelinks_to_wikidata("", artitle, "arwiki", enlink=entitle, ensite="enwiki")
+    cd = add_sitelinks_to_wikidata(
+        "", artitle, "arwiki", enlink=entitle, ensite="enwiki")
 
     if cd is True:
         return True

@@ -66,7 +66,8 @@ class WdAPI:
 
             abusefilter = error.get("abusefilter", "")
             description = abusefilter.get("description", "")
-            logger.debug(f"<<lightred>> ** abusefilter-disallowed: {description} ")
+            logger.debug(
+                f"<<lightred>> ** abusefilter-disallowed: {description} ")
             if description in [
                 "تأخير البوتات 3 ساعات",
                 "تأخير البوتات 3 ساعات- 3 من 3",
@@ -96,7 +97,8 @@ class WdAPI:
         if params is not None:
             params["data"] = {}
 
-        logger.debug(f"<<lightred>>{function} ERROR: <<default>>info: {err_info}, {params=}")
+        logger.debug(
+            f"<<lightred>>{function} ERROR: <<default>>info: {err_info}, {params=}")
 
     def post_to_newapi(
         self,
@@ -126,9 +128,11 @@ class WdAPI:
             find_lag(error)
 
             logger.debug(f"<<purple>>: <<red>> lag work: {max_retry=}")
-
-            return self.post_to_newapi(params=params, max_retry=max_retry + 1)
-
+            try:
+                return self.post_to_newapi(params=params, max_retry=max_retry + 1)
+            except Exception as e:
+                logger.error(f"<<purple>>: <<red>> lag work: {e=}")
+                return {}
         if error:
             er = self.handle_err_wd(error, function="", params=params)
 
