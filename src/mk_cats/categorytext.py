@@ -41,7 +41,7 @@ def fetch_commons_category(entitle, Qid):
     return template
 
 
-def generate_portal_content(title, enca, return_list=False):
+def generate_portal_content(title, enca, return_list: bool=False):
     lilo = []
     en_links = get_page_link_data(enca, "en", 100)
 

@@ -20,7 +20,7 @@ except ImportError:
     resolve_arabic_category_label = None
 
 
-def set_project_log_level(name, level: int) -> None:
+def set_project_log_level(name: str, level: int) -> None:
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
@@ -49,7 +49,7 @@ bad_words = [
 ]
 
 
-def add_to_final_list(final_list, title, callback=None):
+def add_to_final_list(final_list, title, callback=None) -> None:
     title = title.replace("_", " ")
 
     if not title.startswith("تصنيف:"):
@@ -68,7 +68,7 @@ def add_to_final_list(final_list, title, callback=None):
                 logger.info(f"<<lightred>> Error in callback: {e}")
 
 
-def clear_processing_state():
+def clear_processing_state() -> None:
     """Clear all processing state. Call between runs to prevent state leakage."""
     _done_d.clear()
     _new_cat_done.clear()
@@ -110,7 +110,7 @@ def ar_make_lab(title, **Kwargs) -> str:
     return label
 
 
-def scan_ar_title(title):
+def scan_ar_title(title) -> bool:
     if title in _already_created:
         logger.debug(f'<<lightpurple>> title "{title}". in _already_created')
         return False
@@ -129,7 +129,7 @@ def scan_ar_title(title):
     return True
 
 
-def check_if_artitle_exists(test_title):
+def check_if_artitle_exists(test_title) -> bool:
     if not test_title.startswith("تصنيف:"):
         test_title = f"تصنيف:{test_title}"
 
@@ -339,7 +339,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     )
 
 
-def process_catagories(cat, arlab, num, lenth, callback=None) -> None:
+def process_catagories(cat, arlab, num: int, lenth, callback=None) -> None:
     logger.debug(f"*: <<lightred>> {num}/{lenth} cat: {cat}, arlab: {arlab}")
 
     ma_table = make_ar(cat, arlab, callback=callback)
@@ -381,7 +381,7 @@ def process_catagories(cat, arlab, num, lenth, callback=None) -> None:
     logger.debug("<<lightred>> tago done........... ")
 
 
-def one_cat(en_title, num, lenth, sugust="", callback=None):
+def one_cat(en_title, num: int, lenth, sugust: str="", callback=None):
     logger.debug("_________________________________________________________")
 
     logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")

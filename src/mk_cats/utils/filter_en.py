@@ -43,7 +43,7 @@ blcak_starts = [
 
 
 @lru_cache(maxsize=128)
-def filter_category(cat):
+def filter_category(cat) -> bool:
     for x in BBlcak:
         if cat.lower().find(x) != -1:
             logger.debug(f"<<lightred>> find ({x}) in cat")

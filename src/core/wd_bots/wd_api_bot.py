@@ -13,6 +13,7 @@ import logging
 from functools import lru_cache
 
 from ..wiki_api import submitAPI
+from typing import Sequence
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ def format_sitelinks(sitelinks):
     return {x["site"]: x["title"] for d, x in sitelinks.items()}
 
 
-def format_labels_descriptions(labels):
+def format_labels_descriptions(labels: Sequence[str]):
     return {x["language"]: x["value"] for _, x in labels.items()}
 
 
@@ -101,7 +102,7 @@ def Get_Sitelinks_from_qid(ids):
     return table
 
 
-def Get_P373_API(q, titles="", sites=""):
+def Get_P373_API(q, titles: str="", sites: str=""):
     """
     Retrieve the P373 value from the Wikidata API.
     """

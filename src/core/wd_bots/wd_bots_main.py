@@ -104,7 +104,7 @@ class WdAPI:
         self,
         params=None,
         data=None,
-        max_retry=0,
+        max_retry: int=0,
         **kwargs,
     ):
         if params is None:

@@ -14,7 +14,7 @@ page_is_redirect = {}  # self.page_is_redirect
 
 
 class WikiApiCache:
-    def __init__(self, max_size=1000, ttl_seconds=3600):
+    def __init__(self, max_size: int=1000, ttl_seconds: int=3600) -> None:
         self.cache: Dict[Tuple, Any] = {}
         self.max_size = max_size
         self.ttl_seconds = ttl_seconds
@@ -26,7 +26,7 @@ class WikiApiHandler:
     API call counts, and page data.
     """
 
-    def __init__(self, default_en_site_code: str = "en", family: str = "wikipedia"):
+    def __init__(self, default_en_site_code: str = "en", family: str = "wikipedia") -> None:
         # Configuration
         self.family = family
         self.en_site_config = {"code": default_en_site_code, "family": family}
@@ -330,12 +330,12 @@ LC_bot = WikiApiHandler()
 deleted_pages = LC_bot.get_deleting_page()
 
 
-def find_LCN(enlink, prop="", lllang="", family="wikipedia", first_site_code="en"):
+def find_LCN(enlink, prop: str="", lllang: str="", family: str="wikipedia", first_site_code: str="en"):
     # The new method is more generic, so we adapt the call.
     return LC_bot.find_page_data(page_title=enlink, prop=prop, lllang=lllang, site_code=first_site_code)
 
 
-def find_Page_Cat_without_hidden(enlink, prop="", site_code="", family="wikipedia"):
+def find_Page_Cat_without_hidden(enlink, prop: str="", site_code: str="", family: str="wikipedia"):
     # The family parameter is now part of the instance, but we keep it for compatibility.
     return LC_bot.find_non_hidden_categories(page_title=enlink, prop=prop, site_code=site_code or "ar")
 
@@ -344,7 +344,7 @@ def get_arpage_inside_encat(key):
     return LC_bot.get_arpage_inside_encat(key)
 
 
-def set_cache_L_C_N(key, value):
+def set_cache_L_C_N(key, value) -> None:
     LC_bot.cache[key] = value
 
 

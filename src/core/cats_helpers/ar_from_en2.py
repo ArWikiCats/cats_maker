@@ -10,7 +10,7 @@ from ..wiki_api import find_LCN
 logger = logging.getLogger(__name__)
 
 
-def get_ar_list_title_from_en_list(enlist, wiki="en"):
+def get_ar_list_title_from_en_list(enlist, wiki: str="en"):
     new_ar_list = []
 
     en_done = []
@@ -43,7 +43,7 @@ def get_ar_list_title_from_en_list(enlist, wiki="en"):
     return new_ar_list
 
 
-def en_category_members(enpageTitle, wiki="en"):
+def en_category_members(enpageTitle, wiki: str="en"):
     logger.info(f"<<lightyellow>> from category: {enpageTitle}")
 
     namespace_ids = [0, 14, 100]

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def get_page_info_from_wikipedia(
     sitecode,
     title,
-    findtemp="",
+    findtemp: str="",
 ):
     logger.debug(f'for "{sitecode}:{title}"')
 

@@ -15,7 +15,7 @@ class CategoryComparator:
     Service class to compare categories between English and Arabic Wikipedias.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.repo = CategoryRepository()
         self.config = ConfigLoader()
 

@@ -85,7 +85,7 @@ def find_lag(err) -> None:
     time.sleep(FFa_lag[1] + 1)
 
 
-def make_sleep_def():
+def make_sleep_def() -> None:
     frr = int(time.time() - Find_Lag[2])
 
     if Find_Lag_o[1] or frr > 119:
@@ -129,7 +129,7 @@ def make_sleep_def():
         newsleep[1] = fain
 
 
-def do_lag():
+def do_lag() -> None:
     GG = False
 
     numb = 0

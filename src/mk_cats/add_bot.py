@@ -50,7 +50,7 @@ def _get_page(page_title):
 
 
 @function_timer
-def add_to_page(page_title, arcat):
+def add_to_page(page_title, arcat) -> bool:
     dont_list = get_dont_add_pages()
 
     logger.info(f" page_title:{page_title} , cat:{arcat}")

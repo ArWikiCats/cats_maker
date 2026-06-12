@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 API_n_CALLS = {1: 0}
 
 
-def sub_cats_query(enlink, sitecode, ctype=""):
+def sub_cats_query(enlink, sitecode, ctype: str=""):
     if not enlink:
         return False
 
