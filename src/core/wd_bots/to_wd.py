@@ -95,7 +95,7 @@ def outbot_json_bot(err):
             return err_code
 
 
-def outbot_json(js_text, fi: str="", line: str=""):
+def outbot_json(js_text, fi: str = "", line: str = ""):
     err = js_text.get("error", {})
 
     if not err:
@@ -119,7 +119,7 @@ def after_success() -> None:
 
 
 @functools.lru_cache(maxsize=1024)
-def get_session_post(www: str="www") -> WdAPI:
+def get_session_post(www: str = "www") -> WdAPI:
     login_bot = load_login_bot(lang=www, family="wikidata")
     return WdAPI(login_bot)
 
@@ -183,8 +183,8 @@ def add_sitelinks_to_wikidata(
     qid,
     title,
     wiki,
-    enlink: str="",
-    ensite: str="",
+    enlink: str = "",
+    ensite: str = "",
 ):
     if is_wd_lag_high():
         return ""
@@ -282,8 +282,7 @@ def log_to_wikidata_qid(artitle, qid) -> None:
 
 
 def log_to_wikidata(artitle, entitle) -> None:
-    cd = add_sitelinks_to_wikidata(
-        "", artitle, "arwiki", enlink=entitle, ensite="enwiki")
+    cd = add_sitelinks_to_wikidata("", artitle, "arwiki", enlink=entitle, ensite="enwiki")
 
     if cd is True:
         return True

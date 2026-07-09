@@ -61,7 +61,7 @@ def create_Page(text: str, page) -> bool:
     return new_cat
 
 
-def add_text_to_cat(text: str, categories, enca, title, qid, family: str=""):
+def add_text_to_cat(text: str, categories, enca, title, qid, family: str = ""):
     if family != "wikipedia" and family:
         return text
 
@@ -130,7 +130,7 @@ def add_text_to_cat(text: str, categories, enca, title, qid, family: str=""):
     return new_text
 
 
-def make_category(categories, enca, title, qid, family: str="") -> CategoryResult:
+def make_category(categories, enca, title, qid, family: str = "") -> CategoryResult:
     """Create a new category page.
 
     Args:
@@ -182,7 +182,7 @@ def make_category(categories, enca, title, qid, family: str="") -> CategoryResul
     return CategoryResult(False, None, "Failed to create page")
 
 
-def new_category(enca, title, categories, qid, family: str="") -> CategoryResult:
+def new_category(enca, title, categories, qid, family: str = "") -> CategoryResult:
     """Create a new category and return result.
 
     Args:

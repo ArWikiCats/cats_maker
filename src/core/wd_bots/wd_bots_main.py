@@ -66,8 +66,7 @@ class WdAPI:
 
             abusefilter = error.get("abusefilter", "")
             description = abusefilter.get("description", "")
-            logger.debug(
-                f"<<lightred>> ** abusefilter-disallowed: {description} ")
+            logger.debug(f"<<lightred>> ** abusefilter-disallowed: {description} ")
             if description in [
                 "تأخير البوتات 3 ساعات",
                 "تأخير البوتات 3 ساعات- 3 من 3",
@@ -97,14 +96,13 @@ class WdAPI:
         if params is not None:
             params["data"] = {}
 
-        logger.debug(
-            f"<<lightred>>{function} ERROR: <<default>>info: {err_info}, {params=}")
+        logger.debug(f"<<lightred>>{function} ERROR: <<default>>info: {err_info}, {params=}")
 
     def post_to_newapi(
         self,
         params=None,
         data=None,
-        max_retry: int=0,
+        max_retry: int = 0,
         **kwargs,
     ):
         if params is None:

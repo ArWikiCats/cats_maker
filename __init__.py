@@ -1,7 +1,7 @@
 from .src import (
-    process_catagories,
     ar_make_lab,
     create_categories_from_list,
+    process_catagories,
 )
 
 __all__ = [

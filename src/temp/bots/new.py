@@ -125,7 +125,7 @@ class TemplatesMaker:
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
     @classmethod
-    def make_years_template(cls, title, tex, return_title: bool=False):
+    def make_years_template(cls, title, tex, return_title: bool = False):
         if "ق م" in title or "ق.م" in title:
             return ("", "") if return_title else ""
         t_1 = f"تصنيف:{tex}"

@@ -11,9 +11,9 @@ https://doc.wikimedia.org/Wikibase/master/js/rest-api/#/items/getItem
 
 import logging
 from functools import lru_cache
+from typing import Sequence
 
 from ..wiki_api import submitAPI
-from typing import Sequence
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +102,7 @@ def Get_Sitelinks_from_qid(ids):
     return table
 
 
-def Get_P373_API(q, titles: str="", sites: str=""):
+def Get_P373_API(q, titles: str = "", sites: str = ""):
     """
     Retrieve the P373 value from the Wikidata API.
     """

@@ -381,7 +381,7 @@ def process_catagories(cat, arlab, num: int, lenth, callback=None) -> None:
     logger.debug("<<lightred>> tago done........... ")
 
 
-def one_cat(en_title, num: int, lenth, sugust: str="", callback=None):
+def one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
     logger.debug("_________________________________________________________")
 
     logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")

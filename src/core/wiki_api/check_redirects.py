@@ -10,7 +10,7 @@ class NEW_API:
     def __init__(self, login_bot) -> None:
         self.login_bot = login_bot
 
-    def Find_pages_exists_or_not(self, liste, get_redirect: bool=False) -> dict:
+    def Find_pages_exists_or_not(self, liste, get_redirect: bool = False) -> dict:
         all_jsons = {}
 
         for titles in self.chunk_titles(liste, chunk_size=50):
@@ -61,7 +61,7 @@ class NEW_API:
         logger.debug(f" : missing:{missing}, exists: {exists}, redirects: {redirects}")
         return table
 
-    def chunk_titles(self, titles, chunk_size: int=50):
+    def chunk_titles(self, titles, chunk_size: int = 50):
         if isinstance(titles, dict):
             titles = list(titles.keys())
 

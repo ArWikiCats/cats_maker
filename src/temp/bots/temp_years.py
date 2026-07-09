@@ -11,7 +11,7 @@ from .load_data import cacaca, years_Baco
 logger = logging.getLogger(__name__)
 
 
-def make_years_template(title, tex, return_title: bool=False):
+def make_years_template(title, tex, return_title: bool = False):
     logger.info(f' :{title} , tex:"{tex}"', "blue")
     if title.find("ق م") != -1 or title.find("ق.م") != -1:
         if return_title:
