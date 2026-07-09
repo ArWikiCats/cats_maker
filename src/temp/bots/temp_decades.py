@@ -108,9 +108,9 @@ def make_decades_template(title):
                 Y, YY = "", ""
                 dex = decade2
             else:
-                logger.info(f' len(decade2) :"{len(decade2)}".', "red")
+                logger.info(f' len(decade2) :"{len(decade2)}".')
 
-            logger.info(f" Y:{Y} , YY:{YY} ,len(decade2): {len(decade2)}.", "red")
+            logger.info(f" Y:{Y} , YY:{YY} ,len(decade2): {len(decade2)}.")
 
             sus = ""
             if not In:

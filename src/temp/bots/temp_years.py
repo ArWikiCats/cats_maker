@@ -48,7 +48,7 @@ def make_years_template(title, tex, return_title: bool = False):
             bld = f"{bld}|في="
 
         text = f"{{{{{template}|{YY}|{Y}|{bld}}}}}"  # noqa
-        logger.info(f' Y:"{YY}" ,YY:"{Y}", bld:"{bld}" ', "red")
+        logger.info(f' Y:"{YY}" ,YY:"{Y}", bld:"{bld}" ')
         if not bld:
             template = f"{cacaca[tex]}سنة"
             text = f"{{{{{template}|{YY}|{Y}}}}}"  # noqa
