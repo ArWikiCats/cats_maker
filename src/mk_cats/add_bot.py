@@ -50,13 +50,13 @@ def _get_page(page_title):
 
 
 @function_timer
-def add_to_page(page_title, arcat):
+def add_to_page(page_title, arcat) -> bool:
     dont_list = get_dont_add_pages()
 
     logger.info(f" page_title:{page_title} , cat:{arcat}")
 
     if page_title in dont_list:
-        logger.info(f"<<lightred>> page_title:{page_title} in [[تصنيف:صفحات لا تقبل التصنيف المعادل]]")
+        logger.info(f"page_title:{page_title} in [[تصنيف:صفحات لا تقبل التصنيف المعادل]]")
         return False
 
     arcat = arcat.replace("_", " ")
@@ -67,7 +67,7 @@ def add_to_page(page_title, arcat):
     page = _get_page(page_title)
 
     if not page:
-        logger.info(f"<<lightred>> _get_page() failed for {page_title=}, {arcat=}")
+        logger.info(f"_get_page() failed for {page_title=}, {arcat=}")
         return False
 
     text = page.get_text()
@@ -94,7 +94,7 @@ def add_to_page(page_title, arcat):
     save = page.save(newtext=newtext, summary=susu)
 
     if not save:
-        logger.error(f"<<lightred>> page.save() failed for {page_title=}, {arcat=}")
+        logger.error(f"page.save() failed for {page_title=}, {arcat=}")
         return False
 
     return True

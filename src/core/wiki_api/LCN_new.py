@@ -14,7 +14,7 @@ page_is_redirect = {}  # self.page_is_redirect
 
 
 class WikiApiCache:
-    def __init__(self, max_size=1000, ttl_seconds=3600):
+    def __init__(self, max_size: int = 1000, ttl_seconds: int = 3600) -> None:
         self.cache: Dict[Tuple, Any] = {}
         self.max_size = max_size
         self.ttl_seconds = ttl_seconds
@@ -26,7 +26,7 @@ class WikiApiHandler:
     API call counts, and page data.
     """
 
-    def __init__(self, default_en_site_code: str = "en", family: str = "wikipedia"):
+    def __init__(self, default_en_site_code: str = "en", family: str = "wikipedia") -> None:
         # Configuration
         self.family = family
         self.en_site_config = {"code": default_en_site_code, "family": family}
@@ -106,14 +106,14 @@ class WikiApiHandler:
 
         count = self._increment_api_call()
 
-        logger.info(f"<<lightblue>> API CALL {count}: for ({self.family}:{page_title}), prop: {props}")
+        logger.info(f"API CALL {count}: for ({self.family}:{page_title}), prop: {props}")
 
         logger.debug(f" for page {site_code}:{page_title}")
 
         api_response = submitAPI(params, site_code, self.family)
 
         if not (api_response and "query" in api_response and "pages" in api_response["query"]):
-            logger.debug("<<lightblue>> API call failed or returned no query/pages.")
+            logger.debug("API call failed or returned no query/pages.")
             logger.debug(api_response)
             self.cache[cache_key] = False
             return False
@@ -139,7 +139,7 @@ class WikiApiHandler:
 
         for _page_id, page_data in query["pages"].items():
             title = page_data["title"]
-            logger.debug(f"<<lightblue>>--------------\n self_cache add {title} :")
+            logger.debug(f"--------------\n self_cache add {title} :")
 
             # Handle redirects
             if title in redirect_map.values():
@@ -169,23 +169,23 @@ class WikiApiHandler:
                 self.cache[(title, site_code, "categories")] = all_cats
                 self.cache[(title, site_code, "cat_with_out_hidden")] = non_hidden_cats
 
-                logger.debug(f"<<lightblue>> categories: {all_cats}")
-                logger.debug(f"<<lightblue>> cat_with_out_hidden: {non_hidden_cats}")
+                logger.debug(f"categories: {all_cats}")
+                logger.debug(f"cat_with_out_hidden: {non_hidden_cats}")
 
             ns = page_data.get("ns")
             if ns:
                 data["ns"] = ns
                 self.cache[(title, site_code, "ns")] = ns
-                logger.debug(f"<<lightblue>> ns: {ns}")
+                logger.debug(f"ns: {ns}")
 
             if "templates" in page_data:
                 templates = [t["title"] for t in page_data["templates"]]
                 data["templates"] = templates
                 self.cache[(title, site_code, "templates")] = templates
-                logger.debug(f"<<lightblue>> templates: {templates}")
+                logger.debug(f"templates: {templates}")
 
         self.cache[(title, site_code, props)] = {title: data}
-        logger.debug("<<lightred>>--------------")
+        logger.debug("--------------")
 
         return results
 
@@ -200,7 +200,7 @@ class WikiApiHandler:
 
         cache_key = (page_title, site_code, "Cat_without_hidden", prop)
 
-        logger.debug(f"<<lightgreen>>-----------\n find Page_Cat_without_hidden for {site_code}:{page_title} ")
+        logger.debug(f"-----------\n find Page_Cat_without_hidden for {site_code}:{page_title} ")
         if cache_key in self.cache:
             logger.info("get_cache_L_C_N(cache_key)")
             return self.cache[cache_key]
@@ -229,7 +229,7 @@ class WikiApiHandler:
 
         count = self._increment_api_call()
 
-        logger.info(f"<<lightblue>> API CALL {count}: for {site_code}:{page_title}")
+        logger.info(f"API CALL {count}: for {site_code}:{page_title}")
 
         # Submit the API request
         api_response = submitAPI(params, site_code, self.family)
@@ -272,7 +272,7 @@ class WikiApiHandler:
                 self.cache[(cat_title, site_code, "templates")] = templates
 
             if "categories" in cat_data:
-                logger.info("<<lightred>> 'categories' in cat_data")
+                logger.info("'categories' in cat_data")
                 hidden += len([cat for cat in cat_data["categories"] if "hidden" in cat])
 
                 categories = [cat["title"] for cat in cat_data["categories"] if "hidden" not in cat]
@@ -299,11 +299,9 @@ class WikiApiHandler:
                 cat_without += 1
                 cats_without_langlinks.append(cat_title)
 
-        logger.debug(f'<<lightred>>find_Cat_without_hidden for {site_code}:{self.family}:page:"{page_title}" : ')
+        logger.debug(f'find_Cat_without_hidden for {site_code}:{self.family}:page:"{page_title}" : ')
 
-        logger.debug(
-            f"<<lightblue>> \tfind {all_cat} cat, {cat_with} with links, {cat_without} without, hidden {hidden}"
-        )
+        logger.debug(f"\tfind {all_cat} cat, {cat_with} with links, {cat_without} without, hidden {hidden}")
 
         # Update state for categories without langlinks
         if cats_without_langlinks:
@@ -330,12 +328,12 @@ LC_bot = WikiApiHandler()
 deleted_pages = LC_bot.get_deleting_page()
 
 
-def find_LCN(enlink, prop="", lllang="", family="wikipedia", first_site_code="en"):
+def find_LCN(enlink, prop: str = "", lllang: str = "", family: str = "wikipedia", first_site_code: str = "en"):
     # The new method is more generic, so we adapt the call.
     return LC_bot.find_page_data(page_title=enlink, prop=prop, lllang=lllang, site_code=first_site_code)
 
 
-def find_Page_Cat_without_hidden(enlink, prop="", site_code="", family="wikipedia"):
+def find_Page_Cat_without_hidden(enlink, prop: str = "", site_code: str = "", family: str = "wikipedia"):
     # The family parameter is now part of the instance, but we keep it for compatibility.
     return LC_bot.find_non_hidden_categories(page_title=enlink, prop=prop, site_code=site_code or "ar")
 
@@ -344,7 +342,7 @@ def get_arpage_inside_encat(key):
     return LC_bot.get_arpage_inside_encat(key)
 
 
-def set_cache_L_C_N(key, value):
+def set_cache_L_C_N(key, value) -> None:
     LC_bot.cache[key] = value
 
 

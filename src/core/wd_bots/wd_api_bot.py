@@ -11,6 +11,7 @@ https://doc.wikimedia.org/Wikibase/master/js/rest-api/#/items/getItem
 
 import logging
 from functools import lru_cache
+from typing import Sequence
 
 from ..wiki_api import submitAPI
 
@@ -25,7 +26,7 @@ def format_sitelinks(sitelinks):
     return {x["site"]: x["title"] for d, x in sitelinks.items()}
 
 
-def format_labels_descriptions(labels):
+def format_labels_descriptions(labels: Sequence[str]):
     return {x["language"]: x["value"] for _, x in labels.items()}
 
 
@@ -101,7 +102,7 @@ def Get_Sitelinks_from_qid(ids):
     return table
 
 
-def Get_P373_API(q, titles="", sites=""):
+def Get_P373_API(q, titles: str = "", sites: str = ""):
     """
     Retrieve the P373 value from the Wikidata API.
     """

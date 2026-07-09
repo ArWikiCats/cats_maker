@@ -44,7 +44,7 @@ class CategoryResolver:
             cat_members = api.CatDepth("Category:" + ar_title, depth=0, ns="all")
             ar_list = list(cat_members.keys())
 
-        logger.info(f"<<lightgreen>> length ar_list:{len(ar_list)}")
+        logger.info(f"length ar_list:{len(ar_list)}")
         return ar_list
 
     def list_en_pages_with_ar_links(self, encat: str, wiki: str = "en") -> list[str]:
@@ -65,7 +65,7 @@ class CategoryResolver:
         ar_list = self.list_ar_pages_in_cat(ar_title)
         en_list = self.list_en_pages_with_ar_links(en_title, wiki=wiki)
         missing = [x for x in en_list if x not in ar_list]
-        logger.info(f"<<lightgreen>> length missing ar pages:{len(missing)}")
+        logger.info(f"length missing ar pages:{len(missing)}")
         return missing
 
     def resolve_members(self, en_title: str, ar_title: str, wiki: str = "en") -> list[str]:
@@ -82,7 +82,7 @@ class CategoryResolver:
         return self._translate_titles_to_ar(en_titles, wiki=wiki)
 
     def _en_category_members(self, enpage_title: str, wiki: str = "en") -> list[str]:
-        logger.info(f"<<lightyellow>> from category: {enpage_title}")
+        logger.info(f"from category: {enpage_title}")
         namespace_ids = list(DEFAULT_MEMBER_NAMESPACES)
         api = load_main_api(wiki)
         cat_members = api.CatDepth(enpage_title, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
@@ -109,10 +109,10 @@ class CategoryResolver:
             for p_w, data in result.items():
                 if "langlinks" in data and "ar" in data["langlinks"]:
                     ar_title = data["langlinks"]["ar"]
-                    logger.debug(f"<<lightblue>>Adding {ar_title} to ar lists {p_w}")
+                    logger.debug(f"Adding {ar_title} to ar lists {p_w}")
                     new_ar_list.append(ar_title)
 
-        logger.info(f"<<lightyellow>> length of new_ar_list:{len(new_ar_list)}")
+        logger.info(f"length of new_ar_list:{len(new_ar_list)}")
         return new_ar_list
 
     def make_lit_api_way(self, encat: str, item_type: str = "cat") -> list[str]:
@@ -121,10 +121,10 @@ class CategoryResolver:
         This is the refactored ``MakeLitApiWay``.
         """
         if not encat:
-            logger.info("<<lightblue>> No encat")
+            logger.info("No encat")
             return []
 
-        logger.info("<<lightgreen>>* MakeLit ApiWay: ")
+        logger.info("* MakeLit ApiWay: ")
         encat_clean = normalize_category_title(encat, lang="en")
 
         member_type = "cat" if item_type == "cat" else item_type

@@ -67,8 +67,8 @@ def translate_titles_to_ar(titles: list[str], source_wiki: str = "en", batch_siz
         for p_w, data in result.items():
             if "langlinks" in data and "ar" in data["langlinks"]:
                 ar_title = data["langlinks"]["ar"]
-                logger.debug(f"<<lightblue>>Adding {ar_title} to ar lists {p_w}")
+                logger.debug(f"Adding {ar_title} to ar lists {p_w}")
                 new_ar_list.append(ar_title)
 
-    logger.info(f"<<lightyellow>> length of new_ar_list:{len(new_ar_list)}")
+    logger.info(f"length of new_ar_list:{len(new_ar_list)}")
     return new_ar_list

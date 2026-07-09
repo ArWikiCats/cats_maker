@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def make_millennium_template(title):
-    logger.info(f" :{title} ", "blue")
+    logger.info(f" :{title} ")
 
     title = re.sub(r"الألفية الأولى", "الألفية 1", title)
     title = re.sub(r"الألفية الثانية", "الألفية 2", title)
@@ -71,7 +71,7 @@ def make_millennium_template(title):
         logger.info(" no Caas")
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
-    logger.info(f' :{title} , tex:"{teg}"', "blue")
+    logger.info(f' :{title} , tex:"{teg}"')
     t_1 = f"تصنيف:{teg}الألفية"
     ttt = t_1 + r"\s*(\d|الأولى|الثانية|الثالثة|الرابعة|)\s*(في |)(.*|)$"
     logger.info(f'ttt:"{ttt}" ')

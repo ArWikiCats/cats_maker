@@ -11,8 +11,8 @@ from .load_data import cacaca, years_Baco
 logger = logging.getLogger(__name__)
 
 
-def make_years_template(title, tex, return_title=False):
-    logger.info(f' :{title} , tex:"{tex}"', "blue")
+def make_years_template(title, tex, return_title: bool = False):
+    logger.info(f' :{title} , tex:"{tex}"')
     if title.find("ق م") != -1 or title.find("ق.م") != -1:
         if return_title:
             return "", ""
@@ -28,7 +28,7 @@ def make_years_template(title, tex, return_title=False):
         ye = ""
     Y, YY = "", ""
     template = f"{cacaca[tex]}بلد"
-    logger.info(f" :{title} , ye:{ye}, tex:{tex}", "blue")
+    logger.info(f" :{title} , ye:{ye}, tex:{tex}")
 
     if ye in years_Baco:
         logger.info(f"ye in years_Baco {years_Baco[ye]}")
@@ -48,7 +48,7 @@ def make_years_template(title, tex, return_title=False):
             bld = f"{bld}|في="
 
         text = f"{{{{{template}|{YY}|{Y}|{bld}}}}}"  # noqa
-        logger.info(f' Y:"{YY}" ,YY:"{Y}", bld:"{bld}" ', "red")
+        logger.info(f' Y:"{YY}" ,YY:"{Y}", bld:"{bld}" ')
         if not bld:
             template = f"{cacaca[tex]}سنة"
             text = f"{{{{{template}|{YY}|{Y}}}}}"  # noqa

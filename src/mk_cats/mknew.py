@@ -20,7 +20,7 @@ except ImportError:
     resolve_arabic_category_label = None
 
 
-def set_project_log_level(name, level: int) -> None:
+def set_project_log_level(name: str, level: int) -> None:
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
@@ -49,7 +49,7 @@ bad_words = [
 ]
 
 
-def add_to_final_list(final_list, title, callback=None):
+def add_to_final_list(final_list, title, callback=None) -> None:
     title = title.replace("_", " ")
 
     if not title.startswith("تصنيف:"):
@@ -59,16 +59,16 @@ def add_to_final_list(final_list, title, callback=None):
         return
 
     for n, page in enumerate(final_list, start=1):
-        logger.info(f"<<yellow>> cat:{title} page:{page} n:{n}/{len(final_list)}")
+        logger.info(f"cat:{title} page:{page} n:{n}/{len(final_list)}")
         save = add_to_page(page, title)
         if save and callback:
             try:
                 callback(title)
             except Exception as e:
-                logger.info(f"<<lightred>> Error in callback: {e}")
+                logger.info(f"Error in callback: {e}")
 
 
-def clear_processing_state():
+def clear_processing_state() -> None:
     """Clear all processing state. Call between runs to prevent state leakage."""
     _done_d.clear()
     _new_cat_done.clear()
@@ -88,48 +88,48 @@ def ar_make_lab(title, **Kwargs) -> str:
     okay = filter_category(title)
 
     if not okay:
-        logger.debug(f"<<lightred>> {title} is not okay.")
+        logger.debug(f"{title} is not okay.")
         return ""
 
     if not resolve_arabic_category_label:
-        logger.debug("<<lightred>> ArWikiCats.resolve_arabic_category_label not available.")
+        logger.debug("ArWikiCats.resolve_arabic_category_label not available.")
         return ""
 
     label = resolve_arabic_category_label(title)
-    # logger.warning(f'<<lightgreen>> Resolved label for "{title}": "{label}"')
+    # logger.warning(f'Resolved label for "{title}": "{label}"')
 
     if not label:
-        logger.debug(f'<<lightred>> No label found for "{title}".')
+        logger.debug(f'No label found for "{title}".')
         return ""
 
     for word in bad_words:
         if word in label:
-            logger.error(f'<<lightred>> label "{label}" has "{word}".')
+            logger.error(f'label "{label}" has "{word}".')
             return ""
 
     return label
 
 
-def scan_ar_title(title):
+def scan_ar_title(title) -> bool:
     if title in _already_created:
-        logger.debug(f'<<lightpurple>> title "{title}". in _already_created')
+        logger.debug(f'title "{title}". in _already_created')
         return False
 
     cat3 = str(title)
     if cat3 in _new_cat_done.keys():
         _new_cat_done[cat3] += 1
-        logger.debug(f'<<lightblue>> We tried {_new_cat_done[cat3]} times to/created title:<<lightred>>"{cat3}".')
+        logger.debug(f'We tried {_new_cat_done[cat3]} times to/created title:"{cat3}".')
         return False
     else:
         if cat3 in _new_cat_done.keys():
-            logger.debug(f'<<lightred>>2070:<<lightpurple>>new trying with cat: "{title}"')
+            logger.debug(f'2070:new trying with cat: "{title}"')
             _new_cat_done[cat3] += 1
         else:
             _new_cat_done[cat3] = 1
     return True
 
 
-def check_if_artitle_exists(test_title):
+def check_if_artitle_exists(test_title) -> bool:
     if not test_title.startswith("تصنيف:"):
         test_title = f"تصنيف:{test_title}"
 
@@ -137,7 +137,7 @@ def check_if_artitle_exists(test_title):
     page = api.MainPage(test_title)
 
     if page.exists():
-        logger.debug(f"<<lightred>>* category:{test_title} already exists in arwiki.")
+        logger.debug(f"* category:{test_title} already exists in arwiki.")
         return False
 
     return True
@@ -273,12 +273,12 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     """
     # Validation: Check empty Arabic title
     if not ar_title.strip():
-        logger.debug("<<lightred>> ar_title is empty.")
+        logger.debug("ar_title is empty.")
         return []
 
     # Validation: Check if we've already processed this Arabic title
     if not scan_ar_title(ar_title):
-        logger.debug("<<lightred>> scan_ar_title failed.")
+        logger.debug("scan_ar_title failed.")
         return []
 
     # Normalize the English page title
@@ -286,7 +286,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
 
     # Validation: Check if Arabic category already exists
     if not check_if_artitle_exists(ar_title):
-        logger.debug("<<lightred>> artitle already exists.")
+        logger.debug("artitle already exists.")
         return []
 
     # Get site identifiers for Wikidata lookup
@@ -339,8 +339,8 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     )
 
 
-def process_catagories(cat, arlab, num, lenth, callback=None) -> None:
-    logger.debug(f"*: <<lightred>> {num}/{lenth} cat: {cat}, arlab: {arlab}")
+def process_catagories(cat, arlab, num: int, lenth, callback=None) -> None:
+    logger.debug(f"*:{num}/{lenth} cat: {cat}, arlab: {arlab}")
 
     ma_table = make_ar(cat, arlab, callback=callback)
 
@@ -356,13 +356,13 @@ def process_catagories(cat, arlab, num, lenth, callback=None) -> None:
         number = 0
 
         for title in ma_table:
-            logger.debug(r"<<lightred>>\/\/\/ +++++++++ \/\/\/")
-            logger.debug(f'work:{number} <<lightpurple>>"{title}"')
+            logger.debug(r"\/\/\/ +++++++++ \/\/\/")
+            logger.debug(f'work:{number}"{title}"')
             number += 1
 
             labe = ar_make_lab(title)
 
-            logger.debug(f"*<<lightred>> arlab: {labe}")
+            logger.debug(f"*arlab: {labe}")
 
             if not labe:
                 continue
@@ -378,16 +378,16 @@ def process_catagories(cat, arlab, num, lenth, callback=None) -> None:
 
         ma_table = list(set(enriched_titles))
 
-    logger.debug("<<lightred>> tago done........... ")
+    logger.debug("tago done........... ")
 
 
-def one_cat(en_title, num, lenth, sugust="", callback=None):
+def one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
     logger.debug("_________________________________________________________")
 
     logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")
 
     if not en_title.strip():
-        logger.warning("<<lightred>> en_title is empty. return")
+        logger.warning("en_title is empty. return")
         return False
 
     if en_title in _done_d:
@@ -402,17 +402,17 @@ def one_cat(en_title, num, lenth, sugust="", callback=None):
     labb = labb or sugust
 
     if not labb:
-        logger.warning("<<lightred>> labb is empty.")
+        logger.warning("labb is empty.")
         return False
 
     if not check_en_temps(en_title):
-        logger.warning("<<lightred>> check_en_temps failed.")
+        logger.warning("check_en_temps failed.")
         return False
 
     en_list = _resolver.list_en_pages_with_ar_links(en_title, wiki="en")
 
     if not en_list:
-        logger.warning("<<lightred>> en_list is empty. return")
+        logger.warning("en_list is empty. return")
         return False
 
     return process_catagories(en_title, labb, num, lenth, callback=callback)

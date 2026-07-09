@@ -56,11 +56,11 @@ def submitAPI(params, Code, family, **kwargs):
         return {}
 
     except Exception as e:
-        logger.warning(f"<<red>> Error submitting to API: {e}")
+        logger.warning(f"Error submitting to API: {e}")
         return {}
     try:
         json1 = result.json()
     except Exception as e:
-        logger.warning(f"<<red>> Error parsing API response: {e}")
+        logger.warning(f"Error parsing API response: {e}")
 
     return json1

@@ -138,7 +138,7 @@ def get_en_link_from_ar_text(title: str, site: str, sitetarget: str) -> str:
     eng_interwiki = sitelinks.get(sitetarget) or sitelinks.get(sitetarget2) or ""
 
     if eng_interwiki:
-        logger.debug(f"<<lightblue>> {eng_interwiki}")
+        logger.debug(f"{eng_interwiki}")
 
     return eng_interwiki
 
@@ -171,7 +171,7 @@ def get_english_page_title(
         en = get_page_link(pagetitle, en_site, en_site, text=text_new) or ""
 
     if (not en) and settings.category.work_fr:
-        logger.info(f"<<lightred>> no en for {pagetitle}")
+        logger.info(f"no en for {pagetitle}")
         logger.info(ar_page_langlinks)
 
         fr_page_title = ar_page_langlinks.get(fr_site, "")
@@ -179,18 +179,18 @@ def get_english_page_title(
             fr_page_title = get_page_link(pagetitle, en_site, fr_site, text=text_new) or ""
 
         if not fr_page_title:
-            logger.info("<<lightred>> no fr_page_title")
+            logger.info("no fr_page_title")
             return "", ""
 
         en = fr_page_title
         new_site = fr_site
-        logger.info("<<lightred>> find cat from frwiki.....")
+        logger.info("find cat from frwiki.....")
 
     if en:
         lower_en = en.lower()
         for item in _EN_PAGE_BLACKLIST:
             if item in lower_en:
-                logger.info(f"<<lightred>> en {en} in blacklist")
+                logger.info(f"en {en} in blacklist")
                 return "", ""
 
     return en, new_site

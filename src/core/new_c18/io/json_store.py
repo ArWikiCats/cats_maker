@@ -48,9 +48,9 @@ def _save_json(data: list | dict, path: Path) -> None:
     try:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False)
-            logger.info(f"<<green>> wrote to {path}")
+            logger.info(f"wrote to {path}")
     except PermissionError:
-        logger.error(f"<<red>> PermissionError writing to {path}")
+        logger.error(f"PermissionError writing to {path}")
         try:
             os.remove(path)
         except (PermissionError, OSError):
@@ -59,11 +59,11 @@ def _save_json(data: list | dict, path: Path) -> None:
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(data, f)
             os.chmod(path, _STATGROUP)
-            logger.info(f"<<green>> wrote to {path}")
+            logger.info(f"wrote to {path}")
         except (PermissionError, OSError) as e:
-            logger.warning(f"<<red>> Error deleting/writing to {path}: {e}")
+            logger.warning(f"Error deleting/writing to {path}: {e}")
     except (OSError, Exception) as e:
-        logger.warning(f"<<red>> Error writing to {path}: {e}")
+        logger.warning(f"Error writing to {path}: {e}")
 
 
 class JsonStore:
@@ -114,7 +114,7 @@ def get_dont_add_pages() -> list[str]:
     today = datetime.today().strftime("%Y-%m-%d")
 
     if last_modified != today or not data:
-        logger.info(f"<<purple>> last modified: {last_modified}, today: {today}, len: {len(data)}")
+        logger.info(f"last modified: {last_modified}, today: {today}, len: {len(data)}")
         data = fetch_dont_add_pages()
         store.save(data)
 

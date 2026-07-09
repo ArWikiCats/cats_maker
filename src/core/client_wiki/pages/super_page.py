@@ -13,7 +13,7 @@ from .data import CategoriesData, Content, LinksData, Meta, RevisionsData, Templ
 logger = logging.getLogger(__name__)
 
 
-def find_edit_error(old, new):
+def find_edit_error(old, new) -> bool:
     # Define the dictionary of conversion phrases
     conversion_phrases = {
         "#تحويل [[",
@@ -153,7 +153,7 @@ class MainPage(HandleErrors, AskBot):
 
         return self.meta.create_data
 
-    def get_text(self, redirects=False):
+    def get_text(self, redirects: bool = False):
         """
         Retrieves the current wikitext content and metadata for the page.
 
@@ -234,7 +234,7 @@ class MainPage(HandleErrors, AskBot):
             self.get_text()
         return self.meta.wikibase_item
 
-    def get_infos(self):
+    def get_infos(self) -> None:
         """
         Fetches and updates comprehensive metadata for the current page from the MediaWiki API.
 
@@ -331,7 +331,7 @@ class MainPage(HandleErrors, AskBot):
         to = redirects.get("to", "")
 
         if to:
-            logger.debug(f"<<lightyellow>>Page:({self.title}) redirect to ({to})")
+            logger.debug(f"Page:({self.title}) redirect to ({to})")
 
         return to
 
@@ -409,11 +409,11 @@ class MainPage(HandleErrors, AskBot):
         self.meta.is_disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
 
         if self.meta.is_disambig:
-            logger.debug(f'<<lightred>> page "{self.title}" is Disambiguation / توضيح')
+            logger.debug(f'page "{self.title}" is Disambiguation / توضيح')
 
         return self.meta.is_disambig
 
-    def get_categories(self, with_hidden=False):
+    def get_categories(self, with_hidden: bool = False):
         # if not self.categories_data.categories: self.get_infos()
         if not self.meta.info["done"]:
             self.get_infos()
@@ -435,7 +435,7 @@ class MainPage(HandleErrors, AskBot):
 
         return self.langlinks
 
-    def can_edit(self, script="", delay=0):
+    def can_edit(self, script: str = "", delay: int = 0):
         if self.family != "wikipedia":
             return True
 
@@ -484,12 +484,12 @@ class MainPage(HandleErrors, AskBot):
 
     def save(
         self,
-        newtext="",
-        summary="",
-        nocreate=1,
-        minor="0",
-        tags="",
-        nodiff=False,
+        newtext: str = "",
+        summary: str = "",
+        nocreate: int = 1,
+        minor: str = "0",
+        tags: str = "",
+        nodiff: bool = False,
     ) -> bool | str:
         """
         Saves new text to the page, updating its content and metadata.
@@ -567,7 +567,7 @@ class MainPage(HandleErrors, AskBot):
         if result.lower() == "success":
             self.text = newtext
             self.user = ""
-            logger.warning(f"<<lightgreen>> ** true .. [[{self.lang}:{self.family}:{self.title}]] ")
+            logger.warning(f"** true .. [[{self.lang}:{self.family}:{self.title}]] ")
             logger.debug(f"save success for {self.title}")
 
             self.revisions_data.pageid = edit.get("pageid") or self.revisions_data.pageid
@@ -588,10 +588,10 @@ class MainPage(HandleErrors, AskBot):
 
     def create(
         self,
-        text="",
-        summary="",
-        nodiff="",
-        noask=False,
+        text: str = "",
+        summary: str = "",
+        nodiff: str = "",
+        noask: bool = False,
     ) -> bool:
         """
         Creates a new page with the specified text and summary.
@@ -650,7 +650,7 @@ class MainPage(HandleErrors, AskBot):
 
             self.text = text
 
-            logger.warning(f"<<lightgreen>> ** true .. [[{self.lang}:{self.family}:{self.title}]] ")
+            logger.warning(f"** true .. [[{self.lang}:{self.family}:{self.title}]] ")
             logger.debug(f"create success for {self.title}")
 
             self.revisions_data.pageid = edit.get("pageid") or self.revisions_data.pageid
@@ -670,10 +670,10 @@ class MainPage(HandleErrors, AskBot):
 
     def Create(
         self,
-        text="",
-        summary="",
-        nodiff="",
-        noask=False,
+        text: str = "",
+        summary: str = "",
+        nodiff: str = "",
+        noask: bool = False,
     ) -> bool:
         return self.create(text=text, summary=summary, nodiff=nodiff, noask=noask)
 
@@ -709,11 +709,11 @@ class MainPage(HandleErrors, AskBot):
         self,
         params,
         action,
-        _p_="pages",
+        _p_: str = "pages",
         p_empty=None,
-        max=500000,
-        first=False,
-        _p_2="",
+        max: int = 500000,
+        first: bool = False,
+        _p_2: str = "",
         _p_2_empty=None,
         **kwargs,
     ):

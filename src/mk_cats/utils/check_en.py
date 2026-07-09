@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def check_en_temps(en_title) -> bool:
     if en_title in skip_encats:
-        logger.debug(f"<<lightred>> category: {en_title} in skip_encats")
+        logger.debug(f"category: {en_title} in skip_encats")
         return False
 
     category_data = find_LCN(en_title, prop="templates|categories", first_site_code="en")

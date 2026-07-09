@@ -76,16 +76,16 @@ def find_lag(err) -> None:
 
     if lagese != FFa_lag[1]:
         FFa_lag[1] = lagese
-        logger.debug(f"<<lightpurple>> max lag: sleep for {FFa_lag[1]} secound.")
+        logger.debug(f"max lag: sleep for {FFa_lag[1]} secound.")
     else:
-        logger.debug(f"<<lightpurple>> lagese == FFa_lag[1] ({FFa_lag[1]})")
+        logger.debug(f"lagese == FFa_lag[1] ({FFa_lag[1]})")
 
-    logger.debug(f"<<lightred>> max lag: sleep for {lagese + 1} secound.")
+    logger.debug(f"max lag: sleep for {lagese + 1} secound.")
 
     time.sleep(FFa_lag[1] + 1)
 
 
-def make_sleep_def():
+def make_sleep_def() -> None:
     frr = int(time.time() - Find_Lag[2])
 
     if Find_Lag_o[1] or frr > 119:
@@ -98,14 +98,14 @@ def make_sleep_def():
 
         if lag != 0:
             FFa_lag[1] = int(float(lag))
-            logger.debug(f"<<lightpurple>> bot.py {Find_Lag[3]} find lag:{float(lag)}, frr:{frr}")
+            logger.debug(f"bot.py {Find_Lag[3]} find lag:{float(lag)}, frr:{frr}")
 
     fain = 0
 
     if FFa_lag[1] != FFa_lag[2]:
         fain = FFa_lag[1]
 
-        logger.debug(f"<<lightpurple>> bot.py : {fain=}")
+        logger.debug(f"bot.py : {fain=}")
 
         FFa_lag[2] = FFa_lag[1]
 
@@ -125,11 +125,11 @@ def make_sleep_def():
             fain = 4
 
     if newsleep[1] != fain:
-        logger.debug(f"change newsleep from {newsleep[1]} to {fain}, <<lightpurple>> max lag:{FFa_lag[1]}.")
+        logger.debug(f"change newsleep from {newsleep[1]} to {fain},max lag:{FFa_lag[1]}.")
         newsleep[1] = fain
 
 
-def do_lag():
+def do_lag() -> None:
     GG = False
 
     numb = 0

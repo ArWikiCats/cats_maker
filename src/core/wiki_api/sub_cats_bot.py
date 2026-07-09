@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 API_n_CALLS = {1: 0}
 
 
-def sub_cats_query(enlink, sitecode, ctype=""):
+def sub_cats_query(enlink, sitecode, ctype: str = ""):
     if not enlink:
         return False
 
@@ -48,7 +48,7 @@ def sub_cats_query(enlink, sitecode, ctype=""):
 
     API_n_CALLS[1] += 1
 
-    logger.info(f"<<lightblue>> API_n_CALLS {API_n_CALLS[1]} for {sitecode}:{enlink}")
+    logger.info(f"API_n_CALLS {API_n_CALLS[1]} for {sitecode}:{enlink}")
 
     try:
         api = submitAPI(params, sitecode, "wikipedia") or {}
@@ -69,12 +69,12 @@ def sub_cats_query(enlink, sitecode, ctype=""):
         cate_title = caca["title"]
         tablemember[cate_title] = {}
 
-        logger.debug(f"<<lightblue>> cate_title: {cate_title}")
+        logger.debug(f"cate_title: {cate_title}")
 
         if "ns" in caca:
             tablemember[cate_title]["ns"] = caca["ns"]
             set_cache_L_C_N((cate_title, sitecode, "ns"), caca["ns"])
-            logger.debug(f"<<lightblue>> ns: {caca['ns']}")
+            logger.debug(f"ns: {caca['ns']}")
 
         for fo in caca.get("langlinks", {}):
             result = fo["*"]
@@ -82,10 +82,10 @@ def sub_cats_query(enlink, sitecode, ctype=""):
 
             tubb = (cate_title, sitecode, fo["lang"], "en_links")
             set_cache_L_C_N(tubb, result)
-            logger.debug(f'<<lightblue>> add {fo["lang"]}:"{result}" to {cate_title}')
+            logger.debug(f'add {fo["lang"]}:"{result}" to {cate_title}')
 
             oppsite_tubb = (result, fo["lang"], sitecode, "en_links")
-            logger.debug(f'<<lightblue>> add {sitecode}:"{cate_title}" to {result}')
+            logger.debug(f'add {sitecode}:"{cate_title}" to {result}')
             set_cache_L_C_N(oppsite_tubb, cate_title)
 
     table = {"categorymembers": tablemember}

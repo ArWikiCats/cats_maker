@@ -32,94 +32,92 @@ def outbot_json_bot(err):
     err_wait = "احترازًا من الإساء، يُحظر إجراء هذا الفعل مرات كثيرة في فترةٍ زمنية قصيرة، ولقد تجاوزت هذا الحد"
 
     if err_code == "origin-not-empty":
-        logger.debug(f"<<lightred>> msg_html: {msg_html} ")
-        logger.debug(f"<<lightred>> err_info: {err_info} ")
+        logger.debug(f"msg_html: {msg_html} ")
+        logger.debug(f"err_info: {err_info} ")
         return err_code
 
     if err_code == "missingparam":
-        logger.debug(f"<<lightred>> err_info: {err_info} ")
+        logger.debug(f"err_info: {err_info} ")
         return "warn"
 
     elif err_code in ["modification-failed", "failed-modify"]:
-        logger.debug(f"<<lightred>> err_info: {err_info} ")
+        logger.debug(f"err_info: {err_info} ")
 
         if msg_name == "wikibase-api-failed-modify":
-            logger.debug(f"<<lightred>>err msg_name: {msg_name}")
-            logger.debug(f"<<lightred>>\t: {extradata}")
+            logger.debug(f"err msg_name: {msg_name}")
+            logger.debug(f"\t: {extradata}")
             return msg_name
 
         if msg_name == "wikibase-validator-label-equals-description":
-            logger.debug(f"<<lightred>>err msg_name: {msg_name}")
-            logger.debug(f"<<lightred>>\t: {msg_html}")
+            logger.debug(f"err msg_name: {msg_name}")
+            logger.debug(f"\t: {msg_html}")
             return msg_name
 
         if msg_name == "wikibase-validator-label-with-description-conflict":
-            logger.debug("<<lightred>>same description:")
+            logger.debug("same description:")
 
             lab, code, q = messages.get("parameters", [])
 
-            logger.debug(f"<<lightred>>\t: lab:{lab}, code:{code}, q:{q}")
+            logger.debug(f"\t: lab:{lab}, code:{code}, q:{q}")
 
             return "same description"
         return "warn"
     elif err_code == "unresolved-redirect":
-        logger.debug("<<lightred>> - unresolved-redirect")
+        logger.debug("- unresolved-redirect")
         return "unresolved-redirect"
 
     elif err_code == "failed-save":
         if err_wait in text:
-            logger.debug(f'<<lightred>> "{err_wait} time.sleep(5) " ')
+            logger.debug(f'"{err_wait} time.sleep(5) " ')
             time.sleep(5)
             return "reagain"
 
-        logger.debug(f'<<lightred>> - "{err_code}" ')
+        logger.debug(f'- "{err_code}" ')
         logger.debug(text)
         return False
     elif err_code == "no-external-page":
-        logger.debug(f'<<lightred>> - "{err_code}" ')
+        logger.debug(f'- "{err_code}" ')
         logger.debug(text)
         return False
 
     else:
         if "wikibase-api-invalid-json" in text:
-            logger.debug('<<lightred>> - "wikibase-api-invalid-json" ')
+            logger.debug('- "wikibase-api-invalid-json" ')
             logger.debug(text)
             return "wikibase-api-invalid-json"
 
         elif "Could not find an Item containing a sitelink to the provided site and page name" in text:
-            logger.debug(
-                "<<lightred>> ** error. : Could not find an Item containing a sitelink to the provided site and page name "
-            )
+            logger.debug("** error. : Could not find an Item containing a sitelink to the provided site and page name ")
             return "Could not find an Item containing a sitelink to the provided site and page name"
         else:
             return err_code
 
 
-def outbot_json(js_text, fi="", line=""):
+def outbot_json(js_text, fi: str = "", line: str = ""):
     err = js_text.get("error", {})
 
     if not err:
         return "warn"
 
     if fi:
-        logger.debug(f"<<lightred>> ** error. : {fi} ")
+        logger.debug(f"** error. : {fi} ")
 
     if line:
-        logger.debug(f"<<lightpurple>> ** line. : {line} ")
+        logger.debug(f"** line. : {line} ")
 
     return outbot_json_bot(err)
 
 
 def after_success() -> None:
     if get_new_sleep() > 0:
-        logger.warning(f"<<lightgreen>> ** true. sleep({get_new_sleep()})")
+        logger.warning(f"** true. sleep({get_new_sleep()})")
         time.sleep(get_new_sleep())
     else:
-        logger.debug("<<lightgreen>> ** true.")
+        logger.debug("** true.")
 
 
 @functools.lru_cache(maxsize=1024)
-def get_session_post(www="www") -> WdAPI:
+def get_session_post(www: str = "www") -> WdAPI:
     login_bot = load_login_bot(lang=www, family="wikidata")
     return WdAPI(login_bot)
 
@@ -134,19 +132,19 @@ def post_wd_params(params) -> bool:
         success = result.get("success", 0)
         if success == 1:
             after_success()
-            logger.warning("<<lightgreen>> ** true.")
+            logger.warning("** true.")
             return True
 
         outbot_json(result)
     except Exception as e:
-        logger.error(f"<<lightred>> ** error. : {e}")
+        logger.error(f"** error. : {e}")
 
     return False
 
 
 def add_labels(
     qid,
-    label,
+    label: str,
     lang,
 ):
     if is_wd_lag_high():
@@ -183,8 +181,8 @@ def add_sitelinks_to_wikidata(
     qid,
     title,
     wiki,
-    enlink="",
-    ensite="",
+    enlink: str = "",
+    ensite: str = "",
 ):
     if is_wd_lag_high():
         return ""
@@ -198,7 +196,7 @@ def add_sitelinks_to_wikidata(
         logger.debug(f' **: Qid:"{qid}" {wiki}:{title}')
 
     if qid.strip() == "" and enlink == "":
-        logger.debug(f'<<lightred>> **: False: Qid == "" {wiki}:{title}.')
+        logger.debug(f'**: False: Qid == "" {wiki}:{title}.')
         return False
 
     params = {
@@ -282,13 +280,12 @@ def log_to_wikidata_qid(artitle, qid) -> None:
 
 
 def log_to_wikidata(artitle, entitle) -> None:
-    cd = add_sitelinks_to_wikidata(
-        "", artitle, "arwiki", enlink=entitle, ensite="enwiki")
+    cd = add_sitelinks_to_wikidata("", artitle, "arwiki", enlink=entitle, ensite="enwiki")
 
     if cd is True:
         return True
 
-    logger.debug(f'<<lightgreen>>* :ar:"{artitle}", english:"{entitle}".')
+    logger.debug(f'* :ar:"{artitle}", english:"{entitle}".')
 
     enwiki = "enwiki"
     arwiki = "arwiki"

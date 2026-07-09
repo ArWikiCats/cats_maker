@@ -7,10 +7,10 @@ logger = logging.getLogger(__name__)
 
 
 class NEW_API:
-    def __init__(self, login_bot):
+    def __init__(self, login_bot) -> None:
         self.login_bot = login_bot
 
-    def Find_pages_exists_or_not(self, liste, get_redirect=False) -> dict:
+    def Find_pages_exists_or_not(self, liste, get_redirect: bool = False) -> dict:
         all_jsons = {}
 
         for titles in self.chunk_titles(liste, chunk_size=50):
@@ -22,7 +22,7 @@ class NEW_API:
             }
             json1 = self.login_bot.client_request(params)
             if not json1:
-                logger.debug("<<lightred>> error when ")
+                logger.debug("error when ")
                 continue
             all_jsons = self.merge_all_jsons_deep(all_jsons, json1)
 
@@ -61,7 +61,7 @@ class NEW_API:
         logger.debug(f" : missing:{missing}, exists: {exists}, redirects: {redirects}")
         return table
 
-    def chunk_titles(self, titles, chunk_size=50):
+    def chunk_titles(self, titles, chunk_size: int = 50):
         if isinstance(titles, dict):
             titles = list(titles.keys())
 
@@ -107,5 +107,5 @@ def remove_redirect_pages(lang: str, page_titles: list) -> list:
     """Remove redirect pages from a list of page titles."""
     result = load_non_redirects(lang, page_titles)
     non_redirects = [x for x, v in result.items() if v is True]
-    logger.info(f"<<lightgreen>> Removed {len(page_titles) - len(non_redirects)} redirect pages.")
+    logger.info(f"Removed {len(page_titles) - len(non_redirects)} redirect pages.")
     return non_redirects

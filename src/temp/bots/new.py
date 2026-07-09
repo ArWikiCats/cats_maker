@@ -29,7 +29,7 @@ class TemplatesMaker:
     Baco = {}
 
     @classmethod
-    def _initialize_data(cls):
+    def _initialize_data(cls) -> None:
         """Build the lookup dictionaries (only once)."""
         if cls.years_Baco:
             return  # Already initialized
@@ -57,7 +57,7 @@ class TemplatesMaker:
     # ====== الدوال الرئيسية ======
     @classmethod
     def make_millennium_template(cls, title):
-        logger.info(f"<<lightblue>> :{title} ")
+        logger.info(f":{title} ")
         title = re.sub(r"الألفية الأولى", "الألفية 1", title)
         title = re.sub(r"الألفية الثانية", "الألفية 2", title)
         title = re.sub(r"الألفية الثالثة", "الألفية 3", title)
@@ -125,7 +125,7 @@ class TemplatesMaker:
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
     @classmethod
-    def make_years_template(cls, title, tex, return_title=False):
+    def make_years_template(cls, title, tex, return_title: bool = False):
         if "ق م" in title or "ق.م" in title:
             return ("", "") if return_title else ""
         t_1 = f"تصنيف:{tex}"

@@ -55,7 +55,7 @@ def subcatquery(login_bot, title: str, sitecode: str = SITECODE, family: str = F
 
     if print_s:
         logger.debug(
-            f"<<lightyellow>> catdepth_new.py sub cat query for {sitecode}:{title}, depth:{args2['depth']}, ns:{args2['ns']}, onlyns:{args2['onlyns']}"
+            f"catdepth_new.py sub cat query for {sitecode}:{title}, depth:{args2['depth']}, ns:{args2['ns']}, onlyns:{args2['onlyns']}"
         )
 
     logger.info(f"starting subcategory query: {sitecode}:{title}")
@@ -68,7 +68,7 @@ def subcatquery(login_bot, title: str, sitecode: str = SITECODE, family: str = F
     if print_s:
         lenpages = bot.get_len_pages()
         logger.debug(
-            f"<<lightblue>> find {len(result)} pages({args2['ns']}) in {sitecode}:{title}, depth:{args2['depth']} | {lenpages=}"
+            f"find {len(result)} pages({args2['ns']}) in {sitecode}:{title}, depth:{args2['depth']} | {lenpages=}"
         )
 
     return result
