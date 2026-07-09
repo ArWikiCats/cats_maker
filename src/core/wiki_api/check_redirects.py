@@ -22,7 +22,7 @@ class NEW_API:
             }
             json1 = self.login_bot.client_request(params)
             if not json1:
-                logger.debug("<<lightred>> error when ")
+                logger.debug("error when ")
                 continue
             all_jsons = self.merge_all_jsons_deep(all_jsons, json1)
 
@@ -107,5 +107,5 @@ def remove_redirect_pages(lang: str, page_titles: list) -> list:
     """Remove redirect pages from a list of page titles."""
     result = load_non_redirects(lang, page_titles)
     non_redirects = [x for x, v in result.items() if v is True]
-    logger.info(f"<<lightgreen>> Removed {len(page_titles) - len(non_redirects)} redirect pages.")
+    logger.info(f"Removed {len(page_titles) - len(non_redirects)} redirect pages.")
     return non_redirects

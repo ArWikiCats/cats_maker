@@ -58,7 +58,7 @@ class WdAPI:
         err_code = error.get("code", "")
         err_info = error.get("info", "")
 
-        tt = f"<<lightred>>{function} ERROR: <<default>>code:{err_code}."
+        tt = f"{function} ERROR:code:{err_code}."
         logger.debug(tt)
         # ---["protectedpage", 'تأخير البوتات 3 ساعات', False]
         if err_code == "abusefilter-disallowed":
@@ -66,7 +66,7 @@ class WdAPI:
 
             abusefilter = error.get("abusefilter", "")
             description = abusefilter.get("description", "")
-            logger.debug(f"<<lightred>> ** abusefilter-disallowed: {description} ")
+            logger.debug(f"** abusefilter-disallowed: {description} ")
             if description in [
                 "تأخير البوتات 3 ساعات",
                 "تأخير البوتات 3 ساعات- 3 من 3",
@@ -77,26 +77,26 @@ class WdAPI:
             return description
 
         if err_code == "no-such-entity":
-            logger.debug("<<lightred>> ** no-such-entity. ")
+            logger.debug("** no-such-entity. ")
             return False
 
         if err_code == "protectedpage":
-            logger.debug("<<lightred>> ** protectedpage. ")
+            logger.debug("** protectedpage. ")
             # return "protectedpage"
             return False
 
         if err_code == "articleexists":
-            logger.debug("<<lightred>> ** article already created. ")
+            logger.debug("** article already created. ")
             return "articleexists"
 
         if err_code == "maxlag":
-            logger.debug("<<lightred>> ** maxlag. ")
+            logger.debug("** maxlag. ")
             return False
 
         if params is not None:
             params["data"] = {}
 
-        logger.debug(f"<<lightred>>{function} ERROR: <<default>>info: {err_info}, {params=}")
+        logger.debug(f"{function} ERROR:info: {err_info}, {params=}")
 
     def post_to_newapi(
         self,
@@ -125,16 +125,16 @@ class WdAPI:
         if error_code == "maxlag" and max_retry < 4:
             find_lag(error)
 
-            logger.debug(f"<<purple>>: <<red>> lag work: {max_retry=}")
+            logger.debug(f":lag work: {max_retry=}")
             try:
                 return self.post_to_newapi(params=params, max_retry=max_retry + 1)
             except Exception as e:
-                logger.error(f"<<purple>>: <<red>> lag work: {e=}")
+                logger.error(f":lag work: {e=}")
                 return {}
         if error:
             er = self.handle_err_wd(error, function="", params=params)
 
-            logger.debug(f"<<purple>>: <<red>> handle_err_wd: {er}")
+            logger.debug(f":handle_err_wd: {er}")
             # return er
 
         return results

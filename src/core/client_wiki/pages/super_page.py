@@ -331,7 +331,7 @@ class MainPage(HandleErrors, AskBot):
         to = redirects.get("to", "")
 
         if to:
-            logger.debug(f"<<lightyellow>>Page:({self.title}) redirect to ({to})")
+            logger.debug(f"Page:({self.title}) redirect to ({to})")
 
         return to
 
@@ -409,7 +409,7 @@ class MainPage(HandleErrors, AskBot):
         self.meta.is_disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
 
         if self.meta.is_disambig:
-            logger.debug(f'<<lightred>> page "{self.title}" is Disambiguation / توضيح')
+            logger.debug(f'page "{self.title}" is Disambiguation / توضيح')
 
         return self.meta.is_disambig
 
@@ -567,7 +567,7 @@ class MainPage(HandleErrors, AskBot):
         if result.lower() == "success":
             self.text = newtext
             self.user = ""
-            logger.warning(f"<<lightgreen>> ** true .. [[{self.lang}:{self.family}:{self.title}]] ")
+            logger.warning(f"** true .. [[{self.lang}:{self.family}:{self.title}]] ")
             logger.debug(f"save success for {self.title}")
 
             self.revisions_data.pageid = edit.get("pageid") or self.revisions_data.pageid
@@ -650,7 +650,7 @@ class MainPage(HandleErrors, AskBot):
 
             self.text = text
 
-            logger.warning(f"<<lightgreen>> ** true .. [[{self.lang}:{self.family}:{self.title}]] ")
+            logger.warning(f"** true .. [[{self.lang}:{self.family}:{self.title}]] ")
             logger.debug(f"create success for {self.title}")
 
             self.revisions_data.pageid = edit.get("pageid") or self.revisions_data.pageid

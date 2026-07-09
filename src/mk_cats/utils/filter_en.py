@@ -46,14 +46,14 @@ blcak_starts = [
 def filter_category(cat) -> bool:
     for x in BBlcak:
         if cat.lower().find(x) != -1:
-            logger.debug(f"<<lightred>> find ({x}) in cat")
+            logger.debug(f"find ({x}) in cat")
             return False
 
     cat2 = cat.lower().replace("category:", "")
 
     for x in blcak_starts:
         if cat2.startswith(x.lower()):
-            logger.debug(f"<<lightred>> cat.startswith({x})")
+            logger.debug(f"cat.startswith({x})")
             return False
 
     months = [
@@ -75,7 +75,7 @@ def filter_category(cat) -> bool:
         # match the end of cat like month \d+
         matt = rf"^.*? from {x.lower()} \d+$"
         if re.match(matt, cat2):
-            logger.debug(f"<<lightred>> cat.match({matt})")
+            logger.debug(f"cat.match({matt})")
             return False
 
     return True

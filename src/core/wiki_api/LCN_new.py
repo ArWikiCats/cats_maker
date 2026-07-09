@@ -106,14 +106,14 @@ class WikiApiHandler:
 
         count = self._increment_api_call()
 
-        logger.info(f"<<lightblue>> API CALL {count}: for ({self.family}:{page_title}), prop: {props}")
+        logger.info(f"API CALL {count}: for ({self.family}:{page_title}), prop: {props}")
 
         logger.debug(f" for page {site_code}:{page_title}")
 
         api_response = submitAPI(params, site_code, self.family)
 
         if not (api_response and "query" in api_response and "pages" in api_response["query"]):
-            logger.debug("<<lightblue>> API call failed or returned no query/pages.")
+            logger.debug("API call failed or returned no query/pages.")
             logger.debug(api_response)
             self.cache[cache_key] = False
             return False
@@ -139,7 +139,7 @@ class WikiApiHandler:
 
         for _page_id, page_data in query["pages"].items():
             title = page_data["title"]
-            logger.debug(f"<<lightblue>>--------------\n self_cache add {title} :")
+            logger.debug(f"--------------\n self_cache add {title} :")
 
             # Handle redirects
             if title in redirect_map.values():
@@ -169,23 +169,23 @@ class WikiApiHandler:
                 self.cache[(title, site_code, "categories")] = all_cats
                 self.cache[(title, site_code, "cat_with_out_hidden")] = non_hidden_cats
 
-                logger.debug(f"<<lightblue>> categories: {all_cats}")
-                logger.debug(f"<<lightblue>> cat_with_out_hidden: {non_hidden_cats}")
+                logger.debug(f"categories: {all_cats}")
+                logger.debug(f"cat_with_out_hidden: {non_hidden_cats}")
 
             ns = page_data.get("ns")
             if ns:
                 data["ns"] = ns
                 self.cache[(title, site_code, "ns")] = ns
-                logger.debug(f"<<lightblue>> ns: {ns}")
+                logger.debug(f"ns: {ns}")
 
             if "templates" in page_data:
                 templates = [t["title"] for t in page_data["templates"]]
                 data["templates"] = templates
                 self.cache[(title, site_code, "templates")] = templates
-                logger.debug(f"<<lightblue>> templates: {templates}")
+                logger.debug(f"templates: {templates}")
 
         self.cache[(title, site_code, props)] = {title: data}
-        logger.debug("<<lightred>>--------------")
+        logger.debug("--------------")
 
         return results
 
@@ -200,7 +200,7 @@ class WikiApiHandler:
 
         cache_key = (page_title, site_code, "Cat_without_hidden", prop)
 
-        logger.debug(f"<<lightgreen>>-----------\n find Page_Cat_without_hidden for {site_code}:{page_title} ")
+        logger.debug(f"-----------\n find Page_Cat_without_hidden for {site_code}:{page_title} ")
         if cache_key in self.cache:
             logger.info("get_cache_L_C_N(cache_key)")
             return self.cache[cache_key]
@@ -229,7 +229,7 @@ class WikiApiHandler:
 
         count = self._increment_api_call()
 
-        logger.info(f"<<lightblue>> API CALL {count}: for {site_code}:{page_title}")
+        logger.info(f"API CALL {count}: for {site_code}:{page_title}")
 
         # Submit the API request
         api_response = submitAPI(params, site_code, self.family)
@@ -272,7 +272,7 @@ class WikiApiHandler:
                 self.cache[(cat_title, site_code, "templates")] = templates
 
             if "categories" in cat_data:
-                logger.info("<<lightred>> 'categories' in cat_data")
+                logger.info("'categories' in cat_data")
                 hidden += len([cat for cat in cat_data["categories"] if "hidden" in cat])
 
                 categories = [cat["title"] for cat in cat_data["categories"] if "hidden" not in cat]
@@ -299,11 +299,9 @@ class WikiApiHandler:
                 cat_without += 1
                 cats_without_langlinks.append(cat_title)
 
-        logger.debug(f'<<lightred>>find_Cat_without_hidden for {site_code}:{self.family}:page:"{page_title}" : ')
+        logger.debug(f'find_Cat_without_hidden for {site_code}:{self.family}:page:"{page_title}" : ')
 
-        logger.debug(
-            f"<<lightblue>> \tfind {all_cat} cat, {cat_with} with links, {cat_without} without, hidden {hidden}"
-        )
+        logger.debug(f"\tfind {all_cat} cat, {cat_with} with links, {cat_without} without, hidden {hidden}")
 
         # Update state for categories without langlinks
         if cats_without_langlinks:

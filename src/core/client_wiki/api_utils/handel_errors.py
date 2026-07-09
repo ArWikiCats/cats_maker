@@ -70,7 +70,7 @@ class HandleErrors:
         err_code = error.get("code", "")
         err_info = error.get("info", "")
 
-        _tt = f"<<lightred>>{function} ERROR: <<default>>code:{err_code}."
+        _tt = f"{function} ERROR:code:{err_code}."
         # ["protectedpage", "تأخير البوتات 3 ساعات", False]
         if err_code == "abusefilter-disallowed":
 
@@ -78,7 +78,7 @@ class HandleErrors:
 
             abusefilter = error.get("abusefilter", "")
             description = abusefilter.get("description", "") if isinstance(abusefilter, dict) else ""
-            logger.debug(f"<<lightred>> ** abusefilter-disallowed: {description} ")
+            logger.debug(f"** abusefilter-disallowed: {description} ")
             if description in [
                 "تأخير البوتات 3 ساعات",
                 "تأخير البوتات 3 ساعات- 3 من 3",
@@ -89,26 +89,26 @@ class HandleErrors:
             return description
 
         if err_code == "no-such-entity":
-            logger.debug("<<lightred>> ** no-such-entity. ")
+            logger.debug("** no-such-entity. ")
             return False
 
         if err_code == "protectedpage":
-            logger.debug("<<lightred>> ** protectedpage. ")
+            logger.debug("** protectedpage. ")
             return False
 
         if err_code == "articleexists":
-            logger.debug("<<lightred>> ** article already created. ")
+            logger.debug("** article already created. ")
             return "articleexists"
 
         if err_code == "maxlag":
-            logger.debug("<<lightred>> ** maxlag. ")
+            logger.debug("** maxlag. ")
             return False
 
         if do_error:
             if params:
                 params["data"] = {}
                 params["text"] = {}
-            logger.error(f"<<lightred>>{function} ERROR: <<default>>info: {err_info}, {params=}")
+            logger.error(f"{function} ERROR:info: {err_info}, {params=}")
         return error
 
 

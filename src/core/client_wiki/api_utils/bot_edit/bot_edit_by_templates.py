@@ -29,7 +29,7 @@ def _handle_nobots_template(params, title_page, botjob, _template) -> bool:
     # {{nobots}}                منع جميع البوتات
     # منع جميع البوتات
     if not params:
-        logger.debug(f"<<lightred>> botEdit.py: the page has temp:({_template}), botjob:{botjob} skipp.")
+        logger.debug(f"botEdit.py: the page has temp:({_template}), botjob:{botjob} skipp.")
         logger.debug(f"nobots active - blocking bot {botjob} on {title_page}")
         Bot_Cache[botjob][title_page] = False
         return False
@@ -37,7 +37,7 @@ def _handle_nobots_template(params, title_page, botjob, _template) -> bool:
         List = [x.strip() for x in params.get("1", "").split(",")]
         # if 'all' in List or pywikibot.calledModuleName() in List or BOT_USERNAME in List:
         if "all" in List or BOT_USERNAME in List:
-            logger.debug(f"<<lightred>> botEdit.py: the page has temp:({_template}), botjob:{botjob} skipp.")
+            logger.debug(f"botEdit.py: the page has temp:({_template}), botjob:{botjob} skipp.")
             logger.debug(f"bot {BOT_USERNAME} in nobots list - blocking {title_page}")
             # Bot_Cache[title_page] = False
             Bot_Cache[botjob][title_page] = False
@@ -68,9 +68,9 @@ def _handle_bots_template(params, title_page, botjob, title):
             # 'all' in value or BOT_USERNAME in value is True
             sd = "all" in value or BOT_USERNAME in value
             if not sd:
-                logger.debug(f"<<lightred>>botEdit.py Template:({title}) has |allow={','.join(value)}.")
+                logger.debug(f"botEdit.py Template:({title}) has |allow={','.join(value)}.")
             else:
-                logger.warning(f"<<lightgreen>>botEdit.py Template:({title}) has |allow={','.join(value)}.")
+                logger.warning(f"botEdit.py Template:({title}) has |allow={','.join(value)}.")
             Bot_Cache[botjob][title_page] = sd
             return sd
         # {{bots|deny=all}}      منع جميع البوتات
@@ -81,7 +81,7 @@ def _handle_bots_template(params, title_page, botjob, title):
             # if param == 'deny':
             sd = "all" not in value and BOT_USERNAME not in value
             if not sd:
-                logger.debug(f"<<lightred>>botEdit.py Template:({title}) has |deny={','.join(value)}.")
+                logger.debug(f"botEdit.py Template:({title}) has |deny={','.join(value)}.")
             Bot_Cache[botjob][title_page] = sd
             return sd
         # if param == 'allowscript':
@@ -142,11 +142,11 @@ def is_bot_edit_allowed(
         restrictions = STOP_EDIT_TEMPLATES.get(botjob, [])
 
         if title in restrictions or title in all_stop:
-            logger.debug(f"<<lightred>> botEdit.py: the page has temp:({title}), botjob:{botjob} skipp.")
+            logger.debug(f"botEdit.py: the page has temp:({title}), botjob:{botjob} skipp.")
             Bot_Cache[botjob][title_page] = False
             return False
 
-        # logger.debug("<<lightred>>botEdit.py title:(%s), params:(%s)." % (title, str(params)))
+        # logger.debug("botEdit.py title:(%s), params:(%s)." % (title, str(params)))
 
         if title.lower() == "nobots":
             return _handle_nobots_template(params, title_page, botjob, _template)

@@ -45,21 +45,21 @@ def _check_page_status(
     info = get_page_info_from_wikipedia(site, title)
 
     if not info:
-        logger.info(f"<<lightred>> not found:({title})")
+        logger.info(f"not found:({title})")
         return ValidationResult(valid=False, reason=f"Page not found: {title}")
 
     if not info.get("exists"):
-        logger.info(f"<<lightred>> ({title}) not exists")
+        logger.info(f"({title}) not exists")
         return ValidationResult(valid=False, reason=f"Page does not exist: {title}")
 
     if info.get("isRedirectPage"):
-        logger.info(f"<<lightred>> ({title}) isRedirectPage")
+        logger.info(f"({title}) isRedirectPage")
         return ValidationResult(valid=False, reason=f"Page is a redirect: {title}")
 
     if expected_langlink:
         langlink = info.get("langlinks", {}).get("ar" if is_ar else "en", "")
         if langlink and langlink != expected_langlink:
-            logger.info(f"<<lightred>> langlink mismatch ({langlink}) != ({expected_langlink})")
+            logger.info(f"langlink mismatch ({langlink}) != ({expected_langlink})")
             return ValidationResult(
                 valid=False,
                 reason=f"Langlink mismatch: {langlink} != {expected_langlink}",
@@ -71,14 +71,14 @@ def _check_page_status(
         target_temp2 = target_temp.replace(template_prefix, "")
         if is_ar:
             if target_temp2 in template_blacklist and not settings.category.keep:
-                logger.info(f"<<lightred>> {title} has temp:{target_temp2}")
+                logger.info(f"{title} has temp:{target_temp2}")
                 return ValidationResult(
                     valid=False,
                     reason=f"Blacklisted template: {target_temp2}",
                 )
         else:
             if target_temp2.lower() in _get_false_templates() and not settings.category.keep:
-                logger.info(f"<<lightred>> {title} has temp:{target_temp2}")
+                logger.info(f"{title} has temp:{target_temp2}")
                 return ValidationResult(
                     valid=False,
                     reason=f"Blacklisted template: {target_temp2}",

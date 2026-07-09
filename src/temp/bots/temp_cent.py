@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def make_century_template(title):
-    logger.info(f" :{title} ", "blue")
+    logger.info(f" :{title} ")
     Caa = False
     tex = ""
     title = re.sub(r"_", " ", title)
@@ -63,7 +63,7 @@ def make_century_template(title):
             Caa = True
 
     if Caa:
-        logger.info(f' Make Cent_temp:{title} , tex:"{tex}"', "blue")
+        logger.info(f' Make Cent_temp:{title} , tex:"{tex}"')
         t_1 = f"تصنيف:{tex}القرن "
         ttt = t_1 + r"(\d+)\s*( ق م| ق\.م|)\s*(في |)(.*|)$"
 

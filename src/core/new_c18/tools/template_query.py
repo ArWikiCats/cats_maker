@@ -65,7 +65,7 @@ def _query_multi(enlink: str, sitecode: str):
     if cached is not None:
         return cached
 
-    logger.info(f"<<lightblue>> templatequery {sitecode}:{enlink} . ")
+    logger.info(f"templatequery {sitecode}:{enlink} . ")
 
     sasa = find_LCN(enlink, prop="templates", first_site_code=sitecode)
     result = sasa if sasa else None

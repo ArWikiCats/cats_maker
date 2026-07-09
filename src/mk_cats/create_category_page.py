@@ -144,11 +144,11 @@ def make_category(categories, enca, title, qid, family: str = "") -> CategoryRes
         CategoryResult with success status and page title
     """
     if enca in skip_encats:
-        logger.debug(f"<<lightred>> enca: {enca} in skip_encats")
+        logger.debug(f"enca: {enca} in skip_encats")
         return CategoryResult(False, None, "Category in skip list")
 
     if not title.startswith("تصنيف:"):
-        logger.debug(f'<<lightreed>> title: {title} not start with "تصنيف:"')
+        logger.debug(f'title: {title} not start with "تصنيف:"')
         return CategoryResult(False, None, "Invalid title prefix")
 
     caia = ""
@@ -167,17 +167,17 @@ def make_category(categories, enca, title, qid, family: str = "") -> CategoryRes
     page = api.MainPage(title)
 
     if page.get_text() or page.exists():
-        logger.debug(f"<<lightred>> page: {title} already exists")
+        logger.debug(f"page: {title} already exists")
         return CategoryResult(False, None, "Page already exists")
 
     new_cat = create_Page(text, page)
 
     if new_cat:
         text = add_text_to_cat(text, categories, enca, title, qid)
-        logger.info(f"<<lightgreen>> New_Cat: {title}")
+        logger.info(f"New_Cat: {title}")
         return CategoryResult(True, title, None)
 
-    logger.warning(f"<<lightgreen>> New_Cat failed: {title}")
+    logger.warning(f"New_Cat failed: {title}")
     logger.warning(new_cat)
     return CategoryResult(False, None, "Failed to create page")
 
@@ -195,10 +195,10 @@ def new_category(enca, title, categories, qid, family: str = "") -> CategoryResu
     Returns:
         CategoryResult with success status
     """
-    logger.debug(f'<<lightgreen>>* make ar cat:"{title}", for english:"{enca}". ')
+    logger.debug(f'* make ar cat:"{title}", for english:"{enca}". ')
 
     if not title or title == "n":
-        logger.debug('<<lightred>> not title or title != "n"')
+        logger.debug('not title or title != "n"')
         return CategoryResult(False, None, "Invalid title")
 
     result = make_category(categories, enca, title, qid, family=family)

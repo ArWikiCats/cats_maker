@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def make_decades_template(title):
     Caa = False
-    logger.info(f" :{title} ", "blue")
+    logger.info(f" :{title} ")
     tex = ""
     title = re.sub(r"_", " ", title)
 
@@ -72,10 +72,10 @@ def make_decades_template(title):
         p_2 = f"تصنيف:{texx}عقد"
         if title.startswith(p_2):
             tex = texx
-            logger.info(f' :{title} , texx:"{texx}"', "blue")
+            logger.info(f' :{title} , texx:"{texx}"')
 
     if Caa:
-        logger.info(f' Caa: :{title} , tex:"{tex}"', "blue")
+        logger.info(f' Caa: :{title} , tex:"{tex}"')
         t_1 = f"تصنيف:{tex}عقد "
         ttt = t_1 + r"(\d+)\s*(في |)(.*|)$"
 
@@ -86,7 +86,7 @@ def make_decades_template(title):
             decade_ = ""
         if bld == title:
             bld = ""
-        logger.info(f" decade_:'{decade_}' , bld:'{bld}' ", "blue")
+        logger.info(f" decade_:'{decade_}' , bld:'{bld}' ")
         Y, YY = "", ""
 
         template = f"{cacaca[tex]}بلد عقد"

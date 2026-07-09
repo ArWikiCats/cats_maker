@@ -30,7 +30,7 @@ class MemberLister:
             cat2 = normalize_category_title(enpage_title, lang="en")
             fapages = comparator.get_exclusive_category_titles(cat2, "") or []
 
-        logger.info(f"<<lightgreen>>Adding {len(fapages)} pages to fapage lists")
+        logger.info(f"Adding {len(fapages)} pages to fapage lists")
         return fapages
 
     def get_listen_page_title(self, ar_title: str, enpage_title: str) -> list[str]:
@@ -47,7 +47,7 @@ class MemberLister:
             listen_page_title.extend(fapages)
 
         if enpage_title in self.cache:
-            logger.info(f'<<lightgreen>> cache hit for "{enpage_title}"')
+            logger.info(f'cache hit for "{enpage_title}"')
             listen_page_title.extend(self.cache[enpage_title])
 
         listen_page_title = list({x for x in listen_page_title if isinstance(x, str) and x != ""})
