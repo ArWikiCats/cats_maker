@@ -11,13 +11,10 @@ from .load_data import cacaca, years_baco
 logger = logging.getLogger(__name__)
 
 
-def make_years_template(title, tex, return_title: bool = False):
+def make_years_template(title, tex) -> tuple[str, str]:
     logger.info(f' :{title} , tex:"{tex}"')
     if title.find("ق م") != -1 or title.find("ق.م") != -1:
-        if return_title:
-            return "", ""
-        else:
-            return ""
+        return "", ""
 
     t_1 = f"تصنيف:{tex}"
     ttt = t_1 + r"(عام |سنة |)(\d+)\s*(في |)(.*|)$"
@@ -54,12 +51,6 @@ def make_years_template(title, tex, return_title: bool = False):
             text = f"{{{{{template}|{YY}|{Y}}}}}"
         logger.info(text)
 
-        if return_title:
-            return text, template
-        else:
-            return text
+        return text, template
 
-    if return_title:
-        return "{{تصنيف موسم}}", "تصنيف موسم"
-    else:
-        return "{{تصنيف موسم}}"
+    return "{{تصنيف موسم}}", "تصنيف موسم"

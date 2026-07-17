@@ -96,11 +96,11 @@ class TestMakeCentTemp:
 
 class TestMakeYearsTemp:
     def test_returns_empty_for_bc(self):
-        result = make_years_template("تصنيف:100 ق م", "تأسيسات ")
+        result, _ = make_years_template("تصنيف:100 ق م", "تأسيسات ")
         assert result == ""
 
     def test_non_year_returns_season(self):
-        result = make_years_template("تصنيف:علوم", "تأسيسات ")
+        result, _ = make_years_template("تصنيف:علوم", "تأسيسات ")
         assert "تصنيف موسم" in result
 
 

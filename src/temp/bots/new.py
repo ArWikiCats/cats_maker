@@ -56,7 +56,7 @@ class TemplatesMaker:
 
     # ====== الدوال الرئيسية ======
     @classmethod
-    def make_millennium_template(cls, title):
+    def make_millennium_template(cls, title) -> tuple[str, str]:
         logger.info(f":{title} ")
         title = re.sub(r"الألفية الأولى", "الألفية 1", title)
         title = re.sub(r"الألفية الثانية", "الألفية 2", title)
@@ -91,7 +91,7 @@ class TemplatesMaker:
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
     @classmethod
-    def make_decades_template(cls, title):
+    def make_decades_template(cls, title) -> tuple[str, str]:
         title = re.sub(r"_", " ", title)
         for texx, ssss in cls.cacaca.items():
             regdd = rf"{texx}عقد (\d+)( ق م| ق\.م|)"
@@ -108,7 +108,7 @@ class TemplatesMaker:
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
     @classmethod
-    def make_century_template(cls, title):
+    def make_century_template(cls, title) -> tuple[str, str]:
         title = re.sub(r"_", " ", title)
         for texx, cttt in cls.cacaca.items():
             regex = rf"تصنيف\:{texx}القرن (\d+)( ق م| ق\.م|)( في |)(.*|)$"
@@ -125,40 +125,53 @@ class TemplatesMaker:
         return "{{تصنيف موسم}}", "تصنيف موسم"
 
     @classmethod
-    def make_years_template(cls, title, tex, return_title: bool = False):
+    def make_years_templates(cls, title, tex) -> tuple[str, str]:
         if "ق م" in title or "ق.م" in title:
-            return ("", "") if return_title else ""
+            return ("", "")
+
         t_1 = f"تصنيف:{tex}"
         ttt = t_1 + r"(عام |سنة |)(\d+)\s*(في |)(.*|)$"
         ye = re.sub(ttt, r"\g<2>", title)
-        if ye not in cls.years_baco:
-            return ("{{تصنيف موسم}}", "تصنيف موسم") if return_title else "{{تصنيف موسم}}"
 
+        # years
+        if ye not in cls.years_baco:
+            return ("{{تصنيف موسم}}", "تصنيف موسم")
+
+        #
         bld = re.sub(ttt, r"\g<4>", title)
         Y = ye[-1] if len(ye) >= 1 else ""
         YY = ye[:-1] if len(ye) >= 2 else ""
+
+        #
         template = f"{cls.cacaca[tex]}بلد"
         if bld.startswith("حسب"):
             bld += "|في="
+
         text = f"{{{{{template}|{YY}|{Y}|{bld}}}}}" if bld else f"{{{{{cls.cacaca[tex]}سنة|{YY}|{Y}}}}}"
-        return (text, template) if return_title else text
+        return (text, template)
 
     @classmethod
-    def main_make_temp(cls, title):
+    def main_make_temp(cls, title) -> tuple[str, str]:
         title = re.sub(r"_", " ", title)
         if "فيروس كورونا" in title:
             return "", ""
+
         if re.match(r"^تصنيف\:\d+.*", title) or re.match(r".*\d\d\d\d[\-\–]\d\d$", title):
             return "{{تصنيف موسم}}", "تصنيف موسم"
+
         for tex in ["تأسيسات ", "انحلالات "]:
             if any(title.startswith(f"تصنيف:{tex}{n}") for n in range(10)):
-                return cls.make_years_template(title, tex, return_title=True)
+                return cls.make_years_templates(title, tex)
+
         if title.startswith(("تصنيف:عقد", "تصنيف:تأسيسات عقد")):
             return cls.make_decades_template(title)
+
         if "القرن" in title:
             return cls.make_century_template(title)
+
         if "الألفية" in title:
             return cls.make_millennium_template(title)
+
         return "", ""
 
 
@@ -166,14 +179,14 @@ bot = TemplatesMaker()
 bot._initialize_data()
 
 make_decades_template = bot.make_decades_template
-make_years_template = bot.make_years_template
+make_years_templates = bot.make_years_templates
 make_century_template = bot.make_century_template
 make_millennium_template = bot.make_millennium_template
 main_make_temp = bot.main_make_temp
 
 __all__ = [
     "make_decades_template",
-    "make_years_template",
+    "make_years_templates",
     "make_century_template",
     "make_millennium_template",
     "main_make_temp",
