@@ -43,7 +43,7 @@ class DatabaseManager:
         logger.info("DatabaseManager initialized.")
 
     @contextmanager
-    def get_connection(self, wiki: str) -> Generator[Connection[DictCursor], Any]:
+    def get_connection(self, wiki: str) -> Any:
         """
         Provide a database connection within a context manager.
 
