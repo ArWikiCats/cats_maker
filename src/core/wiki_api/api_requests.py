@@ -19,8 +19,8 @@ def _load_session() -> requests.Session:
     return Session
 
 
-def submitAPI(params, Code, family, **kwargs):
-    Code = Code.removesuffix("wiki")
+def submitAPI(params, code, family, **kwargs):
+    code = code.removesuffix("wiki")
 
     params["formatversion"] = 1
     params["utf8"] = 1
@@ -35,11 +35,11 @@ def submitAPI(params, Code, family, **kwargs):
     if family == "commons":
         family = "wikimedia"
 
-    mainurl = f"https://{Code}.{family}.org/w/api.php?"
+    mainurl = f"https://{code}.{family}.org/w/api.php?"
 
     encode_params = urlencode(params)
 
-    url = f"https://{Code}.{family}.org/w/api.php?{encode_params}"
+    url = f"https://{code}.{family}.org/w/api.php?{encode_params}"
 
     url2 = url.replace("&format=json", "").replace("?format=json", "?")
     logger.debug(f"printboturl: {url2}")

@@ -31,9 +31,9 @@ def get_page_link_data(title: str, sitecode: str, ns: int = 100) -> list:
     return data
 
 
-def fetch_commons_category(entitle, Qid):
+def fetch_commons_category(entitle, qid):
     template = ""
-    P373 = Get_P373_API(q=Qid, titles=entitle, sites="enwiki")
+    P373 = Get_P373_API(q=qid, titles=entitle, sites="enwiki")
 
     if P373:
         template = "{{تصنيف كومنز|%s}}" % P373
@@ -76,13 +76,13 @@ def generate_portal_content(title, enca, return_list: bool = False):
     return litp
 
 
-def generate_category_text(enca, title, Qid):
+def generate_category_text(enca, title, qid):
     ff = main_make_temp_no_title(enca, title)
 
     text = ""
     text += generate_portal_content(title, enca)
     text += "{{نسخ:#لوموجود:{{نسخ:اسم_الصفحة}}|{{مقالة تصنيف}}|}}\n"
-    text += fetch_commons_category(enca, Qid)
+    text += fetch_commons_category(enca, qid)
 
     if ff:
         text += "\n%s" % ff

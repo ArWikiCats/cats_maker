@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from ....config import settings
-from ...utils import global_False_entemps
+from ...utils import global_false_entemps
 from ...wiki_api import get_page_info_from_wikipedia
 from ..constants import NO_TEMPLATES_AR, NO_TEMPLATES_AR_WITHOUT_STUBS
 from ..models import ValidationResult
@@ -23,7 +23,7 @@ def _get_no_templates() -> frozenset[str]:
 
 def _get_false_templates() -> frozenset[str]:
     """Return lower-cased false templates from global helper."""
-    return frozenset(x.lower() for x in global_False_entemps)
+    return frozenset(x.lower() for x in global_false_entemps)
 
 
 def _check_page_status(

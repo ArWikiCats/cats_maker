@@ -32,7 +32,7 @@ class TestGetNoTemplates:
 
 
 class TestGetFalseTemplates:
-    @patch("src.core.new_c18.core.category_validator.global_False_entemps", ["Nobots", "Dead"])
+    @patch("src.core.new_c18.core.category_validator.global_false_entemps", ["Nobots", "Dead"])
     def test_returns_lowercased(self):
         result = _get_false_templates()
         assert "nobots" in result

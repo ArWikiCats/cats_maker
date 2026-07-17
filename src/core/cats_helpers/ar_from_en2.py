@@ -42,13 +42,13 @@ def get_ar_list_title_from_en_list(enlist, wiki: str = "en"):
     return new_ar_list
 
 
-def en_category_members(enpageTitle, wiki: str = "en"):
-    logger.info(f"from category: {enpageTitle}")
+def en_category_members(enpage_title, wiki: str = "en"):
+    logger.info(f"from category: {enpage_title}")
 
     namespace_ids = [0, 14, 100]
 
     api = load_main_api(wiki)
-    cat_members = api.CatDepth(enpageTitle, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
+    cat_members = api.CatDepth(enpage_title, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
 
     en_titles = []
 

@@ -32,7 +32,7 @@ class TestInitializeData:
     def test_builds_years_baco(self):
         bot = TemplatesMaker()
         bot._initialize_data()
-        assert len(bot.years_Baco) > 0
+        assert len(bot.years_baco) > 0
 
     def test_builds_baco_decades(self):
         bot = TemplatesMaker()
@@ -47,9 +47,9 @@ class TestInitializeData:
     def test_idempotent(self):
         bot = TemplatesMaker()
         bot._initialize_data()
-        count1 = len(bot.years_Baco)
+        count1 = len(bot.years_baco)
         bot._initialize_data()
-        count2 = len(bot.years_Baco)
+        count2 = len(bot.years_baco)
         assert count1 == count2
 
 
@@ -71,7 +71,7 @@ class TestMakeElffTemp:
         assert "تصنيف موسم" in result
 
 
-class Testmake_decades_template:
+class TestMakeDecadesTemplate:
     def test_basic_decade(self):
         result, temp = make_decades_template("تصنيف:عقد 1990")
         assert "عقد" in result

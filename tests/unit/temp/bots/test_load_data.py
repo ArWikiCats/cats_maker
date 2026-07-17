@@ -9,13 +9,13 @@ from src.temp.bots.load_data import (
     cacaca,
     decades_list,
     elfffff,
-    years_Baco,
+    years_baco,
 )
 
 
 class TestModuleData:
     def test_years_baco_is_dict(self):
-        assert isinstance(years_Baco, dict)
+        assert isinstance(years_baco, dict)
 
     def test_baco_decades_is_dict(self):
         assert isinstance(Baco_decades, dict)
@@ -45,7 +45,7 @@ class TestModuleData:
         assert cacaca["تأسيسات "] == "تأسيس "
 
     def test_years_baco_has_entries(self):
-        assert len(years_Baco) > 0
+        assert len(years_baco) > 0
 
     def test_baco_decades_has_entries(self):
         assert len(Baco_decades) > 0
@@ -57,7 +57,7 @@ class TestModuleData:
         assert len(Baco) > 0
 
     def test_year_2000_in_years_baco(self):
-        assert "2000" in years_Baco
+        assert "2000" in years_baco
 
     def test_decade_1990_in_baco_decades(self):
         assert "1990" in Baco_decades

@@ -6,7 +6,7 @@ from ..client_wiki import load_main_api
 logger = logging.getLogger(__name__)
 
 
-class NEW_API:
+class NewApi:
     def __init__(self, login_bot) -> None:
         self.login_bot = login_bot
 
@@ -98,7 +98,7 @@ def load_non_redirects(lang: str, page_titles: list) -> dict:
 
     _bot = load_main_api(lang, "wikipedia")
 
-    api_n = NEW_API(_bot.login_bot)
+    api_n = NewApi(_bot.login_bot)
     result = api_n.Find_pages_exists_or_not(page_titles, get_redirect=True)
     return result
 

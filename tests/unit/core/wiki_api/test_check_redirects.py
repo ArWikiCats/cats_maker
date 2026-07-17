@@ -6,22 +6,22 @@ This module tests Wikipedia API helper functions.
 
 from unittest.mock import MagicMock
 
-from src.core.wiki_api.check_redirects import NEW_API, load_non_redirects, remove_redirect_pages
+from src.core.wiki_api.check_redirects import NewApi, load_non_redirects, remove_redirect_pages
 
 
 class TestNewAPI:
-    """Tests for NEW_API class"""
+    """Tests for NewApi class"""
 
     def test_init_sets_login_bot(self):
-        """Test that NEW_API init sets login_bot"""
+        """Test that NewApi init sets login_bot"""
         mock_login_bot = MagicMock()
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
         assert api.login_bot == mock_login_bot
 
     def test_chunk_titles_list(self):
         """Test chunk_titles with a list"""
         mock_login_bot = MagicMock()
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
 
         result = api.chunk_titles(["Page1", "Page2", "Page3", "Page4", "Page5"], chunk_size=2)
         assert result == [["Page1", "Page2"], ["Page3", "Page4"], ["Page5"]]
@@ -29,7 +29,7 @@ class TestNewAPI:
     def test_chunk_titles_dict_keys(self):
         """Test chunk_titles with a dict keys"""
         mock_login_bot = MagicMock()
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
 
         result = api.chunk_titles({"Page1": 1, "Page2": 2, "Page3": 3}, chunk_size=2)
         assert result == [["Page1", "Page2"], ["Page3"]]
@@ -37,7 +37,7 @@ class TestNewAPI:
     def test_chunk_titles_keys_view(self):
         """Test chunk_titles with KeysView"""
         mock_login_bot = MagicMock()
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
 
         d = {"Page1": 1, "Page2": 2, "Page3": 3}
         result = api.chunk_titles(d.keys(), chunk_size=2)
@@ -46,7 +46,7 @@ class TestNewAPI:
     def test_merge_all_jsons_deep_dicts(self):
         """Test merge_all_jsons_deep with dicts"""
         mock_login_bot = MagicMock()
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
 
         all_jsons = {"a": {"b": 1}}
         json1 = {"a": {"c": 2}}
@@ -56,7 +56,7 @@ class TestNewAPI:
     def test_merge_all_jsons_deep_lists(self):
         """Test merge_all_jsons_deep with lists"""
         mock_login_bot = MagicMock()
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
 
         all_jsons = {"a": [1, 2]}
         json1 = {"a": [3, 4]}
@@ -66,7 +66,7 @@ class TestNewAPI:
     def test_merge_all_jsons_deep_non_dict(self):
         """Test merge_all_jsons_deep handles non-dict input"""
         mock_login_bot = MagicMock()
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
 
         result = api.merge_all_jsons_deep("not a dict", {"a": 1})
         assert result == {"a": 1}
@@ -83,7 +83,7 @@ class TestNewAPI:
             }
         }
 
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
         result = api.Find_pages_exists_or_not(["Page1", "Page2"])
 
         assert result["Page1"] is False
@@ -101,7 +101,7 @@ class TestNewAPI:
             }
         }
 
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
         result = api.Find_pages_exists_or_not(["Page1", "Page2"], get_redirect=True)
 
         assert result["Page1"] == "redirect"
@@ -117,7 +117,7 @@ class TestNewAPI:
             }
         }
 
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
         result = api.Find_pages_exists_or_not(["Page_One"])
 
         assert result["Page_One"] is True
@@ -127,7 +127,7 @@ class TestNewAPI:
         mock_login_bot = MagicMock()
         mock_login_bot.client_request.return_value = {}
 
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
         result = api.Find_pages_exists_or_not(["Page1"])
 
         assert result == {}
@@ -144,7 +144,7 @@ class TestNewAPI:
             }
         }
 
-        api = NEW_API(mock_login_bot)
+        api = NewApi(mock_login_bot)
         result = api.Find_pages_exists_or_not(["Page1"])
 
         assert "Page1" in result

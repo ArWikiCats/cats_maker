@@ -6,7 +6,7 @@
 import logging
 import re
 
-from .load_data import cacaca, years_Baco
+from .load_data import cacaca, years_baco
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +30,8 @@ def make_years_template(title, tex, return_title: bool = False):
     template = f"{cacaca[tex]}بلد"
     logger.info(f" :{title} , ye:{ye}, tex:{tex}")
 
-    if ye in years_Baco:
-        logger.info(f"ye in years_Baco {years_Baco[ye]}")
+    if ye in years_baco:
+        logger.info(f"ye in years_baco {years_baco[ye]}")
         if len(ye) == 4:
             Y = ye[3]
             YY = ye[0] + ye[1] + ye[2]

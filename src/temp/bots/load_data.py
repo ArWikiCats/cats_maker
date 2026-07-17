@@ -1,11 +1,7 @@
 #!/usr/bin/python3
-"""
+""" """
 
-from .load_data import years_Baco, Baco_decades, Baco_centries, Baco, elfffff, decades_list, cacaca
-
-"""
-
-years_Baco = {}
+years_baco = {}
 Baco_decades = {}
 Baco_centries = {}
 Baco = {}
@@ -45,4 +41,4 @@ for elff, tatt in elfffff.items():
                 years = [int(dic) - x for x in range(10)]
 
             for year in years:
-                years_Baco[str(year)] = {"dic": dic, "centry": centry}
+                years_baco[str(year)] = {"dic": dic, "centry": centry}

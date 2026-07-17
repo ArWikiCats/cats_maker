@@ -23,7 +23,7 @@ class TemplatesMaker:
 
     cacaca = {"تأسيسات ": "تأسيس ", "انحلالات ": "انحلال ", "": ""}
 
-    years_Baco = {}
+    years_baco = {}
     Baco_decades = {}
     Baco_centries = {}
     Baco = {}
@@ -31,7 +31,7 @@ class TemplatesMaker:
     @classmethod
     def _initialize_data(cls) -> None:
         """Build the lookup dictionaries (only once)."""
-        if cls.years_Baco:
+        if cls.years_baco:
             return  # Already initialized
 
         for elff, tatt in cls.elfffff.items():
@@ -52,7 +52,7 @@ class TemplatesMaker:
                     if int(dic) < 1:
                         years = [int(dic) - x for x in range(10)]
                     for year in years:
-                        cls.years_Baco[str(year)] = {"dic": dic, "centry": centry}
+                        cls.years_baco[str(year)] = {"dic": dic, "centry": centry}
 
     # ====== الدوال الرئيسية ======
     @classmethod
@@ -131,7 +131,7 @@ class TemplatesMaker:
         t_1 = f"تصنيف:{tex}"
         ttt = t_1 + r"(عام |سنة |)(\d+)\s*(في |)(.*|)$"
         ye = re.sub(ttt, r"\g<2>", title)
-        if ye not in cls.years_Baco:
+        if ye not in cls.years_baco:
             return ("{{تصنيف موسم}}", "تصنيف موسم") if return_title else "{{تصنيف موسم}}"
 
         bld = re.sub(ttt, r"\g<4>", title)

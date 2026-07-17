@@ -151,7 +151,7 @@ def add_labels(
         return ""
 
     if not qid:
-        logger.debug(" Qid == '' ")
+        logger.debug(" qid == '' ")
         return False
 
     if label == "":
@@ -193,10 +193,10 @@ def add_sitelinks_to_wikidata(
     if enlink:
         logger.debug(f' **: enlink:"{ensite}:{enlink}" {wiki}:{title}')
     else:
-        logger.debug(f' **: Qid:"{qid}" {wiki}:{title}')
+        logger.debug(f' **: qid:"{qid}" {wiki}:{title}')
 
     if qid.strip() == "" and enlink == "":
-        logger.debug(f'**: False: Qid == "" {wiki}:{title}.')
+        logger.debug(f'**: False: qid == "" {wiki}:{title}.')
         return False
 
     params = {

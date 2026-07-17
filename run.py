@@ -35,9 +35,9 @@ logger.setLevel("DEBUG" if settings.debug else "INFO")
 new_all_tab = {1: False}
 
 
-def new_all_work_on_title(title, **Kwargs):
+def new_all_work_on_title(title, **kwargs):
     if new_all:
-        new_all.work_on_title(title=title, dont_create=True, **Kwargs)
+        new_all.work_on_title(title=title, dont_create=True, **kwargs)
 
 
 def get_url_result(url):

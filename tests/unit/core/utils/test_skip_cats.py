@@ -6,7 +6,7 @@ This module tests the category skip lists and template blacklists.
 
 from src.core.utils.skip_cats import (
     NO_Templates_lower,
-    global_False_entemps,
+    global_false_entemps,
     skip_encats,
 )
 
@@ -30,44 +30,44 @@ class TestSkipEnCats:
 
 
 class TestGlobalFalseEntemps:
-    """Tests for global_False_entemps (template blacklist)"""
+    """Tests for global_false_entemps (template blacklist)"""
 
     def test_is_list(self):
-        """Test that global_False_entemps is a list"""
-        assert isinstance(global_False_entemps, list)
+        """Test that global_false_entemps is a list"""
+        assert isinstance(global_false_entemps, list)
 
     def test_contains_hidden_category(self):
         """Test that Hidden category is in the blacklist"""
-        assert "Hidden category" in global_False_entemps
+        assert "Hidden category" in global_false_entemps
 
     def test_contains_maintenance_category(self):
         """Test that Maintenance category is in the blacklist"""
-        assert "Maintenance category" in global_False_entemps
+        assert "Maintenance category" in global_false_entemps
 
     def test_contains_wikipedia_category(self):
         """Test that Wikipedia category is in the blacklist"""
-        assert "Wikipedia category" in global_False_entemps
+        assert "Wikipedia category" in global_false_entemps
 
     def test_contains_empty_category(self):
         """Test that Empty category is in the blacklist"""
-        assert "Empty category" in global_False_entemps
+        assert "Empty category" in global_false_entemps
 
     def test_contains_tracking_category(self):
         """Test that Tracking category is in the blacklist"""
-        assert "Tracking category" in global_False_entemps
+        assert "Tracking category" in global_false_entemps
 
     def test_contains_category_redirect(self):
         """Test that Category redirect is in the blacklist"""
-        assert "Category redirect" in global_False_entemps
+        assert "Category redirect" in global_false_entemps
 
     def test_all_items_are_strings(self):
         """Test that all items are strings"""
-        for item in global_False_entemps:
+        for item in global_false_entemps:
             assert isinstance(item, str)
 
     def test_no_empty_strings(self):
         """Test that there are no empty strings"""
-        for item in global_False_entemps:
+        for item in global_false_entemps:
             assert item.strip() != ""
 
 
@@ -79,8 +79,8 @@ class TestNOTemplatesLower:
         assert isinstance(NO_Templates_lower, list)
 
     def test_length_matches_original(self):
-        """Test that length matches global_False_entemps"""
-        assert len(NO_Templates_lower) == len(global_False_entemps)
+        """Test that length matches global_false_entemps"""
+        assert len(NO_Templates_lower) == len(global_false_entemps)
 
     def test_all_lowercase(self):
         """Test that all items are lowercase"""
@@ -97,7 +97,7 @@ class TestNOTemplatesLower:
 
     def test_correspondence_with_original(self):
         """Test that each item corresponds to original list (lowercase)"""
-        for original, lower in zip(global_False_entemps, NO_Templates_lower, strict=False):
+        for original, lower in zip(global_false_entemps, NO_Templates_lower, strict=False):
             assert original.lower() == lower
 
 
@@ -106,7 +106,7 @@ class TestBlacklistIntegrity:
 
     def test_no_duplicates_in_global_false_entemps(self):
         """Test that there are no duplicate entries"""
-        assert len(global_False_entemps) == len(set(global_False_entemps))
+        assert len(global_false_entemps) == len(set(global_false_entemps))
 
     def test_no_duplicates_in_templates_lower(self):
         """Test that there are no duplicate entries in lowercase list"""
@@ -114,12 +114,12 @@ class TestBlacklistIntegrity:
 
     def test_blacklist_not_empty(self):
         """Test that blacklist is not empty"""
-        assert len(global_False_entemps) > 0
+        assert len(global_false_entemps) > 0
 
     def test_minimum_blacklist_items(self):
         """Test that blacklist has a minimum number of items"""
         # Based on the source, there should be at least 10 items
-        assert len(global_False_entemps) >= 10
+        assert len(global_false_entemps) >= 10
 
 
 class TestStubsBranch:
@@ -135,9 +135,9 @@ class TestStubsBranch:
         try:
             sc_module.settings.category.stubs = True
             importlib.reload(sc_module)
-            assert "Hiddencat" not in sc_module.global_False_entemps
-            assert "WPSS-cat" not in sc_module.global_False_entemps
-            assert "Stub Category" not in sc_module.global_False_entemps
+            assert "Hiddencat" not in sc_module.global_false_entemps
+            assert "WPSS-cat" not in sc_module.global_false_entemps
+            assert "Stub Category" not in sc_module.global_false_entemps
         finally:
             sc_module.settings.category.stubs = original_stubs
             importlib.reload(sc_module)
@@ -152,9 +152,9 @@ class TestStubsBranch:
         try:
             sc_module.settings.category.stubs = False
             importlib.reload(sc_module)
-            assert "Hiddencat" in sc_module.global_False_entemps
-            assert "WPSS-cat" in sc_module.global_False_entemps
-            assert "Stub Category" in sc_module.global_False_entemps
+            assert "Hiddencat" in sc_module.global_false_entemps
+            assert "WPSS-cat" in sc_module.global_false_entemps
+            assert "Stub Category" in sc_module.global_false_entemps
         finally:
             sc_module.settings.category.stubs = original_stubs
             importlib.reload(sc_module)

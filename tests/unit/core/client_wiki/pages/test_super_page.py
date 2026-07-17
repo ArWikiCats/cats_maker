@@ -57,10 +57,10 @@ class TestDataclasses:
         assert r.timestamp == ""
 
     def test_links_data_defaults(self):
-        l = LinksData()
-        assert l.back_links == []
-        assert l.extlinks == []
-        assert l.iwlinks == []
+        te = LinksData()
+        assert te.back_links == []
+        assert te.extlinks == []
+        assert te.iwlinks == []
 
     def test_categories_data_defaults(self):
         c = CategoriesData()

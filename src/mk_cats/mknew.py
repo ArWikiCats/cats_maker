@@ -84,7 +84,7 @@ def get_processing_state():
     }
 
 
-def ar_make_lab(title, **Kwargs) -> str:
+def ar_make_lab(title, **kwargs) -> str:
     okay = filter_category(title)
 
     if not okay:

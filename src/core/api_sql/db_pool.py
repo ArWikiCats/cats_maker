@@ -78,7 +78,7 @@ class DatabaseManager:
             yield conn
         except pymysql.MySQLError as e:
             logger.error("Database connection error for %s: %s", wiki, e)
-            raise DatabaseConnectionError(f"Failed to connect to {wiki}", e)
+            raise DatabaseConnectionError(f"Failed to connect to {wiki}", e) from e
         finally:
             if conn and conn.open:
                 conn.close()
@@ -107,7 +107,7 @@ class DatabaseManager:
                         results = cursor.fetchall()
                     except pymysql.MySQLError as e:
                         logger.error("Failed to fetch results from %s: %s", wiki, e)
-                        raise DatabaseFetchError(f"Failed to fetch results from {wiki}", e)
+                        raise DatabaseFetchError(f"Failed to fetch results from {wiki}", e) from e
 
                     # Decode bytes to strings if necessary
                     return [
@@ -118,7 +118,7 @@ class DatabaseManager:
                 raise
             except pymysql.MySQLError as e:
                 logger.error("Query execution failed on %s: %s", wiki, e)
-                raise QueryExecutionError(f"Query failed on {wiki}", e)
+                raise QueryExecutionError(f"Query failed on {wiki}", e) from e
 
 
 # Global accessor for ease of use, maintaining Singleton behavior
