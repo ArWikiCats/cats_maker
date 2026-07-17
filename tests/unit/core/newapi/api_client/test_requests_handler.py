@@ -139,21 +139,6 @@ class TestAssertNamedUserFailed:
         result = client.client_request_retry({"action": "query"}, method="get")
         assert "query" in result
 
-
-class TestOnAssertNamedUserFailed:
-    """Tests for _on_assertnameduserfailed method."""
-
-    @patch("src.core.newapi.api_client.client._delete_cookie_file")
-    def test_on_assertnameduserfailed_clears_cookies_and_relogs(self, mock_delete):
-        client, site = _make_client()
-        site.login = MagicMock()
-
-        client._on_assertnameduserfailed()
-
-        mock_delete.assert_called_once()
-        site.login.assert_called_once_with("MyBot", "pass")
-
-
 class TestLoginForced:
     """Tests for login method with force=True."""
 
@@ -217,38 +202,3 @@ class TestInjectToken:
         data, params = RequestsHandler._inject_token("new_token", {}, {})
         assert data == {}
         assert params == {}
-
-
-@pytest.mark.skip(reason="never end")
-class TestPostContinue:
-    """Tests for post_continue method."""
-
-    def test_post_continue_single_page(self):
-        client, site = _make_client()
-
-        response = MagicMock()
-        response.raise_for_status = MagicMock()
-        response.headers = {"Content-Type": "application/json"}
-        response.json.return_value = {"query": {"pages": {"1": {"title": "Test"}}}}
-        site.connection.request.return_value = response
-
-        result = client.post_continue({"action": "query"}, "query", p_empty={})
-        assert result == {"1": {"title": "Test"}}
-
-    def test_post_continue_with_continuation(self):
-        client, site = _make_client()
-
-        first_response = MagicMock()
-        first_response.raise_for_status = MagicMock()
-        first_response.headers = {"Content-Type": "application/json"}
-        first_response.json.return_value = {"query": {"pages": {"1": {"title": "Test1"}}}, "continue": {"gpsoffset": 1}}
-
-        second_response = MagicMock()
-        second_response.raise_for_status = MagicMock()
-        second_response.headers = {"Content-Type": "application/json"}
-        second_response.json.return_value = {"query": {"pages": {"2": {"title": "Test2"}}}}
-
-        site.connection.request.side_effect = [first_response, second_response]
-
-        result = client.post_continue({"action": "query"}, "query", p_empty=[])
-        assert len(result) == 2

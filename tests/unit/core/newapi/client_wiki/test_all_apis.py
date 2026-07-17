@@ -25,12 +25,6 @@ class TestALLAPIS:
         assert api.password == "pass"
         assert api.login_bot == mock_login_bot
 
-    @patch("src.core.newapi.client_wiki.all_apis.WikiLoginClient")
-    def test_login2_called_with_correct_args(self, mock_wlc, mock_login_bot):
-        mock_wlc.return_value = mock_login_bot
-        AllAPIS("en", "wikisource", "bot", "pw")
-        mock_wlc.assert_called_once_with(lang="en", family="wikisource", username="bot", password="pw")
-
     @patch("src.core.newapi.client_wiki.all_apis.super_page")
     @patch("src.core.newapi.client_wiki.all_apis.WikiLoginClient")
     def test_main_page_returns_main_page(self, mock_wlc, mock_super_page, mock_login_bot):

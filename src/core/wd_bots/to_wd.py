@@ -148,7 +148,7 @@ def add_labels(
     lang,
 ):
     if is_wd_lag_high():
-        return ""
+        return False
 
     if not qid:
         logger.debug(" qid == '' ")
@@ -183,9 +183,9 @@ def add_sitelinks_to_wikidata(
     wiki,
     enlink: str = "",
     ensite: str = "",
-):
+) -> bool:
     if is_wd_lag_high():
-        return ""
+        return False
 
     if not wiki.endswith("wiki") and wiki.find("wiki") == -1 and wiki.find("wiktionary") == -1:
         wiki = f"{wiki}wiki"
@@ -226,13 +226,13 @@ def add_sitelinks_to_wikidata(
 def create_new_item(
     data2,
     summary,
-):
+) -> bool:
     """
     Create a new item in the API with the provided data and summary.
     """
 
     if is_wd_lag_high():
-        return ""
+        return False
 
     data = json.JSONEncoder().encode(data2)
 
