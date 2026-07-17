@@ -7,7 +7,6 @@ This module tests the helper functions for category member processing:
 X- merge_member_lists() - Merge multiple member lists
 - filter_invalid_members() - Filter out invalid members
 - deduplicate_members() - Remove duplicates from member list
-- remove_redirects() - Remove redirect pages
 - collect_category_members() - Main entry point for member collection
 """
 
@@ -181,21 +180,6 @@ class TestDeduplicateMembers:
         result = deduplicate_members(["A", "B", "C"])
 
         assert set(result) == {"A", "B", "C"}
-
-
-class TestRemoveRedirects:
-    """Tests for remove_redirects function."""
-
-    def test_calls_remove_redirect_pages(self, mocker):
-        """Test that remove_redirects calls remove_redirect_pages."""
-        mock_remove = mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", return_value=["A", "B"])
-
-        from src.mk_cats.members_helper import remove_redirects
-
-        result = remove_redirects("ar", ["A", "B", "C"])
-
-        mock_remove.assert_called_once_with("ar", ["A", "B", "C"])
-        assert result == ["A", "B"]
 
 
 class TestCollectCategoryMembers:

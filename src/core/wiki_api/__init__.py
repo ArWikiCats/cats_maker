@@ -1,4 +1,3 @@
-from .check_redirects import remove_redirect_pages
 from .LCN_new import (
     find_LCN,
     find_Page_Cat_without_hidden,
@@ -15,5 +14,4 @@ __all__ = [
     "set_cache_L_C_N",
     "get_cache_L_C_N",
     "sub_cats_query",
-    "remove_redirect_pages",
 ]

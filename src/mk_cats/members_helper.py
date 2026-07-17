@@ -15,9 +15,29 @@ import logging
 
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, MemberLister
-from ..core.wiki_api import remove_redirect_pages, sub_cats_query
+from ..core.wiki_api import sub_cats_query
+from ..shared.api_page import load_main_api
 
 logger = logging.getLogger(__name__)
+
+
+def load_non_redirects(lang: str, page_titles: list) -> dict:
+    """Return a mapping of page title -> True (exists) / False (missing) / "redirect"."""
+    if not page_titles:
+        return {}
+
+    _bot = load_main_api(lang, "wikipedia")
+
+    result = _bot.NewApi().Find_pages_exists_or_not(page_titles, get_redirect=True)
+    return result
+
+
+def remove_redirect_pages(lang: str, page_titles: list) -> list:
+    """Remove redirect pages from a list of page titles."""
+    result = load_non_redirects(lang, page_titles)
+    non_redirects = [x for x, v in result.items() if v is True]
+    logger.info(f"Removed {len(page_titles) - len(non_redirects)} redirect pages.")
+    return non_redirects
 
 
 def gather_members_from_sql(ar_title: str, en_page_title: str) -> list:
@@ -105,20 +125,6 @@ def deduplicate_members(members: list) -> list:
     return list(set(members))
 
 
-def remove_redirects(lang: str, members: list) -> list:
-    """
-    Remove redirect pages from the member list.
-
-    Args:
-        lang: The language code (e.g., "ar")
-        members: A list of category members
-
-    Returns:
-        A list of members with redirects removed
-    """
-    return remove_redirect_pages(lang, members)
-
-
 def collect_category_members(ar_title: str, en_page_title: str) -> list:
     """
         Collect, merge, filter, and normalize category members from all sources.
@@ -153,6 +159,6 @@ def collect_category_members(ar_title: str, en_page_title: str) -> list:
     members = filter_invalid_members(members)
 
     # Step 6: Remove redirects
-    members = remove_redirects("ar", members)
+    members = remove_redirect_pages("ar", members)
 
     return members
