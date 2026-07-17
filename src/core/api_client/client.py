@@ -528,13 +528,13 @@ class WikiLoginClient(CookiesClient, RequestsHandler):
 
         # Always request JSON and inject write-action safety params
         params = self._enrich_params({"format": "json", **params})
-
+        skip_value = {"token", "text"}
         logger.debug(
             "%s %s params=%s files=%s",
             method.upper(),
             self.api_url,
             # Never log token values
-            {k: ("***" if k == "token" else v) for k, v in params.items()},
+            {k: ("***" if k in skip_value else v) for k, v in params.items()},
             list(files.keys()) if files else None,
         )
         action = params.get("action")
