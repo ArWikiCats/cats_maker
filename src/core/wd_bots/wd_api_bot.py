@@ -13,13 +13,14 @@ import logging
 from functools import lru_cache
 from typing import Any
 
-from ..wiki_api import submitAPI
+from ...shared.api_page import load_main_api
 
 logger = logging.getLogger(__name__)
 
 
 def submitWikidataParams(params) -> dict[str, Any]:
-    return submitAPI(params, "www", "wikidata")
+    wikidata_api = load_main_api("www", "wikidata")
+    return wikidata_api.login_bot.client_request_safe(params)
 
 
 def format_sitelinks(sitelinks) -> dict[str, Any]:

@@ -47,9 +47,9 @@ class TestSubCatsQuery:
         assert "categorymembers" in result
 
     def test_calls_submit_api_for_uncached(self, mocker):
-        """Test that submitAPI is called for uncached queries"""
+        """Test that submitParams is called for uncached queries"""
         mocker.patch("src.core.wiki_api.sub_cats_bot.get_cache_L_C_N", return_value=None)
-        mock_submit = mocker.patch("src.core.wiki_api.sub_cats_bot.submitAPI", return_value={"query": {"pages": {}}})
+        mock_submit = mocker.patch("src.core.wiki_api.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
         mocker.patch("src.core.wiki_api.sub_cats_bot.set_cache_L_C_N")
 
         sub_cats_query("Category:Science", "en")
@@ -60,7 +60,7 @@ class TestSubCatsQuery:
         """Test that API call counter is incremented"""
         initial_count = API_n_CALLS[1]
         mocker.patch("src.core.wiki_api.sub_cats_bot.get_cache_L_C_N", return_value=None)
-        mocker.patch("src.core.wiki_api.sub_cats_bot.submitAPI", return_value={"query": {"pages": {}}})
+        mocker.patch("src.core.wiki_api.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
         mocker.patch("src.core.wiki_api.sub_cats_bot.set_cache_L_C_N")
 
         sub_cats_query("Category:NewCategory", "en")
@@ -70,7 +70,7 @@ class TestSubCatsQuery:
     def test_handles_subcat_type(self, mocker):
         """Test handling of subcat type parameter"""
         mocker.patch("src.core.wiki_api.sub_cats_bot.get_cache_L_C_N", return_value=None)
-        mock_submit = mocker.patch("src.core.wiki_api.sub_cats_bot.submitAPI", return_value={"query": {"pages": {}}})
+        mock_submit = mocker.patch("src.core.wiki_api.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
         mocker.patch("src.core.wiki_api.sub_cats_bot.set_cache_L_C_N")
 
         sub_cats_query("Category:Science", "en", ctype="subcat")
@@ -81,7 +81,7 @@ class TestSubCatsQuery:
     def test_handles_page_type(self, mocker):
         """Test handling of page type parameter"""
         mocker.patch("src.core.wiki_api.sub_cats_bot.get_cache_L_C_N", return_value=None)
-        mock_submit = mocker.patch("src.core.wiki_api.sub_cats_bot.submitAPI", return_value={"query": {"pages": {}}})
+        mock_submit = mocker.patch("src.core.wiki_api.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
         mocker.patch("src.core.wiki_api.sub_cats_bot.set_cache_L_C_N")
 
         sub_cats_query("Category:Science", "en", ctype="page")
@@ -93,7 +93,7 @@ class TestSubCatsQuery:
         """Test extraction of language links from response"""
         mocker.patch("src.core.wiki_api.sub_cats_bot.get_cache_L_C_N", return_value=None)
         mocker.patch(
-            "src.core.wiki_api.sub_cats_bot.submitAPI",
+            "src.core.wiki_api.sub_cats_bot.submitParams",
             return_value={
                 "query": {"pages": {"123": {"title": "Science", "ns": 14, "langlinks": [{"lang": "ar", "*": "علوم"}]}}}
             },
@@ -107,7 +107,7 @@ class TestSubCatsQuery:
     def test_returns_table_structure(self, mocker):
         """Test that result has correct table structure"""
         mocker.patch("src.core.wiki_api.sub_cats_bot.get_cache_L_C_N", return_value=None)
-        mocker.patch("src.core.wiki_api.sub_cats_bot.submitAPI", return_value={"query": {"pages": {}}})
+        mocker.patch("src.core.wiki_api.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
         mocker.patch("src.core.wiki_api.sub_cats_bot.set_cache_L_C_N")
 
         result = sub_cats_query("Category:Test", "en")

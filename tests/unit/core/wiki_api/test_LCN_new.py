@@ -6,33 +6,12 @@ This module tests the WikiApiHandler class and language link functions.
 
 from src.core.wiki_api.LCN_new import (
     LC_bot,
-    WikiApiCache,
     WikiApiHandler,
     find_LCN,
     find_Page_Cat_without_hidden,
-    get_arpage_inside_encat,
     get_cache_L_C_N,
     set_cache_L_C_N,
 )
-
-
-class TestWikiApiCache:
-    """Tests for WikiApiCache class"""
-
-    def test_init_creates_empty_cache(self):
-        """Test that WikiApiCache initializes with empty cache"""
-        cache = WikiApiCache()
-        assert cache.cache == {}
-
-    def test_init_with_custom_max_size(self):
-        """Test that WikiApiCache accepts custom max_size"""
-        cache = WikiApiCache(max_size=500)
-        assert cache.cache == {}
-
-    def test_init_with_custom_ttl(self):
-        """Test that WikiApiCache accepts custom ttl_seconds"""
-        cache = WikiApiCache(ttl_seconds=1800)
-        assert cache.cache == {}
 
 
 class TestWikiApiHandler:
@@ -56,44 +35,6 @@ class TestWikiApiHandler:
         handler = WikiApiHandler()
         assert handler.cache == {}
 
-    def test_init_empty_deleted_list(self):
-        """Test that handler initializes with empty deleted list"""
-        handler = WikiApiHandler()
-        assert handler.deleted == []
-
-    def test_init_api_call_count_zero(self):
-        """Test that API call count starts at zero"""
-        handler = WikiApiHandler()
-        assert handler.api_call_count == 0
-
-    def test_increment_api_call(self):
-        """Test API call counter increment"""
-        handler = WikiApiHandler()
-        count = handler._increment_api_call()
-        assert count == 1
-        count = handler._increment_api_call()
-        assert count == 2
-
-    def test_get_arpage_inside_encat_returns_none_for_missing_key(self):
-        """Test get_arpage_inside_encat returns None for missing key"""
-        handler = WikiApiHandler()
-        result = handler.get_arpage_inside_encat("nonexistent_key")
-        assert result is None
-
-    def test_get_arpage_inside_encat_returns_value_for_existing_key(self):
-        """Test get_arpage_inside_encat returns value for existing key"""
-        handler = WikiApiHandler()
-        handler.arpage_inside_en_cat["test_cat"] = ["page1", "page2"]
-        result = handler.get_arpage_inside_encat("test_cat")
-        assert result == ["page1", "page2"]
-
-    def test_get_deleting_page_returns_list(self):
-        """Test get_deleting_page returns deleted list"""
-        handler = WikiApiHandler()
-        handler.deleted = ["deleted_page"]
-        result = handler.get_deleting_page()
-        assert result == ["deleted_page"]
-
 
 class TestFindPageData:
     """Tests for find_page_data method"""
@@ -102,13 +43,13 @@ class TestFindPageData:
         """Test find_page_data with empty title returns None"""
         handler = WikiApiHandler()
         result = handler.find_page_data("")
-        assert result is None
+        assert result == {}
 
     def test_find_page_data_title_with_hash(self):
         """Test find_page_data with hash in title returns None"""
         handler = WikiApiHandler()
         result = handler.find_page_data("Page#Section")
-        assert result is None
+        assert result == {}
 
     def test_find_page_data_uses_cache(self, mocker):
         """Test find_page_data uses cache for repeated calls"""
@@ -126,13 +67,13 @@ class TestFindNonHiddenCategories:
         """Test that empty title returns None"""
         handler = WikiApiHandler()
         result = handler.find_non_hidden_categories("")
-        assert result is None
+        assert result == {}
 
     def test_title_with_hash_returns_none(self):
         """Test that title with hash returns None"""
         handler = WikiApiHandler()
         result = handler.find_non_hidden_categories("Page#Section")
-        assert result is None
+        assert result == {}
 
     def test_uses_cache_for_repeated_calls(self):
         """Test that cached results are returned"""
@@ -157,12 +98,6 @@ class TestBackwardCompatibilityFunctions:
         mock_method = mocker.patch.object(LC_bot, "find_non_hidden_categories", return_value={"test": True})
         result = find_Page_Cat_without_hidden("Test", prop="langlinks", site_code="ar")
         mock_method.assert_called_once()
-
-    def test_get_arpage_inside_encat_wrapper(self):
-        """Test get_arpage_inside_encat wrapper function"""
-        LC_bot.arpage_inside_en_cat["test_key"] = ["value"]
-        result = get_arpage_inside_encat("test_key")
-        assert result == ["value"]
 
     def test_set_cache_L_C_N_sets_value(self):
         """Test set_cache_L_C_N sets cache value"""
@@ -274,34 +209,6 @@ class TestParseApiResponse:
 
 class TestFindNonHiddenCategoriesIntegration:
     """Integration tests for find_working categories with API responses"""
-
-    def test_handles_pages_with_categories(self, mocker):
-        """Test handling pages with categories data"""
-        handler = WikiApiHandler()
-        mock_response = {
-            "query": {
-                "pages": {
-                    "789": {
-                        "title": "Test Category",
-                        "ns": 14,
-                        "categories": [
-                            {"title": "Category:SubCat1"},
-                            {"title": "Category:SubCat2", "hidden": ""},
-                        ],
-                        "langlinks": [
-                            {"lang": "ar", "*": "تصنيف فرعي 1"},
-                        ],
-                    }
-                }
-            }
-        }
-        mocker.patch(
-            "src.core.wiki_api.LCN_new.submitAPI",
-            return_value=mock_response,
-        )
-        result = handler.find_non_hidden_categories("Test Category")
-        assert result is not False
-        assert isinstance(result, dict)
 
     def test_lc_bot_has_default_config(self):
         """Test that LC_bot has default configuration"""

@@ -2,9 +2,10 @@
 """ """
 
 import logging
+from typing import Any
 
 from ...config import main_settings
-from ..wiki_api import submitAPI
+from ...shared.api_page import load_main_api
 from . import get_cache_L_C_N, set_cache_L_C_N
 
 logger = logging.getLogger(__name__)
@@ -12,14 +13,19 @@ logger = logging.getLogger(__name__)
 API_n_CALLS = {1: 0}
 
 
-def sub_cats_query(enlink, sitecode, ctype: str = ""):
+def submitParams(params, site_code: str) -> dict[str, Any]:
+    site_api = load_main_api(site_code, "wikipedia")
+    return site_api.login_bot.client_request_safe(params)
+
+
+def sub_cats_query(enlink, sitecode, ctype: str = "") -> dict[str, Any]:
     if not enlink:
-        return False
+        return {}
 
     tup = (enlink, sitecode, "sub_cats_query")
 
     if get_cache_L_C_N(tup):
-        return get_cache_L_C_N(tup)
+        return get_cache_L_C_N(tup) or {}
 
     langcode = main_settings.EEn_site.code  # 'en'
     if sitecode == "en":
@@ -51,7 +57,7 @@ def sub_cats_query(enlink, sitecode, ctype: str = ""):
     logger.info(f"API_n_CALLS {API_n_CALLS[1]} for {sitecode}:{enlink}")
 
     try:
-        api = submitAPI(params, sitecode, "wikipedia") or {}
+        data = submitParams(params, sitecode)
     except Exception:
         logger.exception(
             "sub_cats_query failed: sitecode=%s enlink=%s ctype=%s",
@@ -63,7 +69,7 @@ def sub_cats_query(enlink, sitecode, ctype: str = ""):
 
     tablemember = {}
 
-    pages = api.get("query", {}).get("pages", {})
+    pages = data.get("query", {}).get("pages", {})
 
     for _category, caca in pages.items():
         cate_title = caca["title"]
