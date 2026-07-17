@@ -18,6 +18,7 @@ try:
     from ArWikiCats import resolve_arabic_category_label  # type: ignore
 except ImportError:
     resolve_arabic_category_label = None
+    logging.warning("ArWikiCats not available.")
 
 
 def set_project_log_level(name: str, level: int) -> None:
@@ -85,6 +86,7 @@ def get_processing_state():
 
 
 def ar_make_lab(title, **kwargs) -> str:
+    title = str(title)
     okay = filter_category(title)
 
     if not okay:
