@@ -106,25 +106,25 @@ class TestMakeYearsTemp:
 
 class TestMainMakeTemp:
     def test_coronavirus_returns_empty(self):
-        result, temp = main_make_temp("", "تصنيف:فيروس كورونا")
+        result, temp = main_make_temp("تصنيف:فيروس كورونا")
         assert result == ""
 
     def test_numeric_prefix_returns_season(self):
-        result, temp = main_make_temp("", "تصنيف:123 test")
+        result, temp = main_make_temp("تصنيف:123 test")
         assert "تصنيف موسم" in result
 
     def test_decade_title(self):
-        result, temp = main_make_temp("", "تصنيف:عقد 1990")
+        result, temp = main_make_temp("تصنيف:عقد 1990")
         assert "عقد" in result
 
     def test_century_title(self):
-        result, temp = main_make_temp("", "تصنيف:القرن 19")
+        result, temp = main_make_temp("تصنيف:القرن 19")
         assert "قرن" in result
 
     def test_millennium_title(self):
-        result, temp = main_make_temp("", "تصنيف:الألفية الأولى")
+        result, temp = main_make_temp("تصنيف:الألفية الأولى")
         assert "الألفية" in result
 
     def test_normal_category_returns_empty(self):
-        result, temp = main_make_temp("", "تصنيف:علوم")
+        result, temp = main_make_temp("تصنيف:علوم")
         assert result == ""

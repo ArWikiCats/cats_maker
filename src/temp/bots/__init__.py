@@ -21,7 +21,7 @@ from .temp_years import make_years_template
 logger = logging.getLogger(__name__)
 
 
-def main_make_temp(enca, title) -> tuple[str, str]:
+def main_make_temp(title) -> tuple[str, str]:
     title = re.sub(r"_", " ", title)
     logger.info("=====================")
     logger.info(f'main: title:"{title}"')
@@ -101,7 +101,7 @@ def main_make_temp(enca, title) -> tuple[str, str]:
 
 
 def main_make_temp_no_title(title) -> str:
-    result, _ = main_make_temp("", title)
+    result, _ = main_make_temp(title)
 
     return result.strip()
 

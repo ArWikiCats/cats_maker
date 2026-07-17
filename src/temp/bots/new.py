@@ -144,7 +144,7 @@ class TemplatesMaker:
         return (text, template) if return_title else text
 
     @classmethod
-    def main_make_temp(cls, enca, title):
+    def main_make_temp(cls, title):
         title = re.sub(r"_", " ", title)
         if "فيروس كورونا" in title:
             return "", ""

@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """ """
 
+from typing import Any
+
 from ..core.wd_bots import Get_P373_API
 from ..shared.api_page import load_main_api
 from ..temp import main_make_temp_no_title
@@ -41,7 +43,7 @@ def fetch_commons_category(entitle, qid):
     return template
 
 
-def generate_portal_content(title, enca, return_list: bool = False):
+def generate_portal_content(title, enca) -> list[Any]:
     lilo = []
     en_links = get_page_link_data(enca, "en", 100)
 
@@ -63,24 +65,19 @@ def generate_portal_content(title, enca, return_list: bool = False):
             if title.find(" %s " % xc) != -1 or title.startswith("تصنيف:%s " % xc) or title.endswith(" %s" % xc):
                 lilo.append(xc)
 
-    litp = ""
-
-    if len(lilo) != 0:
-        litp = "|".join(lilo)
-
-        litp = "{{بوابة|%s}}\n" % litp
-
-    if return_list:
-        return litp, lilo
-
-    return litp
+    return lilo
 
 
 def generate_category_text(enca, title, qid):
-    ff = main_make_temp_no_title(enca, title)
+    ff = main_make_temp_no_title(title)
 
-    text = ""
-    text += generate_portal_content(title, enca)
+    lilo = generate_portal_content(title, enca)
+    litp = ""
+    if len(lilo) != 0:
+        litp = "|".join(lilo)
+        litp = "{{بوابة|%s}}\n" % litp
+
+    text = litp
     text += "{{نسخ:#لوموجود:{{نسخ:اسم_الصفحة}}|{{مقالة تصنيف}}|}}\n"
     text += fetch_commons_category(enca, qid)
 

@@ -4,6 +4,8 @@
 import functools
 import logging
 
+from src.core.newapi.client_wiki.pages.super_page import MainPage
+
 from ..core.new_c18 import add_text_to_template, get_dont_add_pages, sort_categories
 from ..core.newapi import function_timer
 from ..shared.api_page import load_main_api
@@ -22,7 +24,7 @@ def add_text_to_articles(final_categories, newtext):
 
 
 @functools.lru_cache(maxsize=1024)
-def _get_page(page_title):
+def _get_page(page_title) -> MainPage | None:
     api = load_main_api("ar")
     page = api.MainPage(page_title)
 
@@ -30,13 +32,13 @@ def _get_page(page_title):
 
     if not text:
         logger.info(' text = "" ')
-        return False
+        return None
 
     if page.isRedirect():
-        return False
+        return None
 
     if page.isDisambiguation():
-        return False
+        return None
 
     if not page.exists():
         return False
@@ -44,7 +46,7 @@ def _get_page(page_title):
     page_edit = page.can_edit(script="cat")
 
     if not page_edit:
-        return False
+        return None
 
     return page
 

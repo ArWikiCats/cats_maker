@@ -70,23 +70,23 @@ test_data_millennium = {
 
 @pytest.mark.parametrize("cat, expected", test_data_general.items(), ids=test_data_general.keys())
 def test_general(cat: str, expected):
-    result, temp_name = main_make_temp("", cat)
+    result, temp_name = main_make_temp(cat)
     assert [result, temp_name] == expected
 
 
 @pytest.mark.parametrize("cat, expected", test_data_decade.items(), ids=test_data_decade.keys())
 def test_decade(cat: str, expected):
-    result, temp_name = main_make_temp("", cat)
+    result, temp_name = main_make_temp(cat)
     assert [result, temp_name] == expected
 
 
 @pytest.mark.parametrize("cat, expected", test_data_century.items(), ids=test_data_century.keys())
 def test_century(cat: str, expected):
-    result, temp_name = main_make_temp("", cat)
+    result, temp_name = main_make_temp(cat)
     assert [result, temp_name] == expected
 
 
 @pytest.mark.parametrize("cat, expected", test_data_millennium.items(), ids=test_data_millennium.keys())
 def test_millennium(cat: str, expected):
-    result, temp_name = main_make_temp("", cat)
+    result, temp_name = main_make_temp(cat)
     assert [result, temp_name] == expected
