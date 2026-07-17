@@ -14,7 +14,7 @@ from src.core.new_c18.models import ValidationResult
 
 
 class TestGetNoTemplates:
-    @patch("src.core.new_c18.core.category_validator.settings")
+    @patch("src.core.new_c18.core.category_validator.main_settings")
     @patch("src.core.new_c18.core.category_validator.NO_TEMPLATES_AR", frozenset(["stub"]))
     @patch("src.core.new_c18.core.category_validator.NO_TEMPLATES_AR_WITHOUT_STUBS", frozenset(["redirect"]))
     def test_returns_no_templates_ar(self, mock_settings):
@@ -22,7 +22,7 @@ class TestGetNoTemplates:
         result = _get_no_templates()
         assert "stub" in result
 
-    @patch("src.core.new_c18.core.category_validator.settings")
+    @patch("src.core.new_c18.core.category_validator.main_settings")
     @patch("src.core.new_c18.core.category_validator.NO_TEMPLATES_AR", frozenset(["stub"]))
     @patch("src.core.new_c18.core.category_validator.NO_TEMPLATES_AR_WITHOUT_STUBS", frozenset(["redirect"]))
     def test_returns_no_templates_without_stubs(self, mock_settings):
@@ -75,7 +75,7 @@ class TestCheckPageStatus:
             "templates": {"Template:Nobots"},
         }
         with (
-            patch("src.core.new_c18.core.category_validator.settings") as mock_settings,
+            patch("src.core.new_c18.core.category_validator.main_settings") as mock_settings,
             patch("src.core.new_c18.core.category_validator._get_false_templates", return_value=frozenset(["nobots"])),
         ):
             mock_settings.category.keep = False

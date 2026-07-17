@@ -20,7 +20,7 @@ class TestLoadSession:
 
 class TestSubmitAPI:
     @patch("src.core.wiki_api.api_requests._load_session")
-    @patch("src.core.wiki_api.api_requests.settings")
+    @patch("src.core.wiki_api.api_requests.main_settings")
     def test_basic_query(self, mock_settings, mock_load_session):
         mock_settings.wikipedia.user_agent = "test"
         mock_settings.wikipedia.default_timeout = 30
@@ -34,7 +34,7 @@ class TestSubmitAPI:
         assert "query" in result
 
     @patch("src.core.wiki_api.api_requests._load_session")
-    @patch("src.core.wiki_api.api_requests.settings")
+    @patch("src.core.wiki_api.api_requests.main_settings")
     def test_strips_wiki_suffix(self, mock_settings, mock_load_session):
         mock_settings.wikipedia.user_agent = "test"
         mock_settings.wikipedia.default_timeout = 30
@@ -49,7 +49,7 @@ class TestSubmitAPI:
         assert "en.wikipedia.org" in call_args[0][0]
 
     @patch("src.core.wiki_api.api_requests._load_session")
-    @patch("src.core.wiki_api.api_requests.settings")
+    @patch("src.core.wiki_api.api_requests.main_settings")
     def test_joins_titles_list(self, mock_settings, mock_load_session):
         mock_settings.wikipedia.user_agent = "test"
         mock_settings.wikipedia.default_timeout = 30
@@ -64,7 +64,7 @@ class TestSubmitAPI:
         assert call_data["titles"] == "A|B"
 
     @patch("src.core.wiki_api.api_requests._load_session")
-    @patch("src.core.wiki_api.api_requests.settings")
+    @patch("src.core.wiki_api.api_requests.main_settings")
     def test_commons_maps_to_wikimedia(self, mock_settings, mock_load_session):
         mock_settings.wikipedia.user_agent = "test"
         mock_settings.wikipedia.default_timeout = 30
@@ -79,7 +79,7 @@ class TestSubmitAPI:
         assert "wikimedia.org" in call_args[0][0]
 
     @patch("src.core.wiki_api.api_requests._load_session")
-    @patch("src.core.wiki_api.api_requests.settings")
+    @patch("src.core.wiki_api.api_requests.main_settings")
     def test_timeout_returns_empty(self, mock_settings, mock_load_session):
         import requests as req_lib
 

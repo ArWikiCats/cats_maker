@@ -13,7 +13,7 @@ from src.config import (
     WikidataConfig,
     WikipediaConfig,
     WikiSiteInfo,
-    settings,
+    main_settings,
 )
 from src.config.settings import _safe_int, default_user_agent
 
@@ -253,42 +253,42 @@ class TestSettingsEnvVars:
 
 
 class TestGlobalSettings:
-    """Tests for the global settings instance."""
+    """Tests for the global main_settings instance."""
 
     def test_settings_instance_exists(self):
-        """Test that global settings instance exists."""
+        """Test that global main_settings instance exists."""
 
-        assert settings is not None
+        assert main_settings is not None
 
     def test_settings_is_settings_type(self):
-        """Test that global settings is Settings type."""
+        """Test that global main_settings is Settings type."""
 
-        assert isinstance(settings, Settings)
+        assert isinstance(main_settings, Settings)
 
     def test_settings_has_default_wikipedia(self):
-        """Test settings has default Wikipedia config."""
+        """Test main_settings has default Wikipedia config."""
 
-        assert settings.wikipedia.ar_code == "ar"
-        assert settings.wikipedia.en_code == "en"
+        assert main_settings.wikipedia.ar_code == "ar"
+        assert main_settings.wikipedia.en_code == "en"
 
     def test_settings_has_default_wikidata(self):
-        """Test settings has default Wikidata config."""
+        """Test main_settings has default Wikidata config."""
 
-        assert settings.wikidata.endpoint == "https://www.wikidata.org/w/api.php"
+        assert main_settings.wikidata.endpoint == "https://www.wikidata.org/w/api.php"
 
     def test_settings_has_default_database(self):
-        """Test settings has default Database config."""
+        """Test main_settings has default Database config."""
 
-        assert settings.database.port == 3306
+        assert main_settings.database.port == 3306
 
 
 class TestModuleExports:
     """Tests for module exports."""
 
     def test_exports_settings(self):
-        """Test settings is exported."""
+        """Test main_settings is exported."""
 
-        assert settings is not None
+        assert main_settings is not None
 
     def test_exports_settings_class(self):
         """Test Settings class is exported."""
@@ -677,7 +677,7 @@ class TestProcessArgv:
         assert s.category.make_new_cat is False
 
     def test_slang(self, monkeypatch):
-        """Test -slang:fr sets secondary_lang and related settings."""
+        """Test -slang:fr sets secondary_lang and related main_settings."""
         monkeypatch.setattr(sys, "argv", ["test", "-slang:fr"])
         s = Settings()
         assert s.site.secondary_lang == "fr"

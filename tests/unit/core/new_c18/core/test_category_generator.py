@@ -12,7 +12,7 @@ from src.core.new_c18.core.category_generator import (
 
 
 class TestGetNamespaceIds:
-    @patch("src.core.new_c18.core.category_generator.settings")
+    @patch("src.core.new_c18.core.category_generator.main_settings")
     @patch("src.core.new_c18.core.category_generator.DEFAULT_MEMBER_NAMESPACES", [0, 10, 14])
     @patch("src.core.new_c18.core.category_generator.STUB_MEMBER_NAMESPACES", [0, 14])
     def test_default_namespaces(self, mock_settings):
@@ -20,7 +20,7 @@ class TestGetNamespaceIds:
         result = _get_namespace_ids()
         assert result == [0, 10, 14]
 
-    @patch("src.core.new_c18.core.category_generator.settings")
+    @patch("src.core.new_c18.core.category_generator.main_settings")
     @patch("src.core.new_c18.core.category_generator.DEFAULT_MEMBER_NAMESPACES", [0, 10, 14])
     @patch("src.core.new_c18.core.category_generator.STUB_MEMBER_NAMESPACES", [0, 14])
     def test_stub_namespaces(self, mock_settings):
@@ -57,7 +57,7 @@ class TestFetchCategoryMembers:
 
 class TestTranslateTitlesToAr:
     @patch("src.core.new_c18.core.category_generator.find_LCN")
-    @patch("src.core.new_c18.core.category_generator.settings")
+    @patch("src.core.new_c18.core.category_generator.main_settings")
     def test_returns_translated_titles(self, mock_settings, mock_find_lcn):
         mock_settings.EEn_site.code = "en"
         mock_find_lcn.return_value = {
@@ -69,7 +69,7 @@ class TestTranslateTitlesToAr:
         assert "رياضيات" in result
 
     @patch("src.core.new_c18.core.category_generator.find_LCN")
-    @patch("src.core.new_c18.core.category_generator.settings")
+    @patch("src.core.new_c18.core.category_generator.main_settings")
     def test_skips_missing_translations(self, mock_settings, mock_find_lcn):
         mock_settings.EEn_site.code = "en"
         mock_find_lcn.return_value = {
@@ -79,7 +79,7 @@ class TestTranslateTitlesToAr:
         assert result == []
 
     @patch("src.core.new_c18.core.category_generator.find_LCN")
-    @patch("src.core.new_c18.core.category_generator.settings")
+    @patch("src.core.new_c18.core.category_generator.main_settings")
     def test_empty_result(self, mock_settings, mock_find_lcn):
         mock_settings.EEn_site.code = "en"
         mock_find_lcn.return_value = None
