@@ -2,6 +2,9 @@
 # Typed exceptions so callers can catch specific failure modes.
 
 
+from __future__ import annotations
+
+
 class WikiClientError(Exception):
     """Base exception for all api_client errors."""
 
@@ -18,9 +21,19 @@ class MaxlagError(WikiClientError):
     """Raised when server maxlag is not resolved after all attempts."""
 
 
-class MaxRetriesExceeded(WikiClientError):
+class MaxRetriesExceededError(WikiClientError):
     """Raised when the generic retry cap is hit."""
 
 
 class CookieError(WikiClientError):
     """Raised when the cookie file cannot be read or written."""
+
+
+__all__ = [
+    "WikiClientError",
+    "LoginError",
+    "CSRFError",
+    "MaxlagError",
+    "MaxRetriesExceededError",
+    "CookieError",
+]

@@ -28,7 +28,7 @@ except Exception:
 @dataclass(frozen=True)
 class Paths:
     cookies_dir: str
-    dont_add_to_pages_path: str
+    dont_add_to_pages_path: str | None
     arwikicats_path: str
 
 

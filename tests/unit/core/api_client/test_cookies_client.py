@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from src.core.api_client.cookies import (
+from src.core.api_client.cookies_client import (
     _COOKIE_MAX_AGE_DAYS,
     _delete_cookie_file,
     _delete_if_stale,
