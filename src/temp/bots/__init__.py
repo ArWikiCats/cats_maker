@@ -70,7 +70,7 @@ def main_make_temp(title) -> tuple[str, str]:
             t_33 = f"تصنيف:{tex}سنة {numb}"
             t_44 = f"تصنيف:{tex}عام {numb}"
             if title.startswith((t_2, t_33, t_44)):
-                return make_years_template(title, tex, return_title=True)
+                return make_years_template(title, tex)
 
     for texd in ["تصنيف:تأسيسات عقد", "تصنيف:انحلالات عقد", "تصنيف:عقد"]:
         if title.startswith(texd):

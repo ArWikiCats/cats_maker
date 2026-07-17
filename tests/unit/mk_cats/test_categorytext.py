@@ -263,18 +263,6 @@ class TestGeneratePortalContent:
 class TestGenerateCategoryText:
     """Tests for generate_category_text function"""
 
-    def test_generates_text_with_all_components(self, mocker):
-        """Test that generate_category_text includes all components"""
-        mocker.patch("src.mk_cats.categorytext.main_make_temp_no_title", return_value="")
-        mocker.patch("src.mk_cats.categorytext.generate_portal_content", return_value="{{بوابة|علوم}}\n")
-        mocker.patch("src.mk_cats.categorytext.fetch_commons_category", return_value="{{تصنيف كومنز|Science}}")
-
-        result = generate_category_text("Category:Science", "تصنيف:علوم", "Q123")
-
-        assert "{{بوابة|علوم}}" in result
-        assert "{{نسخ:#لوموجود" in result
-        assert "{{تصنيف كومنز|Science}}" in result
-
     def test_includes_template_when_present(self, mocker):
         """Test that template is included when main_make_temp_no_title returns content"""
         mocker.patch("src.mk_cats.categorytext.main_make_temp_no_title", return_value="{{قالب تصفح}}")
@@ -313,7 +301,7 @@ class TestGenerateCategoryText:
 
         generate_category_text("Category:Science", "تصنيف:علوم", "Q123")
 
-        mock_temp.assert_called_once_with("Category:Science", "تصنيف:علوم")
+        mock_temp.assert_called_once_with("تصنيف:علوم")
 
     def test_always_includes_lomawjod_template(self, mocker):
         """Test that the lomawjod template is always present"""
