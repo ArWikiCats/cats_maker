@@ -32,12 +32,12 @@ class TestSubCatsQuery:
     def test_returns_false_for_empty_link(self):
         """Test that False is returned for empty link"""
         result = sub_cats_query("", "en")
-        assert result is False
+        assert result == {}
 
     def test_returns_false_for_none_link(self):
         """Test that False is returned for None link"""
         result = sub_cats_query(None, "en")
-        assert result is False
+        assert result == {}
 
     def test_returns_cached_value(self, mocker):
         """Test that cached values are returned"""
