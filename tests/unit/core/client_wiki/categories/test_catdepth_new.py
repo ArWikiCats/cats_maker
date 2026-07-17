@@ -4,8 +4,6 @@ Unit tests for src/core/client_wiki/categories/catdepth_new.py module.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from src.core.client_wiki.categories.catdepth_new import args_group, subcatquery, title_process
 
 

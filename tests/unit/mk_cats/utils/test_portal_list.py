@@ -4,8 +4,6 @@ Tests for portal_list.py
 This module tests the portal English to Arabic mapping.
 """
 
-import pytest
-
 from src.mk_cats.utils.portal_list import (
     portal_en_to_ar_lower,
 )

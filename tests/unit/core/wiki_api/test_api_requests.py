@@ -4,8 +4,6 @@ Unit tests for src/core/wiki_api/api_requests.py module.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from src.core.wiki_api.api_requests import _load_session, submitAPI
 
 

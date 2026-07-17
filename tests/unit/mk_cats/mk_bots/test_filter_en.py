@@ -4,8 +4,6 @@ Tests for filter_en.py
 This module tests English category filtering functions.
 """
 
-import pytest
-
 from src.mk_cats.utils.filter_en import (
     BBlcak,
     blcak_starts,

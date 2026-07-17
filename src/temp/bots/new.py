@@ -41,16 +41,16 @@ class TemplatesMaker:
                     centry2 = ""
                 cls.Baco_centries[str(centry)] = elff
 
-                decades = cls.decades_list.get(centry, [f"{centry2}{x}0" for x in range(0, 10)])
+                decades = cls.decades_list.get(centry, [f"{centry2}{x}0" for x in range(10)])
                 for dic in decades:
                     if dic == "00":
                         dic = "0"
                     cls.Baco_decades[str(dic)] = centry
                     cls.Baco[int(dic)] = centry
 
-                    years = [int(dic) + x for x in range(0, 10)]
+                    years = [int(dic) + x for x in range(10)]
                     if int(dic) < 1:
-                        years = [int(dic) - x for x in range(0, 10)]
+                        years = [int(dic) - x for x in range(10)]
                     for year in years:
                         cls.years_Baco[str(year)] = {"dic": dic, "centry": centry}
 

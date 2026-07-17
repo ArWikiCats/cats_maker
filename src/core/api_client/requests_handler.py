@@ -9,7 +9,6 @@ from typing import Any, Optional
 import requests
 
 from ...config import settings
-
 from .exceptions import (
     CSRFError,
     MaxlagError,
@@ -22,6 +21,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # RequestsHandler — transport + retry layer
 # ---------------------------------------------------------------------------
+
 
 class RequestsHandler:
     """
@@ -160,7 +160,11 @@ class RequestsHandler:
                         f"attempts. Last error: {error_info or error_code}"
                     )
                 working_data, working_params = self._handle_csrf(
-                    error_code, error_info, attempt, working_data, working_params,
+                    error_code,
+                    error_info,
+                    attempt,
+                    working_data,
+                    working_params,
                 )
                 continue
 
@@ -275,6 +279,7 @@ class RequestsHandler:
             settings.api_client.max_retries,
         )
         time.sleep(delay)
+
 
 __all__ = [
     "RequestsHandler",

@@ -42,7 +42,7 @@ class DatabaseManager:
         logger.info("DatabaseManager initialized.")
 
     @contextmanager
-    def get_connection(self, wiki: str) -> Generator[pymysql.connections.Connection, None, None]:
+    def get_connection(self, wiki: str) -> Generator[pymysql.connections.Connection]:
         """
         Provide a database connection within a context manager.
 

@@ -20,8 +20,7 @@ def _load_session() -> requests.Session:
 
 
 def submitAPI(params, Code, family, **kwargs):
-    if Code.endswith("wiki"):
-        Code = Code[:-4]
+    Code = Code.removesuffix("wiki")
 
     params["formatversion"] = 1
     params["utf8"] = 1

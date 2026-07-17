@@ -4,8 +4,6 @@ Tests for skip_cats.py
 This module tests the category skip lists and template blacklists.
 """
 
-import pytest
-
 from src.core.utils.skip_cats import (
     NO_Templates_lower,
     global_False_entemps,
@@ -99,7 +97,7 @@ class TestNOTemplatesLower:
 
     def test_correspondence_with_original(self):
         """Test that each item corresponds to original list (lowercase)"""
-        for original, lower in zip(global_False_entemps, NO_Templates_lower):
+        for original, lower in zip(global_False_entemps, NO_Templates_lower, strict=False):
             assert original.lower() == lower
 
 

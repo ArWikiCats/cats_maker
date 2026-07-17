@@ -2,9 +2,7 @@
 Unit tests for src/core/new_c18/core/category_validator.py module.
 """
 
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from src.core.new_c18.core.category_validator import (
     _check_page_status,

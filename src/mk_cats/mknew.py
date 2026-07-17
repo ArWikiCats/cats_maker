@@ -344,7 +344,7 @@ def process_catagories(cat, arlab, num: int, lenth, callback=None) -> None:
 
     ma_table = make_ar(cat, arlab, callback=callback)
 
-    for i in range(0, settings.range_limit):
+    for i in range(settings.range_limit):
         if not ma_table:
             break
 

@@ -4,8 +4,6 @@ Unit tests for src/core/new_c18/io/sql_queries.py module.
 
 from unittest.mock import patch
 
-import pytest
-
 from src.core.new_c18.io.sql_queries import (
     fetch_ar_category_members,
     fetch_dont_add_pages,

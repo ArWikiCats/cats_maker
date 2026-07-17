@@ -1,7 +1,6 @@
 """ """
 
 import logging
-from copy import deepcopy
 from typing import Any, Dict, Optional, Union
 
 from ....config import settings

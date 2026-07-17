@@ -23,8 +23,6 @@ from src.mk_cats.mknew import add_to_final_list
 class TestCheckIfArtitleExists:
     """Tests for check_if_artitle_exists function."""
 
-    pass
-
 
 class TestArMakeLab:
     """Tests for ar_make_lab function."""

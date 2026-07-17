@@ -99,8 +99,7 @@ class CategoryResolver:
         for i in range(0, len(titles), batch_size):
             batch = titles[i : i + batch_size]
             part_list = "|".join(batch)
-            if part_list.startswith("|"):
-                part_list = part_list[1:]
+            part_list = part_list.removeprefix("|")
 
             result = find_LCN(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
             if not result:

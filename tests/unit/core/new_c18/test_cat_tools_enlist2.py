@@ -4,8 +4,6 @@ Tests for category_resolver.py
 This module tests category member API functions.
 """
 
-import pytest
-
 from src.core.new_c18.core.category_resolver import CategoryResolver
 
 

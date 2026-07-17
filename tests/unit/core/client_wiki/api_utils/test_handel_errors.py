@@ -4,8 +4,6 @@ Tests for handel_errors.py
 This module tests error handling functions.
 """
 
-import pytest
-
 from src.core.client_wiki.api_utils.handel_errors import HandleErrors
 
 

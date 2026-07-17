@@ -5,10 +5,7 @@ Unit tests for src/core/new_c18/io/json_store.py module.
 import json
 import os
 from datetime import datetime, timedelta
-from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from src.core.new_c18.io.json_store import JsonStore, _load_json, _save_json, get_dont_add_pages
 

@@ -4,8 +4,6 @@ Unit tests for src/core/new_c18/core/category_generator.py module.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from src.core.new_c18.core.category_generator import (
     _get_namespace_ids,
     fetch_category_members,

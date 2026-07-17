@@ -57,7 +57,7 @@ def main_make_temp(enca, title) -> tuple[str, str]:
         tt = f"تصنيف:{month}"
         tt2 = f"تصنيف:أحداث {month}"
         if title.startswith(tt) or title.startswith(tt2):
-            text = f"{{{{تصنيف شهر|{month}}}}}\n"  # noqa
+            text = f"{{{{تصنيف شهر|{month}}}}}\n"
             return text, "تصنيف شهر"
 
     if title.startswith("تصنيف:صناديق تصفح"):
@@ -65,7 +65,7 @@ def main_make_temp(enca, title) -> tuple[str, str]:
         return text, "تصنيف قوالب"
 
     for tex in ["تأسيسات ", "انحلالات "]:
-        for numb in range(0, 10):
+        for numb in range(10):
             t_2 = f"تصنيف:{tex}{numb}"
             t_33 = f"تصنيف:{tex}سنة {numb}"
             t_44 = f"تصنيف:{tex}عام {numb}"

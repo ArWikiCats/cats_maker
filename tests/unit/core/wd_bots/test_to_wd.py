@@ -4,12 +4,7 @@ Unit tests for src/core/wd_bots/to_wd.py module.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from src.core.wd_bots.to_wd import (
-    after_success,
-    create_new_item,
-    log_to_wikidata,
     log_to_wikidata_qid,
     makejson,
     outbot_json,

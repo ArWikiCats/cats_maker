@@ -2,9 +2,7 @@
 Unit tests for src/core/client_wiki/api_utils/ask_bot.py module.
 """
 
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from src.core.client_wiki.api_utils import ask_bot
 from src.core.client_wiki.api_utils.ask_bot import AskBot, showDiff

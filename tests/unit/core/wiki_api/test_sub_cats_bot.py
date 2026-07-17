@@ -4,8 +4,6 @@ Tests for sub_cats_bot.py
 This module tests subcategory query functions.
 """
 
-import pytest
-
 from src.core.wiki_api.sub_cats_bot import (
     API_n_CALLS,
     sub_cats_query,

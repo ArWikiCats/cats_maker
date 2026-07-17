@@ -4,9 +4,7 @@ Tests for categorytext.py
 This module tests category text generation functions.
 """
 
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from src.mk_cats.categorytext import (
     LocalLanguageLinks,

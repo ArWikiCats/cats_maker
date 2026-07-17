@@ -2,8 +2,6 @@
 Unit tests for src/core/new_c18/core/cross_wiki_linker.py module.
 """
 
-import pytest
-
 from src.core.new_c18.core.cross_wiki_linker import (
     _update_caches,
     get_en_link_from_ar_text,

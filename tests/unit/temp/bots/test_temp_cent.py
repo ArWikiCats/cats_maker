@@ -3,8 +3,6 @@
 Test file for make_century_template function
 """
 
-import sys
-from pathlib import Path
 
 from src.temp.bots import make_century_template
 

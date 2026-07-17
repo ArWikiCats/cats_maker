@@ -2,7 +2,6 @@
 Unit tests for src/core/utils/functions_timer.py module.
 """
 
-import logging
 from unittest.mock import patch
 
 from src.core.utils.functions_timer import function_timer
@@ -27,7 +26,6 @@ class TestFunctionTimer:
         @function_timer
         def my_func():
             """My docstring."""
-            pass
 
         assert my_func.__doc__ == "My docstring."
 

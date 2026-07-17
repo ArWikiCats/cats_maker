@@ -4,8 +4,6 @@ Unit tests for src/core/api_client/cookies.py module.
 
 import os
 from datetime import datetime, timedelta
-from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 from src.core.api_client.cookies_client import (
     _COOKIE_MAX_AGE_DAYS,
@@ -13,7 +11,6 @@ from src.core.api_client.cookies_client import (
     _delete_if_stale,
     get_cookie_path,
 )
-from src.core.api_client.exceptions import CookieError
 
 
 class TestGetCookiePath:

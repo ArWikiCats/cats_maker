@@ -3,15 +3,12 @@ Unit tests for src/core/wd_bots/lag_bot.py module.
 TODO: write tests
 """
 
-import pytest
-
 from src.core.wd_bots.lag_bot import (
     FFa_lag,
     Find_Lag,
     do_lag,
     find_lag,
     is_wd_lag_high,
-    make_sleep_def,
 )
 
 

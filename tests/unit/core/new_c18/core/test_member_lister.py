@@ -4,8 +4,6 @@ Tests for member_lister.py
 This module tests category page listing functions.
 """
 
-import pytest
-
 from src.core.new_c18.core.member_lister import MemberLister
 
 

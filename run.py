@@ -87,8 +87,7 @@ def main():
     for arg in sys.argv:
         argn, _, value = arg.partition(":")
 
-        if argn.startswith("-"):
-            argn = argn[1:]
+        argn = argn.removeprefix("-")
 
         # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:357357
         # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:231528

@@ -11,10 +11,6 @@ X- merge_member_lists() - Merge multiple member lists
 - collect_category_members() - Main entry point for member collection
 """
 
-from unittest.mock import MagicMock
-
-import pytest
-
 from src.mk_cats.members_helper import gather_members_from_api, gather_members_from_sql
 
 

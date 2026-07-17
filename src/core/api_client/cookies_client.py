@@ -2,10 +2,10 @@
 # Pure functions for loading and saving a MozillaCookieJar.
 # No class, no state — compose with anything that holds a requests.Session.
 
+import http.cookiejar
 import logging
 import os
 import stat
-import http.cookiejar
 from datetime import datetime, timedelta
 from pathlib import Path
 

@@ -4,8 +4,6 @@ Tests for service.py
 This module tests namespace handling and SQL query functions for MediaWiki.
 """
 
-import pytest
-
 from src.core.api_sql.service import CategoryComparator
 
 

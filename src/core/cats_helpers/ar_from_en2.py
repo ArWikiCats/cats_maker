@@ -19,8 +19,7 @@ def get_ar_list_title_from_en_list(enlist, wiki: str = "en"):
         liste = enlist[i : i + 50]
         part_list = "|".join(liste)
         if part_list:
-            if part_list.startswith("|"):
-                part_list = part_list[len("|") :]
+            part_list = part_list.removeprefix("|")
 
             sito_code = settings.EEn_site.code
 

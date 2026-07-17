@@ -3,8 +3,6 @@ Unit tests for src/core/wd_bots/wd_bots_main.py module.
 TODO: write tests
 """
 
-import pytest
-
 from src.core.wd_bots.wd_bots_main import WdAPI
 
 
