@@ -153,7 +153,7 @@ class TemplatesMaker:
         for tex in ["تأسيسات ", "انحلالات "]:
             if any(title.startswith(f"تصنيف:{tex}{n}") for n in range(10)):
                 return cls.make_years_template(title, tex, return_title=True)
-        if title.startswith("تصنيف:عقد") or title.startswith("تصنيف:تأسيسات عقد"):
+        if title.startswith(("تصنيف:عقد", "تصنيف:تأسيسات عقد")):
             return cls.make_decades_template(title)
         if "القرن" in title:
             return cls.make_century_template(title)

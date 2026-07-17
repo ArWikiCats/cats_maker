@@ -74,7 +74,7 @@ class TestMaxlagHandling:
 
         site.connection.request.side_effect = [maxlag_response, success_response]
 
-        with patch("src.core.api_client.client.time.sleep") as mock_sleep:
+        with patch("src.core.api_client.requests_handler.time.sleep") as mock_sleep:
             result = client.client_request_retry({"action": "query"}, method="get")
             assert "query" in result
 
@@ -86,7 +86,7 @@ class TestMaxlagHandling:
         maxlag_response.json.return_value = {"error": {"code": "maxlag", "info": "Lag"}}
         site.connection.request.return_value = maxlag_response
 
-        with patch("src.core.api_client.client.time.sleep"):
+        with patch("src.core.api_client.requests_handler.time.sleep"):
             with pytest.raises(MaxlagError):
                 client.client_request_retry({"action": "query"}, method="get")
 
@@ -174,7 +174,7 @@ class TestHandleMaxlag:
         response = MagicMock()
         response.headers = {"Retry-After": "3"}
 
-        with patch("src.core.api_client.client.time.sleep") as mock_sleep:
+        with patch("src.core.api_client.requests_handler.time.sleep") as mock_sleep:
             client._handle_maxlag(response, 1)
             mock_sleep.assert_called_with(3.0)
 
@@ -183,7 +183,7 @@ class TestHandleMaxlag:
         response = MagicMock()
         response.headers = {"Retry-After": "not_a_number"}
 
-        with patch("src.core.api_client.client.time.sleep") as mock_sleep:
+        with patch("src.core.api_client.requests_handler.time.sleep") as mock_sleep:
             with patch("src.core.api_client.client.settings") as mock_settings:
                 mock_settings.api_client.backoff_base = 1
                 mock_settings.api_client.maxlag_header = "Retry-After"
@@ -196,7 +196,7 @@ class TestHandleMaxlag:
         response = MagicMock()
         response.headers = {}
 
-        with patch("src.core.api_client.client.time.sleep") as mock_sleep:
+        with patch("src.core.api_client.requests_handler.time.sleep") as mock_sleep:
             with patch("src.core.api_client.client.settings") as mock_settings:
                 mock_settings.api_client.backoff_base = 1
                 mock_settings.api_client.maxlag_header = "Retry-After"

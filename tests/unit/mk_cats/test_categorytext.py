@@ -403,6 +403,6 @@ class PortalListIntegrityTests:
 
     def test_find_list_values_relate_to_portals(self):
         """Test that category_mapping values are valid portal names"""
-        for key, value in category_mapping.items():
+        for _key, value in category_mapping.items():
             # Values should be non-empty strings
             assert value.strip() != ""

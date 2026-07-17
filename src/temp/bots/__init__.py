@@ -56,7 +56,7 @@ def main_make_temp(enca, title) -> tuple[str, str]:
     ]:
         tt = f"تصنيف:{month}"
         tt2 = f"تصنيف:أحداث {month}"
-        if title.startswith(tt) or title.startswith(tt2):
+        if title.startswith((tt, tt2)):
             text = f"{{{{تصنيف شهر|{month}}}}}\n"
             return text, "تصنيف شهر"
 
@@ -69,7 +69,7 @@ def main_make_temp(enca, title) -> tuple[str, str]:
             t_2 = f"تصنيف:{tex}{numb}"
             t_33 = f"تصنيف:{tex}سنة {numb}"
             t_44 = f"تصنيف:{tex}عام {numb}"
-            if title.startswith(t_2) or title.startswith(t_33) or title.startswith(t_44):
+            if title.startswith((t_2, t_33, t_44)):
                 return make_years_template(title, tex, return_title=True)
 
     for texd in ["تصنيف:تأسيسات عقد", "تصنيف:انحلالات عقد", "تصنيف:عقد"]:

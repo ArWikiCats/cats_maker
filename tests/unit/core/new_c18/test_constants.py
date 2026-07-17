@@ -35,7 +35,7 @@ class TestFalseTemplates:
     def test_contains_stub_template(self):
         """Test that stub template is in list (unless -stubs arg)"""
         # Note: بذرة may be removed if -stubs in sys.argv
-        assert "بذرة" in FALSE_TEMPLATES or True  # May be removed
+        assert "بذرة" in FALSE_TEMPLATES
 
     def test_contains_wikidata_template(self):
         """Test that wikidata template is in list"""

@@ -21,7 +21,7 @@ random.shuffle(list_data)
 
 def get_items(limit: int) -> dict[str, str]:
     list_limit = list_data[:limit]
-    return {x: v for x, v in dict(list_limit).items()}
+    return dict(dict(list_limit).items())
 
 
 test_data_10 = get_items(10)

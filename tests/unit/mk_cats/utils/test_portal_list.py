@@ -34,7 +34,7 @@ class TestPortalEnToArLower:
 
     def test_no_empty_values(self):
         """Test that there are no empty values"""
-        for key, value in portal_en_to_ar_lower.items():
+        for _key, value in portal_en_to_ar_lower.items():
             if value:  # Only check non-empty values
                 assert len(value) > 0
 

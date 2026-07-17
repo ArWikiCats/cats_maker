@@ -25,7 +25,7 @@ def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass
         site_instance.connection = MagicMock()
         site_instance.api_url = "http://example.com/api"
 
-        kw = dict(lang=lang, family=family, username=username, password=password)
+        kw = {"lang": lang, "family": family, "username": username, "password": password}
         if cookies_dir is not None:
             kw["cookies_dir"] = cookies_dir
         client = WikiLoginClient(**kw)
