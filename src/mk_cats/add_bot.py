@@ -4,9 +4,9 @@
 import functools
 import logging
 
-from ..core.newapi.client_wiki.pages.super_page import MainPage
 from ..core.new_c18 import add_text_to_template, get_dont_add_pages, sort_categories
 from ..core.newapi import function_timer
+from ..core.newapi.client_wiki.pages.super_page import MainPage
 from ..shared.api_page import load_main_api
 
 logger = logging.getLogger(__name__)

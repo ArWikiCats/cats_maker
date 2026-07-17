@@ -3,10 +3,9 @@
 import logging
 import threading
 from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Any
 
 import pymysql
-from pymysql.connections import Connection
 from pymysql.cursors import DictCursor
 
 from .config import ConfigLoader, DatabaseConfig
