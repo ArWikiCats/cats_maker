@@ -130,6 +130,9 @@ class CookiesClient:
         self.family = family
         self.username = username
         self.cookies_dir = cookies_dir
+        if self.cookies_dir is None:
+            self.cookies_dir = get_cookies_dir()
+
         self.use_cookies = use_cookies
 
         self.cj = None

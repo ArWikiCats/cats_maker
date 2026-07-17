@@ -589,7 +589,6 @@ class MainPage:
         nocreate: int = 1,
         minor: str = "0",
         tags: str = "",
-        ask: bool = False,
     ) -> bool | str | dict:
         result = self.edit(
             newtext=newtext,
@@ -597,7 +596,6 @@ class MainPage:
             nocreate=nocreate,
             minor=minor,
             tags=tags,
-            ask=ask,
         )
 
         if result.get("success") is True:

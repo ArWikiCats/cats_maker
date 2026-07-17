@@ -5,7 +5,7 @@ from __future__ import annotations
 import functools
 import logging
 
-from ....utils import function_timer
+from ...utils import function_timer
 from ..constants import CATEGORY_PREFIXES
 from .category_db import CategoryDepth
 
