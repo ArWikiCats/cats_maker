@@ -102,7 +102,7 @@ def add_text_to_cat(text: str, categories, enca, title, qid, family: str = ""):
         if save:
             text = new_text
 
-    portalse, portals_list = categorytext.generate_portal_content(title, enca, return_list=True)
+    portalse, portals_list = categorytext.generate_portal_content(title, enca)
 
     if portalse and portals_list != []:
         # اضافة قالب بوابة

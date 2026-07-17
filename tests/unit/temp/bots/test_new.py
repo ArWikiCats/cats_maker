@@ -8,7 +8,7 @@ from src.temp.bots.new import (
     make_century_template,
     make_decades_template,
     make_millennium_template,
-    make_years_template,
+    make_years_templates,
 )
 
 
@@ -96,11 +96,11 @@ class TestMakeCentTemp:
 
 class TestMakeYearsTemp:
     def test_returns_empty_for_bc(self):
-        result, _ = make_years_template("تصنيف:100 ق م", "تأسيسات ")
+        result, _ = make_years_templates("تصنيف:100 ق م", "تأسيسات ")
         assert result == ""
 
     def test_non_year_returns_season(self):
-        result, _ = make_years_template("تصنيف:علوم", "تأسيسات ")
+        result, _ = make_years_templates("تصنيف:علوم", "تأسيسات ")
         assert "تصنيف موسم" in result
 
 
