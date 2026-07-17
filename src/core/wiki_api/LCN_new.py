@@ -4,7 +4,7 @@ Refactored module for handling MediaWiki API calls for categories, langlinks, et
 """
 
 import logging
-from typing import Any, Optional, Tuple
+from typing import Any, Tuple
 
 from ..wiki_api import submitAPI
 
@@ -53,13 +53,17 @@ class WikiApiHandler:
 
     # --- Public methods mimicking the old functions ---
 
-    def get_arpage_inside_encat(self, key: str) -> Optional[list[str]]:
+    def get_arpage_inside_encat(self, key: str) -> list[str] | None:
         """Gets the list of arabic pages inside an english category."""
         return self.arpage_inside_en_cat.get(key)
 
     def find_page_data(
-        self, page_title: str, prop: str = "", lllang: str = "", site_code: str = "en"
-    ) -> Optional[dict]:
+        self,
+        page_title: str,
+        prop: str = "",
+        lllang: str = "",
+        site_code: str = "en",
+    ) -> dict | None:
         """
         Retrieves data (langlinks, categories, etc.) for a given page.
         This is the refactored version of find_LCN.
@@ -74,7 +78,7 @@ class WikiApiHandler:
 
         if not page_title or "#" in page_title:
             self.cache[cache_key] = False
-            return False
+            return None
 
         params = {
             "action": "query",
@@ -116,7 +120,7 @@ class WikiApiHandler:
             logger.debug("API call failed or returned no query/pages.")
             logger.debug(api_response)
             self.cache[cache_key] = False
-            return False
+            return None
 
         query = api_response["query"]
 
@@ -124,7 +128,7 @@ class WikiApiHandler:
             logger.info(f'Page not found (id: -1) for "{site_code}:{page_title}"')
             self.deleted.append(page_title)
             self.cache[cache_key] = False
-            return False
+            return None
 
         page_results = self._parse_api_response(query, site_code, props)
 
@@ -189,14 +193,19 @@ class WikiApiHandler:
 
         return results
 
-    def find_non_hidden_categories(self, page_title: str, prop: str = "", site_code: str = "ar") -> Optional[dict]:
+    def find_non_hidden_categories(
+        self,
+        page_title: str,
+        prop: str = "",
+        site_code: str = "ar",
+    ) -> dict | None:
         """
         Retrieves non-hidden categories for a given page.
         Refactored version of find_Page_Cat_without_hidden.
         """
         if not page_title or "#" in page_title:
             logger.info(f"(page_title == '{page_title}') or (page_title.find('#') != -1)")
-            return False
+            return None
 
         cache_key = (page_title, site_code, "Cat_without_hidden", prop)
 
@@ -235,7 +244,7 @@ class WikiApiHandler:
         api_response = submitAPI(params, site_code, self.family)
 
         if not (api_response and "query" in api_response and "pages" in api_response["query"]):
-            return False
+            return None
 
         # Initialize counters and lists
         all_cat = 0
@@ -328,14 +337,34 @@ LC_bot = WikiApiHandler()
 deleted_pages = LC_bot.get_deleting_page()
 
 
-def find_LCN(enlink, prop: str = "", lllang: str = "", family: str = "wikipedia", first_site_code: str = "en"):
+def find_LCN(
+    enlink,
+    prop: str = "",
+    lllang: str = "",
+    family: str = "wikipedia",
+    first_site_code: str = "en",
+):
     # The new method is more generic, so we adapt the call.
-    return LC_bot.find_page_data(page_title=enlink, prop=prop, lllang=lllang, site_code=first_site_code)
+    return LC_bot.find_page_data(
+        page_title=enlink,
+        prop=prop,
+        lllang=lllang,
+        site_code=first_site_code,
+    )
 
 
-def find_Page_Cat_without_hidden(enlink, prop: str = "", site_code: str = "", family: str = "wikipedia"):
+def find_Page_Cat_without_hidden(
+    enlink,
+    prop: str = "",
+    site_code: str = "",
+    family: str = "wikipedia",
+):
     # The family parameter is now part of the instance, but we keep it for compatibility.
-    return LC_bot.find_non_hidden_categories(page_title=enlink, prop=prop, site_code=site_code or "ar")
+    return LC_bot.find_non_hidden_categories(
+        page_title=enlink,
+        prop=prop,
+        site_code=site_code or "ar",
+    )
 
 
 def get_arpage_inside_encat(key):

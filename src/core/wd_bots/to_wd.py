@@ -279,6 +279,4 @@ def log_to_wikidata(artitle, entitle) -> None | str:
 
     summary = f"Bot: New item from [[w:en:{entitle}|{enwiki}]]/[[w:ar:{artitle}|{arwiki}]]."
 
-    new_item_id = create_new_item(data, summary)
-
-    return new_item_id
+    create_new_item(data, summary)

@@ -13,7 +13,7 @@ from ..shared.api_page import load_main_api
 logger = logging.getLogger(__name__)
 
 
-def add_text_to_articles(final_categories, newtext):
+def add_text_to_articles(final_categories, newtext) -> str:
     if newtext.find("[[تصنيف:") != -1:
         num = newtext.find("[[تصنيف:")
         newtext = f"{(newtext[:num] + final_categories)}\n{newtext[num:]}"
@@ -41,7 +41,7 @@ def _get_page(page_title) -> MainPage | None:
         return None
 
     if not page.exists():
-        return False
+        return None
 
     page_edit = page.can_edit(script="cat")
 

@@ -3,9 +3,10 @@
 import logging
 import threading
 from contextlib import contextmanager
-from typing import Generator
+from typing import Any, Generator
 
 import pymysql
+from pymysql.connections import Connection
 from pymysql.cursors import DictCursor
 
 from .config import ConfigLoader, DatabaseConfig
@@ -42,7 +43,7 @@ class DatabaseManager:
         logger.info("DatabaseManager initialized.")
 
     @contextmanager
-    def get_connection(self, wiki: str) -> Generator[pymysql.connections.Connection]:
+    def get_connection(self, wiki: str) -> Generator[Connection[DictCursor], Any]:
         """
         Provide a database connection within a context manager.
 

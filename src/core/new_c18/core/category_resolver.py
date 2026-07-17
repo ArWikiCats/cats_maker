@@ -53,7 +53,8 @@ class CategoryResolver:
 
         if self._use_sql():
             rows = fetch_en_category_langlinks(encat, wiki=wiki)
-            en_list = [x.get("ll_title") for x in rows if x.get("ll_title")]
+            if rows:
+                en_list = [x["ll_title"] for x in rows if x.get("ll_title")]
 
         if not en_list:
             en_list = self._fetch_ar_titles_based_on_en_category(encat, wiki=wiki)

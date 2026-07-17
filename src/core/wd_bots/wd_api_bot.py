@@ -11,26 +11,26 @@ https://doc.wikimedia.org/Wikibase/master/js/rest-api/#/items/getItem
 
 import logging
 from functools import lru_cache
-from typing import Sequence
+from typing import Any
 
 from ..wiki_api import submitAPI
 
 logger = logging.getLogger(__name__)
 
 
-def submitWikidataParams(params):
+def submitWikidataParams(params) -> dict[str, Any]:
     return submitAPI(params, "www", "wikidata")
 
 
-def format_sitelinks(sitelinks):
+def format_sitelinks(sitelinks) -> dict[str, Any]:
     return {x["site"]: x["title"] for d, x in sitelinks.items()}
 
 
-def format_labels_descriptions(labels: Sequence[str]):
+def format_labels_descriptions(labels: dict[str, Any]) -> dict[str, Any]:
     return {x["language"]: x["value"] for _, x in labels.items()}
 
 
-def Get_infos_wikidata(params):
+def Get_infos_wikidata(params) -> dict[str, Any]:
     table = {"labels": {}, "sitelinks": {}, "q": ""}
 
     json1 = submitWikidataParams(params)
@@ -67,7 +67,7 @@ def Get_infos_wikidata(params):
 def Get_Sitelinks_From_wikidata(
     site,
     title,
-):
+) -> dict[str, Any]:
     sitewiki = site
     if site.find("wiki") == -1:
         sitewiki = f"{site}wiki"
@@ -89,7 +89,7 @@ def Get_Sitelinks_From_wikidata(
     return table
 
 
-def Get_Sitelinks_from_qid(ids):
+def Get_Sitelinks_from_qid(ids) -> dict[str, Any]:
     params = {
         "action": "wbgetentities",
         "props": "sitelinks",
@@ -102,7 +102,7 @@ def Get_Sitelinks_from_qid(ids):
     return table
 
 
-def Get_P373_API(q, titles: str = "", sites: str = ""):
+def Get_P373_API(q, titles: str = "", sites: str = "") -> Any:
     """
     Retrieve the P373 value from the Wikidata API.
     """
