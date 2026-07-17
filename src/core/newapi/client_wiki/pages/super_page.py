@@ -6,10 +6,9 @@ import logging
 import sys
 from typing import Any, Union
 
-
+from .....config import settings
 from ...api_client import WikiLoginClient
 from ...client_wiki.api_utils.handel_errors import HandleErrors
-from .....config import settings
 from ..api_utils import change_codes
 from ..api_utils.ask_bot import AskBot
 from ..api_utils.bot_edit import is_page_editable
