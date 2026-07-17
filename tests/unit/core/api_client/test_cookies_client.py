@@ -4,6 +4,7 @@ Unit tests for src/core/api_client/cookies.py module.
 
 import os
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock, patch
 
 from src.core.api_client.cookies_client import (
     _COOKIE_MAX_AGE_DAYS,
@@ -75,3 +76,37 @@ class TestDeleteCookieFile:
 class TestConstants:
     def test_cookie_max_age_days(self):
         assert _COOKIE_MAX_AGE_DAYS == 3
+
+
+class TestCookieLoading:
+    """Tests for cookie loading error handling."""
+
+    @patch("src.core.api_client.cookies_client.http.cookiejar.LWPCookieJar")
+    def test_make_cookiejar_loads_existing_cookies(self, mock_jar_class):
+        from pathlib import Path
+
+        from src.core.api_client.cookies_client import CookiesClient
+
+        mock_cj = MagicMock()
+        mock_jar_class.return_value = mock_cj
+
+        with patch("pathlib.Path.exists", return_value=True):
+            mock_cj.load.side_effect = Exception("Parse error")
+            result = CookiesClient._make_cookiejar(Path("/fake/path"))
+
+        mock_cj.load.assert_called_once_with(ignore_discard=True, ignore_expires=True)
+
+
+class TestCookieSaving:
+    """Tests for cookie saving error handling."""
+
+    @patch("src.core.api_client.cookies_client.logger")
+    def test_save_cookies_failure_is_logged(self, mock_logger):
+        from src.core.api_client.cookies_client import CookiesClient
+
+        mock_cj = MagicMock()
+        mock_cj.save.side_effect = Exception("IO Error")
+
+        CookiesClient.save_cookies(mock_cj)
+
+        mock_logger.exception.assert_called_with("Failed to save cookies")

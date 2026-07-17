@@ -1,5 +1,5 @@
 """
-Unit tests for src/core/api_client/client.py - RequestsHandler and related methods.
+Unit tests for src/core/api_client/requests_handler.py - RequestsHandler and related methods.
 """
 
 from unittest.mock import MagicMock, patch
@@ -8,6 +8,7 @@ import pytest
 
 from src.core.api_client.client import WikiLoginClient
 from src.core.api_client.exceptions import MaxlagError
+from src.core.api_client.requests_handler import RequestsHandler
 
 
 def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass"):
@@ -209,19 +210,16 @@ class TestInjectToken:
     """Tests for _inject_token static method."""
 
     def test_inject_token_into_data(self):
-        from src.core.api_client.client import RequestsHandler
 
         data, params = RequestsHandler._inject_token("new_token", {"token": "old"}, {})
         assert data["token"] == "new_token"
 
     def test_inject_token_into_params(self):
-        from src.core.api_client.client import RequestsHandler
 
         data, params = RequestsHandler._inject_token("new_token", {}, {"token": "old"})
         assert params["token"] == "new_token"
 
     def test_inject_token_no_existing_token(self):
-        from src.core.api_client.client import RequestsHandler
 
         data, params = RequestsHandler._inject_token("new_token", {}, {})
         assert data == {}
@@ -261,37 +259,3 @@ class TestPostContinue:
 
         result = client.post_continue({"action": "query"}, "query", p_empty=[])
         assert len(result) == 2
-
-
-class TestCookieLoading:
-    """Tests for cookie loading error handling."""
-
-    @patch("src.core.api_client.client.http.cookiejar.LWPCookieJar")
-    def test_make_cookiejar_loads_existing_cookies(self, mock_jar_class):
-        from pathlib import Path
-
-        from src.core.api_client.client import CookiesClient
-
-        mock_cj = MagicMock()
-        mock_jar_class.return_value = mock_cj
-
-        with patch("pathlib.Path.exists", return_value=True):
-            mock_cj.load.side_effect = Exception("Parse error")
-            result = CookiesClient._make_cookiejar(Path("/fake/path"))
-
-        mock_cj.load.assert_called_once_with(ignore_discard=True, ignore_expires=True)
-
-
-class TestCookieSaving:
-    """Tests for cookie saving error handling."""
-
-    @patch("src.core.api_client.client.logger")
-    def test_save_cookies_failure_is_logged(self, mock_logger):
-        from src.core.api_client.client import CookiesClient
-
-        mock_cj = MagicMock()
-        mock_cj.save.side_effect = Exception("IO Error")
-
-        CookiesClient.save_cookies(mock_cj)
-
-        mock_logger.exception.assert_called_with("Failed to save cookies")
