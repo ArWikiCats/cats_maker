@@ -1,7 +1,6 @@
 """Data Access Layer (Repository Pattern)."""
 
 import logging
-from typing import List
 
 from .db_pool import db_manager
 from .utils import add_namespace_prefix
@@ -38,7 +37,7 @@ class CategoryRepository:
     """Handles all database interactions related to Wikipedia categories."""
 
     @staticmethod
-    def fetch_arabic_titles_with_english_links(category_title: str) -> List[str]:
+    def fetch_arabic_titles_with_english_links(category_title: str) -> list[str]:
         """
         Fetch Arabic page titles that belong to a specific category
         and have an English language link.
@@ -56,7 +55,7 @@ class CategoryRepository:
             return []
 
     @staticmethod
-    def fetch_english_titles_with_arabic_links(category_title: str) -> List[str]:
+    def fetch_english_titles_with_arabic_links(category_title: str) -> list[str]:
         """
         Fetch English language links (ll_title) for pages in a specific
         English category.

@@ -137,7 +137,7 @@ class BotConfig:
         ask: Ask for confirmation before making changes
         no_diff: Don't show diff when asking for confirmation
         show_diff: Force show diff when asking for confirmation
-        no_fa: Dont check if the edit is false edit
+        no_false_edit: Dont check if the edit is false edit
         force_edit: Force bot edit (bypass nobots check)
         no_login: Disable login assertion
         no_cookies: Disable cookie storage
@@ -146,7 +146,7 @@ class BotConfig:
     ask: bool = False
     no_diff: bool = False
     show_diff: bool = False
-    no_fa: bool = False
+    no_false_edit: bool = False
     force_edit: bool = False
     workibrahem: bool = False
     no_login: bool = False
@@ -435,7 +435,7 @@ class Settings:
             if arg_name == "diff":
                 self.bot.show_diff = True
             if arg_name == "nofa":
-                self.bot.no_fa = True
+                self.bot.no_false_edit = True
             if arg_name == "workibrahem":
                 self.bot.workibrahem = True
             if arg_name in ("botedit", "editbot"):

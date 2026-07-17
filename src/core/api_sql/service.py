@@ -2,7 +2,6 @@
 
 import logging
 import re
-from typing import List
 
 from .config import ConfigLoader
 from .repository import CategoryRepository
@@ -29,7 +28,7 @@ class CategoryComparator:
         # Replace spaces with underscores for consistency
         return cleaned.replace(" ", "_")
 
-    def get_exclusive_category_titles(self, en_category: str, ar_category: str) -> List[str]:
+    def get_exclusive_category_titles(self, en_category: str, ar_category: str) -> list[str]:
         """
         Return English-wiki titles that are in en_category but absent from ar_category.
 

@@ -1,7 +1,7 @@
 import logging
 from collections.abc import KeysView
 
-from ..client_wiki import load_main_api
+from ..newapi.client_wiki import load_main_api
 
 logger = logging.getLogger(__name__)
 

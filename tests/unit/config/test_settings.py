@@ -745,10 +745,10 @@ class TestProcessArgv:
         assert s.bot.show_diff is True
 
     def test_nofa(self, monkeypatch):
-        """Test nofa sets bot.no_fa=True."""
+        """Test nofa sets bot.no_false_edit=True."""
         monkeypatch.setattr(sys, "argv", ["test", "nofa"])
         s = Settings()
-        assert s.bot.no_fa is True
+        assert s.bot.no_false_edit is True
 
     def test_botedit(self, monkeypatch):
         """Test botedit sets bot.force_edit=True."""

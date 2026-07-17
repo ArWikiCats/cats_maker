@@ -99,10 +99,10 @@ def main():
         # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 encat:1988_war_films
 
         if argn == "quarry":
-            List = get_quarry_result(value)
-            for cat in List:
+            list_data = get_quarry_result(value)
+            for cat in list_data:
                 categories_list.append(cat)
-            logger.info(f"Add {len(List)} cat from get_quarry_result to categories_list.")
+            logger.info(f"Add {len(list_data)} cat from get_quarry_result to categories_list.")
 
         elif argn == "encat":
             categories_list.append(value)
