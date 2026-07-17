@@ -2,7 +2,6 @@
 Unit tests for src/core/client_wiki/api_utils/ask_bot.py module.
 """
 
-
 from src.core.newapi.client_wiki.api_utils import ask_bot
 from src.core.newapi.client_wiki.api_utils.ask_bot import AskBot
 

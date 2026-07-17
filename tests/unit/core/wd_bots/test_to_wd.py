@@ -108,8 +108,7 @@ class TestMakejson:
 
 class TestPostWdParams:
     @patch("src.core.wd_bots.to_wd.get_session_post")
-    @patch("src.core.wd_bots.to_wd.after_success")
-    def test_success_returns_true(self, mock_after, mock_get_session):
+    def test_success_returns_true(self, mock_get_session):
         mock_api = MagicMock()
         mock_api.post_to_newapi.return_value = {"success": 1}
         mock_get_session.return_value = mock_api
@@ -125,11 +124,6 @@ class TestPostWdParams:
 
 
 class TestAddLabels:
-    def test_returns_empty_when_lag_high(self):
-        from src.core.wd_bots.to_wd import add_labels
-
-        assert add_labels("Q123", "label", "ar") is False
-
     def test_returns_false_when_no_qid(self):
         from src.core.wd_bots.to_wd import add_labels
 

@@ -5,7 +5,5 @@ This module tests error handling functions.
 """
 
 
-
 class TestHandleErrors:
     """Tests for HandleErrors class"""
-
