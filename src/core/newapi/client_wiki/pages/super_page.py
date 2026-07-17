@@ -6,7 +6,7 @@ import logging
 import sys
 from typing import Any, Union
 
-from .....config import settings
+from .....config import main_settings
 from ...api_client import WikiLoginClient
 from ...client_wiki.api_utils.handel_errors import HandleErrors
 from ..api_utils import change_codes
@@ -104,7 +104,7 @@ class MainPage:
         if self.ns is False or self.ns != 0:
             return False
 
-        if settings.bot.no_false_edit:
+        if main_settings.bot.no_false_edit:
             return False
 
         if not self.text:
@@ -442,7 +442,7 @@ class MainPage:
         if not self.text:
             self.text = self.get_text()
 
-        if settings.bot.force_edit:
+        if main_settings.bot.force_edit:
             return True
 
         self.meta.can_be_edit = is_page_editable(

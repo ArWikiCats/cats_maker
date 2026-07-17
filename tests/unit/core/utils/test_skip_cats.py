@@ -131,15 +131,15 @@ class TestStubsBranch:
 
         from src.core.utils import skip_cats as sc_module
 
-        original_stubs = sc_module.settings.category.stubs
+        original_stubs = sc_module.main_settings.category.stubs
         try:
-            sc_module.settings.category.stubs = True
+            sc_module.main_settings.category.stubs = True
             importlib.reload(sc_module)
             assert "Hiddencat" not in sc_module.global_false_entemps
             assert "WPSS-cat" not in sc_module.global_false_entemps
             assert "Stub Category" not in sc_module.global_false_entemps
         finally:
-            sc_module.settings.category.stubs = original_stubs
+            sc_module.main_settings.category.stubs = original_stubs
             importlib.reload(sc_module)
 
     def test_stubs_false_keeps_entries(self):
@@ -148,13 +148,13 @@ class TestStubsBranch:
 
         from src.core.utils import skip_cats as sc_module
 
-        original_stubs = sc_module.settings.category.stubs
+        original_stubs = sc_module.main_settings.category.stubs
         try:
-            sc_module.settings.category.stubs = False
+            sc_module.main_settings.category.stubs = False
             importlib.reload(sc_module)
             assert "Hiddencat" in sc_module.global_false_entemps
             assert "WPSS-cat" in sc_module.global_false_entemps
             assert "Stub Category" in sc_module.global_false_entemps
         finally:
-            sc_module.settings.category.stubs = original_stubs
+            sc_module.main_settings.category.stubs = original_stubs
             importlib.reload(sc_module)

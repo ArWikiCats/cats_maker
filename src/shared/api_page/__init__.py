@@ -8,7 +8,7 @@ import os
 
 from dotenv import load_dotenv
 
-from ...config import settings
+from ...config import main_settings
 from ...core.newapi import AllAPIS, WikiLoginClient
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ def load_main_api(
         family=family,
         username=username,
         password=password,
-        cookies_dir=settings.paths.cookies_dir,
+        cookies_dir=main_settings.paths.cookies_dir,
     )
 
 
@@ -62,7 +62,7 @@ def load_login_bot(lang: str = "ar", family: str = "wikipedia") -> WikiLoginClie
         family=family,
         username=username,
         password=password,
-        cookies_dir=settings.paths.cookies_dir,
+        cookies_dir=main_settings.paths.cookies_dir,
     )
 
 

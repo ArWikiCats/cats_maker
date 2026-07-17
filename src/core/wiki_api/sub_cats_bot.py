@@ -3,7 +3,7 @@
 
 import logging
 
-from ...config import settings
+from ...config import main_settings
 from ..wiki_api import submitAPI
 from . import get_cache_L_C_N, set_cache_L_C_N
 
@@ -21,7 +21,7 @@ def sub_cats_query(enlink, sitecode, ctype: str = ""):
     if get_cache_L_C_N(tup):
         return get_cache_L_C_N(tup)
 
-    langcode = settings.EEn_site.code  # 'en'
+    langcode = main_settings.EEn_site.code  # 'en'
     if sitecode == "en":
         langcode = "ar"
 

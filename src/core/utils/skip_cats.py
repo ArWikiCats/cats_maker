@@ -1,6 +1,6 @@
 """ """
 
-from ...config import settings
+from ...config import main_settings
 
 skip_encats = [
     "Category:Invasions of Israel",
@@ -24,7 +24,7 @@ global_false_entemps = [
     # 'container category',      #تصنيف حاوية
 ]
 
-if settings.category.stubs:
+if main_settings.category.stubs:
     global_false_entemps.remove("Hiddencat")
     global_false_entemps.remove("WPSS-cat")
     global_false_entemps.remove("Stub Category")

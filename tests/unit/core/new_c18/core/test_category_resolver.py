@@ -112,7 +112,7 @@ class TestListEnPagesWithArLinks:
             "src.core.new_c18.core.category_resolver.CategoryResolver._fetch_ar_titles_based_on_en_category",
             return_value=[],
         )
-        mocker.patch("src.core.new_c18.core.category_resolver.settings.database.use_sql", False)
+        mocker.patch("src.core.new_c18.core.category_resolver.main_settings.database.use_sql", False)
 
         resolver = CategoryResolver()
         result = resolver.list_en_pages_with_ar_links("Science")
@@ -141,7 +141,7 @@ class TestListEnPagesWithArLinks:
             "src.core.new_c18.core.category_resolver.CategoryResolver._fetch_ar_titles_based_on_en_category",
             return_value=["صفحة1"],
         )
-        mocker.patch("src.core.new_c18.core.category_resolver.settings.database.use_sql", False)
+        mocker.patch("src.core.new_c18.core.category_resolver.main_settings.database.use_sql", False)
 
         resolver = CategoryResolver()
         result = resolver.list_en_pages_with_ar_links("Science")

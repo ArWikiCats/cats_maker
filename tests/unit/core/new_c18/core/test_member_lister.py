@@ -12,7 +12,7 @@ class TestExtractFanPageTitles:
 
     def test_returns_list(self, mocker):
         """Test that method returns a list"""
-        mocker.patch("src.core.new_c18.core.member_lister.settings.database.use_sql", False)
+        mocker.patch("src.core.new_c18.core.member_lister.main_settings.database.use_sql", False)
 
         lister = MemberLister()
         result = lister.extract_fan_page_titles("Category:Science")
@@ -21,7 +21,7 @@ class TestExtractFanPageTitles:
 
     def test_returns_empty_when_sql_disabled(self, mocker):
         """Test that empty list is returned when SQL is disabled"""
-        mocker.patch("src.core.new_c18.core.member_lister.settings.database.use_sql", False)
+        mocker.patch("src.core.new_c18.core.member_lister.main_settings.database.use_sql", False)
 
         lister = MemberLister()
         result = lister.extract_fan_page_titles("Category:Science")
@@ -30,7 +30,7 @@ class TestExtractFanPageTitles:
 
     def test_calls_get_exclusive_when_sql_enabled(self, mocker):
         """Test that get_exclusive_category_titles is called when SQL enabled"""
-        mocker.patch("src.core.new_c18.core.member_lister.settings.database.use_sql", True)
+        mocker.patch("src.core.new_c18.core.member_lister.main_settings.database.use_sql", True)
         mock_comparator = mocker.patch("src.core.new_c18.core.member_lister.CategoryComparator")
         mock_comparator.return_value.get_exclusive_category_titles.return_value = ["Page1", "Page2"]
 
@@ -42,7 +42,7 @@ class TestExtractFanPageTitles:
 
     def test_strips_category_prefix(self, mocker):
         """Test that Category: prefix is stripped"""
-        mocker.patch("src.core.new_c18.core.member_lister.settings.database.use_sql", True)
+        mocker.patch("src.core.new_c18.core.member_lister.main_settings.database.use_sql", True)
         mock_comparator = mocker.patch("src.core.new_c18.core.member_lister.CategoryComparator")
         mock_get_exclusive = mock_comparator.return_value.get_exclusive_category_titles
         mock_get_exclusive.return_value = []

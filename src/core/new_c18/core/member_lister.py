@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 
-from ....config import settings
+from ....config import main_settings
 from ...api_sql import CategoryComparator
 from ..utils.text import normalize_category_title
 from .category_resolver import CategoryResolver
@@ -25,7 +25,7 @@ class MemberLister:
         """Fetch exclusive category titles from EN wiki via SQL comparator."""
         fapages: list[str] = []
 
-        if settings.database.use_sql:
+        if main_settings.database.use_sql:
             comparator = CategoryComparator()
             cat2 = normalize_category_title(enpage_title, lang="en")
             fapages = comparator.get_exclusive_category_titles(cat2, "") or []

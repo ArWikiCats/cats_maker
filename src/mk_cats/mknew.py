@@ -4,7 +4,7 @@ python3 core8/pwb.py mk_cats/mknew
 
 import logging
 
-from ..config import settings
+from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
 from ..core.wd_bots import Get_Sitelinks_From_wikidata, add_labels, log_to_wikidata, log_to_wikidata_qid
 from ..core.wiki_api import find_Page_Cat_without_hidden
@@ -313,9 +313,9 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
         return []
 
     # Check minimum members requirement
-    if len(members) < settings.category.min_members:
+    if len(members) < main_settings.category.min_members:
         logger.debug(
-            f" Category has {len(members)} members, less than minimum required ({settings.category.min_members}) "
+            f" Category has {len(members)} members, less than minimum required ({main_settings.category.min_members}) "
         )
         return []
 
@@ -344,12 +344,12 @@ def process_catagories(cat, arlab, num: int, lenth, callback=None) -> None:
 
     ma_table = make_ar(cat, arlab, callback=callback)
 
-    for i in range(settings.range_limit):
+    for i in range(main_settings.range_limit):
         if not ma_table:
             break
 
         logger.debug("===========================")
-        logger.debug(f"**: range: {i} of {settings.range_limit}: for {len(ma_table)} cats.")
+        logger.debug(f"**: range: {i} of {main_settings.range_limit}: for {len(ma_table)} cats.")
         logger.debug("===========================")
 
         enriched_titles = []

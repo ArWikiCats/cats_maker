@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 
-from ....config import settings
+from ....config import main_settings
 from ....shared.api_page import load_main_api
 from ...api_sql import add_namespace_prefix
 from ...cats_helpers import Categorized_Page_Generator
@@ -28,7 +28,7 @@ class CategoryResolver:
             return True
         if self.backend == "api":
             return False
-        return settings.database.use_sql
+        return main_settings.database.use_sql
 
     def list_ar_pages_in_cat(self, ar_title: str) -> list[str]:
         """Return all page titles inside an Arabic category."""
@@ -92,9 +92,9 @@ class CategoryResolver:
         """Batch-translate page titles from source wiki to Arabic via langlinks."""
         new_ar_list: list[str] = []
 
-        sito_code = settings.EEn_site.code
+        sito_code = main_settings.EEn_site.code
         if wiki == "fr":
-            sito_code = settings.FR_site.code
+            sito_code = main_settings.FR_site.code
 
         for i in range(0, len(titles), batch_size):
             batch = titles[i : i + batch_size]
@@ -142,7 +142,7 @@ class CategoryResolver:
             batch = gent_faso_list[i : i + 50]
             joined = "|".join(batch)
 
-            gent_sasa = find_LCN(joined, prop="langlinks", first_site_code=settings.EEn_site.code)
+            gent_sasa = find_LCN(joined, prop="langlinks", first_site_code=main_settings.EEn_site.code)
             if not gent_sasa:
                 continue
 

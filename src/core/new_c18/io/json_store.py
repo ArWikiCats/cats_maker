@@ -11,12 +11,12 @@ from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 
-from ....config import settings
+from ....config import main_settings
 from .sql_queries import fetch_dont_add_pages
 
 logger = logging.getLogger(__name__)
 
-_FILENAME_JSON = settings.paths.dont_add_to_pages_path
+_FILENAME_JSON = main_settings.paths.dont_add_to_pages_path
 _STATGROUP = stat.S_IRWXU | stat.S_IRWXG
 
 
@@ -91,11 +91,11 @@ def get_dont_add_pages() -> list[str]:
 
     Uses a local JSON cache; refreshes from SQL once per day.
     """
-    if settings.category.no_dontadd or settings.category.test_mode:
+    if main_settings.category.no_dontadd or main_settings.category.test_mode:
         return []
 
-    if not settings.category.test_add:
-        if settings.is_production():
+    if not main_settings.category.test_add:
+        if main_settings.is_production():
             logger.info("dont get dontadd list in local server")
             return []
 

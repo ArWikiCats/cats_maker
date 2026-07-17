@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 import requests
 
-from ...config import settings
+from ...config import main_settings
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 @functools.lru_cache(maxsize=1)
 def _load_session() -> requests.Session:
     Session = requests.Session()
-    Session.headers.update({"User-Agent": settings.wikipedia.user_agent})
+    Session.headers.update({"User-Agent": main_settings.wikipedia.user_agent})
     return Session
 
 
@@ -48,7 +48,7 @@ def submitAPI(params, code, family, **kwargs):
 
     json1 = {}
     try:
-        result = Session.post(mainurl, data=params, timeout=settings.wikipedia.default_timeout)
+        result = Session.post(mainurl, data=params, timeout=main_settings.wikipedia.default_timeout)
 
     except requests.exceptions.ReadTimeout:
         logger.debug(f"ReadTimeout: {mainurl}")

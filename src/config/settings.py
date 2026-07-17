@@ -501,4 +501,4 @@ class Settings:
 
 
 # Global settings instance
-settings = Settings()
+main_settings = Settings()

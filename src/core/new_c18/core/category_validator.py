@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 
-from ....config import settings
+from ....config import main_settings
 from ...utils import global_false_entemps
 from ...wiki_api import get_page_info_from_wikipedia
 from ..constants import NO_TEMPLATES_AR, NO_TEMPLATES_AR_WITHOUT_STUBS
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 def _get_no_templates() -> frozenset[str]:
     """Return the appropriate template blacklist based on settings."""
-    if settings.category.stubs:
+    if main_settings.category.stubs:
         return NO_TEMPLATES_AR_WITHOUT_STUBS
     return NO_TEMPLATES_AR
 
@@ -70,14 +70,14 @@ def _check_page_status(
     for target_temp in templates:
         target_temp2 = target_temp.replace(template_prefix, "")
         if is_ar:
-            if target_temp2 in template_blacklist and not settings.category.keep:
+            if target_temp2 in template_blacklist and not main_settings.category.keep:
                 logger.info(f"{title} has temp:{target_temp2}")
                 return ValidationResult(
                     valid=False,
                     reason=f"Blacklisted template: {target_temp2}",
                 )
         else:
-            if target_temp2.lower() in _get_false_templates() and not settings.category.keep:
+            if target_temp2.lower() in _get_false_templates() and not main_settings.category.keep:
                 logger.info(f"{title} has temp:{target_temp2}")
                 return ValidationResult(
                     valid=False,

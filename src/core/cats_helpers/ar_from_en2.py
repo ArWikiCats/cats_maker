@@ -3,7 +3,7 @@
 
 import logging
 
-from ...config import settings
+from ...config import main_settings
 from ...shared.api_page import load_main_api
 from ..wiki_api import find_LCN
 
@@ -21,10 +21,10 @@ def get_ar_list_title_from_en_list(enlist, wiki: str = "en"):
         if part_list:
             part_list = part_list.removeprefix("|")
 
-            sito_code = settings.EEn_site.code
+            sito_code = main_settings.EEn_site.code
 
             if wiki == "fr":
-                sito_code = settings.FR_site.code
+                sito_code = main_settings.FR_site.code
 
             new_list = find_LCN(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
 

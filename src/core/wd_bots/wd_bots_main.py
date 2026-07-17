@@ -5,7 +5,7 @@
 
 import logging
 
-from ...config import settings
+from ...config import main_settings
 from ..newapi.api_client import WikiLoginClient
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ class WdAPI:
         login_bot: WikiLoginClient,
     ) -> None:
         self.login_bot = login_bot
-        self.lang = "test" if settings.wikidata.test_mode else "www"
+        self.lang = "test" if main_settings.wikidata.test_mode else "www"
         self.family = "wikidata"
 
     def handle_err_wd(

@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 import re
 
-from ....config import settings
+from ....config import main_settings
 from ...wd_bots import Get_Sitelinks_from_qid, Get_Sitelinks_From_wikidata
 from ...wiki_api import find_LCN, get_cache_L_C_N, set_cache_L_C_N
 from ..utils.text import extract_wikidata_qid
@@ -170,7 +170,7 @@ def get_english_page_title(
     if not en:
         en = get_page_link(pagetitle, en_site, en_site, text=text_new) or ""
 
-    if (not en) and settings.category.work_fr:
+    if (not en) and main_settings.category.work_fr:
         logger.info(f"no en for {pagetitle}")
         logger.info(ar_page_langlinks)
 

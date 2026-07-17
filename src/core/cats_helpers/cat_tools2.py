@@ -8,14 +8,14 @@
 
 import logging
 
-from ...config import settings
+from ...config import main_settings
 from ...shared.api_page import load_main_api
 
 logger = logging.getLogger(__name__)
 
 tatone_ns = [0, 14, 10, 100]
 
-if settings.category.stubs:
+if main_settings.category.stubs:
     tatone_ns = [14]
 
 
@@ -28,7 +28,7 @@ def Categorized_Page_Generator(enpage_title, typee):
 
     NN_cat_member = []
 
-    api = load_main_api(settings.EEn_site.code)
+    api = load_main_api(main_settings.EEn_site.code)
     cat_member = api.CatDepth(enpage_title, depth=0, ns=nss, with_lang="ar")
 
     for title in cat_member:

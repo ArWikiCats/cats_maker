@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 
-from ....config import settings
+from ....config import main_settings
 from ....shared.api_page import load_main_api
 from ...wiki_api import find_LCN
 from ..constants import DEFAULT_MEMBER_NAMESPACES, STUB_MEMBER_NAMESPACES
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def _get_namespace_ids() -> list[int]:
-    if settings.category.stubs:
+    if main_settings.category.stubs:
         return list(STUB_MEMBER_NAMESPACES)
     return list(DEFAULT_MEMBER_NAMESPACES)
 
@@ -50,9 +50,9 @@ def translate_titles_to_ar(titles: list[str], source_wiki: str = "en", batch_siz
     """
     new_ar_list: list[str] = []
 
-    sito_code = settings.EEn_site.code
+    sito_code = main_settings.EEn_site.code
     if source_wiki == "fr":
-        sito_code = settings.FR_site.code
+        sito_code = main_settings.FR_site.code
 
     for i in range(0, len(titles), batch_size):
         batch = titles[i : i + batch_size]
