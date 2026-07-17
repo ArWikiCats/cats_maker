@@ -233,7 +233,6 @@ class TestGeneratePortalContent:
         # Title contains "آيسلندا" and also portal link has Iceland
         result = generate_portal_content("تصنيف:تاريخ آيسلندا", "Category:History of Iceland")
 
-
         assert result.count("آيسلندا") == 1
 
     def test_returns_list_when_return_list_true(self, mocker):
@@ -244,7 +243,6 @@ class TestGeneratePortalContent:
 
         assert isinstance(result, list)
         assert "آيسلندا" in result
-
 
     def test_category_mapping_in_category_not_duplicated(self, mocker):
         """Test that category_mapping portals are not duplicated if already in list"""
