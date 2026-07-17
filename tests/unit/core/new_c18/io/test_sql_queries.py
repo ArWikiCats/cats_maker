@@ -4,8 +4,6 @@ Unit tests for src/core/new_c18/io/sql_queries.py module.
 
 from unittest.mock import patch
 
-import pytest
-
 from src.core.new_c18.io.sql_queries import (
     fetch_ar_category_members,
     fetch_dont_add_pages,
@@ -37,7 +35,7 @@ class TestFetchArCategoryMembers:
 
 class TestFetchEnCategoryLanglinks:
     @patch("src.core.new_c18.io.sql_queries.db_manager")
-    @patch("src.core.new_c18.io.sql_queries.settings")
+    @patch("src.core.new_c18.io.sql_queries.main_settings")
     def test_returns_rows(self, mock_settings, mock_db):
         mock_settings.query.ns_no_10 = False
         mock_settings.query.ns_only_14 = False
@@ -46,7 +44,7 @@ class TestFetchEnCategoryLanglinks:
         assert len(result) == 1
 
     @patch("src.core.new_c18.io.sql_queries.db_manager")
-    @patch("src.core.new_c18.io.sql_queries.settings")
+    @patch("src.core.new_c18.io.sql_queries.main_settings")
     def test_strips_category_prefix(self, mock_settings, mock_db):
         mock_settings.query.ns_no_10 = False
         mock_settings.query.ns_only_14 = False
@@ -56,7 +54,7 @@ class TestFetchEnCategoryLanglinks:
         assert call_args[1]["params"] == ("Science",)
 
     @patch("src.core.new_c18.io.sql_queries.db_manager")
-    @patch("src.core.new_c18.io.sql_queries.settings")
+    @patch("src.core.new_c18.io.sql_queries.main_settings")
     def test_returns_empty_on_error(self, mock_settings, mock_db):
         mock_settings.query.ns_no_10 = False
         mock_settings.query.ns_only_14 = False

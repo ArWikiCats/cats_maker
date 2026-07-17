@@ -53,7 +53,7 @@ def make_century_template(title):
                 temp = f"{cttt}قرن"
                 if not texx:
                     temp = "سنوات في القرن"
-                text = f"{{{{{temp}|{sss}{dee}{ass}}}}}"  # noqa
+                text = f"{{{{{temp}|{sss}{dee}{ass}}}}}"
                 return text, temp
 
     for texx in cacaca:

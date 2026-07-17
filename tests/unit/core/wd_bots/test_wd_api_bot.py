@@ -4,12 +4,9 @@ Tests for wd_api_bot.py
 This module tests Wikidata API functions.
 """
 
-import pytest
-
 from src.core.wd_bots.wd_api_bot import (
     Get_infos_wikidata,
     Get_P373_API,
-    Get_Sitelinks_from_qid,
     Get_Sitelinks_From_wikidata,
     format_labels_descriptions,
     format_sitelinks,

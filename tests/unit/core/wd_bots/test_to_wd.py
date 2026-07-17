@@ -4,12 +4,7 @@ Unit tests for src/core/wd_bots/to_wd.py module.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from src.core.wd_bots.to_wd import (
-    after_success,
-    create_new_item,
-    log_to_wikidata,
     log_to_wikidata_qid,
     makejson,
     outbot_json,
@@ -113,8 +108,7 @@ class TestMakejson:
 
 class TestPostWdParams:
     @patch("src.core.wd_bots.to_wd.get_session_post")
-    @patch("src.core.wd_bots.to_wd.after_success")
-    def test_success_returns_true(self, mock_after, mock_get_session):
+    def test_success_returns_true(self, mock_get_session):
         mock_api = MagicMock()
         mock_api.post_to_newapi.return_value = {"success": 1}
         mock_get_session.return_value = mock_api
@@ -130,20 +124,12 @@ class TestPostWdParams:
 
 
 class TestAddLabels:
-    @patch("src.core.wd_bots.to_wd.is_wd_lag_high", return_value=True)
-    def test_returns_empty_when_lag_high(self, _):
-        from src.core.wd_bots.to_wd import add_labels
-
-        assert add_labels("Q123", "label", "ar") == ""
-
-    @patch("src.core.wd_bots.to_wd.is_wd_lag_high", return_value=False)
-    def test_returns_false_when_no_qid(self, _):
+    def test_returns_false_when_no_qid(self):
         from src.core.wd_bots.to_wd import add_labels
 
         assert add_labels("", "label", "ar") is False
 
-    @patch("src.core.wd_bots.to_wd.is_wd_lag_high", return_value=False)
-    def test_returns_false_when_empty_label(self, _):
+    def test_returns_false_when_empty_label(self):
         from src.core.wd_bots.to_wd import add_labels
 
         assert add_labels("Q123", "", "ar") is False

@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 
 import requests
 
-from ...config import settings
+from ...config import main_settings
 
 logger = logging.getLogger(__name__)
 
@@ -15,13 +15,12 @@ logger = logging.getLogger(__name__)
 @functools.lru_cache(maxsize=1)
 def _load_session() -> requests.Session:
     Session = requests.Session()
-    Session.headers.update({"User-Agent": settings.wikipedia.user_agent})
+    Session.headers.update({"User-Agent": main_settings.wikipedia.user_agent})
     return Session
 
 
-def submitAPI(params, Code, family, **kwargs):
-    if Code.endswith("wiki"):
-        Code = Code[:-4]
+def submitAPI(params, code, family, **kwargs):
+    code = code.removesuffix("wiki")
 
     params["formatversion"] = 1
     params["utf8"] = 1
@@ -36,11 +35,11 @@ def submitAPI(params, Code, family, **kwargs):
     if family == "commons":
         family = "wikimedia"
 
-    mainurl = f"https://{Code}.{family}.org/w/api.php?"
+    mainurl = f"https://{code}.{family}.org/w/api.php?"
 
     encode_params = urlencode(params)
 
-    url = f"https://{Code}.{family}.org/w/api.php?{encode_params}"
+    url = f"https://{code}.{family}.org/w/api.php?{encode_params}"
 
     url2 = url.replace("&format=json", "").replace("?format=json", "?")
     logger.debug(f"printboturl: {url2}")
@@ -49,7 +48,7 @@ def submitAPI(params, Code, family, **kwargs):
 
     json1 = {}
     try:
-        result = Session.post(mainurl, data=params, timeout=settings.wikipedia.default_timeout)
+        result = Session.post(mainurl, data=params, timeout=main_settings.wikipedia.default_timeout)
 
     except requests.exceptions.ReadTimeout:
         logger.debug(f"ReadTimeout: {mainurl}")

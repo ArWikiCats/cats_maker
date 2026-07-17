@@ -4,9 +4,7 @@ Tests for categorytext.py
 This module tests category text generation functions.
 """
 
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 from src.mk_cats.categorytext import (
     LocalLanguageLinks,
@@ -174,24 +172,15 @@ class TestGeneratePortalContent:
 
         result = generate_portal_content("تصنيف:تصنيف_بدون_بوابات", "Category:NoPortals")
 
-        assert result == ""
+        assert result == []
 
     def test_returns_string_and_empty_list_with_return_list(self, mocker):
-        """Test that generate_portal_content returns tuple when return_list=True"""
+        """Test that generate_portal_content returns tuple"""
         mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=[])
 
-        result = generate_portal_content("تصنيف:اختبار", "Category:Test", return_list=True)
+        result = generate_portal_content("تصنيف:اختبار", "Category:Test")
 
-        assert result == ("", [])
-
-    def test_translates_english_portals_to_arabic(self, mocker):
-        """Test that English portal names are translated to Arabic"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Olympics"])
-
-        result = generate_portal_content("تصنيف:ألعاب أولمبية", "Category:Olympics")
-
-        assert "ألعاب أولمبية" in result
-        assert "{{بوابة|" in result
+        assert result == []
 
     def test_translates_multiple_portals(self, mocker):
         """Test that multiple portals are translated and joined"""
@@ -242,36 +231,18 @@ class TestGeneratePortalContent:
         mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Iceland"])
 
         # Title contains "آيسلندا" and also portal link has Iceland
-        result = generate_portal_content("تصنيف:تاريخ آيسلندا", "Category:History of Iceland", return_list=True)
+        result = generate_portal_content("تصنيف:تاريخ آيسلندا", "Category:History of Iceland")
 
-        litp, lilo = result
-        assert lilo.count("آيسلندا") == 1
+        assert result.count("آيسلندا") == 1
 
     def test_returns_list_when_return_list_true(self, mocker):
-        """Test that generate_portal_content returns list when return_list=True"""
+        """Test that generate_portal_content returns list when"""
         mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Iceland"])
 
-        litp, lilo = generate_portal_content("تصنيف:اختبار", "Category:Test", return_list=True)
-
-        assert isinstance(lilo, list)
-        assert "آيسلندا" in lilo
-
-    def test_format_with_multiple_portals(self, mocker):
-        """Test portal format with multiple portals uses pipe separator"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Iceland", "Portal:Olympics"])
-
         result = generate_portal_content("تصنيف:اختبار", "Category:Test")
 
-        assert "{{بوابة|" in result
-        assert "|" in result.split("{{بوابة|")[1].split("}}")[0]
-
-    def test_ignores_unknown_portal_names(self, mocker):
-        """Test that unknown portal names are ignored"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=["Portal:UnknownPortalXYZ"])
-
-        result = generate_portal_content("تصنيف:اختبار", "Category:Test")
-
-        assert result == ""
+        assert isinstance(result, list)
+        assert "آيسلندا" in result
 
     def test_category_mapping_in_category_not_duplicated(self, mocker):
         """Test that category_mapping portals are not duplicated if already in list"""
@@ -279,10 +250,9 @@ class TestGeneratePortalContent:
 
         # Title contains "الألعاب الأولمبية" which maps to "ألعاب أولمبية"
         # The portal link also gives "ألعاب أولمبية"
-        result = generate_portal_content("تصنيف:الألعاب الأولمبية", "Category:Olympics", return_list=True)
+        result = generate_portal_content("تصنيف:الألعاب الأولمبية", "Category:Olympics")
 
-        litp, lilo = result
-        assert lilo.count("ألعاب أول㎥ية") == 1 or lilo.count("ألعاب أولمبية") == 1
+        assert result.count("ألعاب أول㎥ية") == 1 or result.count("ألعاب أولمبية") == 1
 
 
 # ===== Tests for generate_category_text =====
@@ -290,18 +260,6 @@ class TestGeneratePortalContent:
 
 class TestGenerateCategoryText:
     """Tests for generate_category_text function"""
-
-    def test_generates_text_with_all_components(self, mocker):
-        """Test that generate_category_text includes all components"""
-        mocker.patch("src.mk_cats.categorytext.main_make_temp_no_title", return_value="")
-        mocker.patch("src.mk_cats.categorytext.generate_portal_content", return_value="{{بوابة|علوم}}\n")
-        mocker.patch("src.mk_cats.categorytext.fetch_commons_category", return_value="{{تصنيف كومنز|Science}}")
-
-        result = generate_category_text("Category:Science", "تصنيف:علوم", "Q123")
-
-        assert "{{بوابة|علوم}}" in result
-        assert "{{نسخ:#لوموجود" in result
-        assert "{{تصنيف كومنز|Science}}" in result
 
     def test_includes_template_when_present(self, mocker):
         """Test that template is included when main_make_temp_no_title returns content"""
@@ -341,7 +299,7 @@ class TestGenerateCategoryText:
 
         generate_category_text("Category:Science", "تصنيف:علوم", "Q123")
 
-        mock_temp.assert_called_once_with("Category:Science", "تصنيف:علوم")
+        mock_temp.assert_called_once_with("تصنيف:علوم")
 
     def test_always_includes_lomawjod_template(self, mocker):
         """Test that the lomawjod template is always present"""
@@ -405,6 +363,6 @@ class PortalListIntegrityTests:
 
     def test_find_list_values_relate_to_portals(self):
         """Test that category_mapping values are valid portal names"""
-        for key, value in category_mapping.items():
+        for _key, value in category_mapping.items():
             # Values should be non-empty strings
             assert value.strip() != ""

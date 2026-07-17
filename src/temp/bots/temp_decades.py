@@ -61,7 +61,7 @@ def make_decades_template(title):
                     temp = f"{ssss}عقد"
                     if not texx:
                         temp = "تصنيف عقد"
-                    text = f"{{{{{temp}|قرن={Qrn}|عقد={dee}{ass}}}}}"  # noqa
+                    text = f"{{{{{temp}|قرن={Qrn}|عقد={dee}{ass}}}}}"
                     return text, temp
                 else:
                     logger.info(f"dee {dee} not in Baco_decades")
@@ -119,11 +119,11 @@ def make_decades_template(title):
                 dex = "|عقد=" + dex
 
             template = f"{cacaca[tex]}بلد عقد"
-            text = f"{{{{{template}|{Y}|{YY}|{dex}|قرن={qrn}|بلد={bld}{sus}}}}}\n"  # noqa
+            text = f"{{{{{template}|{Y}|{YY}|{dex}|قرن={qrn}|بلد={bld}{sus}}}}}\n"
 
             if not bld:
                 template = f"{tex}عقد"
-                text = f"{{{{{template}|{Y}|{YY}|قرن={qrn}{sus}}}}}\n"  # noqa
+                text = f"{{{{{template}|{Y}|{YY}|قرن={qrn}{sus}}}}}\n"
 
             return text, template
         else:

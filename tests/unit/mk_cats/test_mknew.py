@@ -23,8 +23,6 @@ from src.mk_cats.mknew import add_to_final_list
 class TestCheckIfArtitleExists:
     """Tests for check_if_artitle_exists function."""
 
-    pass
-
 
 class TestArMakeLab:
     """Tests for ar_make_lab function."""
@@ -414,7 +412,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.find_Page_Cat_without_hidden", return_value={})
         # Return only 3 members (below default min_members of 5)
         mocker.patch("src.mk_cats.mknew.collect_category_members", return_value=["Article1", "Article2", "Article3"])
-        mock_settings = mocker.patch("src.mk_cats.mknew.settings")
+        mock_settings = mocker.patch("src.mk_cats.mknew.main_settings")
         mock_settings.category.min_members = 5
 
         result = mknew.make_ar("Category:Science", "علوم")
@@ -444,7 +442,7 @@ class TestMakeArMinMembers:
             "src.mk_cats.mknew.collect_category_members",
             return_value=["Article1", "Article2", "Article3", "Article4", "Article5"],
         )
-        mock_settings = mocker.patch("src.mk_cats.mknew.settings")
+        mock_settings = mocker.patch("src.mk_cats.mknew.main_settings")
         mock_settings.category.min_members = 5
         mock_settings.range_limit = 5
         from src.mk_cats.create_category_page import CategoryResult
@@ -483,7 +481,7 @@ class TestMakeArMinMembers:
             "src.mk_cats.mknew.collect_category_members",
             return_value=["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10"],
         )
-        mock_settings = mocker.patch("src.mk_cats.mknew.settings")
+        mock_settings = mocker.patch("src.mk_cats.mknew.main_settings")
         mock_settings.category.min_members = 5
         mock_settings.range_limit = 5
         from src.mk_cats.create_category_page import CategoryResult
@@ -520,7 +518,7 @@ class TestMakeArMinMembers:
         mocker.patch(
             "src.mk_cats.mknew.collect_category_members", return_value=["A1", "A2", "A3", "A4", "A5", "A6", "A7"]
         )
-        mock_settings = mocker.patch("src.mk_cats.mknew.settings")
+        mock_settings = mocker.patch("src.mk_cats.mknew.main_settings")
         mock_settings.category.min_members = 10  # Custom value higher than 7
         mock_settings.range_limit = 5
 
@@ -548,7 +546,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.find_Page_Cat_without_hidden", return_value={})
         # Return only 1 member
         mocker.patch("src.mk_cats.mknew.collect_category_members", return_value=["Article1"])
-        mock_settings = mocker.patch("src.mk_cats.mknew.settings")
+        mock_settings = mocker.patch("src.mk_cats.mknew.main_settings")
         mock_settings.category.min_members = 0  # Allow any
         mock_settings.range_limit = 5
         from src.mk_cats.create_category_page import CategoryResult

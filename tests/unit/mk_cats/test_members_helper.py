@@ -11,10 +11,6 @@ X- merge_member_lists() - Merge multiple member lists
 - collect_category_members() - Main entry point for member collection
 """
 
-from unittest.mock import MagicMock
-
-import pytest
-
 from src.mk_cats.members_helper import gather_members_from_api, gather_members_from_sql
 
 
@@ -210,7 +206,7 @@ class TestCollectCategoryMembers:
         mocker.patch("src.mk_cats.members_helper.gather_members_from_sql", return_value=["SqlArticle"])
         mocker.patch("src.mk_cats.members_helper.gather_members_from_api", return_value=["ApiArticle"])
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
-        mocker.patch("src.mk_cats.members_helper.settings")
+        mocker.patch("src.mk_cats.members_helper.main_settings")
 
         from src.mk_cats.members_helper import collect_category_members
 
@@ -227,7 +223,7 @@ class TestCollectCategoryMembers:
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
 
         # Mock settings to enable SQL
-        mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
+        mock_settings = mocker.patch("src.mk_cats.members_helper.main_settings")
         mock_settings.database.use_sql = True
 
         from src.mk_cats.members_helper import collect_category_members
@@ -246,7 +242,7 @@ class TestCollectCategoryMembers:
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
 
         # Mock settings to disable SQL
-        mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
+        mock_settings = mocker.patch("src.mk_cats.members_helper.main_settings")
         mock_settings.database.use_sql = False
 
         from src.mk_cats.members_helper import collect_category_members
@@ -263,7 +259,7 @@ class TestCollectCategoryMembers:
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", return_value=[])
 
         # Mock settings to disable SQL
-        mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
+        mock_settings = mocker.patch("src.mk_cats.members_helper.main_settings")
         mock_settings.database.use_sql = False
 
         from src.mk_cats.members_helper import collect_category_members
@@ -279,7 +275,7 @@ class TestCollectCategoryMembers:
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
 
         # Mock settings to enable SQL
-        mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
+        mock_settings = mocker.patch("src.mk_cats.members_helper.main_settings")
         mock_settings.database.use_sql = True
 
         from src.mk_cats.members_helper import collect_category_members
@@ -295,7 +291,7 @@ class TestCollectCategoryMembers:
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
 
         # Mock settings to enable SQL
-        mock_settings = mocker.patch("src.mk_cats.members_helper.settings")
+        mock_settings = mocker.patch("src.mk_cats.members_helper.main_settings")
         mock_settings.database.use_sql = True
 
         from src.mk_cats.members_helper import collect_category_members

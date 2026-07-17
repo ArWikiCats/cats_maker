@@ -8,8 +8,7 @@ import json
 import logging
 import time
 
-from ..client_wiki import load_login_bot
-from .lag_bot import get_new_sleep, is_wd_lag_high
+from ...shared.api_page import load_login_bot
 from .wd_bots_main import WdAPI
 
 logger = logging.getLogger(__name__)
@@ -108,14 +107,6 @@ def outbot_json(js_text, fi: str = "", line: str = ""):
     return outbot_json_bot(err)
 
 
-def after_success() -> None:
-    if get_new_sleep() > 0:
-        logger.warning(f"** true. sleep({get_new_sleep()})")
-        time.sleep(get_new_sleep())
-    else:
-        logger.debug("** true.")
-
-
 @functools.lru_cache(maxsize=1024)
 def get_session_post(www: str = "www") -> WdAPI:
     login_bot = load_login_bot(lang=www, family="wikidata")
@@ -131,7 +122,6 @@ def post_wd_params(params) -> bool:
 
         success = result.get("success", 0)
         if success == 1:
-            after_success()
             logger.warning("** true.")
             return True
 
@@ -146,12 +136,9 @@ def add_labels(
     qid,
     label: str,
     lang,
-):
-    if is_wd_lag_high():
-        return ""
-
+) -> bool:
     if not qid:
-        logger.debug(" Qid == '' ")
+        logger.debug(" qid == '' ")
         return False
 
     if label == "":
@@ -183,20 +170,17 @@ def add_sitelinks_to_wikidata(
     wiki,
     enlink: str = "",
     ensite: str = "",
-):
-    if is_wd_lag_high():
-        return ""
-
+) -> bool:
     if not wiki.endswith("wiki") and wiki.find("wiki") == -1 and wiki.find("wiktionary") == -1:
         wiki = f"{wiki}wiki"
 
     if enlink:
         logger.debug(f' **: enlink:"{ensite}:{enlink}" {wiki}:{title}')
     else:
-        logger.debug(f' **: Qid:"{qid}" {wiki}:{title}')
+        logger.debug(f' **: qid:"{qid}" {wiki}:{title}')
 
     if qid.strip() == "" and enlink == "":
-        logger.debug(f'**: False: Qid == "" {wiki}:{title}.')
+        logger.debug(f'**: False: qid == "" {wiki}:{title}.')
         return False
 
     params = {
@@ -226,13 +210,10 @@ def add_sitelinks_to_wikidata(
 def create_new_item(
     data2,
     summary,
-):
+) -> bool:
     """
     Create a new item in the API with the provided data and summary.
     """
-
-    if is_wd_lag_high():
-        return ""
 
     data = json.JSONEncoder().encode(data2)
 
@@ -279,11 +260,11 @@ def log_to_wikidata_qid(artitle, qid) -> None:
     add_labels(qid, artitle, "ar")
 
 
-def log_to_wikidata(artitle, entitle) -> None:
+def log_to_wikidata(artitle, entitle) -> None | str:
     cd = add_sitelinks_to_wikidata("", artitle, "arwiki", enlink=entitle, ensite="enwiki")
 
     if cd is True:
-        return True
+        return None
 
     logger.debug(f'* :ar:"{artitle}", english:"{entitle}".')
 

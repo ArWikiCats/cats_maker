@@ -21,7 +21,7 @@ from .temp_years import make_years_template
 logger = logging.getLogger(__name__)
 
 
-def main_make_temp(enca, title) -> tuple[str, str]:
+def main_make_temp(title) -> tuple[str, str]:
     title = re.sub(r"_", " ", title)
     logger.info("=====================")
     logger.info(f'main: title:"{title}"')
@@ -56,8 +56,8 @@ def main_make_temp(enca, title) -> tuple[str, str]:
     ]:
         tt = f"تصنيف:{month}"
         tt2 = f"تصنيف:أحداث {month}"
-        if title.startswith(tt) or title.startswith(tt2):
-            text = f"{{{{تصنيف شهر|{month}}}}}\n"  # noqa
+        if title.startswith((tt, tt2)):
+            text = f"{{{{تصنيف شهر|{month}}}}}\n"
             return text, "تصنيف شهر"
 
     if title.startswith("تصنيف:صناديق تصفح"):
@@ -65,12 +65,12 @@ def main_make_temp(enca, title) -> tuple[str, str]:
         return text, "تصنيف قوالب"
 
     for tex in ["تأسيسات ", "انحلالات "]:
-        for numb in range(0, 10):
+        for numb in range(10):
             t_2 = f"تصنيف:{tex}{numb}"
             t_33 = f"تصنيف:{tex}سنة {numb}"
             t_44 = f"تصنيف:{tex}عام {numb}"
-            if title.startswith(t_2) or title.startswith(t_33) or title.startswith(t_44):
-                return make_years_template(title, tex, return_title=True)
+            if title.startswith((t_2, t_33, t_44)):
+                return make_years_template(title, tex)
 
     for texd in ["تصنيف:تأسيسات عقد", "تصنيف:انحلالات عقد", "تصنيف:عقد"]:
         if title.startswith(texd):
@@ -101,7 +101,7 @@ def main_make_temp(enca, title) -> tuple[str, str]:
 
 
 def main_make_temp_no_title(title) -> str:
-    result, _ = main_make_temp("", title)
+    result, _ = main_make_temp(title)
 
     return result.strip()
 

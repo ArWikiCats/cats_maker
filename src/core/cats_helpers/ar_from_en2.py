@@ -3,8 +3,8 @@
 
 import logging
 
-from ...config import settings
-from ..client_wiki import load_main_api
+from ...config import main_settings
+from ...shared.api_page import load_main_api
 from ..wiki_api import find_LCN
 
 logger = logging.getLogger(__name__)
@@ -19,13 +19,12 @@ def get_ar_list_title_from_en_list(enlist, wiki: str = "en"):
         liste = enlist[i : i + 50]
         part_list = "|".join(liste)
         if part_list:
-            if part_list.startswith("|"):
-                part_list = part_list[len("|") :]
+            part_list = part_list.removeprefix("|")
 
-            sito_code = settings.EEn_site.code
+            sito_code = main_settings.EEn_site.code
 
             if wiki == "fr":
-                sito_code = settings.FR_site.code
+                sito_code = main_settings.FR_site.code
 
             new_list = find_LCN(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
 
@@ -43,13 +42,13 @@ def get_ar_list_title_from_en_list(enlist, wiki: str = "en"):
     return new_ar_list
 
 
-def en_category_members(enpageTitle, wiki: str = "en"):
-    logger.info(f"from category: {enpageTitle}")
+def en_category_members(enpage_title, wiki: str = "en"):
+    logger.info(f"from category: {enpage_title}")
 
     namespace_ids = [0, 14, 100]
 
     api = load_main_api(wiki)
-    cat_members = api.CatDepth(enpageTitle, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
+    cat_members = api.CatDepth(enpage_title, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
 
     en_titles = []
 

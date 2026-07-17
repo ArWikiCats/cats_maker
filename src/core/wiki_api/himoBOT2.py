@@ -17,8 +17,7 @@ def get_page_info_from_wikipedia(
 ):
     logger.debug(f'for "{sitecode}:{title}"')
 
-    if sitecode.endswith("wiki"):
-        sitecode = sitecode[:-4]
+    sitecode = sitecode.removesuffix("wiki")
 
     title = title.strip()
 

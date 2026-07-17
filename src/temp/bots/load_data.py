@@ -1,11 +1,7 @@
 #!/usr/bin/python3
-"""
+""" """
 
-from .load_data import years_Baco, Baco_decades, Baco_centries, Baco, elfffff, decades_list, cacaca
-
-"""
-
-years_Baco = {}
+years_baco = {}
 Baco_decades = {}
 Baco_centries = {}
 Baco = {}
@@ -33,16 +29,16 @@ for elff, tatt in elfffff.items():
         if centry in decades_list:
             decades = decades_list[centry]
         else:
-            decades = [f"{centry2}{x}0" for x in range(0, 10)]
+            decades = [f"{centry2}{x}0" for x in range(10)]
 
         for dic in decades:
             if dic == "00":
                 dic = "0"
             Baco_decades[str(dic)] = centry
             Baco[int(dic)] = centry
-            years = [int(dic) + x for x in range(0, 10)]
+            years = [int(dic) + x for x in range(10)]
             if int(dic) < 1:
-                years = [int(dic) - x for x in range(0, 10)]
+                years = [int(dic) - x for x in range(10)]
 
             for year in years:
-                years_Baco[str(year)] = {"dic": dic, "centry": centry}
+                years_baco[str(year)] = {"dic": dic, "centry": centry}

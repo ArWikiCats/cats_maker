@@ -7,7 +7,7 @@ def generate_domain_test_placeholders(src_root, test_root):
     src_path = Path(src_root)
     test_base = Path(test_root)
 
-    for root, dirs, files in os.walk(src_path):
+    for root, _dirs, files in os.walk(src_path):
         current_path = Path(root)
 
         # if "domain" not in current_path.parts: continue

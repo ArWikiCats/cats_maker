@@ -6,18 +6,15 @@
 import logging
 import re
 
-from .load_data import cacaca, years_Baco
+from .load_data import cacaca, years_baco
 
 logger = logging.getLogger(__name__)
 
 
-def make_years_template(title, tex, return_title: bool = False):
+def make_years_template(title, tex) -> tuple[str, str]:
     logger.info(f' :{title} , tex:"{tex}"')
     if title.find("ق م") != -1 or title.find("ق.م") != -1:
-        if return_title:
-            return "", ""
-        else:
-            return ""
+        return "", ""
 
     t_1 = f"تصنيف:{tex}"
     ttt = t_1 + r"(عام |سنة |)(\d+)\s*(في |)(.*|)$"
@@ -30,8 +27,8 @@ def make_years_template(title, tex, return_title: bool = False):
     template = f"{cacaca[tex]}بلد"
     logger.info(f" :{title} , ye:{ye}, tex:{tex}")
 
-    if ye in years_Baco:
-        logger.info(f"ye in years_Baco {years_Baco[ye]}")
+    if ye in years_baco:
+        logger.info(f"ye in years_baco {years_baco[ye]}")
         if len(ye) == 4:
             Y = ye[3]
             YY = ye[0] + ye[1] + ye[2]
@@ -47,19 +44,13 @@ def make_years_template(title, tex, return_title: bool = False):
         if bld.startswith("حسب"):
             bld = f"{bld}|في="
 
-        text = f"{{{{{template}|{YY}|{Y}|{bld}}}}}"  # noqa
+        text = f"{{{{{template}|{YY}|{Y}|{bld}}}}}"
         logger.info(f' Y:"{YY}" ,YY:"{Y}", bld:"{bld}" ')
         if not bld:
             template = f"{cacaca[tex]}سنة"
-            text = f"{{{{{template}|{YY}|{Y}}}}}"  # noqa
+            text = f"{{{{{template}|{YY}|{Y}}}}}"
         logger.info(text)
 
-        if return_title:
-            return text, template
-        else:
-            return text
+        return text, template
 
-    if return_title:
-        return "{{تصنيف موسم}}", "تصنيف موسم"
-    else:
-        return "{{تصنيف موسم}}"
+    return "{{تصنيف موسم}}", "تصنيف موسم"

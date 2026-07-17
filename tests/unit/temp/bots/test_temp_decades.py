@@ -3,8 +3,6 @@
 Test file for make_decades_template function
 """
 
-import sys
-from pathlib import Path
 
 from src.temp.bots import make_decades_template
 

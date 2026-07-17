@@ -4,7 +4,7 @@ Refactored module for handling MediaWiki API calls for categories, langlinks, et
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Optional, Tuple
 
 from ..wiki_api import submitAPI
 
@@ -15,7 +15,7 @@ page_is_redirect = {}  # self.page_is_redirect
 
 class WikiApiCache:
     def __init__(self, max_size: int = 1000, ttl_seconds: int = 3600) -> None:
-        self.cache: Dict[Tuple, Any] = {}
+        self.cache: dict[Tuple, Any] = {}
         self.max_size = max_size
         self.ttl_seconds = ttl_seconds
 
@@ -33,11 +33,11 @@ class WikiApiHandler:
 
         # State variables (previously global)
 
-        self.cache: Dict[Tuple, Any] = {}
+        self.cache: dict[Tuple, Any] = {}
 
-        self.arpage_inside_en_cat: Dict[str, List[str]] = {}
-        self.page_is_redirect: Dict[str, List[str]] = {}
-        self.deleted: List[str] = []
+        self.arpage_inside_en_cat: dict[str, list[str]] = {}
+        self.page_is_redirect: dict[str, list[str]] = {}
+        self.deleted: list[str] = []
         self.api_call_count: int = 0
 
     def get_arpage_inside_encat_all(self):
@@ -53,13 +53,13 @@ class WikiApiHandler:
 
     # --- Public methods mimicking the old functions ---
 
-    def get_arpage_inside_encat(self, key: str) -> Optional[List[str]]:
+    def get_arpage_inside_encat(self, key: str) -> Optional[list[str]]:
         """Gets the list of arabic pages inside an english category."""
         return self.arpage_inside_en_cat.get(key)
 
     def find_page_data(
         self, page_title: str, prop: str = "", lllang: str = "", site_code: str = "en"
-    ) -> Optional[Dict]:
+    ) -> Optional[dict]:
         """
         Retrieves data (langlinks, categories, etc.) for a given page.
         This is the refactored version of find_LCN.
@@ -132,7 +132,7 @@ class WikiApiHandler:
         self.cache[cache_key] = page_results
         return page_results
 
-    def _parse_api_response(self, query: Dict, site_code: str, props: str = "") -> Dict:
+    def _parse_api_response(self, query: dict, site_code: str, props: str = "") -> dict:
         """Helper to parse the 'pages' and 'redirects' part of an API response."""
         results = {}
         redirect_map = {r["from"]: r["to"] for r in query.get("redirects", [])}
@@ -189,7 +189,7 @@ class WikiApiHandler:
 
         return results
 
-    def find_non_hidden_categories(self, page_title: str, prop: str = "", site_code: str = "ar") -> Optional[Dict]:
+    def find_non_hidden_categories(self, page_title: str, prop: str = "", site_code: str = "ar") -> Optional[dict]:
         """
         Retrieves non-hidden categories for a given page.
         Refactored version of find_Page_Cat_without_hidden.

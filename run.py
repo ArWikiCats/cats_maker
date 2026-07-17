@@ -35,9 +35,9 @@ logger.setLevel("DEBUG" if settings.debug else "INFO")
 new_all_tab = {1: False}
 
 
-def new_all_work_on_title(title, **Kwargs):
+def new_all_work_on_title(title, **kwargs):
     if new_all:
-        new_all.work_on_title(title=title, dont_create=True, **Kwargs)
+        new_all.work_on_title(title=title, dont_create=True, **kwargs)
 
 
 def get_url_result(url):
@@ -87,8 +87,7 @@ def main():
     for arg in sys.argv:
         argn, _, value = arg.partition(":")
 
-        if argn.startswith("-"):
-            argn = argn[1:]
+        argn = argn.removeprefix("-")
 
         # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:357357
         # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:231528
@@ -100,10 +99,10 @@ def main():
         # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 encat:1988_war_films
 
         if argn == "quarry":
-            List = get_quarry_result(value)
-            for cat in List:
+            list_data = get_quarry_result(value)
+            for cat in list_data:
                 categories_list.append(cat)
-            logger.info(f"Add {len(List)} cat from get_quarry_result to categories_list.")
+            logger.info(f"Add {len(list_data)} cat from get_quarry_result to categories_list.")
 
         elif argn == "encat":
             categories_list.append(value)

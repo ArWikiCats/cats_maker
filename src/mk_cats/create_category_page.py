@@ -4,8 +4,8 @@
 import logging
 from typing import NamedTuple, Optional
 
-from ..core.client_wiki import load_main_api
 from ..core.utils import skip_encats
+from ..shared.api_page import load_main_api
 from ..temp import main_make_temp_no_title
 from . import categorytext
 
@@ -102,7 +102,7 @@ def add_text_to_cat(text: str, categories, enca, title, qid, family: str = ""):
         if save:
             text = new_text
 
-    portalse, portals_list = categorytext.generate_portal_content(title, enca, return_list=True)
+    portalse, portals_list = categorytext.generate_portal_content(title, enca)
 
     if portalse and portals_list != []:
         # اضافة قالب بوابة

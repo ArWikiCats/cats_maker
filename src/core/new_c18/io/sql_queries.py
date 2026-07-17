@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from ....config import settings
+from ....config import main_settings
 from ...api_sql import add_namespace_prefix, db_manager
 
 logger = logging.getLogger(__name__)
@@ -37,9 +37,9 @@ def fetch_en_category_langlinks(encat: str, wiki: str = "en") -> list[dict[str, 
     encat2 = encat.replace(" ", "_").replace("Category:", "").replace("category:", "")
 
     nss = "0, 10, 14"
-    if settings.query.ns_no_10:
+    if main_settings.query.ns_no_10:
         nss = "0, 14"
-    if settings.query.ns_only_14:
+    if main_settings.query.ns_only_14:
         nss = "14"
 
     # nss is validated against known safe values above

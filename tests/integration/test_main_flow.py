@@ -7,12 +7,11 @@ These tests verify the complete flow from create_categories_from_list
 through all the processing steps, with mocked external services.
 """
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
 from src.core.new_c18.core.category_resolver import CategoryResolver
-from src.core.new_c18.core.member_lister import MemberLister
 from src.core.wd_bots import wd_api_bot
 from src.core.wiki_api import himoBOT2
 from src.mk_cats import create_categories_from_list, create_category_page, mknew

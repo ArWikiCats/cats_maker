@@ -43,8 +43,7 @@ def normalize_category_title(title: str, *, lang: str = "ar") -> str:
     if lang == "ar":
         while title.startswith("تصنيف:تصنيف:"):
             title = title[len("تصنيف:") :]
-        if title.startswith("تصنيف:"):
-            title = title[len("تصنيف:") :]
+        title = title.removeprefix("تصنيف:")
     elif lang == "en":
         while title.lower().startswith("category:category:"):
             title = title[len("Category:") :]

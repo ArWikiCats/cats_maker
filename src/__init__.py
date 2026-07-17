@@ -13,16 +13,16 @@ import os
 import sys
 from pathlib import Path
 
-# Optional ArWikiCats integration - configure via environment variable
-arwikicats_path = os.getenv("ARWIKICATS_PATH")
-if arwikicats_path:
-    arwikicats_path = Path(arwikicats_path)
-    if arwikicats_path.exists():
-        sys.path.insert(0, str(arwikicats_path.parent))
-
-
 from .logging_config import setup_logging
-from .mk_cats import (
+
+# Optional ArWikiCats integration - configure via environment variable
+_arwikicats_path = os.getenv("ARWIKICATS_PATH")
+if _arwikicats_path:
+    _arwikicats_path = Path(_arwikicats_path)
+    if _arwikicats_path.exists():
+        sys.path.insert(0, str(_arwikicats_path.parent))
+
+from .mk_cats import (  # noqa: E402
     ar_make_lab,
     create_categories_from_list,
     process_catagories,

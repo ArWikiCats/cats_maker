@@ -1,12 +1,12 @@
 """ """
 
-from ...config import settings
+from ...config import main_settings
 
 skip_encats = [
     "Category:Invasions of Israel",
 ]
 
-global_False_entemps = [
+global_false_entemps = [
     "Hidden category",
     "Maintenance category",  # تصنيف صيانة
     "Wikipedia category",  # تصنيف ويكيبيديا
@@ -24,10 +24,10 @@ global_False_entemps = [
     # 'container category',      #تصنيف حاوية
 ]
 
-if settings.category.stubs:
-    global_False_entemps.remove("Hiddencat")
-    global_False_entemps.remove("WPSS-cat")
-    global_False_entemps.remove("Stub Category")
+if main_settings.category.stubs:
+    global_false_entemps.remove("Hiddencat")
+    global_false_entemps.remove("WPSS-cat")
+    global_false_entemps.remove("Stub Category")
 
 
-NO_Templates_lower = [x.lower() for x in global_False_entemps]
+NO_Templates_lower = [x.lower() for x in global_false_entemps]

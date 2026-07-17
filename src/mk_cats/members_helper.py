@@ -13,7 +13,7 @@ Responsibilities:
 
 import logging
 
-from ..config import settings
+from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, MemberLister
 from ..core.wiki_api import remove_redirect_pages, sub_cats_query
 
@@ -142,7 +142,7 @@ def collect_category_members(ar_title: str, en_page_title: str) -> list:
     members = gather_members_from_sql(ar_title, en_page_title)
 
     # Step 2: Gather from API if SQL is disabled or returned empty
-    if settings.database.use_sql is False or members == []:
+    if main_settings.database.use_sql is False or members == []:
         api_members = gather_members_from_api(en_page_title)
         members = merge_member_lists(members, api_members)
 

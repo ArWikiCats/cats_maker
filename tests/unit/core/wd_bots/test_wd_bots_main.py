@@ -3,8 +3,6 @@ Unit tests for src/core/wd_bots/wd_bots_main.py module.
 TODO: write tests
 """
 
-import pytest
-
 from src.core.wd_bots.wd_bots_main import WdAPI
 
 
@@ -46,8 +44,6 @@ class TestWDAPI:
         """Test that filter_data adds format and utf8"""
         mock_login = mocker.MagicMock()
         mock_login.user_login = "testuser"
-        mocker.patch("src.core.wd_bots.wd_bots_main.do_lag")
-        mocker.patch("src.core.wd_bots.wd_bots_main.get_lag_value", return_value=5)
 
         api = WdAPI(mock_login)
         data = {"action": "wbeditentity"}

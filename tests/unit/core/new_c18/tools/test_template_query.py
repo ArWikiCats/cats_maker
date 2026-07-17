@@ -4,8 +4,6 @@ Tests for template_query.py
 This module tests template query functions for Wikipedia categories.
 """
 
-import pytest
-
 from src.core.new_c18.tools.template_query import TemplateCache, _cache, get_templates
 
 

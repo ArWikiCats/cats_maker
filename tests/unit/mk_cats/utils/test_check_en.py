@@ -7,10 +7,6 @@ This module tests:
 - check_en_temps() - Check English templates for blacklisted items
 """
 
-from unittest.mock import MagicMock, patch
-
-import pytest
-
 
 class TestCheckEnTemps:
     """Tests for check_en_temps function."""

@@ -93,9 +93,9 @@ def make_millennium_template(title):
     bld = bld.strip()
     if bld.startswith("حسب") or bld == "":
         bld = bld + "|في="
-    text = f"{{{{{templatename}|{bld}}}}}\n"  # noqa
+    text = f"{{{{{templatename}|{bld}}}}}\n"
     if not teg:
         templatename = f"الألفية {elffs} في بلد"
-        text = f"{{{{{templatename}|{bld}}}}}\n"  # noqa
+        text = f"{{{{{templatename}|{bld}}}}}\n"
 
     return text, templatename

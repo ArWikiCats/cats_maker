@@ -1,7 +1,5 @@
 """Unit tests for src/core/api_sql/repository.py module."""
 
-import pytest
-
 from src.core.api_sql.repository import CategoryRepository
 
 

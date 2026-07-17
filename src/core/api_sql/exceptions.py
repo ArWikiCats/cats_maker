@@ -14,13 +14,9 @@ class DatabaseError(Exception):
 class DatabaseConnectionError(DatabaseError):
     """Raised when a database connection cannot be established."""
 
-    pass
-
 
 class QueryExecutionError(DatabaseError):
     """Raised when a SQL query fails to execute."""
-
-    pass
 
 
 class DatabaseFetchError(DatabaseError):
@@ -29,5 +25,3 @@ class DatabaseFetchError(DatabaseError):
 
 class ConfigurationError(DatabaseError):
     """Raised when required configuration is missing or invalid."""
-
-    pass
