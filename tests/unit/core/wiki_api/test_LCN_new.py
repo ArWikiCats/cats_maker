@@ -99,16 +99,16 @@ class TestFindPageData:
     """Tests for find_page_data method"""
 
     def test_find_page_data_empty_title(self):
-        """Test find_page_data with empty title returns False"""
+        """Test find_page_data with empty title returns None"""
         handler = WikiApiHandler()
         result = handler.find_page_data("")
-        assert result is False
+        assert result is None
 
     def test_find_page_data_title_with_hash(self):
-        """Test find_page_data with hash in title returns False"""
+        """Test find_page_data with hash in title returns None"""
         handler = WikiApiHandler()
         result = handler.find_page_data("Page#Section")
-        assert result is False
+        assert result is None
 
     def test_find_page_data_uses_cache(self, mocker):
         """Test find_page_data uses cache for repeated calls"""
@@ -122,17 +122,17 @@ class TestFindPageData:
 class TestFindNonHiddenCategories:
     """Tests for find_non_hidden_categories method"""
 
-    def test_empty_title_returns_false(self):
-        """Test that empty title returns False"""
+    def test_empty_title_returns_none(self):
+        """Test that empty title returns None"""
         handler = WikiApiHandler()
         result = handler.find_non_hidden_categories("")
-        assert result is False
+        assert result is None
 
-    def test_title_with_hash_returns_false(self):
-        """Test that title with hash returns False"""
+    def test_title_with_hash_returns_none(self):
+        """Test that title with hash returns None"""
         handler = WikiApiHandler()
         result = handler.find_non_hidden_categories("Page#Section")
-        assert result is False
+        assert result is None
 
     def test_uses_cache_for_repeated_calls(self):
         """Test that cached results are returned"""
