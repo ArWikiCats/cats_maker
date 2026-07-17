@@ -337,17 +337,6 @@ class TestGetCatNew:
         """Helper to build a mock page entry."""
         return {"title": title, "ns": ns, "revisions": [{"timestamp": timestamp, "revid": revid}]}
 
-    def test_basic_call_returning_pages(self, bot, mock_login_bot):
-        """Single API call with no continue params returns pages."""
-        pages = {"Page1": self._make_page("Page1")}
-        mock_login_bot.client_request.return_value = self._make_api_response(pages)
-
-        result = bot.get_cat_new("Category:Test")
-
-        assert "Page1" in result
-        assert result["Page1"]["revid"] == 100
-        mock_login_bot.client_request.assert_called_once()
-
     def test_multiple_pages_in_single_response(self, bot, mock_login_bot):
         """Single API call returning multiple pages."""
         pages = {

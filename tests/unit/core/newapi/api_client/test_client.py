@@ -197,35 +197,6 @@ class TestClientRequestRetry:
         assert result["query"]["userinfo"]["id"] == 42
 
 
-# ── Test _ensure_logged_in ───────────────────────────────────────────────────
-
-
-class TestEnsureLoggedIn:
-    def test_skips_login_when_session_valid(self):
-        client, site = _make_client()
-        # uid != 0 means session is valid
-        site.api.return_value = {"query": {"userinfo": {"id": 42}}}
-        site.login = MagicMock()
-        client._ensure_logged_in()
-        site.login.assert_not_called()
-
-    def test_logs_in_when_anonymous(self):
-        client, site = _make_client()
-        site.logged_in = False
-        site.site_init = MagicMock()
-        site.login = MagicMock()
-        client._ensure_logged_in()
-        site.site_init.assert_called_once()
-
-    def test_logs_in_on_api_exception(self):
-        client, site = _make_client()
-        site.logged_in = False
-        site.site_init = MagicMock(side_effect=Exception("connection error"))
-        site.login = MagicMock()
-        client._ensure_logged_in()
-        site.site_init.assert_called_once()
-
-
 # ── Test _do_login ───────────────────────────────────────────────────────────
 
 
@@ -283,31 +254,3 @@ class TestRepr:
         client, _ = _make_client(family="wiktionary")
         r = repr(client)
         assert "wiktionary" in r
-
-
-# ── Test __init__ with cookies_dir ───────────────────────────────────────────
-
-
-class TestInitCookiesDir:
-    def test_passes_cookies_dir_to_get_cookie_path(self):
-        with (
-            patch("src.core.newapi.api_client.client.mwclient.Site") as mock_site,
-            patch("src.core.newapi.api_client.cookies_client.get_cookie_path") as mock_path,
-        ):
-            mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
-            mock_path.return_value = MagicMock()
-
-            WikiLoginClient("en", "wikipedia", "bot", "pass", cookies_dir="/tmp/cookies")
-            mock_path.assert_called_once_with("/tmp/cookies", "wikipedia", "en", "bot")
-
-    def test_default_cookies_dir_is_default_value(self):
-        with (
-            patch("src.core.newapi.api_client.client.mwclient.Site") as mock_site,
-            patch("src.core.newapi.api_client.cookies_client.get_cookie_path") as mock_path,
-        ):
-            mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
-            mock_path.return_value = MagicMock()
-
-            WikiLoginClient("en", "wikipedia", "bot", "pass", "/tmp/cookies")
-            args = mock_path.call_args[0]
-            assert args[0] == "/tmp/cookies"

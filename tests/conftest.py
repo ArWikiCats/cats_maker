@@ -15,23 +15,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 @pytest.fixture(autouse=True)
-def disable_network(mocker):
-    """Disable all network requests during testing"""
-    mocker.patch("requests.get", side_effect=Exception("Network disabled in tests"))
-    mocker.patch("requests.post", side_effect=Exception("Network disabled in tests"))
-    mocker.patch("urllib.request.urlopen", side_effect=Exception("Network disabled in tests"))
-    mocker.patch(
-        "src.core.newapi.api_client.client.mwclient.client.requests.get",
-        side_effect=Exception("Network disabled in tests"),
-    )
-    mocker.patch(
-        "src.core.newapi.api_client.client.mwclient.client.requests.post",
-        side_effect=Exception("Network disabled in tests"),
-    )
+def stop_nets(request):
+    # Check if 'network' mark is present in the current test item
+    if "network" in request.node.keywords:
+        from pytest_socket import enable_socket
 
-
-@pytest.fixture(autouse=True)
-def stop_nets():
+        enable_socket()
+        return
+    # Otherwise, disable the socket for all other tests
     disable_socket(allow_unix_socket=True)
 
 
