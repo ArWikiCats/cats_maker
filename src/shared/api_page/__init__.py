@@ -1,14 +1,15 @@
 """ """
 
+from __future__ import annotations
+
 import functools
 import logging
 import os
 
 from dotenv import load_dotenv
 
-from ....config import settings
-from ..api_client import WikiLoginClient
-from .all_apis import AllAPIS
+from ...config import settings
+from ...core.newapi import AllAPIS, WikiLoginClient
 
 logger = logging.getLogger(__name__)
 

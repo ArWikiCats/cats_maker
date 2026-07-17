@@ -7,7 +7,6 @@ import logging
 
 from ...config import settings
 from ..newapi.api_client import WikiLoginClient
-from .lag_bot import do_lag, find_lag, get_lag_value
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +17,6 @@ class WdAPI:
         login_bot: WikiLoginClient,
     ) -> None:
         self.login_bot = login_bot
-
         self.lang = "test" if settings.wikidata.test_mode else "www"
         self.family = "wikidata"
 
@@ -123,14 +121,8 @@ class WdAPI:
         error_code = error.get("code", "")
 
         if error_code == "maxlag" and max_retry < 4:
-            find_lag(error)
+            return {}
 
-            logger.debug(f":lag work: {max_retry=}")
-            try:
-                return self.post_to_newapi(params=params, max_retry=max_retry + 1)
-            except Exception as e:
-                logger.error(f":lag work: {e=}")
-                return {}
         if error:
             er = self.handle_err_wd(error, function="", params=params)
 
@@ -140,10 +132,8 @@ class WdAPI:
         return results
 
     def filter_data(self, data):
-        do_lag()
-
         if "maxlag" not in data:
-            data["maxlag"] = get_lag_value() + 1
+            data["maxlag"] = 5
 
         data["format"] = "json"
         data["utf8"] = 1

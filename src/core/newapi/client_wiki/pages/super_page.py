@@ -442,6 +442,9 @@ class MainPage:
         if not self.text:
             self.text = self.get_text()
 
+        if settings.bot.force_edit:
+            return True
+
         self.meta.can_be_edit = is_page_editable(
             text=self.text,
             title_page=self.title,

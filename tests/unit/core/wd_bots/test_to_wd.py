@@ -125,20 +125,17 @@ class TestPostWdParams:
 
 
 class TestAddLabels:
-    @patch("src.core.wd_bots.to_wd.is_wd_lag_high", return_value=True)
-    def test_returns_empty_when_lag_high(self, _):
+    def test_returns_empty_when_lag_high(self):
         from src.core.wd_bots.to_wd import add_labels
 
         assert add_labels("Q123", "label", "ar") is False
 
-    @patch("src.core.wd_bots.to_wd.is_wd_lag_high", return_value=False)
-    def test_returns_false_when_no_qid(self, _):
+    def test_returns_false_when_no_qid(self):
         from src.core.wd_bots.to_wd import add_labels
 
         assert add_labels("", "label", "ar") is False
 
-    @patch("src.core.wd_bots.to_wd.is_wd_lag_high", return_value=False)
-    def test_returns_false_when_empty_label(self, _):
+    def test_returns_false_when_empty_label(self):
         from src.core.wd_bots.to_wd import add_labels
 
         assert add_labels("Q123", "", "ar") is False

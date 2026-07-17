@@ -6,6 +6,7 @@ This module tests Wikipedia API helper functions.
 
 from src.core.wiki_api.check_redirects import load_non_redirects, remove_redirect_pages
 
+
 class TestLoadNonRedirects:
     """Tests for load_non_redirects function"""
 

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """ """
 
-from ..core.newapi.client_wiki import load_main_api
 from ..core.wd_bots import Get_P373_API
+from ..shared.api_page import load_main_api
 from ..temp import main_make_temp_no_title
 from .categorytext_data import LocalLanguageLinks, category_mapping
 from .utils import portal_en_to_ar_lower

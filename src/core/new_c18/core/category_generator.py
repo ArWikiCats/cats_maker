@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from ....config import settings
-from ...newapi.client_wiki import load_main_api
+from ....shared.api_page import load_main_api
 from ...wiki_api import find_LCN
 from ..constants import DEFAULT_MEMBER_NAMESPACES, STUB_MEMBER_NAMESPACES
 

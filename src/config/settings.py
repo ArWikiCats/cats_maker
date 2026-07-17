@@ -148,7 +148,6 @@ class BotConfig:
     show_diff: bool = False
     no_false_edit: bool = False
     force_edit: bool = False
-    workibrahem: bool = False
     no_login: bool = False
     no_cookies: bool = False
 
@@ -436,8 +435,6 @@ class Settings:
                 self.bot.show_diff = True
             if arg_name == "nofa":
                 self.bot.no_false_edit = True
-            if arg_name == "workibrahem":
-                self.bot.workibrahem = True
             if arg_name in ("botedit", "editbot"):
                 self.bot.force_edit = True
             if arg_name == "nologin":

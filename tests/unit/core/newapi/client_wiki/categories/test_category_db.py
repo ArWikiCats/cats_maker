@@ -326,5 +326,6 @@ class TestParamsWork:
 class TestGetCatNew:
     """Tests for get_cat_new - the API request loop with continue params and limit check."""
 
+
 class TestSubcatquery:
     """Tests for subcatquery_ - full traversal with depth and sorting."""

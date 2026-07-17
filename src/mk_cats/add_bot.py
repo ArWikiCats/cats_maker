@@ -5,8 +5,8 @@ import functools
 import logging
 
 from ..core.new_c18 import add_text_to_template, get_dont_add_pages, sort_categories
-from ..core.newapi.client_wiki import load_main_api
 from ..core.utils import function_timer
+from ..shared.api_page import load_main_api
 
 logger = logging.getLogger(__name__)
 

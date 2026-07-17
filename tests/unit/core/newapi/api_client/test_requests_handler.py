@@ -139,6 +139,7 @@ class TestAssertNamedUserFailed:
         result = client.client_request_retry({"action": "query"}, method="get")
         assert "query" in result
 
+
 class TestLoginForced:
     """Tests for login method with force=True."""
 

@@ -6,8 +6,6 @@ import logging
 
 import pywikibot
 
-from .....config import settings
-
 logger = logging.getLogger(__name__)
 
 _save_or_ask: dict[str, bool] = {}
@@ -42,30 +40,29 @@ class AskBot:
             return True
 
         text = text or ""
-        if settings.bot.ask:
-            if text or newtext:
-                if not self.nodiff:
-                    pywikibot.showDiff(text, newtext)
+        if text or newtext:
+            if not self.nodiff:
+                pywikibot.showDiff(text, newtext)
 
-                logger.warning(f"diference in bytes: {len(newtext) - len(text):,}")
-                logger.warning(f"len of text: {len(text):,}, len of newtext: {len(newtext):,}")
+            logger.warning(f"diference in bytes: {len(newtext) - len(text):,}")
+            logger.warning(f"len of text: {len(text):,}, len of newtext: {len(newtext):,}")
 
-            if summary:
-                logger.warning(f"-Edit summary: {summary}")
+        if summary:
+            logger.warning(f"-Edit summary: {summary}")
 
-            logger.warning(f"AskBot: {message}? (yes, no) {username=}")
+        logger.warning(f"AskBot: {message}? (yes, no) {username=}")
 
-            sa = input("([y]es, [N]o, [a]ll)?")
+        sa = input("([y]es, [N]o, [a]ll)?")
 
-            if sa == "a":
-                _save_or_ask[job] = True
-                logger.warning("---------------------------------")
-            logger.warning(f"save all:{job} without asking.")
+        if sa == "a":
+            _save_or_ask[job] = True
             logger.warning("---------------------------------")
+        logger.warning(f"save all:{job} without asking.")
+        logger.warning("---------------------------------")
 
-            if sa not in ["y", "a", "", "Y", "A", "all", "aaa"]:
-                logger.warning("wrong answer")
-                return False
+        if sa not in ["y", "a", "", "Y", "A", "all", "aaa"]:
+            logger.warning("wrong answer")
+            return False
 
         return True
 
