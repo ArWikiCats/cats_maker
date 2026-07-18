@@ -73,7 +73,7 @@ def Get_Sitelinks_From_wikidata(
     if site.find("wiki") == -1:
         sitewiki = f"{site}wiki"
 
-    params = {
+    params: dict[str, Any] = {
         "action": "wbgetentities",
         "props": "sitelinks",
         # "props": "sitelinks|templates",
@@ -91,7 +91,7 @@ def Get_Sitelinks_From_wikidata(
 
 
 def Get_Sitelinks_from_qid(ids) -> dict[str, Any]:
-    params = {
+    params: dict[str, Any] = {
         "action": "wbgetentities",
         "props": "sitelinks",
         "normalize": 1,
@@ -112,7 +112,7 @@ def Get_P373_API(q, titles: str = "", sites: str = "") -> Any:
 
     P = "P373"
 
-    params = {
+    params: dict[str, Any] = {
         "action": "wbgetentities",
         "props": "sitelinks|claims",
         "ids": q,

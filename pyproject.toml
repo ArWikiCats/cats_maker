@@ -234,7 +234,7 @@ reportOptionalSubscript = "warning"
 # deprecateTypingAliases = false
 # enableExperimentalFeatures = false
 # reportReturnType = false
-reportArgumentType = false
+# reportArgumentType = false
 
 # reportOperatorIssue = false
 # reportIndexIssue = false

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import logging
+from typing import Any
 
 from tqdm import tqdm
 
@@ -229,7 +230,7 @@ class CategoryDepth:
         return table
 
     def get_cat_new(self, cac: str) -> dict:
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "utf8": 1,

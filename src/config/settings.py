@@ -27,9 +27,9 @@ except Exception:
 
 @dataclass(frozen=True)
 class Paths:
-    cookies_dir: str
+    cookies_dir: str | None
     dont_add_to_pages_path: str | None
-    arwikicats_path: str
+    arwikicats_path: str | None
 
 
 def _safe_int(value: str, default: int) -> int:

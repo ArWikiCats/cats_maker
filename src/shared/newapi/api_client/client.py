@@ -403,6 +403,7 @@ class WikiLoginClient:
 
     def post_continue_dict(
         self,
+        *,
         params: dict,
         action: str,
         _load_data: Callable,
@@ -465,6 +466,7 @@ class WikiLoginClient:
 
     def post_continue_list(
         self,
+        *,
         params: dict,
         action: str,
         _load_data: Callable,

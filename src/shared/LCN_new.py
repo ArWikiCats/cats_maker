@@ -60,7 +60,7 @@ class WikiApiHandler:
             self.cache[cache_key] = False
             return {}
 
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             # "prop": "categories|langlinks|templates",
@@ -207,7 +207,7 @@ class WikiApiHandler:
         # Define target language for langlinks
         lllang_target = "ar" if site_code != "ar" else self.en_site_config["code"]
 
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": prop or "langlinks",
