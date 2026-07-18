@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .api_page import load_main_api
 from .LCN_new import (
     find_LCN,

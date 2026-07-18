@@ -12,7 +12,6 @@ from unittest.mock import MagicMock
 import pytest
 
 from src.core.new_c18.core.category_resolver import CategoryResolver
-from src.core.wd_bots import wd_api_bot
 from src.mk_cats import create_categories_from_list, create_category_page, mknew
 from src.mk_cats.mknew import (
     clear_processing_state,
@@ -21,6 +20,7 @@ from src.mk_cats.mknew import (
     process_catagories,
     scan_ar_title,
 )
+from src.shared.wd_api import wd_api_bot
 
 
 class TestMainFlowIntegration:
@@ -30,7 +30,7 @@ class TestMainFlowIntegration:
     def mock_all_external_services(self, mocker):
         """Mock all external API calls for integration testing."""
         # Mock Wikidata API
-        mock_wikidata = mocker.patch("src.core.wd_bots.wd_api_bot.Get_Sitelinks_From_wikidata")
+        mock_wikidata = mocker.patch("src.shared.wd_api.wd_api_bot.Get_Sitelinks_From_wikidata")
         mock_wikidata.return_value = {"q": "Q12345", "sitelinks": {}}
 
         # Mock LCN (Language Code Navigator)
@@ -54,7 +54,7 @@ class TestMainFlowIntegration:
         mock_lit_api.return_value = []
 
         # Mock to_wd.log_to_wikidata
-        mock_log_wd = mocker.patch("src.core.wd_bots.to_wd.log_to_wikidata")
+        mock_log_wd = mocker.patch("src.shared.wd_api.to_wd.log_to_wikidata")
 
         # Mock validate_categories_for_new_cat
         mock_validate = mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat")
@@ -178,7 +178,7 @@ class TestModuleInteraction:
     def test_new_c18_integration_with_category_resolver(self, mocker):
         """Test that new_c18 module integrates with CategoryResolver."""
         # Mock database connection
-        mock_connect = mocker.patch("src.core.api_sql.db_pool.db_manager.execute_query")
+        mock_connect = mocker.patch("src.shared.api_sql.db_pool.db_manager.execute_query")
         mock_connect.return_value = []
 
         # This tests that the modules can be imported and interact
@@ -197,10 +197,10 @@ class TestModuleInteraction:
         assert create_category_page.new_category is not None
 
     def test_wd_bots_integration_with_get_bots(self, mocker):
-        """Test that wd_bots module functions integrate properly."""
+        """Test that wd_api module functions integrate properly."""
 
         # Mock the underlying API call
-        mock_api = mocker.patch("src.core.wd_bots.wd_api_bot.Get_infos_wikidata")
+        mock_api = mocker.patch("src.shared.wd_api.wd_api_bot.Get_infos_wikidata")
         mock_api.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -213,7 +213,7 @@ class TestModuleInteraction:
         }
 
         # Test get_sitelinks function (mocking at the right level)
-        mock_sitelinks = mocker.patch("src.core.wd_bots.wd_api_bot.Get_Sitelinks_From_wikidata")
+        mock_sitelinks = mocker.patch("src.shared.wd_api.wd_api_bot.Get_Sitelinks_From_wikidata")
         mock_sitelinks.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",

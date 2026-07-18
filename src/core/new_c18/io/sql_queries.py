@@ -7,7 +7,7 @@ import logging
 from typing import Any
 
 from ....config import main_settings
-from ...api_sql import add_namespace_prefix, db_manager
+from ....shared.api_sql import add_namespace_prefix, db_manager
 
 logger = logging.getLogger(__name__)
 
