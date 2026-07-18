@@ -21,3 +21,4 @@ coverage.xml
 .claude/settings.local.json
 src/.vscode/settings.json
 /z
+/.vscode
