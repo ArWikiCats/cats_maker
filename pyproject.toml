@@ -200,7 +200,7 @@ exclude = [
 ]
 
 # Diagnostic modes: "basic" or "standard" or "strict"
-typeCheckingMode = "basic"
+typeCheckingMode = "standard"
 
 # Automatically find virtual environments
 venvPath = "."
