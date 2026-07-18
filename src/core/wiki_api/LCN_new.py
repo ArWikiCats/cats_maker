@@ -350,6 +350,7 @@ def find_Page_Cat_without_hidden(
         site_code=site_code or "ar",
     )
 
+
 def get_arpage_inside_encat(key):
     return arpage_inside_encat.get(key)
 

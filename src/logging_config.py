@@ -2,30 +2,58 @@
 Logging configuration with colored output.
 """
 
+from __future__ import annotations
+
 import logging
 import os
 import sys
+from logging.handlers import WatchedFileHandler
 from pathlib import Path
 
 import colorlog
 
 
-def prepare_log_file(log_file, project_logger):
-    log_file = os.path.expandvars(str(log_file))
-    log_file = Path(log_file).expanduser()
+def prepare_log_file(log_file: str | None, project_logger: logging.Logger) -> Path | None:
+    """
+    Prepare the log file path and create parent directories if needed.
+    """
+    if not log_file:
+        return None
+    log_file_path = os.path.expandvars(str(log_file))
+    log_file_path = Path(log_file_path).expanduser()
 
     try:
-        log_file.parent.mkdir(parents=True, exist_ok=True)
+        log_file_path.parent.mkdir(parents=True, exist_ok=True)
     except Exception as e:
-        project_logger.error(f"Failed to create log directory: {e}")
-        log_file = None
-    return log_file
+        project_logger.error("Failed to create log directory: %s", e)
+        log_file_path = None
+    return log_file_path
+
+
+def setup_file_handler(
+    project_logger: logging.Logger,
+    log_file: Path,
+    level: int,
+) -> None:
+    if not log_file:
+        return
+    file_formatter = logging.Formatter(
+        fmt="%(asctime)s - %(name)s - %(levelname)-8s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    # file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
+    file_handler = WatchedFileHandler(log_file, mode="a", encoding="utf-8")
+    file_handler.setFormatter(file_formatter)
+    file_handler.setLevel(level)
+    project_logger.addHandler(file_handler)
 
 
 def setup_logging(
     level: str = "INFO",
     name: str = "cats_maker_new",
     log_file: str | None = None,
+    error_log_file: str | None = None,
+    use_colorlog: bool = False,
 ) -> None:
     """
     Configure logging for the entire project namespace only.
@@ -39,23 +67,33 @@ def setup_logging(
     project_logger.setLevel(numeric_level)
     project_logger.propagate = False
 
-    formatter = colorlog.ColoredFormatter(
-        fmt="%(filename)s:%(lineno)s %(funcName)s() - %(log_color)s%(levelname)-s %(reset)s%(message)s",
-        log_colors={
-            "DEBUG": "cyan",
-            "INFO": "green",
-            "WARNING": "yellow",
-            "ERROR": "red",
-            "CRITICAL": "red,bg_white",
-        },
-    )
+    if use_colorlog:
+        console_formatter = colorlog.ColoredFormatter(
+            # Standard format: Time - Name - Level - [File:Line] - Message
+            fmt="%(asctime)s - %(name)s - %(log_color)s%(levelname)-s %(reset)s- [%(filename)s:%(lineno)d] - %(message)s",
+            datefmt="%H:%M:%S",
+            log_colors={
+                "DEBUG": "cyan",
+                "INFO": "green",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "red,bg_white",
+            },
+        )
+    else:
+        console_formatter = logging.Formatter(
+            # Standard format: Time - Name - Level - [File:Line] - Message
+            fmt="%(asctime)s - %(name)s - %(levelname)-s - [%(filename)s:%(lineno)d] - %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
 
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(formatter)
+    console_handler.setFormatter(console_formatter)
 
     console_handler.setLevel(numeric_level)
-
     project_logger.addHandler(console_handler)
+
+    project_logger.debug("Setting up logging for '%s' with level '%s'", name, level)
 
     # Optional file handler (no colors)
     if not log_file:
@@ -63,22 +101,15 @@ def setup_logging(
 
     if log_file:
         log_file_path = prepare_log_file(log_file, project_logger)
-        setup_file_handler(project_logger, log_file_path, numeric_level)
+        if log_file_path:
+            setup_file_handler(project_logger, log_file_path, numeric_level)
 
-        # Separate error log file
-        log_file2 = f"{str(log_file)}.err"
-        setup_file_handler(project_logger, log_file2, logging.WARNING)
+    if error_log_file:
+        error_log_file_path = prepare_log_file(error_log_file, project_logger)
+        if error_log_file_path:
+            setup_file_handler(project_logger, error_log_file_path, logging.WARNING)
 
 
-def setup_file_handler(project_logger, log_file, level) -> None:
-    file_formatter = logging.Formatter(
-        fmt="%(asctime)s - %(name)s - %(levelname)-8s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    try:
-        file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
-        file_handler.setFormatter(file_formatter)
-        file_handler.setLevel(level)
-        project_logger.addHandler(file_handler)
-    except Exception as e:
-        project_logger.error(f"Failed to create log file: {e}")
+__all__ = [
+    "setup_logging",
+]
