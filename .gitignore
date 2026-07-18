@@ -22,3 +22,4 @@ coverage.xml
 src/.vscode/settings.json
 /z
 /.vscode
+/src/textfiles
