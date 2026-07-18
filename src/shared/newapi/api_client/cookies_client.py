@@ -101,8 +101,10 @@ def _delete_if_stale(path: Path) -> None:
         _delete_cookie_file(path, reason=f"older than {_COOKIE_MAX_AGE_DAYS} days ({age.days}d)")
 
 
-def _delete_cookie_file(path: Path, reason: str = "") -> None:
+def _delete_cookie_file(path: Path | None, reason: str = "") -> None:
     """Delete a cookie file, logging the outcome."""
+    if not path:
+        return
     try:
         path.unlink(missing_ok=True)
         logger.debug("Deleted stale cookie file %s (%s)", path, reason)
@@ -190,7 +192,7 @@ class CookiesClient:
                 logger.error("Error loading cookies: %s", exc)
         return cj
 
-    def _delete_cookie_file(self, path: Path, reason: str = "") -> None:
+    def _delete_cookie_file(self, path: Path | None, reason: str = "") -> None:
         return _delete_cookie_file(path, reason)
 
     def get_cookies_path(self) -> Path:

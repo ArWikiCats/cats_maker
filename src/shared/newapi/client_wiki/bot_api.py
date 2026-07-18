@@ -76,7 +76,7 @@ class NewApi(NewApiHelpers):
             # ---
             done += len(titles)
             # ---
-            params = {
+            params: dict[str, Any] = {
                 "action": "query",
                 "titles": "|".join(titles),
                 "prop": "info|pageprops",
@@ -150,7 +150,7 @@ class NewApi(NewApiHelpers):
             # ---
             done += len(titles)
             # ---
-            params = {
+            params: dict[str, Any] = {
                 "action": "query",
                 "titles": "|".join(titles),
                 "prop": "info|pageprops",
@@ -227,7 +227,7 @@ class NewApi(NewApiHelpers):
         self,
         start: str = "",
         namespace: str = "0",
-        limit: int = "max",
+        limit: int | str = "max",
         apfilterredir: str = "",
         ppprop: str = "",
         limit_all: int = 100000,
@@ -237,7 +237,7 @@ class NewApi(NewApiHelpers):
             f"Get_All_pages for start:{start}, limit:{limit},namespace:{namespace},apfilterredir:{apfilterredir}"
         )
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "pageprops",
@@ -264,8 +264,12 @@ class NewApi(NewApiHelpers):
         def _load_data(body):
             return body.get("query", {}).get("allpages") or []
 
-        # ---
-        newp = self.login_bot.post_continue_list(params=params, action="query", max=limit_all, _load_data=_load_data)
+        newp = self.login_bot.post_continue_list(
+            params=params,
+            action="query",
+            max=limit_all,
+            _load_data=_load_data,
+        )
         # ---
         logger.debug(f"<<lightpurple>> --- : find {len(newp)} pages.")
         # ---
@@ -281,7 +285,7 @@ class NewApi(NewApiHelpers):
         self,
         start: str = "",
         namespace: str = "0",
-        limit: int = "max",
+        limit: int | str = "max",
         filterredir: str = "",
         ppprop: str = "",
         limit_all: int = 100000,
@@ -291,7 +295,7 @@ class NewApi(NewApiHelpers):
             f"Get_All_pages_generator for start:{start}, limit:{limit},namespace:{namespace},filterredir:{filterredir}"
         )
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "pageprops",
@@ -371,7 +375,7 @@ class NewApi(NewApiHelpers):
         if not pssearch:
             return []
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "list": "prefixsearch",
             "pssearch": pssearch,
@@ -416,7 +420,7 @@ class NewApi(NewApiHelpers):
         self,
         value: str = "",
         ns: str = "*",
-        offset: int = "",
+        offset: int | str = "",
         srlimit: str = "max",
         return_dict: bool = False,
         addparams=None,
@@ -427,7 +431,7 @@ class NewApi(NewApiHelpers):
         if not srlimit:
             srlimit = "max"
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "list": "search",
@@ -445,7 +449,7 @@ class NewApi(NewApiHelpers):
         # ---
         if addparams:
             addparams = {x: v for x, v in addparams.items() if v and x not in params}
-            params = {**params, **addparams}
+            params: dict[str, Any] = {**params, **addparams}
 
         # ---
         def _load_data(body):
@@ -488,7 +492,7 @@ class NewApi(NewApiHelpers):
             dd = datetime.datetime.now(datetime.UTC) - timedelta(minutes=offset_minutes)
             rcstart = dd.strftime("%Y-%m-%dT%H:%M:00.000Z")
 
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "list": "recentchanges",
@@ -534,7 +538,7 @@ class NewApi(NewApiHelpers):
         ucshow: str = "",
     ):
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "list": "usercontribs",
@@ -604,7 +608,7 @@ class NewApi(NewApiHelpers):
         # ---
         numbes = 50
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "langlinks",
@@ -667,7 +671,7 @@ class NewApi(NewApiHelpers):
 
     def get_logs(self, title: str) -> list:
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "list": "logevents",
@@ -686,7 +690,7 @@ class NewApi(NewApiHelpers):
         return logevents
 
     def get_extlinks(self, title: str):
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "extlinks",
@@ -718,7 +722,7 @@ class NewApi(NewApiHelpers):
     def get_pageassessments(self, titles_list: list[str]) -> list[Any]:
         titles = "|".join(titles_list)
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "pageassessments",
@@ -732,9 +736,9 @@ class NewApi(NewApiHelpers):
             return body.get("query", {}).get("pages") or []
 
         results = self.login_bot.post_continue_list(
-            params,
-            "query",
-            "pages",
+            params=params,
+            action="query",
+            _load_data=_load_data,
         )
         return results
 
@@ -745,7 +749,7 @@ class NewApi(NewApiHelpers):
         options=None,
     ) -> list[Any]:
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "revisions",
@@ -782,7 +786,7 @@ class NewApi(NewApiHelpers):
         max=None,
     ) -> list[Any]:
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "list": "querypage",
@@ -864,7 +868,7 @@ class NewApi(NewApiHelpers):
         # ---
         logger.debug(f'Get_template_pages for template:"{title}", limit:"{max}",namespace:"{namespace}"')
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             # "prop": "info",
             "titles": title,
@@ -899,7 +903,7 @@ class NewApi(NewApiHelpers):
         # ---
         logger.debug(f' for file:"{title}":')
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "imageinfo",
@@ -931,7 +935,7 @@ class NewApi(NewApiHelpers):
         # ---
         logger.debug(f' for file:"{title}":')
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "imageinfo",
@@ -956,7 +960,7 @@ class NewApi(NewApiHelpers):
         max=None,
     ) -> list[Any]:
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "list": "pageswithprop",
@@ -995,7 +999,7 @@ class NewApi(NewApiHelpers):
         # ---
         # for i in range(0, len(titles), 50): group = titles[i : i + 50]
         for title_chunk in self.chunk_titles(titles, chunk_size=50):
-            params = {
+            params: dict[str, Any] = {
                 "action": "query",
                 "format": "json",
                 "titles": "|".join(title_chunk),
@@ -1025,7 +1029,7 @@ class NewApi(NewApiHelpers):
 
     def expandtemplates(self, text: str) -> str:
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "expandtemplates",
             "format": "json",
             "text": text,
@@ -1044,7 +1048,7 @@ class NewApi(NewApiHelpers):
 
     def Parse_Text(self, line, title: str) -> str:
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "parse",
             "prop": "wikitext",
             "text": line,
@@ -1087,7 +1091,7 @@ class NewApi(NewApiHelpers):
         # ---
         logger.info(f"<<lightyellow>> {file_path=}...")
         # ---
-        params = {
+        params: dict[str, Any] = {
             "action": "upload",
             "format": "json",
             "filename": file_name,
@@ -1124,7 +1128,7 @@ class NewApi(NewApiHelpers):
         normalized: list[dict[str, dict]],
     ) -> dict[str, Any]:
         # ---
-        tab = {
+        tab: dict[str, Any] = {
             "user_input": title,
             "redirect_to": "",
             "normalized_to": "",
@@ -1155,7 +1159,7 @@ class NewApi(NewApiHelpers):
     ) -> dict[str, Any]:
         title = title.strip()
 
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "titles": title,
             "redirects": 1,

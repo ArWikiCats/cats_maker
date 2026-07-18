@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+from typing import Any
 
 import wikitextparser as wtp
 
@@ -32,7 +33,9 @@ def template_text_to_params(text: str) -> dict[str, str]:
     parsed = wtp.parse(text)
     if not parsed.templates:
         return {}
-    params = {str(param.name).strip(): str(param.value).strip() for param in parsed.templates[0].arguments}
+    params: dict[str, str] = {
+        str(param.name).strip(): str(param.value).strip() for param in parsed.templates[0].arguments
+    }
     return {x: v for x, v in params.items() if x and v}
 
 
@@ -78,7 +81,7 @@ class IsAllowed:
             title = str(template.normal_name()).strip().lower()
 
             if title == "nobots" or title == "bots":
-                params = {
+                params: dict[str, Any] = {
                     str(param.name).strip(): str(param.value).strip()
                     for param in template.arguments
                     if str(param.value).strip()

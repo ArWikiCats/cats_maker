@@ -34,7 +34,7 @@ class TestMainFlowIntegration:
         mock_wikidata.return_value = {"q": "Q12345", "sitelinks": {}}
 
         # Mock LCN (Language Code Navigator)
-        mock_lcn = mocker.patch("src.shared.LCN_new.find_Page_Cat_without_hidden")
+        mock_lcn = mocker.patch("src.shared.lcn_new.find_Page_Cat_without_hidden")
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in mknew)
@@ -133,7 +133,7 @@ class TestMainFlowIntegration:
         mocker.patch("src.mk_cats.mknew.ar_make_lab", return_value="")
 
         # First call should process
-        result1 = one_cat("Category:Test", 1, 2)
+        one_cat("Category:Test", 1, 2)
 
         # Second call with same category should be filtered
         result2 = one_cat("Category:Test", 2, 2)

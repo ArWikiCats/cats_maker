@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """ """
 
-from typing import Any
 
 from ..shared.api_page import load_main_api
 from ..shared.wd_api import Get_P373_API
@@ -10,7 +9,7 @@ from .categorytext_data import LocalLanguageLinks, category_mapping
 from .utils import portal_en_to_ar_lower
 
 
-def get_page_link_data(title: str, sitecode: str, ns: int = 100) -> list:
+def get_page_link_data(title: str, sitecode: str, ns: int = 100) -> list[str]:
     api = load_main_api(sitecode)
     page = api.MainPage(title)
 
@@ -38,12 +37,12 @@ def fetch_commons_category(entitle, qid) -> str:
     P373 = Get_P373_API(q=qid, titles=entitle, sites="enwiki")
 
     if P373:
-        template = "{{تصنيف كومنز|%s}}" % P373
+        template = f"{{{{تصنيف كومنز|{P373}}}}}"
 
     return template
 
 
-def generate_portal_content(title, enca) -> list[Any]:
+def generate_portal_content(title, enca) -> list[str]:
     result = []
     en_links = get_page_link_data(enca, "en", 100)
 
@@ -59,7 +58,7 @@ def generate_portal_content(title, enca) -> list[Any]:
 
     for xc in LocalLanguageLinks:
         if xc not in result:
-            if title.find(" %s " % xc) != -1 or title.startswith("تصنيف:%s " % xc) or title.endswith(" %s" % xc):
+            if title.find(f" {xc} ") != -1 or title.startswith(f"تصنيف:{xc} ") or title.endswith(f" {xc}"):
                 result.append(xc)
 
     return result
@@ -70,15 +69,15 @@ def generate_category_text(enca, title, qid):
 
     result = generate_portal_content(title, enca)
     litp = ""
-    if len(result) != 0:
+    if result:
         litp = "|".join(result)
-        litp = "{{بوابة|%s}}\n" % litp
+        litp = f"{{{{بوابة|{litp}}}}}\n"
 
     text = litp
     text += "{{نسخ:#لوموجود:{{نسخ:اسم_الصفحة}}|{{مقالة تصنيف}}|}}\n"
     text += fetch_commons_category(enca, qid)
 
     if ff:
-        text += "\n%s" % ff
+        text += f"\n{ff}"
 
     return text

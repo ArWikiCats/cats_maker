@@ -104,17 +104,17 @@ docstring-code-line-length = 120
 # "E402", "E225", "E226", "E227", "E228", "E252", "F841", "E224", "E203", "F401",
 ignore = [
     "E501",
-    "UP035",
-    "UP006",
+    #     "UP035",
+    #     "UP006",
     "N806",
-    "N999",
-    "UP015",
-    "I001",
+    #     "N999",
+    #     "UP015",
+    #     "I001",
     "N802",
-    "UP007",
-    "UP045",
-    "UP031",
-    "F841",
+    #     "UP007",
+    #     "UP045",
+    #     "UP031",
+    #     "F841",
 ]
 select = [
     "E",       # pycodestyle (error)
@@ -200,14 +200,23 @@ exclude = [
 ]
 
 # Diagnostic modes: "basic" or "standard" or "strict"
-typeCheckingMode = "basic"
+typeCheckingMode = "strict"
 
 # Automatically find virtual environments
 venvPath = "."
 venv = ".venv"
 
-# Fine-tune specific warning rules
+reportUnusedVariable = false
+reportMissingTypeArgument = false
+reportMissingParameterType = false
+reportUnknownParameterType = false
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownVariableType = false
 
+# Fine-tune specific warning rules
+reportPossiblyUnboundVariable = true
 analyzeUnannotatedFunctions = true
 disableBytesTypePromotions = true
 strictParameterNoneValue = true
@@ -222,19 +231,3 @@ reportAssignmentType = "warning"
 reportOptionalMemberAccess = "warning"
 reportCallIssue = "warning"
 reportOptionalSubscript = "warning"
-
-
-# reportMissingTypeStubs = false
-# reportGeneralTypeIssues = false
-# reportUnknownMemberType = false
-# enableReachabilityAnalysis = false
-# strictListInference = false
-# strictDictionaryInference = false
-# strictSetInference = false
-# deprecateTypingAliases = false
-# enableExperimentalFeatures = false
-# reportReturnType = false
-reportArgumentType = false
-
-# reportOperatorIssue = false
-# reportIndexIssue = false

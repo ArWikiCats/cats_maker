@@ -27,7 +27,7 @@ def extract_templates_and_params(text: str) -> list[dict[str, Any]]:
         if not template:
             continue
         # ---
-        params = {}
+        params: dict[str, Any] = {}
         for param in template.arguments:
             value = str(param.value)  # mwpfh needs upcast to str
             key = str(param.name)

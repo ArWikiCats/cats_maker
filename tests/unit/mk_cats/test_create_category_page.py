@@ -89,7 +89,7 @@ class TestAddTextToCat:
         """Test that add_text_to_cat handles empty categories list"""
         mocker.patch("src.mk_cats.create_category_page.page_put", return_value=False)
         mocker.patch("src.mk_cats.create_category_page.categorytext.fetch_commons_category", return_value="")
-        mocker.patch("src.mk_cats.create_category_page.categorytext.generate_portal_content", return_value=("", []))
+        mocker.patch("src.mk_cats.create_category_page.categorytext.generate_portal_content", return_value=[])
         mocker.patch("src.mk_cats.create_category_page.categorytext.main_make_temp_no_title", return_value="")
 
         text = "Test text"
@@ -100,7 +100,7 @@ class TestAddTextToCat:
         """Test that add_text_to_cat filters out None and False categories"""
         mocker.patch("src.mk_cats.create_category_page.page_put", return_value=False)
         mocker.patch("src.mk_cats.create_category_page.categorytext.fetch_commons_category", return_value="")
-        mocker.patch("src.mk_cats.create_category_page.categorytext.generate_portal_content", return_value=("", []))
+        mocker.patch("src.mk_cats.create_category_page.categorytext.generate_portal_content", return_value=[])
         mocker.patch("src.mk_cats.create_category_page.categorytext.main_make_temp_no_title", return_value="")
 
         text = "Test text"

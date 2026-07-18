@@ -79,7 +79,7 @@ src/
 │   │   ├── api_requests.py
 │   │   ├── check_redirects.py
 │   │   ├── himoBOT2.py
-│   │   ├── LCN_new.py
+│   │   ├── lcn_new.py
 │   │   └── sub_cats_bot.py
 │   └── wiki_client/
 │       ├── __init__.py

@@ -75,7 +75,7 @@ class TestMaxlagHandling:
 
         site.connection.request.side_effect = [maxlag_response, success_response]
 
-        with patch("src.shared.newapi.api_client.requests_handler.time.sleep") as mock_sleep:
+        with patch("src.shared.newapi.api_client.requests_handler.time.sleep"):
             result = client.client_request_retry({"action": "query"}, method="get")
             assert "query" in result
 
@@ -109,7 +109,6 @@ class TestCSRFErrorHandling:
         success_response.json.return_value = {"query": {"pages": {"1": {"title": "Test"}}}}
 
         site.connection.request.side_effect = [csrf_error_response, success_response]
-        site_instance = site  # store reference
 
         result = client.client_request_retry({"action": "query", "token": "bad"}, method="get")
         assert "query" in result
