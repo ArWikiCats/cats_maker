@@ -56,7 +56,7 @@ def create_Page(text: str, page) -> bool:
     """
     used in tests
     """
-    new_cat = page.Create(text=text, summary="بوت:إنشاء تصنيف.")
+    new_cat = page.create(text=text, summary="بوت:إنشاء تصنيف.")
 
     return new_cat
 
