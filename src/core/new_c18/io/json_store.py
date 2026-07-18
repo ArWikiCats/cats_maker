@@ -30,11 +30,11 @@ def _load_json(path: Path, empty_data: str = "list") -> list | dict:
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(data, f)
             os.chmod(path, _STATGROUP)
-        except (PermissionError, OSError) as e:
+        except (PermissionError, OSError):
             logger.exception("Error save json file")
 
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
     except json.JSONDecodeError as e:
         logger.warning(f"JSON decode error in {path}: {e}")

@@ -33,7 +33,8 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import mwclient
 import mwclient.errors

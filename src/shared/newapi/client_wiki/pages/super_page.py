@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import sys
-from typing import Any, Union
+from typing import Any
 
 from .....config import main_settings
 from ...api_client import WikiLoginClient
@@ -61,7 +61,7 @@ class MainPage:
 
         self.text: str = ""
         self.newtext: str = ""
-        self.ns: Union[bool, int] = False
+        self.ns: bool | int = False
         self.langlinks: dict[str, str] = {}
 
         self.meta = Meta()

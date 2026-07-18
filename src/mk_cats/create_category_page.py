@@ -2,7 +2,7 @@
 """ """
 
 import logging
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 
 from ..core.utils import skip_encats
 from ..shared.api_page import load_main_api
@@ -22,8 +22,8 @@ class CategoryResult(NamedTuple):
     """
 
     success: bool
-    page_title: Optional[str] = None
-    error_message: Optional[str] = None
+    page_title: str | None = None
+    error_message: str | None = None
 
 
 def page_put(title, new_text, msg):
@@ -102,7 +102,12 @@ def add_text_to_cat(text: str, categories, enca, title, qid, family: str = ""):
         if save:
             text = new_text
 
-    portalse, portals_list = categorytext.generate_portal_content(title, enca)
+    portals_list = categorytext.generate_portal_content(title, enca)
+
+    portalse = ""
+    if portals_list:
+        portalse = "|".join(portals_list)
+        portalse = "{{بوابة|%s}}\n" % portalse
 
     if portalse and portals_list != []:
         # اضافة قالب بوابة

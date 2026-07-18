@@ -70,7 +70,7 @@ def generate_category_text(enca, title, qid):
 
     result = generate_portal_content(title, enca)
     litp = ""
-    if len(result) != 0:
+    if result:
         litp = "|".join(result)
         litp = "{{بوابة|%s}}\n" % litp
 

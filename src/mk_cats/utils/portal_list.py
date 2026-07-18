@@ -6,7 +6,7 @@ from pathlib import Path
 
 Dir = Path(__file__).parent
 
-with open(f"{Dir}/New_Portal_List.json", "r", encoding="utf-8") as c:
+with open(f"{Dir}/New_Portal_List.json", encoding="utf-8") as c:
     New_Portal_List = json.load(c)
 
 portal_en_to_ar_lower = {}
