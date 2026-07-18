@@ -1,10 +1,10 @@
 """
-Tests for LCN_new.py
+Tests for lcn_new.py
 
 This module tests the WikiApiHandler class and language link functions.
 """
 
-from src.shared.LCN_new import (
+from src.shared.lcn_new import (
     LC_bot,
     WikiApiHandler,
     find_LCN,

@@ -71,7 +71,7 @@ Consolidated dead-code removal checklist:
 | ----------------------------------------------------- | ------------------------------------------------ | ------------------------------- |
 | `decode_bytes` function                               | `api_sql/sql_bot.py`                             | api_sql (Quick Wins) — **DONE** |
 | `printurl` param, `url`/`url2` variables              | `wiki_api/api_requests.py`                       | wiki_api (Phase 1)              |
-| `WikiApiCache` stub (never instantiated)              | `wiki_api/LCN_new.py`                            | wiki_api (Phase 2)              |
+| `WikiApiCache` stub (never instantiated)              | `wiki_api/lcn_new.py`                            | wiki_api (Phase 2)              |
 | `numb` variable (assigned twice, used once)           | `wiki_api/himoBOT2.py`                           | wiki_api (Phase 4)              |
 | `do_lag()` `while GG is True` loop (always exits)     | `wd_bots/lag_bot.py`                             | wd_bots (Phase 1)               |
 | `make_sleep_def()` `or` chain (always short-circuits) | `wd_bots/lag_bot.py`                             | wd_bots (Phase 1)               |
@@ -92,7 +92,7 @@ Every module has module-level mutable state that must become instance-scoped:
 | `Save_or_Ask` dict                             | `new_api/ask_bot.py`       | new_api (Phase 2)  |
 | `Bot_Cache`, `Created_Cache`                   | `new_api/botEdit.py`       | new_api (Phase 2)  |
 | `FFa_lag`, `newsleep`, `Find_Lag`              | `wd_bots/lag_bot.py`       | wd_bots (Phase 1)  |
-| `LC_bot = WikiApiHandler()`                    | `wiki_api/LCN_new.py`      | wiki_api (Phase 3) |
+| `LC_bot = WikiApiHandler()`                    | `wiki_api/lcn_new.py`      | wiki_api (Phase 3) |
 | `API_n_CALLS`                                  | `wiki_api/sub_cats_bot.py` | wiki_api (Phase 5) |
 | `pages_in_arcat_toMake` dict                   | `c18/cat_tools_enlist.py`  | c18_merged (5.3.6) |
 | `_done_d`, `_new_cat_done`, `_already_created` | `mk_cats/mknew.py`         | mk_cats (5.1.4)    |

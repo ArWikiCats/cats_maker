@@ -12,7 +12,7 @@ src/core/wiki_api/
 ├── api_requests.py          # submitAPI() — low-level HTTP POST to MediaWiki API
 ├── check_redirects.py       # NEW_API class + remove_redirect_pages() helper
 ├── himoBOT2.py              # get_page_info_from_wikipedia() — rich per-page fetch
-├── LCN_new.py               # WikiApiHandler class + backward-compat wrappers
+├── lcn_new.py               # WikiApiHandler class + backward-compat wrappers
 └── sub_cats_bot.py          # sub_cats_query() — subcategory members with langlinks
 ```
 
@@ -24,17 +24,17 @@ src/core/wiki_api/
 
 3. **Dead code — unused `printurl` param, `url`/`url2` variables** in `submitAPI()`. The `url` and `url2` strings are computed but never used for the actual request; only `mainurl` is passed to `Session.post()`.
 
-4. **Dead code — `WikiApiCache` class** in `LCN_new.py:15-18`. Never instantiated anywhere; `max_size` and `ttl_seconds` parameters are stored but unused.
+4. **Dead code — `WikiApiCache` class** in `lcn_new.py:15-18`. Never instantiated anywhere; `max_size` and `ttl_seconds` parameters are stored but unused.
 
 5. **Dead code — `numb` variable** in `himoBOT2.py:87-88` assigned twice (`0` then `1`) but only used in one debug log line.
 
-6. **Global mutable singleton — `LC_bot = WikiApiHandler()`** in `LCN_new.py:323`. Module-level singleton makes test isolation fragile (tests must manually clear state). Also: `API_n_CALLS = {1: 0}` global counter in `sub_cats_bot.py`.
+6. **Global mutable singleton — `LC_bot = WikiApiHandler()`** in `lcn_new.py:323`. Module-level singleton makes test isolation fragile (tests must manually clear state). Also: `API_n_CALLS = {1: 0}` global counter in `sub_cats_bot.py`.
 
-7. **`deleted_pages` reference capture** — `LCN_new.py:327` captures a list reference at import time. Works currently but fragile if `LC_bot.deleted` were ever reassigned.
+7. **`deleted_pages` reference capture** — `lcn_new.py:327` captures a list reference at import time. Works currently but fragile if `LC_bot.deleted` were ever reassigned.
 
 8. **`_parse_api_response()` has side effects** — both parses AND writes to `self.cache`, making it hard to unit-test the parsing logic separately.
 
-9. **No separation of concerns** — `LCN_new.py` mixes: API query construction, response parsing, caching, reverse-cache building, and backward-compat wrappers all in one file.
+9. **No separation of concerns** — `lcn_new.py` mixes: API query construction, response parsing, caching, reverse-cache building, and backward-compat wrappers all in one file.
 
 10. **`check_redirects.py` duplicates API logic** — `NEW_API` class has its own query construction and pagination that overlaps with `WikiApiHandler`.
 
@@ -74,7 +74,7 @@ src/core/wiki_api/
 
 ### Phase 3: Extract `client.py` (unified WikiApiClient)
 
--   Merge `WikiApiHandler` (from `LCN_new.py`) and `NEW_API` (from `check_redirects.py`) into a single `WikiApiClient` class.
+-   Merge `WikiApiHandler` (from `lcn_new.py`) and `NEW_API` (from `check_redirects.py`) into a single `WikiApiClient` class.
 -   Responsibilities:
     -   Build MediaWiki API query parameters.
     -   Submit via `transport.submitAPI()`.
@@ -115,7 +115,7 @@ src/core/wiki_api/
 | ----------------------------- | --------------------------- | --------------------------------------------------------------- |
 | `transport.py` (api_requests) | 0% coverage                 | Full: success, ReadTimeout, generic exception, JSON parse error |
 | `cache.py` (new)              | 0% (stub exists)            | Full: set/get, TTL expiry, max-size eviction, key types         |
-| `client.py` (WikiApiClient)   | Partial (via LCN_new tests) | Full: all query types, pagination, error responses              |
+| `client.py` (WikiApiClient)   | Partial (via lcn_new tests) | Full: all query types, pagination, error responses              |
 | `himoBOT2.py`                 | Partial (5 tests)           | Full: redirect, missing, findtemp, all return fields            |
 | `sub_cats_bot.py`             | Partial (9 tests)           | Full: ctypes, empty result, error handling                      |
 | `check_redirects.py`          | Indirect only               | Full: chunking, deep-merge, redirect detection                  |
