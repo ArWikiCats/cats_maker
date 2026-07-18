@@ -6,7 +6,6 @@ from typing import Any
 
 from ...config import main_settings
 from ...shared.api_page import load_main_api
-from . import get_cache_L_C_N, set_cache_L_C_N
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +20,6 @@ def submitParams(params, site_code: str) -> dict[str, Any]:
 def sub_cats_query(enlink, sitecode, ctype: str = "") -> dict[str, Any]:
     if not enlink:
         return {}
-
-    tup = (enlink, sitecode, "sub_cats_query")
-
-    if get_cache_L_C_N(tup):
-        return get_cache_L_C_N(tup) or {}
 
     langcode = main_settings.EEn_site.code  # 'en'
     if sitecode == "en":
@@ -79,23 +73,11 @@ def sub_cats_query(enlink, sitecode, ctype: str = "") -> dict[str, Any]:
 
         if "ns" in caca:
             tablemember[cate_title]["ns"] = caca["ns"]
-            set_cache_L_C_N((cate_title, sitecode, "ns"), caca["ns"])
             logger.debug(f"ns: {caca['ns']}")
 
         for fo in caca.get("langlinks", {}):
-            result = fo["*"]
             tablemember[cate_title][fo["lang"]] = fo["*"]
 
-            tubb = (cate_title, sitecode, fo["lang"], "en_links")
-            set_cache_L_C_N(tubb, result)
-            logger.debug(f'add {fo["lang"]}:"{result}" to {cate_title}')
-
-            oppsite_tubb = (result, fo["lang"], sitecode, "en_links")
-            logger.debug(f'add {sitecode}:"{cate_title}" to {result}')
-            set_cache_L_C_N(oppsite_tubb, cate_title)
-
     table = {"categorymembers": tablemember}
-
-    set_cache_L_C_N(tup, table)
 
     return table

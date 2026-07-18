@@ -9,8 +9,6 @@ from src.core.wiki_api.LCN_new import (
     WikiApiHandler,
     find_LCN,
     find_Page_Cat_without_hidden,
-    get_cache_L_C_N,
-    set_cache_L_C_N,
 )
 
 
@@ -98,22 +96,6 @@ class TestBackwardCompatibilityFunctions:
         mock_method = mocker.patch.object(LC_bot, "find_non_hidden_categories", return_value={"test": True})
         result = find_Page_Cat_without_hidden("Test", prop="langlinks", site_code="ar")
         mock_method.assert_called_once()
-
-    def test_set_cache_L_C_N_sets_value(self):
-        """Test set_cache_L_C_N sets cache value"""
-        set_cache_L_C_N(("test", "key"), "test_value")
-        assert LC_bot.cache[("test", "key")] == "test_value"
-
-    def test_get_cache_L_C_N_gets_value(self):
-        """Test get_cache_L_C_N gets cache value"""
-        LC_bot.cache[("get", "test")] = "cached_value"
-        result = get_cache_L_C_N(("get", "test"))
-        assert result == "cached_value"
-
-    def test_get_cache_L_C_N_returns_none_for_missing(self):
-        """Test get_cache_L_C_N returns None for missing key"""
-        result = get_cache_L_C_N(("nonexistent", "key"))
-        assert result is None
 
 
 class TestGlobalLCBot:

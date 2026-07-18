@@ -196,7 +196,7 @@ class WikiApiHandler:
 
         logger.debug(f"-----------\n find Page_Cat_without_hidden for {site_code}:{page_title} ")
         if cache_key in self.cache:
-            logger.info("get_cache_L_C_N(cache_key)")
+            logger.info("(cache_key)")
             return self.cache[cache_key]
 
         no_cat_pages.setdefault(page_title, [])
@@ -364,14 +364,6 @@ def get_arpage_inside_encat(key):
     return arpage_inside_encat.get(key)
 
 
-def set_cache_L_C_N(key, value) -> None:
-    LC_bot.cache[key] = value
-
-
-def get_cache_L_C_N(key):
-    return LC_bot.cache.get(key)
-
-
 __all__ = [
     "WikiApiHandler",
     "find_LCN",
@@ -379,6 +371,4 @@ __all__ = [
     "add_to_no_cat",
     "get_No_Cat_",
     "get_arpage_inside_encat",
-    "set_cache_L_C_N",
-    "get_cache_L_C_N",
 ]
