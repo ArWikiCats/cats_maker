@@ -6,106 +6,12 @@ Wikidata functions for cats_maker_new bot
 import functools
 import json
 import logging
-import time
 from typing import Any
 
 from ...shared.api_page import load_login_bot
 from .wd_bots_main import WdAPI
 
 logger = logging.getLogger(__name__)
-
-
-def outbot_json_bot(err):
-    text = str(err)
-
-    err_code = err.get("code", "")
-    err_info = err.get("info", "")
-
-    extradata = err.get("extradata", [""])
-    messages = err.get("messages", [{}])[0]
-    msg_name = messages.get("name", "")
-
-    msg_html = ""
-    if isinstance(messages.get("html", {}), dict):
-        msg_html = messages.get("html", {}).get("*", "")
-
-    err_wait = "احترازًا من الإساء، يُحظر إجراء هذا الفعل مرات كثيرة في فترةٍ زمنية قصيرة، ولقد تجاوزت هذا الحد"
-
-    if err_code == "origin-not-empty":
-        logger.debug(f"msg_html: {msg_html} ")
-        logger.debug(f"err_info: {err_info} ")
-        return err_code
-
-    if err_code == "missingparam":
-        logger.debug(f"err_info: {err_info} ")
-        return "warn"
-
-    elif err_code in ["modification-failed", "failed-modify"]:
-        logger.debug(f"err_info: {err_info} ")
-
-        if msg_name == "wikibase-api-failed-modify":
-            logger.debug(f"err msg_name: {msg_name}")
-            logger.debug(f"\t: {extradata}")
-            return msg_name
-
-        if msg_name == "wikibase-validator-label-equals-description":
-            logger.debug(f"err msg_name: {msg_name}")
-            logger.debug(f"\t: {msg_html}")
-            return msg_name
-
-        if msg_name == "wikibase-validator-label-with-description-conflict":
-            logger.debug("same description:")
-
-            lab, code, q = messages.get("parameters", [])
-
-            logger.debug(f"\t: lab:{lab}, code:{code}, q:{q}")
-
-            return "same description"
-        return "warn"
-    elif err_code == "unresolved-redirect":
-        logger.debug("- unresolved-redirect")
-        return "unresolved-redirect"
-
-    elif err_code == "failed-save":
-        if err_wait in text:
-            logger.debug(f'"{err_wait} time.sleep(5) " ')
-            time.sleep(5)
-            return "reagain"
-
-        logger.debug(f'- "{err_code}" ')
-        logger.debug(text)
-        return False
-    elif err_code == "no-external-page":
-        logger.debug(f'- "{err_code}" ')
-        logger.debug(text)
-        return False
-
-    else:
-        if "wikibase-api-invalid-json" in text:
-            logger.debug('- "wikibase-api-invalid-json" ')
-            logger.debug(text)
-            return "wikibase-api-invalid-json"
-
-        elif "Could not find an Item containing a sitelink to the provided site and page name" in text:
-            logger.debug("** error. : Could not find an Item containing a sitelink to the provided site and page name ")
-            return "Could not find an Item containing a sitelink to the provided site and page name"
-        else:
-            return err_code
-
-
-def outbot_json(js_text, fi: str = "", line: str = ""):
-    err = js_text.get("error", {})
-
-    if not err:
-        return "warn"
-
-    if fi:
-        logger.debug(f"** error. : {fi} ")
-
-    if line:
-        logger.debug(f"** line. : {line} ")
-
-    return outbot_json_bot(err)
 
 
 @functools.lru_cache(maxsize=1024)
@@ -124,7 +30,6 @@ def post_wd_params(params) -> bool:
             logger.warning("** true.")
             return True
 
-        outbot_json(result)
     except Exception as e:
         logger.error(f"** error. : {e}")
 
