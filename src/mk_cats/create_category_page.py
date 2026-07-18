@@ -106,10 +106,10 @@ def add_text_to_cat(text: str, categories, enca, title, qid, family: str = ""):
 
     portalse = ""
     if portals_list:
-        portalse = "|".join(portals_list)
+        portalse = "|".join(list(portals_list))
         portalse = f"{{{{بوابة|{portalse}}}}}\n"
 
-    if portalse and portals_list != []:
+    if portalse and portals_list:
         # اضافة قالب بوابة
         asds = ",".join([f"بوابة:{dd}" for dd in portals_list])
 

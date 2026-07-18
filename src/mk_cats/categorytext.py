@@ -10,7 +10,7 @@ from .categorytext_data import LocalLanguageLinks, category_mapping
 from .utils import portal_en_to_ar_lower
 
 
-def get_page_link_data(title: str, sitecode: str, ns: int = 100) -> list:
+def get_page_link_data(title: str, sitecode: str, ns: int = 100) -> list[str]:
     api = load_main_api(sitecode)
     page = api.MainPage(title)
 
@@ -43,7 +43,7 @@ def fetch_commons_category(entitle, qid) -> str:
     return template
 
 
-def generate_portal_content(title, enca) -> list[Any]:
+def generate_portal_content(title, enca) -> list[str]:
     result = []
     en_links = get_page_link_data(enca, "en", 100)
 
