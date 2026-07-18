@@ -8,5 +8,5 @@ from src.shared.newapi.client_wiki.api_utils.ask_bot import AskBot
 
 class TestASKBOT:
     def test_init(self):
-        bot = AskBot()
+        AskBot()
         assert ask_bot._save_or_ask == {}

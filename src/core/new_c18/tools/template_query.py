@@ -28,7 +28,6 @@ class TemplateCache:
         return None
 
     def set(self, enlink: str, sitecode: str, value: Any) -> None:
-        key = f"{sitecode}:{enlink}"
         self._store[sitecode][enlink] = value
 
 

@@ -29,7 +29,7 @@ class TestAddToPage:
         mock_page.get_text.return_value = ""
         mocker.patch("src.mk_cats.add_bot._get_page", return_value=False)
 
-        result = add_to_page("صفحة", "تصنيف:علوم_الحاسوب")
+        add_to_page("صفحة", "تصنيف:علوم_الحاسوب")
         # The category should have underscores replaced
 
     def test_returns_false_when_page_cannot_be_retrieved(self, mocker):

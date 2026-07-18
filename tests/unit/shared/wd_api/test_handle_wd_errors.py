@@ -79,7 +79,7 @@ class TestWDErrorsHandler:
         error = {"code": "unknown_error", "info": "Unknown error occurred"}
         params = {"data": {"test": "data"}}
 
-        result = mock_wd_api.handle_err_wd(error, params=params)
+        mock_wd_api.handle_err_wd(error, params=params)
 
         # Should clear data in params
         assert params["data"] == {}

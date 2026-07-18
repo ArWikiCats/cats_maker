@@ -133,7 +133,7 @@ class TestMainFlowIntegration:
         mocker.patch("src.mk_cats.mknew.ar_make_lab", return_value="")
 
         # First call should process
-        result1 = one_cat("Category:Test", 1, 2)
+        one_cat("Category:Test", 1, 2)
 
         # Second call with same category should be filtered
         result2 = one_cat("Category:Test", 2, 2)

@@ -38,7 +38,7 @@ def fetch_commons_category(entitle, qid) -> str:
     P373 = Get_P373_API(q=qid, titles=entitle, sites="enwiki")
 
     if P373:
-        template = "{{تصنيف كومنز|%s}}" % P373
+        template = f"{{{{تصنيف كومنز|{P373}}}}}"
 
     return template
 
@@ -59,7 +59,7 @@ def generate_portal_content(title, enca) -> list[Any]:
 
     for xc in LocalLanguageLinks:
         if xc not in result:
-            if title.find(" %s " % xc) != -1 or title.startswith("تصنيف:%s " % xc) or title.endswith(" %s" % xc):
+            if title.find(f" {xc} ") != -1 or title.startswith(f"تصنيف:{xc} ") or title.endswith(f" {xc}"):
                 result.append(xc)
 
     return result
@@ -72,13 +72,13 @@ def generate_category_text(enca, title, qid):
     litp = ""
     if result:
         litp = "|".join(result)
-        litp = "{{بوابة|%s}}\n" % litp
+        litp = f"{{{{بوابة|{litp}}}}}\n"
 
     text = litp
     text += "{{نسخ:#لوموجود:{{نسخ:اسم_الصفحة}}|{{مقالة تصنيف}}|}}\n"
     text += fetch_commons_category(enca, qid)
 
     if ff:
-        text += "\n%s" % ff
+        text += f"\n{ff}"
 
     return text

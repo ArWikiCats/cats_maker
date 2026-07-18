@@ -221,7 +221,7 @@ class TestCollectCategoryMembers:
 
     def test_uses_api_when_sql_disabled(self, mocker):
         """Test that collect_category_members uses API when SQL is disabled."""
-        mock_sql = mocker.patch("src.mk_cats.members_helper.gather_members_from_sql", return_value=["SqlArticle"])
+        mocker.patch("src.mk_cats.members_helper.gather_members_from_sql", return_value=["SqlArticle"])
         mock_api = mocker.patch("src.mk_cats.members_helper.gather_members_from_api", return_value=["ApiArticle"])
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
 

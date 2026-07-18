@@ -107,7 +107,7 @@ def add_text_to_cat(text: str, categories, enca, title, qid, family: str = ""):
     portalse = ""
     if portals_list:
         portalse = "|".join(portals_list)
-        portalse = "{{بوابة|%s}}\n" % portalse
+        portalse = f"{{{{بوابة|{portalse}}}}}\n"
 
     if portalse and portals_list != []:
         # اضافة قالب بوابة
