@@ -206,6 +206,7 @@ typeCheckingMode = "strict"
 venvPath = "."
 venv = ".venv"
 
+reportUnusedVariable = false
 reportMissingTypeArgument = false
 reportMissingParameterType = false
 reportUnknownParameterType = false
