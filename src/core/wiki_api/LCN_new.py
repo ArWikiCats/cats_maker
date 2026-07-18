@@ -350,16 +350,6 @@ def find_Page_Cat_without_hidden(
         site_code=site_code or "ar",
     )
 
-
-def add_to_no_cat(key: str, cat: str) -> None:
-    """Adds a category to the 'no_cat_pages' map for a given key."""
-    no_cat_pages.setdefault(key, []).append(cat)
-
-
-def get_No_Cat_(key):
-    return no_cat_pages.get(key)
-
-
 def get_arpage_inside_encat(key):
     return arpage_inside_encat.get(key)
 
@@ -368,7 +358,5 @@ __all__ = [
     "WikiApiHandler",
     "find_LCN",
     "find_Page_Cat_without_hidden",
-    "add_to_no_cat",
-    "get_No_Cat_",
     "get_arpage_inside_encat",
 ]
