@@ -476,12 +476,12 @@ class NewApi(NewApiHelpers):
 
     def Get_Newpages(
         self,
-        limit: int = 5000,
+        limit: int | str = 5000,
         namespace: str = "0",
         rcstart: str = "",
         user: str = "",
         three_houers: bool = False,
-        offset_minutes: bool = False,
+        offset_minutes: int | str | None = None,
         offset_hours: bool = False,
     ) -> list[str]:
         if three_houers:
@@ -489,7 +489,7 @@ class NewApi(NewApiHelpers):
             rcstart = dd.strftime("%Y-%m-%dT%H:%M:00.000Z")
 
         elif offset_minutes and isinstance(offset_minutes, int):
-            dd = datetime.datetime.now(datetime.UTC) - timedelta(minutes=offset_minutes)
+            dd = datetime.datetime.now(datetime.UTC) - timedelta(minutes=offset_minutes or 0)
             rcstart = dd.strftime("%Y-%m-%dT%H:%M:00.000Z")
 
         params: dict[str, Any] = {
@@ -533,7 +533,7 @@ class NewApi(NewApiHelpers):
     def UserContribs(
         self,
         user,
-        limit: int = 5000,
+        limit: int | str = 5000,
         namespace: str = "*",
         ucshow: str = "",
     ):
@@ -1201,10 +1201,9 @@ class NewApi(NewApiHelpers):
         if not query:
             return {}
 
-        for _ in query.get("normalized", []):
-            for xio in query["normalized"]:
-                if xio["from"] == title:
-                    title2 = xio["to"]
+        for xio in query.get("normalized", []):
+            if xio["from"] == title:
+                title2 = xio["to"]
 
         for red in query.get("redirects", []):
             logger.debug(f'page is redirects to : "{red["to"]}"')

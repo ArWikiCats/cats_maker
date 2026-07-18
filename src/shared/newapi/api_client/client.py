@@ -408,7 +408,7 @@ class WikiLoginClient:
         params: dict,
         action: str,
         _load_data: Callable,
-        max: int | None = None,
+        max: int | str | None = None,
     ) -> dict[str, Any]:
         """
         Drive a MediaWiki API continuation query to completion.
@@ -471,7 +471,7 @@ class WikiLoginClient:
         params: dict,
         action: str,
         _load_data: Callable,
-        max: int | None = None,
+        max: int | str | None = None,
     ) -> list[Any]:
         """
         Drive a MediaWiki API continuation query to completion.
@@ -529,15 +529,19 @@ class WikiLoginClient:
         logger.debug("done, %d total results", len(results))
         return results
 
-    def get_max(self, max) -> int:
+    def get_max(self, max: int | str | None = None) -> int:
         if isinstance(max, str) and max.isdigit():
             max = int(max)
+
         if max == 0:
             max = 500_000
+
         if max is None:
             max = 500_000
+
         if isinstance(max, str):
             max = 500_000
+
         return max
 
     def __repr__(self) -> str:
