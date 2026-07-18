@@ -15,7 +15,6 @@ Example:
 import os
 import sys
 from dataclasses import dataclass, field
-from typing import Optional
 
 from dotenv import load_dotenv
 
@@ -27,9 +26,9 @@ except Exception:
 
 @dataclass(frozen=True)
 class Paths:
-    cookies_dir: str
+    cookies_dir: str | None
     dont_add_to_pages_path: str | None
-    arwikicats_path: str
+    arwikicats_path: str | None
 
 
 def _safe_int(value: str, default: int) -> int:
@@ -111,7 +110,7 @@ class DatabaseConfig:
         use_sql: Whether to use SQL database for queries
     """
 
-    host: Optional[str] = None
+    host: str | None = None
     port: int = 3306
     use_sql: bool = True
 

@@ -25,7 +25,7 @@ def sub_cats_query(enlink, sitecode, ctype: str = "") -> dict[str, Any]:
     if sitecode == "en":
         langcode = "ar"
 
-    params = {
+    params: dict[str, Any] = {
         "action": "query",
         "format": "json",
         "prop": "langlinks",

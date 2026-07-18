@@ -87,7 +87,7 @@ def add_sitelinks_to_wikidata(
         logger.debug(f'**: False: qid == "" {wiki}:{title}.')
         return False
 
-    params = {
+    params: dict[str, Any] = {
         "action": "wbsetsitelink",
         "linktitle": title,
         "linksite": wiki,

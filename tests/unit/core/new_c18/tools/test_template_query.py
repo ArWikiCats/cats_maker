@@ -49,7 +49,7 @@ class TestGetTemplates:
         )
 
         # Use unique key to avoid cache
-        result = get_templates("unique_test_link_123", "ar")
+        get_templates("unique_test_link_123", "ar")
 
         mock_find_lcn.assert_called_once()
 

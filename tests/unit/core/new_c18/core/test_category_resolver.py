@@ -22,7 +22,7 @@ class TestFetchArTitlesBasedOnEnCategory:
         )
 
         resolver = CategoryResolver()
-        result = resolver._fetch_ar_titles_based_on_en_category("Science")
+        resolver._fetch_ar_titles_based_on_en_category("Science")
 
         mock_en_cat.assert_called_once_with("Science", wiki="en")
 
@@ -38,7 +38,7 @@ class TestFetchArTitlesBasedOnEnCategory:
         )
 
         resolver = CategoryResolver()
-        result = resolver._fetch_ar_titles_based_on_en_category("Science", wiki="en")
+        resolver._fetch_ar_titles_based_on_en_category("Science", wiki="en")
 
         mock_get_ar.assert_called_once_with(["Page1", "Page2"], wiki="en")
 
@@ -83,13 +83,13 @@ class TestListArPagesInCat:
         )
 
         resolver = CategoryResolver(backend="sql")
-        result = resolver.list_ar_pages_in_cat("تصنيف:علوم")
+        resolver.list_ar_pages_in_cat("تصنيف:علوم")
 
         mock_sql.assert_called_once()
 
     def test_replaces_spaces_with_underscores(self, mocker):
         """Test that spaces are handled correctly"""
-        mock_sql = mocker.patch(
+        mocker.patch(
             "src.core.new_c18.core.category_resolver.fetch_ar_category_members",
             return_value=[{"page_title": "test", "page_namespace": 0}],
         )
@@ -127,7 +127,7 @@ class TestListEnPagesWithArLinks:
         )
 
         resolver = CategoryResolver(backend="sql")
-        result = resolver.list_en_pages_with_ar_links("Science")
+        resolver.list_en_pages_with_ar_links("Science")
 
         mock_sql.assert_called_once()
 
@@ -144,7 +144,7 @@ class TestListEnPagesWithArLinks:
         mocker.patch("src.core.new_c18.core.category_resolver.main_settings.database.use_sql", False)
 
         resolver = CategoryResolver()
-        result = resolver.list_en_pages_with_ar_links("Science")
+        resolver.list_en_pages_with_ar_links("Science")
 
         mock_api.assert_called_once()
 

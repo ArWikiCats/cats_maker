@@ -73,7 +73,7 @@ def add_to_page(page_title, arcat) -> bool:
     text = page.get_text()
     ns = page.namespace()
 
-    categories = page.get_categories(with_hidden=False)
+    _categories = page.get_categories(with_hidden=False)
 
     if text.find(f"[[{arcat}]]") != -1 or text.find(f"[[{arcat}|") != -1:
         logger.info(" text.find( final_categories.strip() ) != -1 ")

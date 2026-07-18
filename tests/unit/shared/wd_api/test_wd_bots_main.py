@@ -36,7 +36,7 @@ class TestWDAPI:
         mock_login.client_request.return_value = {"result": "ok"}
 
         api = WdAPI(mock_login)
-        result = api.login_bot.client_request({"action": "query"})
+        api.login_bot.client_request({"action": "query"})
 
         mock_login.client_request.assert_called()
 

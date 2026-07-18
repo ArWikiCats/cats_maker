@@ -69,7 +69,7 @@ class TemplatesMaker:
 
             elffs = re.sub(regex, r"\g<1>", title)
             bef = re.sub(regex, r"\g<2>", title)
-            In = re.sub(regex, r"\g<3>", title)
+            _in = re.sub(regex, r"\g<3>", title)
             bld = re.sub(regex, r"\g<4>", title)
 
             if elffs == title:

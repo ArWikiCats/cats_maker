@@ -2,7 +2,7 @@
 """ """
 
 import logging
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 
 from ..core.utils import skip_encats
 from ..shared.api_page import load_main_api
@@ -22,8 +22,8 @@ class CategoryResult(NamedTuple):
     """
 
     success: bool
-    page_title: Optional[str] = None
-    error_message: Optional[str] = None
+    page_title: str | None = None
+    error_message: str | None = None
 
 
 def page_put(title, new_text, msg):
@@ -56,7 +56,7 @@ def create_Page(text: str, page) -> bool:
     """
     used in tests
     """
-    new_cat = page.Create(text=text, summary="بوت:إنشاء تصنيف.")
+    new_cat = page.create(text=text, summary="بوت:إنشاء تصنيف.")
 
     return new_cat
 
@@ -102,9 +102,14 @@ def add_text_to_cat(text: str, categories, enca, title, qid, family: str = ""):
         if save:
             text = new_text
 
-    portalse, portals_list = categorytext.generate_portal_content(title, enca)
+    portals_list = categorytext.generate_portal_content(title, enca)
 
-    if portalse and portals_list != []:
+    portalse = ""
+    if portals_list:
+        portalse = "|".join(list(portals_list))
+        portalse = f"{{{{بوابة|{portalse}}}}}\n"
+
+    if portalse and portals_list:
         # اضافة قالب بوابة
         asds = ",".join([f"بوابة:{dd}" for dd in portals_list])
 

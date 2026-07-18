@@ -33,7 +33,8 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import mwclient
 import mwclient.errors
@@ -403,6 +404,7 @@ class WikiLoginClient:
 
     def post_continue_dict(
         self,
+        *,
         params: dict,
         action: str,
         _load_data: Callable,
@@ -465,6 +467,7 @@ class WikiLoginClient:
 
     def post_continue_list(
         self,
+        *,
         params: dict,
         action: str,
         _load_data: Callable,

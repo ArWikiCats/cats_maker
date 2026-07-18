@@ -4,6 +4,7 @@
 """
 
 import logging
+from typing import Any
 
 from ...config import main_settings
 from ...shared.newapi import WikiLoginClient
@@ -98,7 +99,7 @@ class WdAPI:
 
     def post_to_newapi(
         self,
-        params=None,
+        params: dict[str, Any] | None = None,
         data=None,
         max_retry: int = 0,
         **kwargs,

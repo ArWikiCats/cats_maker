@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import sys
-from typing import Any, Union
+from typing import Any
 
 from .....config import main_settings
 from ...api_client import WikiLoginClient
@@ -61,7 +61,7 @@ class MainPage:
 
         self.text: str = ""
         self.newtext: str = ""
-        self.ns: Union[bool, int] = False
+        self.ns: bool | int = False
         self.langlinks: dict[str, str] = {}
 
         self.meta = Meta()
@@ -132,7 +132,7 @@ class MainPage:
         Returns:
             dict: A dictionary containing 'timestamp', 'user', and 'anon' keys for the page's creation.
         """
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "revisions",
@@ -173,7 +173,7 @@ class MainPage:
         Returns:
             The wikitext content of the page.
         """
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "prop": "revisions|pageprops|flagged",
             "titles": self.title,
@@ -248,7 +248,7 @@ class MainPage:
 
         Retrieves and stores categories (including hidden), language links, templates, backlinks, interwiki links, and page information such as namespace, page ID, length, last revision ID, and last touched timestamp. Updates instance attributes with the fetched data for later access.
         """
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "titles": self.title,
             "prop": "categories|langlinks|templates|linkshere|iwlinks|info",
@@ -316,7 +316,7 @@ class MainPage:
         self.meta.info["done"] = True
 
     def get_redirect_target(self):
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "titles": self.title,
             "prop": "info",
@@ -339,7 +339,7 @@ class MainPage:
         return to
 
     def get_extlinks(self):
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "extlinks",
@@ -354,7 +354,7 @@ class MainPage:
         continue_params = {}
         while True:
             if continue_params:
-                # params = {**params, **continue_params}
+                # params: dict[str, Any] = {**params, **continue_params}
                 params.update(continue_params)
 
             json1 = self.login_bot.client_request_safe(params, method="get")
@@ -378,7 +378,7 @@ class MainPage:
 
     def get_userinfo(self):
         if len(self.meta.userinfo) == 0:
-            params = {
+            params: dict[str, Any] = {
                 "action": "query",
                 "format": "json",
                 "list": "users",
@@ -531,7 +531,7 @@ class MainPage:
         ):
             return {"success": False, "error_code": "user_abort"}
 
-        params = {
+        params: dict[str, Any] = {
             "action": "edit",
             "title": self.title,
             "text": newtext,
@@ -641,7 +641,7 @@ class MainPage:
         ):
             return {"success": False, "error_code": "user_abort"}
 
-        params = {
+        params: dict[str, Any] = {
             "action": "edit",
             "title": self.title,
             "text": text,
@@ -698,7 +698,7 @@ class MainPage:
                 {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}
             ]
         """
-        params = {
+        params: dict[str, Any] = {
             "action": "parse",
             "prop": "links",
             "formatversion": "2",
@@ -724,7 +724,7 @@ class MainPage:
         return self.links_data.links2
 
     def page_links_query(self, plnamespace: str = "*"):
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "prop": "links",
             "formatversion": "2",
@@ -765,7 +765,7 @@ class MainPage:
                 if x not in rvprop:
                     rvprop.append(x)
 
-        params = {
+        params: dict[str, Any] = {
             "action": "query",
             "format": "json",
             "prop": "revisions",

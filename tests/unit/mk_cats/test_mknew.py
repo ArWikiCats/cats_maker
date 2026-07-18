@@ -454,7 +454,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
         mocker.patch("src.mk_cats.mknew.log_to_wikidata")
 
-        result = mknew.make_ar("Category:Science", "علوم")
+        mknew.make_ar("Category:Science", "علوم")
 
         # Should have proceeded to create the category
         mock_new_category.assert_called_once()
@@ -493,7 +493,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
         mocker.patch("src.mk_cats.mknew.log_to_wikidata")
 
-        result = mknew.make_ar("Category:Science", "علوم")
+        mknew.make_ar("Category:Science", "علوم")
 
         # Should have proceeded to create the category
         mock_new_category.assert_called_once()
@@ -558,7 +558,7 @@ class TestMakeArMinMembers:
         mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat", return_value=False)
         mocker.patch("src.mk_cats.mknew.log_to_wikidata")
 
-        result = mknew.make_ar("Category:Science", "علوم")
+        mknew.make_ar("Category:Science", "علوم")
 
         # Should have proceeded to create the category
         mock_new_category.assert_called_once()
