@@ -9,7 +9,7 @@ import os
 from dotenv import load_dotenv
 
 from ...config import main_settings
-from ...core.newapi import AllAPIS, WikiLoginClient
+from ...shared.newapi import AllAPIS, WikiLoginClient
 
 logger = logging.getLogger(__name__)
 

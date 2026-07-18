@@ -7,8 +7,8 @@ import logging
 import re
 
 from ....config import main_settings
-from ...wd_bots import Get_Sitelinks_from_qid, Get_Sitelinks_From_wikidata
-from ...wiki_api import find_LCN, get_cache_L_C_N, set_cache_L_C_N
+from ....shared import find_LCN
+from ....shared.wd_api import Get_Sitelinks_from_qid, Get_Sitelinks_From_wikidata
 from ..utils.text import extract_wikidata_qid
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,6 @@ def resolve_via_wikidata(text: str, link: str, firstsite_code: str, second_site_
         logger.debug(">> Link contains '#', indicating a section link.")
         return None
 
-    _update_caches(link, firstsite_code, second_site_code, result)
     return result
 
 
@@ -53,13 +52,6 @@ def resolve_via_api(link: str, firstsite_code: str, second_site_code: str, text:
 
     Returns the target page title, or None if no link exists.
     """
-    tubb = (link, firstsite_code, second_site_code, "en_links")
-
-    cached = get_cache_L_C_N(tubb)
-    if cached:
-        logger.debug(f'>> _cache LCN tubb: "{link}": = {second_site_code}:{cached}')
-        return cached
-
     logger.debug(f">> english_page_link {firstsite_code}:{link}")
     link = link.replace("[[", "").replace("]]", "").replace("en:", "").replace("ar:", "")
     link1 = link.replace("_", " ")
@@ -103,14 +95,11 @@ def resolve_via_api(link: str, firstsite_code: str, second_site_code: str, text:
             link1_other = sitelinks2[firstsite_code]
             if link1 != link1_other:
                 logger.info(f"link1 ({link1}) != link1_other ({link1_other}).")
-                set_cache_L_C_N(tubb, False)
                 return None
 
-        _update_caches(link, firstsite_code, second_site_code, results)
         logger.info(f" ({results}).")
         return results
 
-    set_cache_L_C_N(tubb, False)
     return None
 
 
@@ -194,10 +183,3 @@ def get_english_page_title(
                 return "", ""
 
     return en, new_site
-
-
-def _update_caches(link: str, firstsite_code: str, second_site_code: str, result: str) -> None:
-    tubb = (link, firstsite_code, second_site_code, "en_links")
-    opposite_tubb = (result, second_site_code, firstsite_code, "en_links")
-    set_cache_L_C_N(opposite_tubb, link)
-    set_cache_L_C_N(tubb, result)

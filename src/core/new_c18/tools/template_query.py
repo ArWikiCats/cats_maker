@@ -7,7 +7,7 @@ import logging
 from collections import defaultdict
 from typing import Any
 
-from ...wiki_api import find_LCN, get_cache_L_C_N, set_cache_L_C_N
+from ....shared import find_LCN
 from ..constants import SKIP_CATEGORIES
 
 logger = logging.getLogger(__name__)
@@ -20,23 +20,16 @@ class TemplateCache:
         self._store: dict[str, dict[str, Any]] = defaultdict(dict)
 
     def get(self, enlink: str, sitecode: str) -> Any | None:
-        key = f"{sitecode}:{enlink}"
         site_cache = self._store[sitecode]
 
         if enlink in site_cache:
             return site_cache[enlink]
-
-        cached = get_cache_L_C_N((enlink, sitecode, "templates"))
-        if cached is not None:
-            site_cache[enlink] = cached
-            return cached
 
         return None
 
     def set(self, enlink: str, sitecode: str, value: Any) -> None:
         key = f"{sitecode}:{enlink}"
         self._store[sitecode][enlink] = value
-        set_cache_L_C_N((enlink, sitecode, "templates"), value)
 
 
 _cache = TemplateCache()

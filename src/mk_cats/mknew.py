@@ -6,9 +6,9 @@ import logging
 
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
-from ..core.wd_bots import Get_Sitelinks_From_wikidata, add_labels, log_to_wikidata, log_to_wikidata_qid
-from ..core.wiki_api import find_Page_Cat_without_hidden
+from ..shared import find_Page_Cat_without_hidden
 from ..shared.api_page import load_main_api
+from ..shared.wd_api import Get_Sitelinks_From_wikidata, add_labels, log_to_wikidata, log_to_wikidata_qid
 from .add_bot import add_to_page
 from .create_category_page import new_category
 from .members_helper import collect_category_members
@@ -18,6 +18,7 @@ try:
     from ArWikiCats import resolve_arabic_category_label  # type: ignore
 except ImportError:
     resolve_arabic_category_label = None
+    logging.warning("ArWikiCats not available.")
 
 
 def set_project_log_level(name: str, level: int) -> None:
@@ -85,6 +86,7 @@ def get_processing_state():
 
 
 def ar_make_lab(title, **kwargs) -> str:
+    title = str(title)
     okay = filter_category(title)
 
     if not okay:

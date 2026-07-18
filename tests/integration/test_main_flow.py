@@ -12,8 +12,6 @@ from unittest.mock import MagicMock
 import pytest
 
 from src.core.new_c18.core.category_resolver import CategoryResolver
-from src.core.wd_bots import wd_api_bot
-from src.core.wiki_api import himoBOT2
 from src.mk_cats import create_categories_from_list, create_category_page, mknew
 from src.mk_cats.mknew import (
     clear_processing_state,
@@ -22,6 +20,7 @@ from src.mk_cats.mknew import (
     process_catagories,
     scan_ar_title,
 )
+from src.shared.wd_api import wd_api_bot
 
 
 class TestMainFlowIntegration:
@@ -30,16 +29,12 @@ class TestMainFlowIntegration:
     @pytest.fixture
     def mock_all_external_services(self, mocker):
         """Mock all external API calls for integration testing."""
-        # Mock Wikipedia API
-        mock_wiki_api = mocker.patch("src.core.wiki_api.himoBOT2.get_page_info_from_wikipedia")
-        mock_wiki_api.return_value = {"exists": False}
-
         # Mock Wikidata API
-        mock_wikidata = mocker.patch("src.core.wd_bots.wd_api_bot.Get_Sitelinks_From_wikidata")
+        mock_wikidata = mocker.patch("src.shared.wd_api.wd_api_bot.Get_Sitelinks_From_wikidata")
         mock_wikidata.return_value = {"q": "Q12345", "sitelinks": {}}
 
         # Mock LCN (Language Code Navigator)
-        mock_lcn = mocker.patch("src.core.wiki_api.LCN_new.find_Page_Cat_without_hidden")
+        mock_lcn = mocker.patch("src.shared.LCN_new.find_Page_Cat_without_hidden")
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in mknew)
@@ -59,7 +54,7 @@ class TestMainFlowIntegration:
         mock_lit_api.return_value = []
 
         # Mock to_wd.log_to_wikidata
-        mock_log_wd = mocker.patch("src.core.wd_bots.to_wd.log_to_wikidata")
+        mock_log_wd = mocker.patch("src.shared.wd_api.to_wd.log_to_wikidata")
 
         # Mock validate_categories_for_new_cat
         mock_validate = mocker.patch("src.mk_cats.mknew.validate_categories_for_new_cat")
@@ -70,7 +65,6 @@ class TestMainFlowIntegration:
         mock_make_ar_list.return_value = []
 
         return {
-            "wiki_api": mock_wiki_api,
             "wikidata": mock_wikidata,
             "lcn": mock_lcn,
             "sql": mock_sql,
@@ -181,32 +175,10 @@ class TestMainFlowIntegration:
 class TestModuleInteraction:
     """Tests for interaction between different modules."""
 
-    def test_wiki_api_integration_with_himoBOT2(self, mocker):
-        """Test that wiki_api module functions work together."""
-
-        # Mock the underlying API call
-        mock_api = mocker.patch("src.core.wiki_api.himoBOT2.submitAPI")
-        mock_api.return_value = {
-            "query": {
-                "pages": {
-                    "123": {
-                        "title": "Test Page",
-                        "pageid": 123,
-                        "ns": 0,
-                    }
-                }
-            }
-        }
-
-        result = himoBOT2.get_page_info_from_wikipedia("ar", "Test Page")
-
-        assert result is not None
-        assert "title" in result
-
     def test_new_c18_integration_with_category_resolver(self, mocker):
         """Test that new_c18 module integrates with CategoryResolver."""
         # Mock database connection
-        mock_connect = mocker.patch("src.core.api_sql.db_pool.db_manager.execute_query")
+        mock_connect = mocker.patch("src.shared.api_sql.db_pool.db_manager.execute_query")
         mock_connect.return_value = []
 
         # This tests that the modules can be imported and interact
@@ -225,10 +197,10 @@ class TestModuleInteraction:
         assert create_category_page.new_category is not None
 
     def test_wd_bots_integration_with_get_bots(self, mocker):
-        """Test that wd_bots module functions integrate properly."""
+        """Test that wd_api module functions integrate properly."""
 
         # Mock the underlying API call
-        mock_api = mocker.patch("src.core.wd_bots.wd_api_bot.Get_infos_wikidata")
+        mock_api = mocker.patch("src.shared.wd_api.wd_api_bot.Get_infos_wikidata")
         mock_api.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -241,7 +213,7 @@ class TestModuleInteraction:
         }
 
         # Test get_sitelinks function (mocking at the right level)
-        mock_sitelinks = mocker.patch("src.core.wd_bots.wd_api_bot.Get_Sitelinks_From_wikidata")
+        mock_sitelinks = mocker.patch("src.shared.wd_api.wd_api_bot.Get_Sitelinks_From_wikidata")
         mock_sitelinks.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -338,30 +310,3 @@ class TestDataFlowIntegration:
 
         assert result == "علوم الحاسوب"
         mock_label.assert_called_with("Computer science zz")
-
-    def test_wiki_info_flows_to_category_creation(self, mocker):
-        """Test that Wikipedia info flows to category creation."""
-
-        # Mock API response
-        mocker.patch(
-            "src.core.wiki_api.himoBOT2.submitAPI",
-            return_value={
-                "query": {
-                    "pages": {
-                        "123": {
-                            "title": "Category:Science",
-                            "pageid": 123,
-                            "ns": 14,
-                            "categories": [{"title": "Category:Academic disciplines"}],
-                        }
-                    }
-                }
-            },
-        )
-
-        # Get page info
-        result = himoBOT2.get_page_info_from_wikipedia("en", "Category:Science")
-
-        # Verify the data structure is suitable for category creation
-        assert "title" in result
-        assert result["ns"] == 14  # Category namespace

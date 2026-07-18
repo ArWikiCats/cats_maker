@@ -3,7 +3,6 @@ Unit tests for src/core/new_c18/core/cross_wiki_linker.py module.
 """
 
 from src.core.new_c18.core.cross_wiki_linker import (
-    _update_caches,
     get_en_link_from_ar_text,
     get_english_page_title,
     get_page_link,
@@ -39,7 +38,6 @@ class TestResolveViaWikidata:
             "src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_from_qid",
             return_value={"sitelinks": {"enwiki": "Science", "arwiki": "علوم"}},
         )
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
 
         result = resolve_via_wikidata("text with Q123", "link", "en", "ar")
         assert result == "علوم"
@@ -76,91 +74,55 @@ class TestResolveViaWikidata:
 class TestResolveViaApi:
     """Tests for resolve_via_api function"""
 
-    def test_returns_cached_value(self, mocker):
-        """Test that cached values are returned"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value="Science")
-
-        result = resolve_via_api("Science", "en", "ar")
-        assert result == "Science"
-
     def test_cleans_link_brackets_and_prefixes(self, mocker):
         """Test that link brackets and prefixes are cleaned"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value=None)
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.find_LCN",
             return_value={"Science": {"langlinks": {"ar": "علوم"}}},
         )
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
 
         result = resolve_via_api("[[en:Science]]", "en", "ar")
         assert result is None
 
     def test_finds_langlink_from_find_lcn(self, mocker):
         """Test finding langlink from find_LCN"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value=None)
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.find_LCN",
             return_value={"Science": {"langlinks": {"ar": "علوم", "en": "Science"}}},
         )
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
 
         result = resolve_via_api("Science", "en", "ar")
         assert result is None
 
     def test_returns_none_when_ar_to_match_differs(self, mocker):
         """Test that None is returned when ar_to_match differs"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value=None)
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.find_LCN",
             return_value={"Science": {"langlinks": {"ar": "different", "en": "Different"}}},
         )
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
 
         result = resolve_via_api("Science", "en", "ar")
         assert result is None
 
 
-class TestUpdateCaches:
-    """Tests for _update_caches function"""
-
-    def test_updates_both_directions(self, mocker):
-        """Test that both cache directions are updated"""
-        mock_set_cache = mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
-
-        _update_caches("Science", "en", "ar", "علوم")
-
-        assert mock_set_cache.call_count == 2
-
-
 class TestGetPageLink:
     """Tests for get_page_link function"""
 
-    def test_returns_cached_value(self, mocker):
-        """Test that cached values are returned"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value="Science")
-
-        result = get_page_link("علوم", "ar", "en")
-        assert result == "Science"
-
     def test_cleans_link_brackets(self, mocker):
         """Test that double brackets are removed from link"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value=None)
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.find_LCN", return_value=None)
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
 
         get_page_link("[[علوم]]", "ar", "en")
         # Function should process without error
 
     def test_returns_none_when_no_langlink(self, mocker):
         """Test that None is returned when no langlink is found"""
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_cache_L_C_N", return_value=None)
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.find_LCN", return_value=None)
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
-        mocker.patch("src.core.new_c18.core.cross_wiki_linker.set_cache_L_C_N")
 
         result = get_page_link("nonexistent", "ar", "en")
         assert result is None

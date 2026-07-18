@@ -3,8 +3,8 @@
 
 from typing import Any
 
-from ..core.wd_bots import Get_P373_API
 from ..shared.api_page import load_main_api
+from ..shared.wd_api import Get_P373_API
 from ..temp import main_make_temp_no_title
 from .categorytext_data import LocalLanguageLinks, category_mapping
 from .utils import portal_en_to_ar_lower

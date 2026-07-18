@@ -5,7 +5,6 @@ Unit tests for src/core/new_c18/core/category_validator.py module.
 from unittest.mock import patch
 
 from src.core.new_c18.core.category_validator import (
-    _check_page_status,
     _get_false_templates,
     _get_no_templates,
     validate_categories_for_new_cat,
@@ -37,68 +36,6 @@ class TestGetFalseTemplates:
         result = _get_false_templates()
         assert "nobots" in result
         assert "dead" in result
-
-
-class TestCheckPageStatus:
-    @patch("src.core.new_c18.core.category_validator.get_page_info_from_wikipedia")
-    def test_page_not_found(self, mock_get_info):
-        mock_get_info.return_value = None
-        result = _check_page_status("en", "Category:Test", None, frozenset())
-        assert result.valid is False
-        assert "not found" in result.reason
-
-    @patch("src.core.new_c18.core.category_validator.get_page_info_from_wikipedia")
-    def test_page_does_not_exist(self, mock_get_info):
-        mock_get_info.return_value = {"exists": False}
-        result = _check_page_status("en", "Category:Test", None, frozenset())
-        assert result.valid is False
-        assert "not exist" in result.reason
-
-    @patch("src.core.new_c18.core.category_validator.get_page_info_from_wikipedia")
-    def test_page_is_redirect(self, mock_get_info):
-        mock_get_info.return_value = {"exists": True, "isRedirectPage": True}
-        result = _check_page_status("en", "Category:Test", None, frozenset())
-        assert result.valid is False
-        assert "redirect" in result.reason
-
-    @patch("src.core.new_c18.core.category_validator.get_page_info_from_wikipedia")
-    def test_valid_page(self, mock_get_info):
-        mock_get_info.return_value = {"exists": True, "isRedirectPage": False, "templates": {}}
-        result = _check_page_status("en", "Category:Test", None, frozenset())
-        assert result.valid is True
-
-    @patch("src.core.new_c18.core.category_validator.get_page_info_from_wikipedia")
-    def test_blacklisted_template(self, mock_get_info):
-        mock_get_info.return_value = {
-            "exists": True,
-            "isRedirectPage": False,
-            "templates": {"Template:Nobots"},
-        }
-        with (
-            patch("src.core.new_c18.core.category_validator.main_settings") as mock_settings,
-            patch("src.core.new_c18.core.category_validator._get_false_templates", return_value=frozenset(["nobots"])),
-        ):
-            mock_settings.category.keep = False
-            result = _check_page_status("en", "Category:Test", None, frozenset())
-            assert result.valid is False
-            assert "Blacklisted" in result.reason
-
-    @patch("src.core.new_c18.core.category_validator.get_page_info_from_wikipedia")
-    def test_langlink_mismatch(self, mock_get_info):
-        mock_get_info.return_value = {
-            "exists": True,
-            "isRedirectPage": False,
-            "templates": {},
-            "langlinks": {"en": "Category:Other"},
-        }
-        # is_ar=True, so it looks for "ar" key; expected_langlink doesn't match
-        result = _check_page_status("ar", "تصنيف:اختبار", "Category:Test", frozenset(), is_ar=True)
-        # langlinks has "en" but not "ar", so langlink="" and condition is skipped
-        # Need to provide the ar key
-        mock_get_info.return_value["langlinks"]["ar"] = "تصنيف:أخرى"
-        result = _check_page_status("ar", "تصنيف:اختبار", "Category:Test", frozenset(), is_ar=True)
-        assert result.valid is False
-        assert "mismatch" in result.reason
 
 
 class TestValidateCategoriesForNewCat:

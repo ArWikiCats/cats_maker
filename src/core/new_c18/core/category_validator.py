@@ -6,8 +6,8 @@ from __future__ import annotations
 import logging
 
 from ....config import main_settings
+from ....shared.api_page import load_main_api
 from ...utils import global_false_entemps
-from ...wiki_api import get_page_info_from_wikipedia
 from ..constants import NO_TEMPLATES_AR, NO_TEMPLATES_AR_WITHOUT_STUBS
 from ..models import ValidationResult
 
@@ -42,7 +42,8 @@ def _check_page_status(
         template_blacklist: Set of template names that invalidate the page.
         is_ar: Whether this is an Arabic page (affects template prefix).
     """
-    info = get_page_info_from_wikipedia(site, title)
+    sitr_api = load_main_api(site, "wikipedia")
+    info = sitr_api.NewApi().get_page_info_from_wikipedia(title)
 
     if not info:
         logger.info(f"not found:({title})")
