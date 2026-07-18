@@ -7,8 +7,8 @@ import logging
 import re
 
 from ....config import main_settings
+from ....shared import find_LCN
 from ...wd_bots import Get_Sitelinks_from_qid, Get_Sitelinks_From_wikidata
-from ...wiki_api import find_LCN
 from ..utils.text import extract_wikidata_qid
 
 logger = logging.getLogger(__name__)

@@ -4,8 +4,8 @@
 import logging
 
 from ...config import main_settings
+from ...shared import find_LCN
 from ...shared.api_page import load_main_api
-from ..wiki_api import find_LCN
 
 logger = logging.getLogger(__name__)
 

@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from ...shared.api_page import load_main_api
+from .api_page import load_main_api
 
 logger = logging.getLogger(__name__)
 

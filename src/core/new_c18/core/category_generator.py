@@ -6,8 +6,7 @@ from __future__ import annotations
 import logging
 
 from ....config import main_settings
-from ....shared.api_page import load_main_api
-from ...wiki_api import find_LCN
+from ....shared import find_LCN, load_main_api
 from ..constants import DEFAULT_MEMBER_NAMESPACES, STUB_MEMBER_NAMESPACES
 
 logger = logging.getLogger(__name__)

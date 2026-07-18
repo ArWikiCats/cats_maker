@@ -4,7 +4,7 @@ Tests for sub_cats_bot.py
 This module tests subcategory query functions.
 """
 
-from src.core.wiki_api.sub_cats_bot import (
+from src.core.cats_helpers.sub_cats_bot import (
     API_n_CALLS,
     sub_cats_query,
 )
@@ -43,7 +43,7 @@ class TestSubCatsQuery:
         """Test that API call counter is incremented"""
         initial_count = API_n_CALLS[1]
 
-        mocker.patch("src.core.wiki_api.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
+        mocker.patch("src.core.cats_helpers.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
 
         sub_cats_query("Category:NewCategory", "en")
 
@@ -52,7 +52,9 @@ class TestSubCatsQuery:
     def test_handles_subcat_type(self, mocker):
         """Test handling of subcat type parameter"""
 
-        mock_submit = mocker.patch("src.core.wiki_api.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
+        mock_submit = mocker.patch(
+            "src.core.cats_helpers.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}}
+        )
 
         sub_cats_query("Category:Science", "en", ctype="subcat")
 
@@ -62,7 +64,9 @@ class TestSubCatsQuery:
     def test_handles_page_type(self, mocker):
         """Test handling of page type parameter"""
 
-        mock_submit = mocker.patch("src.core.wiki_api.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
+        mock_submit = mocker.patch(
+            "src.core.cats_helpers.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}}
+        )
 
         sub_cats_query("Category:Science", "en", ctype="page")
 
@@ -73,7 +77,7 @@ class TestSubCatsQuery:
         """Test extraction of language links from response"""
 
         mocker.patch(
-            "src.core.wiki_api.sub_cats_bot.submitParams",
+            "src.core.cats_helpers.sub_cats_bot.submitParams",
             return_value={
                 "query": {"pages": {"123": {"title": "Science", "ns": 14, "langlinks": [{"lang": "ar", "*": "علوم"}]}}}
             },
@@ -86,7 +90,7 @@ class TestSubCatsQuery:
     def test_returns_table_structure(self, mocker):
         """Test that result has correct table structure"""
 
-        mocker.patch("src.core.wiki_api.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
+        mocker.patch("src.core.cats_helpers.sub_cats_bot.submitParams", return_value={"query": {"pages": {}}})
 
         result = sub_cats_query("Category:Test", "en")
 

@@ -7,7 +7,7 @@ import logging
 from collections import defaultdict
 from typing import Any
 
-from ...wiki_api import find_LCN
+from ....shared import find_LCN
 from ..constants import SKIP_CATEGORIES
 
 logger = logging.getLogger(__name__)

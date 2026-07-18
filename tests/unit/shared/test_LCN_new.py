@@ -4,7 +4,7 @@ Tests for LCN_new.py
 This module tests the WikiApiHandler class and language link functions.
 """
 
-from src.core.wiki_api.LCN_new import (
+from src.shared.LCN_new import (
     LC_bot,
     WikiApiHandler,
     find_LCN,
