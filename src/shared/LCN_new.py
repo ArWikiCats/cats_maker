@@ -173,8 +173,8 @@ class WikiApiHandler:
                 self.cache[(title, site_code, "templates")] = templates
                 logger.debug(f"templates: {templates}")
 
-        self.cache[(title, site_code, props)] = {title: data}
-        logger.debug("--------------")
+            self.cache[(title, site_code, props)] = {title: data}
+            logger.debug("--------------")
 
         return results
 
