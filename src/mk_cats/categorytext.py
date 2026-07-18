@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """ """
 
-from typing import Any
 
 from ..shared.api_page import load_main_api
 from ..shared.wd_api import Get_P373_API
