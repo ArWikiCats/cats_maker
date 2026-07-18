@@ -200,11 +200,19 @@ exclude = [
 ]
 
 # Diagnostic modes: "basic" or "standard" or "strict"
-typeCheckingMode = "standard"
+typeCheckingMode = "strict"
 
 # Automatically find virtual environments
 venvPath = "."
 venv = ".venv"
+
+reportMissingTypeArgument = false
+reportMissingParameterType = false
+reportUnknownParameterType = false
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
+reportUnknownArgumentType = false
+reportUnknownVariableType = false
 
 # Fine-tune specific warning rules
 reportPossiblyUnboundVariable = true
