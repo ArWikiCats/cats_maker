@@ -103,18 +103,18 @@ docstring-code-line-length = 120
 [tool.ruff.lint]
 # "E402", "E225", "E226", "E227", "E228", "E252", "F841", "E224", "E203", "F401",
 ignore = [
-    "E501",
-    #     "UP035",
-    #     "UP006",
-    "N806",
-    #     "N999",
-    #     "UP015",
-    #     "I001",
-    "N802",
-    #     "UP007",
-    #     "UP045",
-    #     "UP031",
-    #     "F841",
+    "E501", # Line too long
+    # "F841",  # Local variable is assigned to but never used
+    # "N802",  # Function name should be lowercase
+    # "N806",  # Variable in function should be lowercase
+    # "UP007", # Use `X | Y` for type annotations instead of `Optional[X]`
+    "UP031", # Use format specifiers instead of percent format
+    # "UP045", # Use `X | None` instead of `Optional[X]`
+    # "UP006",  # Use `list` instead of `List` for type annotations
+    # "UP035",  # Use `X | Y` for type unions instead of `Union[X, Y]`
+    # "I001",   # Import block is un-sorted or un-formatted
+    # "N999",   # Invalid module name
+    # "UP015",  # Unnecessary open mode parameters
 ]
 select = [
     "E",       # pycodestyle (error)
@@ -200,7 +200,7 @@ exclude = [
 ]
 
 # Diagnostic modes: "basic" or "standard" or "strict"
-typeCheckingMode = "strict"
+typeCheckingMode = "standard"
 
 # Automatically find virtual environments
 venvPath = "."
