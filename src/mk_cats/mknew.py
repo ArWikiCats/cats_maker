@@ -3,6 +3,7 @@ python3 core8/pwb.py mk_cats/mknew
 """
 
 import logging
+from typing import Callable
 
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
@@ -85,7 +86,7 @@ def get_processing_state():
     }
 
 
-def ar_make_lab(title, **kwargs) -> str:
+def ar_make_lab(title: str, *args, **kwargs) -> str:
     title = str(title)
     okay = filter_category(title)
 
@@ -341,7 +342,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     )
 
 
-def process_catagories(cat, arlab, num: int, lenth, callback=None) -> None:
+def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Callable | None =None) -> None:
     logger.debug(f"*:{num}/{lenth} cat: {cat}, arlab: {arlab}")
 
     ma_table = make_ar(cat, arlab, callback=callback)
@@ -420,11 +421,11 @@ def one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
     return process_catagories(en_title, labb, num, lenth, callback=callback)
 
 
-def create_categories_from_list(liste, callback=None) -> None:
+def create_categories_from_list(titles: list[str], callback: Callable | None =None) -> None:
     # clear_processing_state()
-    lenth = len(liste)
+    lenth = len(titles)
 
-    for num, en_title in enumerate(liste, 1):
+    for num, en_title in enumerate(titles, 1):
         one_cat(en_title, num, lenth, callback=callback)
 
 
