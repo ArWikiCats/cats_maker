@@ -4,12 +4,14 @@ Environment-driven configuration for the service package.
 
 from __future__ import annotations
 
+import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
 
 from .exceptions import ConfigurationError
 
+logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class DatabaseConfig:
@@ -43,7 +45,9 @@ class ConfigLoader:
         # In production, these might come from env vars or a secrets manager
         # For Wikimedia Toolforge/Cloud, we often rely on replica.my.cnf
         home = Path.home()
+
         cnf_path = home / "replica.my.cnf"
+        logger.info("replica.my.cnf file at %s", str(cnf_path))
 
         if not cnf_path.exists():
             raise ConfigurationError(f"Replica config file not found at {cnf_path}")

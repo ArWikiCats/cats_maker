@@ -12,6 +12,8 @@ Example:
     'https://www.wikidata.org/w/api.php'
 """
 
+from __future__ import annotations
+
 import os
 import sys
 from dataclasses import dataclass, field
@@ -31,8 +33,10 @@ class Paths:
     arwikicats_path: str | None
 
 
-def _safe_int(value: str, default: int) -> int:
+def _safe_int(value: str | None, default: int) -> int:
     """Safely convert string to int, returning default on failure."""
+    if not value:
+        return default
     try:
         return int(value)
     except (ValueError, TypeError):
@@ -102,18 +106,29 @@ class ApiClientConfig:
 
 @dataclass
 class DatabaseConfig:
-    """Configuration for database connections.
-
-    Attributes:
-        host: Database host (optional, derived from wiki code if not set)
-        port: Database port
-        use_sql: Whether to use SQL database for queries
     """
-
+    Configuration for database connections.
+    """
+    user: str
+    password: str
     host: str | None = None
     port: int = 3306
     use_sql: bool = True
+    cache_ttl: int = 60 * 60 * 24 * 7  # 1 week
 
+
+    @classmethod
+    def load(cls) -> DatabaseConfig:
+        return cls(
+            host=os.getenv("DATABASE_HOST") or "",
+            port=_safe_int(os.getenv("DATABASE_PORT"), 3306),
+            user=os.getenv("TOOL_REPLICA_USER") or "",
+            password=os.getenv("TOOL_REPLICA_PASSWORD") or "",
+            cache_ttl=int(os.getenv("TOOL_REPLICA_CACHE_TTL", 60 * 60 * 24 * 7)),
+        )
+
+    def has_db_data(self) -> bool:
+        return bool(self.user and self.password)
 
 @dataclass
 class DebugConfig:
