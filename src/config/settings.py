@@ -374,29 +374,6 @@ class Settings:
     debug: bool = False
     log_level: str = "INFO"
 
-    @classmethod
-    def load(cls) -> Settings:
-        """
-        Build a Settings instance from each sub-config's own load(),
-        i.e. purely from environment variables. __post_init__ still runs
-        afterwards and layers argv overrides on top, exactly as before.
-        """
-        return cls(
-            wikipedia=WikipediaConfig.load(),
-            wikidata=WikidataConfig.load(),
-            api_client=ApiClientConfig.load(),
-            database=DatabaseConfig.load(),
-            debug_config=DebugConfig.load(),
-            bot=BotConfig.load(),
-            category=CategoryConfig.load(),
-            query=QueryConfig.load(),
-            site=SiteConfig.load(),
-            paths=Paths.load(),
-            range_limit=_safe_int(os.getenv("RANGE_LIMIT"), 5),
-            debug=_safe_bool(os.getenv("DEBUG"), False),
-            log_level=os.getenv("LOG_LEVEL") or "INFO",
-        )
-
     @staticmethod
     def is_production() -> bool:
         """Check if the application is running in production mode."""
@@ -438,12 +415,6 @@ class Settings:
                 family=self.site.secondary_family or "wikipedia", code=self.site.secondary_lang or "fr", use=True
             )
         return WikiSiteInfo(family="", code="fr", use=False)
-
-    def __post_init__(self) -> None:
-        """
-        Process command-line arguments for runtime overrides.
-        """
-        self._process_argv()
 
     def _process_env_vars(self) -> None:
         """Load configuration from environment variables."""
@@ -607,6 +578,27 @@ class Settings:
         # Calculate to_limit with offset if both are set
         if self.query.to_limit != 0:
             self.query.to_limit = self.query.to_limit + self.query.offset
+
+    @classmethod
+    def load(cls) -> Settings:
+        """
+        Build a Settings instance from each sub-config's own load(),
+        """
+        return cls(
+            wikipedia=WikipediaConfig.load(),
+            wikidata=WikidataConfig.load(),
+            api_client=ApiClientConfig.load(),
+            database=DatabaseConfig.load(),
+            debug_config=DebugConfig.load(),
+            bot=BotConfig.load(),
+            category=CategoryConfig.load(),
+            query=QueryConfig.load(),
+            site=SiteConfig.load(),
+            paths=Paths.load(),
+            range_limit=_safe_int(os.getenv("RANGE_LIMIT"), 5),
+            debug=_safe_bool(os.getenv("DEBUG"), False),
+            log_level=os.getenv("LOG_LEVEL") or "INFO",
+        )
 
 # Global settings instance
 main_settings = Settings.load()
