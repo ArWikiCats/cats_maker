@@ -405,11 +405,11 @@ def one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
     labb = labb or sugust
 
     if not labb:
-        logger.warning("labb is empty.")
+        logger.warning("%s ar label is empty.", en_title)
         return False
 
     if not check_en_temps(en_title):
-        logger.warning("check_en_temps failed.")
+        logger.warning("check_en_temps for %s failed.", en_title)
         return False
 
     en_list = _resolver.list_en_pages_with_ar_links(en_title, wiki="en")
