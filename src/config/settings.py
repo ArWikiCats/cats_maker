@@ -56,7 +56,8 @@ class Paths:
 
     @classmethod
     def load(cls) -> Paths:
-        """Load Paths configuration from environment variables."""
+        """
+        Load Paths configuration from environment variables."""
         return cls(
             cookies_dir=os.getenv("COOKIES_DIR"),
             dont_add_to_pages_path=os.getenv("DONT_ADD_TO_PAGES_PATH"),
@@ -86,7 +87,8 @@ class WikipediaConfig:
 
     @classmethod
     def load(cls) -> WikipediaConfig:
-        """Load Wikipedia configuration from environment variables."""
+        """
+        Load Wikipedia configuration from environment variables."""
         return cls(
             ar_family=os.getenv("WIKIPEDIA_AR_FAMILY") or "wikipedia",
             ar_code=os.getenv("WIKIPEDIA_AR_CODE") or "ar",
@@ -116,7 +118,8 @@ class WikidataConfig:
 
     @classmethod
     def load(cls) -> WikidataConfig:
-        """Load Wikidata configuration from environment variables."""
+        """
+        Load Wikidata configuration from environment variables."""
         return cls(
             endpoint=os.getenv("WIKIDATA_ENDPOINT") or "https://www.wikidata.org/w/api.php",
             sparql_endpoint=os.getenv("WIKIDATA_SPARQL_ENDPOINT") or "https://query.wikidata.org/sparql",
@@ -141,7 +144,8 @@ class ApiClientConfig:
 
     @classmethod
     def load(cls) -> ApiClientConfig:
-        """Load API client configuration from environment variables."""
+        """
+        Load API client configuration from environment variables."""
         return cls(
             max_retries=_safe_int(os.getenv("API_CLIENT_MAX_RETRIES"), 5),
             backoff_base=_safe_int(os.getenv("API_CLIENT_BACKOFF_BASE"), 1),
@@ -163,7 +167,8 @@ class DatabaseConfig:
 
     @classmethod
     def load(cls) -> DatabaseConfig:
-        """Load Database configuration from environment variables."""
+        """
+        Load Database configuration from environment variables."""
         return cls(
             host=os.getenv("DATABASE_HOST") or "",
             port=_safe_int(os.getenv("DATABASE_PORT"), 3306),
@@ -320,7 +325,8 @@ class WikiSiteInfo:
         return cls()
 
     def __getitem__(self, key):
-        """Support dictionary-like access for backward compatibility."""
+        """
+        Support dictionary-like access for backward compatibility."""
         if key == "family":
             return self.family
         elif key == "code":
@@ -332,7 +338,8 @@ class WikiSiteInfo:
         raise KeyError(key)
 
     def __contains__(self, key) -> bool:
-        """Support 'in' operator for backward compatibility."""
+        """
+        Support 'in' operator for backward compatibility."""
         return key in ("family", "code", "use", 1)
 
 
@@ -375,7 +382,8 @@ class Settings:
 
     @staticmethod
     def is_production() -> bool:
-        """Check if the application is running in production mode."""
+        """
+        Check if the application is running in production mode."""
         return os.getenv("APP_ENV", "").lower() == "production"
 
     @property
@@ -416,7 +424,8 @@ class Settings:
         return WikiSiteInfo(family="", code="fr", use=False)
 
     def _process_argv(self) -> None:
-        """Process command-line arguments for configuration overrides."""
+        """
+        Process command-line arguments for configuration overrides."""
         for arg in sys.argv:
             arg_name, _, value = arg.partition(":")
 
