@@ -79,7 +79,7 @@ class WikiReplicaMaps:
         """
         new_map = {}
 
-        if not main_settings.database.has_db_data():
+        if not main_settings.database.can_use_sql():
             logger.warning("No credentials for DB, skipping wiki map load")
             return new_map
 

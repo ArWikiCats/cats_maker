@@ -42,6 +42,10 @@ class WikiReplicaDB(WikiReplicaBaseDB):
             password=main_settings.database.password,
         )
 
+    @staticmethod
+    def can_use_sql() -> bool:
+        return main_settings.database.can_use_sql()
+
 
 __all__ = [
     "WikiReplicaDB",

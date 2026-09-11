@@ -25,6 +25,7 @@ class CategoryResolver:
     def _use_sql(self) -> bool:
         if self.backend == "sql":
             return True
+
         if self.backend == "api":
             return False
         return main_settings.database.use_sql

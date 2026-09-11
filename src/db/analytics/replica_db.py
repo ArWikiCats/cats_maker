@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from collections.abc import Sequence
 from typing import Any
 
@@ -183,22 +182,8 @@ class WikiReplicaBaseDB:
         self.close()
 
 
-def get_sql() -> bool:
-    """
-    Checks if SQL database replica access is allowed and enabled.
-    Returns True if replica credentials exist and 'nosql' is not requested in sys.argv.
-    """
-
-    if not os.getenv("TOOL_REPLICA_USER"):
-        logger.debug("get_sql: no TOOL_REPLICA_USER set, SQL disabled")
-        return False
-
-    return True
-
-
 __all__ = [
     "WikiReplicaBaseDB",
     "decode_value",
     "resolve_bytes",
-    "get_sql",
 ]

@@ -181,7 +181,7 @@ class DatabaseConfig:
             use_sql=_safe_bool(os.getenv("DATABASE_USE_SQL"), True),
         )
 
-    def has_db_data(self) -> bool:
+    def can_use_sql(self) -> bool:
         return bool(self.user and self.password)
 
 
