@@ -96,7 +96,6 @@ class WikipediaConfig:
             default_timeout=_safe_int(os.getenv("WIKIPEDIA_TIMEOUT"), 10),
         )
 
-
 @dataclass
 class WikidataConfig:
     """Configuration for Wikidata API connections.
@@ -416,62 +415,6 @@ class Settings:
             )
         return WikiSiteInfo(family="", code="fr", use=False)
 
-    def _process_env_vars(self) -> None:
-        """Load configuration from environment variables."""
-        # Wikipedia config
-        if os.getenv("WIKIPEDIA_AR_CODE"):
-            self.wikipedia.ar_code = os.environ["WIKIPEDIA_AR_CODE"]
-        if os.getenv("WIKIPEDIA_EN_CODE"):
-            self.wikipedia.en_code = os.environ["WIKIPEDIA_EN_CODE"]
-        if os.getenv("WIKIPEDIA_AR_FAMILY"):
-            self.wikipedia.ar_family = os.environ["WIKIPEDIA_AR_FAMILY"]
-        if os.getenv("WIKIPEDIA_EN_FAMILY"):
-            self.wikipedia.en_family = os.environ["WIKIPEDIA_EN_FAMILY"]
-        if os.getenv("WIKIPEDIA_USER_AGENT"):
-            self.wikipedia.user_agent = os.environ["WIKIPEDIA_USER_AGENT"]
-        if os.getenv("WIKIPEDIA_TIMEOUT"):
-            self.wikipedia.default_timeout = _safe_int(os.environ["WIKIPEDIA_TIMEOUT"], self.wikipedia.default_timeout)
-
-        # Wikidata config
-        if os.getenv("WIKIDATA_ENDPOINT"):
-            self.wikidata.endpoint = os.environ["WIKIDATA_ENDPOINT"]
-        if os.getenv("WIKIDATA_SPARQL_ENDPOINT"):
-            self.wikidata.sparql_endpoint = os.environ["WIKIDATA_SPARQL_ENDPOINT"]
-        if os.getenv("WIKIDATA_TIMEOUT"):
-            self.wikidata.timeout = _safe_int(os.environ["WIKIDATA_TIMEOUT"], self.wikidata.timeout)
-        if os.getenv("WIKIDATA_MAXLAG"):
-            self.wikidata.maxlag = _safe_int(os.environ["WIKIDATA_MAXLAG"], self.wikidata.maxlag)
-
-        # API Client config
-        if os.getenv("API_CLIENT_MAX_RETRIES"):
-            self.api_client.max_retries = _safe_int(os.environ["API_CLIENT_MAX_RETRIES"], self.api_client.max_retries)
-        if os.getenv("API_CLIENT_BACKOFF_BASE"):
-            self.api_client.backoff_base = _safe_int(
-                os.environ["API_CLIENT_BACKOFF_BASE"], self.api_client.backoff_base
-            )
-        if os.getenv("API_CLIENT_MAXLAG_HEADER"):
-            self.api_client.maxlag_header = os.environ["API_CLIENT_MAXLAG_HEADER"]
-
-        # Database config
-        if os.getenv("DATABASE_HOST"):
-            self.database.host = os.environ["DATABASE_HOST"]
-        if os.getenv("DATABASE_PORT"):
-            self.database.port = _safe_int(os.environ["DATABASE_PORT"], self.database.port)
-        if os.getenv("DATABASE_USE_SQL"):
-            self.database.use_sql = os.environ["DATABASE_USE_SQL"].lower() in ("true", "1", "yes")
-
-        # Global settings
-        if os.getenv("RANGE_LIMIT"):
-            self.range_limit = _safe_int(os.environ["RANGE_LIMIT"], self.range_limit)
-        if os.getenv("DEBUG"):
-            self.debug = os.environ["DEBUG"].lower() in ("true", "1", "yes")
-        if os.getenv("LOG_LEVEL"):
-            self.log_level = os.environ["LOG_LEVEL"]
-
-        # Category config
-        if os.getenv("MIN_MEMBERS"):
-            self.category.min_members = _safe_int(os.environ["MIN_MEMBERS"], self.category.min_members)
-
     def _process_argv(self) -> None:
         """Process command-line arguments for configuration overrides."""
         for arg in sys.argv:
@@ -584,7 +527,7 @@ class Settings:
         """
         Build a Settings instance from each sub-config's own load(),
         """
-        return cls(
+        settings = cls(
             wikipedia=WikipediaConfig.load(),
             wikidata=WikidataConfig.load(),
             api_client=ApiClientConfig.load(),
@@ -599,6 +542,8 @@ class Settings:
             debug=_safe_bool(os.getenv("DEBUG"), False),
             log_level=os.getenv("LOG_LEVEL") or "INFO",
         )
+        settings._process_argv()
+        return settings
 
 # Global settings instance
 main_settings = Settings.load()
