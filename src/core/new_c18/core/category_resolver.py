@@ -30,7 +30,8 @@ class CategoryResolver:
         return main_settings.database.use_sql
 
     def list_ar_pages_in_cat(self, ar_title: str) -> list[str]:
-        """Return all page titles inside an Arabic category."""
+        """
+        Return all page titles inside an Arabic category."""
         ar_list: list[str] = []
 
         if self._use_sql():
@@ -47,7 +48,8 @@ class CategoryResolver:
         return ar_list
 
     def list_en_pages_with_ar_links(self, encat: str, wiki: str = "en") -> list[str]:
-        """Return Arabic page titles linked from pages in an EN/FR category."""
+        """
+        Return Arabic page titles linked from pages in an EN/FR category."""
         en_list: list[str] = []
 
         if self._use_sql():
@@ -61,7 +63,8 @@ class CategoryResolver:
         return [x.replace("_", " ") for x in en_list]
 
     def diff_missing_ar_pages(self, en_title: str, ar_title: str, wiki: str = "en") -> list[str]:
-        """Return Arabic pages present in EN category but missing from AR category."""
+        """
+        Return Arabic pages present in EN category but missing from AR category."""
         ar_list = self.list_ar_pages_in_cat(ar_title)
         en_list = self.list_en_pages_with_ar_links(en_title, wiki=wiki)
         missing = [x for x in en_list if x not in ar_list]
@@ -69,7 +72,8 @@ class CategoryResolver:
         return missing
 
     def resolve_members(self, en_title: str, ar_title: str, wiki: str = "en") -> list[str]:
-        """High-level resolver: normalise inputs and return missing pages."""
+        """
+        High-level resolver: normalise inputs and return missing pages."""
         en_title = normalize_category_title(en_title, lang=wiki)
         ar_title = normalize_category_title(ar_title, lang="ar")
         return self.diff_missing_ar_pages(en_title, ar_title, wiki=wiki)
@@ -77,7 +81,8 @@ class CategoryResolver:
     # --- API-based helpers (formerly MakeLitApiWay / cat_tools_enlist2) ---
 
     def _fetch_ar_titles_based_on_en_category(self, enpage_title: str, wiki: str = "en") -> list[str]:
-        """Fallback: use API to find Arabic titles for EN category members."""
+        """
+        Fallback: use API to find Arabic titles for EN category members."""
         en_titles = self._en_category_members(enpage_title, wiki=wiki)
         return self._translate_titles_to_ar(en_titles, wiki=wiki)
 
@@ -89,7 +94,8 @@ class CategoryResolver:
         return [title for title, info in cat_members.items() if int(info["ns"]) in namespace_ids]
 
     def _translate_titles_to_ar(self, titles: list[str], wiki: str = "en", batch_size: int = 50) -> list[str]:
-        """Batch-translate page titles from source wiki to Arabic via langlinks."""
+        """
+        Batch-translate page titles from source wiki to Arabic via langlinks."""
         new_ar_list: list[str] = []
 
         sito_code = main_settings.EEn_site.code
@@ -115,7 +121,8 @@ class CategoryResolver:
         return new_ar_list
 
     def make_lit_api_way(self, encat: str, item_type: str = "cat") -> list[str]:
-        """Generate a list of Arabic page titles based on the provided EN category.
+        """
+        Generate a list of Arabic page titles based on the provided EN category.
 
         This is the refactored ``MakeLitApiWay``.
         """

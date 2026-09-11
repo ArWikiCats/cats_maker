@@ -22,7 +22,8 @@ class MemberLister:
         self.resolver = resolver if resolver is not None else CategoryResolver()
 
     def extract_fan_page_titles(self, enpage_title: str) -> list[str]:
-        """Fetch exclusive category titles from EN wiki via SQL comparator."""
+        """
+        Fetch exclusive category titles from EN wiki via SQL comparator."""
         fapages: list[str] = []
 
         if main_settings.database.use_sql:
@@ -34,7 +35,8 @@ class MemberLister:
         return fapages
 
     def get_listen_page_title(self, ar_title: str, enpage_title: str) -> list[str]:
-        """Resolve the list of Arabic pages to add to a new category."""
+        """
+        Resolve the list of Arabic pages to add to a new category."""
         enpage_title = enpage_title.strip()
         listen_page_title: list[str] = []
 

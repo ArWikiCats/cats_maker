@@ -10,7 +10,8 @@ class TestWDAPI:
     """Tests for WdAPI class"""
 
     def test_instantiation(self, mocker):
-        """Test that WdAPI can be instantiated"""
+        """
+        Test that WdAPI can be instantiated"""
         mock_login = mocker.MagicMock()
         mock_login.user_login = "testuser"
 
@@ -20,7 +21,8 @@ class TestWDAPI:
         assert api.login_bot == mock_login
 
     def test_inherits_error_handler(self, mocker):
-        """Test that WdAPI inherits from WD_ERRORS_HANDLER"""
+        """
+        Test that WdAPI inherits from WD_ERRORS_HANDLER"""
         mock_login = mocker.MagicMock()
         mock_login.user_login = "testuser"
 
@@ -30,7 +32,8 @@ class TestWDAPI:
         assert hasattr(api, "handle_err_wd")
 
     def test_post_params_delegates(self, mocker):
-        """Test that client_request delegates to login_bot"""
+        """
+        Test that client_request delegates to login_bot"""
         mock_login = mocker.MagicMock()
         mock_login.user_login = "testuser"
         mock_login.client_request.return_value = {"result": "ok"}
@@ -41,7 +44,8 @@ class TestWDAPI:
         mock_login.client_request.assert_called()
 
     def test_filter_data_adds_format(self, mocker):
-        """Test that filter_data adds format and utf8"""
+        """
+        Test that filter_data adds format and utf8"""
         mock_login = mocker.MagicMock()
         mock_login.user_login = "testuser"
 

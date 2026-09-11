@@ -228,7 +228,8 @@ class MainPage:
         return self.text
 
     def get_qid(self) -> str:
-        """Retrieve the QID from the wikibase item.
+        """
+        Retrieve the QID from the wikibase item.
 
         This function checks if the `wikibase_item` attribute is set. If it is
         not set, it calls the `get_text` method to populate the `wikibase_item`.

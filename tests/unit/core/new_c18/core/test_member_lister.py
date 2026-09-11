@@ -11,7 +11,8 @@ class TestExtractFanPageTitles:
     """Tests for MemberLister.extract_fan_page_titles method"""
 
     def test_returns_list(self, mocker):
-        """Test that method returns a list"""
+        """
+        Test that method returns a list"""
         mocker.patch("src.core.new_c18.core.member_lister.main_settings.database.use_sql", False)
 
         lister = MemberLister()
@@ -20,7 +21,8 @@ class TestExtractFanPageTitles:
         assert isinstance(result, list)
 
     def test_returns_empty_when_sql_disabled(self, mocker):
-        """Test that empty list is returned when SQL is disabled"""
+        """
+        Test that empty list is returned when SQL is disabled"""
         mocker.patch("src.core.new_c18.core.member_lister.main_settings.database.use_sql", False)
 
         lister = MemberLister()
@@ -29,7 +31,8 @@ class TestExtractFanPageTitles:
         assert result == []
 
     def test_calls_get_exclusive_when_sql_enabled(self, mocker):
-        """Test that get_exclusive_category_titles is called when SQL enabled"""
+        """
+        Test that get_exclusive_category_titles is called when SQL enabled"""
         mocker.patch("src.core.new_c18.core.member_lister.main_settings.database.use_sql", True)
         mock_comparator = mocker.patch("src.core.new_c18.core.member_lister.CategoryComparator")
         mock_comparator.return_value.get_exclusive_category_titles.return_value = ["Page1", "Page2"]
@@ -41,7 +44,8 @@ class TestExtractFanPageTitles:
         assert len(result) == 2
 
     def test_strips_category_prefix(self, mocker):
-        """Test that Category: prefix is stripped"""
+        """
+        Test that Category: prefix is stripped"""
         mocker.patch("src.core.new_c18.core.member_lister.main_settings.database.use_sql", True)
         mock_comparator = mocker.patch("src.core.new_c18.core.member_lister.CategoryComparator")
         mock_get_exclusive = mock_comparator.return_value.get_exclusive_category_titles
@@ -58,7 +62,8 @@ class TestGetListenPageTitle:
     """Tests for MemberLister.get_listen_page_title method"""
 
     def test_returns_list(self, mocker):
-        """Test that method returns a list"""
+        """
+        Test that method returns a list"""
         mocker.patch(
             "src.core.new_c18.core.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
@@ -74,7 +79,8 @@ class TestGetListenPageTitle:
         assert isinstance(result, list)
 
     def test_strips_whitespace_from_title(self, mocker):
-        """Test that whitespace is stripped from title"""
+        """
+        Test that whitespace is stripped from title"""
         mocker.patch(
             "src.core.new_c18.core.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
@@ -91,7 +97,8 @@ class TestGetListenPageTitle:
         assert isinstance(result, list)
 
     def test_uses_resolver_when_valid(self, mocker):
-        """Test that resolver is called when validation passes"""
+        """
+        Test that resolver is called when validation passes"""
         mocker.patch(
             "src.core.new_c18.core.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=True),
@@ -106,7 +113,8 @@ class TestGetListenPageTitle:
         assert "صفحة1" in result
 
     def test_falls_back_to_extract_fan_page_titles(self, mocker):
-        """Test fallback to extract_fan_page_titles"""
+        """
+        Test fallback to extract_fan_page_titles"""
         mocker.patch(
             "src.core.new_c18.core.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
@@ -123,7 +131,8 @@ class TestGetListenPageTitle:
         assert "Page1" in result
 
     def test_removes_duplicates(self, mocker):
-        """Test that duplicates are removed"""
+        """
+        Test that duplicates are removed"""
         mocker.patch(
             "src.core.new_c18.core.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
@@ -139,7 +148,8 @@ class TestGetListenPageTitle:
         assert len(result) == len(set(result))
 
     def test_filters_empty_strings(self, mocker):
-        """Test that empty strings are filtered"""
+        """
+        Test that empty strings are filtered"""
         mocker.patch(
             "src.core.new_c18.core.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),

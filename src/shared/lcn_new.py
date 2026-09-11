@@ -122,7 +122,8 @@ class WikiApiHandler:
         site_code: str,
         props: str = "",
     ) -> dict[str, Any]:
-        """Helper to parse the 'pages' and 'redirects' part of an API response."""
+        """
+        Helper to parse the 'pages' and 'redirects' part of an API response."""
         results = {}
         redirect_map = {r["from"]: r["to"] for r in query.get("redirects", [])}
 

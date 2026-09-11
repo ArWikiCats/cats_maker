@@ -180,7 +180,8 @@ class WikiLoginClient:
 
     @property
     def site(self) -> mwclient.Site:
-        """The underlying ``mwclient.Site`` — use for high-level wiki access."""
+        """
+        The underlying ``mwclient.Site`` — use for high-level wiki access."""
         return self._site
 
     # ------------------------------------------------------------------

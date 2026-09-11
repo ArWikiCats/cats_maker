@@ -15,21 +15,24 @@ class TestResolveViaWikidata:
     """Tests for resolve_via_wikidata function"""
 
     def test_returns_none_when_no_qid_in_text(self, mocker):
-        """Test that None is returned when no QID is found"""
+        """
+        Test that None is returned when no QID is found"""
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.extract_wikidata_qid", return_value=None)
 
         result = resolve_via_wikidata("some text", "link", "en", "ar")
         assert result is None
 
     def test_returns_none_when_qid_invalid(self, mocker):
-        """Test that None is returned when QID is invalid"""
+        """
+        Test that None is returned when QID is invalid"""
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.extract_wikidata_qid", return_value="invalid")
 
         result = resolve_via_wikidata("some text", "link", "en", "ar")
         assert result is None
 
     def test_resolves_via_wikidata_sitelinks(self, mocker):
-        """Test resolving via Wikidata sitelinks"""
+        """
+        Test resolving via Wikidata sitelinks"""
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.extract_wikidata_qid",
             return_value="Q123",
@@ -43,7 +46,8 @@ class TestResolveViaWikidata:
         assert result == "علوم"
 
     def test_returns_none_when_no_matching_sitelink(self, mocker):
-        """Test that None is returned when no matching sitelink"""
+        """
+        Test that None is returned when no matching sitelink"""
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.extract_wikidata_qid",
             return_value="Q123",
@@ -57,7 +61,8 @@ class TestResolveViaWikidata:
         assert result is None
 
     def test_returns_none_when_link_has_section(self, mocker):
-        """Test that None is returned when result contains #"""
+        """
+        Test that None is returned when result contains #"""
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.extract_wikidata_qid",
             return_value="Q123",
@@ -75,7 +80,8 @@ class TestResolveViaApi:
     """Tests for resolve_via_api function"""
 
     def test_cleans_link_brackets_and_prefixes(self, mocker):
-        """Test that link brackets and prefixes are cleaned"""
+        """
+        Test that link brackets and prefixes are cleaned"""
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.find_LCN",
             return_value={"Science": {"langlinks": {"ar": "علوم"}}},
@@ -86,7 +92,8 @@ class TestResolveViaApi:
         assert result is None
 
     def test_finds_langlink_from_find_lcn(self, mocker):
-        """Test finding langlink from find_LCN"""
+        """
+        Test finding langlink from find_LCN"""
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.find_LCN",
             return_value={"Science": {"langlinks": {"ar": "علوم", "en": "Science"}}},
@@ -97,7 +104,8 @@ class TestResolveViaApi:
         assert result is None
 
     def test_returns_none_when_ar_to_match_differs(self, mocker):
-        """Test that None is returned when ar_to_match differs"""
+        """
+        Test that None is returned when ar_to_match differs"""
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.find_LCN",
             return_value={"Science": {"langlinks": {"ar": "different", "en": "Different"}}},
@@ -112,7 +120,8 @@ class TestGetPageLink:
     """Tests for get_page_link function"""
 
     def test_cleans_link_brackets(self, mocker):
-        """Test that double brackets are removed from link"""
+        """
+        Test that double brackets are removed from link"""
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.find_LCN", return_value=None)
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
 
@@ -120,7 +129,8 @@ class TestGetPageLink:
         # Function should process without error
 
     def test_returns_none_when_no_langlink(self, mocker):
-        """Test that None is returned when no langlink is found"""
+        """
+        Test that None is returned when no langlink is found"""
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.find_LCN", return_value=None)
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
 
@@ -132,14 +142,16 @@ class TestGetEnLinkFromArText:
     """Tests for get_en_link_from_ar_text function"""
 
     def test_returns_empty_string_when_no_sitelinks(self, mocker):
-        """Test that empty string is returned when no sitelinks"""
+        """
+        Test that empty string is returned when no sitelinks"""
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata", return_value=None)
 
         result = get_en_link_from_ar_text("علوم", "arwiki", "enwiki")
         assert result == ""
 
     def test_extracts_english_sitelink(self, mocker):
-        """Test that English sitelink is extracted"""
+        """
+        Test that English sitelink is extracted"""
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata",
             return_value={"sitelinks": {"enwiki": "Science"}},
@@ -149,7 +161,8 @@ class TestGetEnLinkFromArText:
         assert result == "Science"
 
     def test_handles_wiki_suffix(self, mocker):
-        """Test handling of wiki suffix in sitetarget"""
+        """
+        Test handling of wiki suffix in sitetarget"""
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.Get_Sitelinks_From_wikidata",
             return_value={"sitelinks": {"en": "Science", "enwiki": "Science"}},
@@ -163,19 +176,22 @@ class TestGetEnglishPageTitle:
     """Tests for get_english_page_title function"""
 
     def test_returns_provided_english_link(self):
-        """Test that provided english link is returned"""
+        """
+        Test that provided english link is returned"""
         result, site = get_english_page_title("Science", "علوم", "", {})
         assert result == "Science"
         assert site == "en"
 
     def test_extracts_from_langlinks(self, mocker):
-        """Test extracting from ar_page_langlinks"""
+        """
+        Test extracting from ar_page_langlinks"""
         result, site = get_english_page_title("", "علوم", "", {"en": "Science"})
         assert result == "Science"
         assert site == "en"
 
     def test_blacklists_sandbox_pages(self, mocker):
-        """Test that Sandbox pages are blacklisted"""
+        """
+        Test that Sandbox pages are blacklisted"""
         mocker.patch(
             "src.core.new_c18.core.cross_wiki_linker.get_en_link_from_ar_text", return_value="User:Test/Sandbox"
         )
@@ -185,7 +201,8 @@ class TestGetEnglishPageTitle:
         assert result == ""
 
     def test_returns_empty_when_no_english_found(self, mocker):
-        """Test that empty strings are returned when no English found"""
+        """
+        Test that empty strings are returned when no English found"""
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_en_link_from_ar_text", return_value="")
         mocker.patch("src.core.new_c18.core.cross_wiki_linker.get_page_link", return_value=None)
 

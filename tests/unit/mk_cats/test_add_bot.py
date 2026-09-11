@@ -16,14 +16,16 @@ class TestAddToPage:
 
     @pytest.mark.skip(reason="take so long, maybe missing the right mock?")
     def test_returns_false_for_dont_add_pages(self, mocker):
-        """Test that pages in dont_add list return False"""
+        """
+        Test that pages in dont_add list return False"""
         mocker.patch("src.core.new_c18.io.json_store.get_dont_add_pages", return_value=["صفحة_ممنوعة"])
 
         result = add_to_page("صفحة_ممنوعة", "تصنيف:علوم")
         assert result is False
 
     def test_replaces_underscores_in_category(self, mocker):
-        """Test that underscores are replaced with spaces in category"""
+        """
+        Test that underscores are replaced with spaces in category"""
         mocker.patch("src.core.new_c18.io.json_store.get_dont_add_pages", return_value=[])
         mock_page = mocker.MagicMock()
         mock_page.get_text.return_value = ""
@@ -33,7 +35,8 @@ class TestAddToPage:
         # The category should have underscores replaced
 
     def test_returns_false_when_page_cannot_be_retrieved(self, mocker):
-        """Test that False is returned when page cannot be retrieved"""
+        """
+        Test that False is returned when page cannot be retrieved"""
         mocker.patch("src.core.new_c18.io.json_store.get_dont_add_pages", return_value=[])
         mocker.patch("src.mk_cats.add_bot._get_page", return_value=False)
 
@@ -41,7 +44,8 @@ class TestAddToPage:
         assert result is False
 
     def test_returns_false_when_category_already_exists(self, mocker):
-        """Test that False is returned when category already in page"""
+        """
+        Test that False is returned when category already in page"""
         mocker.patch("src.core.new_c18.io.json_store.get_dont_add_pages", return_value=[])
         mock_page = mocker.MagicMock()
         mock_page.get_text.return_value = "[[تصنيف:علوم]]"

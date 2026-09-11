@@ -30,7 +30,8 @@ class TemplatesMaker:
 
     @classmethod
     def _initialize_data(cls) -> None:
-        """Build the lookup dictionaries (only once)."""
+        """
+        Build the lookup dictionaries (only once)."""
         if cls.years_baco:
             return  # Already initialized
 

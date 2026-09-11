@@ -20,7 +20,8 @@ class CategoryComparator:
 
     @staticmethod
     def normalize_category_title(title: str, prefix_pattern: str) -> str:
-        """Strip a category prefix and normalise spaces to underscores."""
+        """
+        Strip a category prefix and normalise spaces to underscores."""
         if not title:
             return title
         # Remove prefix case-insensitively

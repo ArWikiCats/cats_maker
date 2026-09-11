@@ -75,5 +75,6 @@ class ConfigLoader:
 
     @staticmethod
     def is_production() -> bool:
-        """Check if the application is running in production mode."""
+        """
+        Check if the application is running in production mode."""
         return os.getenv("APP_ENV", "").lower() == "production"

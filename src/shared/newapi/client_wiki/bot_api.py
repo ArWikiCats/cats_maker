@@ -348,7 +348,8 @@ class NewApi(NewApiHelpers):
         pslimit: str = "max",
         limit_all: int = 100000,
     ) -> list:
-        """Perform a prefix search for titles in a specified namespace.
+        """
+        Perform a prefix search for titles in a specified namespace.
 
         This function constructs a query to search for titles that start with a
         given prefix. It allows for filtering by namespace and limits the number
@@ -577,7 +578,8 @@ class NewApi(NewApiHelpers):
         targtsitecode: str = "",
         numbes: int = 40,
     ) -> dict:
-        """Retrieve language links for a list of titles from a specified target
+        """
+        Retrieve language links for a list of titles from a specified target
         site.
 
         This function takes a list of titles and queries a media wiki API to

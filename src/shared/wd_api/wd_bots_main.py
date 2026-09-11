@@ -27,7 +27,8 @@ class WdAPI:
         function: str = "",
         params: dict | None = None,
     ):
-        """Handle errors related to the specified function.
+        """
+        Handle errors related to the specified function.
 
         This method processes an error dictionary returned from an API call,
         extracting relevant error codes and information. It outputs error

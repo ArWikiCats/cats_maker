@@ -19,7 +19,8 @@ class TestAddToTextTemps:
     """Tests for add_to_text_temps function"""
 
     def test_adds_categories_after_template(self):
-        """Test that categories are added after template"""
+        """
+        Test that categories are added after template"""
         text = "محتوى\n{{توثيق شريط}}\nنهاية"
         categories = "[[تصنيف:علوم]]"
         result = add_to_text_temps(text, categories)
@@ -28,7 +29,8 @@ class TestAddToTextTemps:
         assert result.index(categories) > result.index("{{توثيق شريط}}")
 
     def test_returns_unchanged_if_no_template(self):
-        """Test that text is unchanged if no template found"""
+        """
+        Test that text is unchanged if no template found"""
         text = "محتوى عادي"
         categories = "[[تصنيف:علوم]]"
         result = add_to_text_temps(text, categories)
@@ -40,7 +42,8 @@ class TestAddToDocPage:
     """Tests for add_to_doc_page function"""
 
     def test_creates_new_doc_page_for_empty_text(self):
-        """Test that new doc page is created for empty text"""
+        """
+        Test that new doc page is created for empty text"""
         categories = "[[تصنيف:علوم]]"
         result = add_to_doc_page("", categories)
 
@@ -49,7 +52,8 @@ class TestAddToDocPage:
         assert "</includeonly>" in result
 
     def test_adds_categories_to_existing_doc(self):
-        """Test that categories are added to existing doc"""
+        """
+        Test that categories are added to existing doc"""
         text = "محتوى التوثيق"
         categories = "[[تصنيف:علوم]]"
         result = add_to_doc_page(text, categories)
@@ -58,7 +62,8 @@ class TestAddToDocPage:
         assert isinstance(result, str)
 
     def test_handles_includeonly_tags(self):
-        """Test handling of includeonly tags"""
+        """
+        Test handling of includeonly tags"""
         text = "<includeonly>\n[[تصنيف:قديم]]\n</includeonly>"
         categories = "[[تصنيف:جديد]]"
         result = add_to_doc_page(text, categories)
@@ -66,7 +71,8 @@ class TestAddToDocPage:
         assert "[[تصنيف:جديد]]" in result or result == text
 
     def test_skips_existing_categories(self):
-        """Test that existing categories are not duplicated"""
+        """
+        Test that existing categories are not duplicated"""
         text = "محتوى\n[[تصنيف:علوم]]"
         categories = "[[تصنيف:علوم]]"
         result = add_to_doc_page(text, categories)
@@ -75,7 +81,8 @@ class TestAddToDocPage:
         assert result.count("[[تصنيف:علوم]]") <= 1 or result == text
 
     def test_skips_empty_category_lines(self):
-        """Test that empty lines in categories are skipped"""
+        """
+        Test that empty lines in categories are skipped"""
         text = "محتوى"
         categories = "[[تصنيف:علوم]]\n\n[[تصنيف:تاريخ]]"
         result = add_to_doc_page(text, categories)
@@ -83,7 +90,8 @@ class TestAddToDocPage:
         assert "[[تصنيف:علوم]]" in result
 
     def test_handles_category_with_pipe(self):
-        """Test that categories with pipe (sort key) are handled"""
+        """
+        Test that categories with pipe (sort key) are handled"""
         text = "محتوى"
         categories = "[[تصنيف:علوم|فرع]]"
         result = add_to_doc_page(text, categories)
@@ -92,7 +100,8 @@ class TestAddToDocPage:
         assert isinstance(result, str)
 
     def test_handles_includeonly_with_category_pattern(self):
-        """Test handling when includeonly precedes category"""
+        """
+        Test handling when includeonly precedes category"""
         text = "<includeonly>\n[[تصنيف:قديم]]"
         categories = "[[تصنيف:جديد]]"
         result = add_to_doc_page(text, categories)
@@ -100,7 +109,8 @@ class TestAddToDocPage:
         assert "[[تصنيف:جديد]]" in result or result == text
 
     def test_handles_sandbox_template(self):
-        """Test handling of sandbox template"""
+        """
+        Test handling of sandbox template"""
         text = "محتوى\n{{sandbox other}}"
         categories = "[[تصنيف:علوم]]"
         result = add_to_doc_page(text, categories)
@@ -108,7 +118,8 @@ class TestAddToDocPage:
         assert "[[تصنيف:علوم]]" in result
 
     def test_handles_melab_akher_template(self):
-        """Test handling of ملعب أخر template"""
+        """
+        Test handling of ملعب أخر template"""
         text = "محتوى\n{{ملعب أخر}}"
         categories = "[[تصنيف:علوم]]"
         result = add_to_doc_page(text, categories)
@@ -116,7 +127,8 @@ class TestAddToDocPage:
         assert "[[تصنيف:علوم]]" in result
 
     def test_handles_end_includeonly_tag(self):
-        """Test handling of </includeonly> tag"""
+        """
+        Test handling of </includeonly> tag"""
         text = "محتوى\n</includeonly>"
         categories = "[[تصنيف:علوم]]"
         result = add_to_doc_page(text, categories)
@@ -124,7 +136,8 @@ class TestAddToDocPage:
         assert "[[تصنيف:علوم]]" in result
 
     def test_creates_default_template_when_no_match(self):
-        """Test that default template is created when no other match"""
+        """
+        Test that default template is created when no other match"""
         text = "محتوى قالب"
         categories = "[[تصنيف:علوم]]"
         result = add_to_doc_page(text, categories)
@@ -136,7 +149,8 @@ class TestAddDirect:
     """Tests for add_direct function"""
 
     def test_adds_before_documentation_template(self):
-        """Test that categories are added before documentation template"""
+        """
+        Test that categories are added before documentation template"""
         text = "محتوى\n{{توثيق}}"
         categories = "[[تصنيف:علوم]]"
         result = add_direct(text, categories)
@@ -144,7 +158,8 @@ class TestAddDirect:
         assert categories in result
 
     def test_adds_before_navbox_template(self):
-        """Test that categories are added before navbox template"""
+        """
+        Test that categories are added before navbox template"""
         text = "محتوى\n{{توثيق شريط}}"
         categories = "[[تصنيف:علوم]]"
         result = add_direct(text, categories)
@@ -152,7 +167,8 @@ class TestAddDirect:
         assert categories in result
 
     def test_adds_noinclude_wrapper_when_no_template(self):
-        """Test that noinclude wrapper is added when no template found"""
+        """
+        Test that noinclude wrapper is added when no template found"""
         text = "محتوى القالب"
         categories = "[[تصنيف:علوم]]"
         result = add_direct(text, categories)
@@ -161,7 +177,8 @@ class TestAddDirect:
         assert categories in result
 
     def test_handles_collapsible_option_template(self):
-        """Test handling of collapsible option template"""
+        """
+        Test handling of collapsible option template"""
         text = "محتوى\n{{خيارات طي قالب تصفح}}"
         categories = "[[تصنيف:علوم]]"
         result = add_direct(text, categories)
@@ -169,7 +186,8 @@ class TestAddDirect:
         assert categories in result
 
     def test_handles_option_lawi_template(self):
-        """Test handling of خيار طوي قالب template"""
+        """
+        Test handling of خيار طوي قالب template"""
         text = "محتوى\n{{خيار طوي قالب}}"
         categories = "[[تصنيف:علوم]]"
         result = add_direct(text, categories)
@@ -177,7 +195,8 @@ class TestAddDirect:
         assert categories in result
 
     def test_handles_collapsible_option_english(self):
-        """Test handling of collapsible option English template"""
+        """
+        Test handling of collapsible option English template"""
         text = "محتوى\n{{collapsible option}}"
         categories = "[[تصنيف:علوم]]"
         result = add_direct(text, categories)
@@ -185,7 +204,8 @@ class TestAddDirect:
         assert categories in result
 
     def test_merges_adjacent_noinclude_tags(self):
-        """Test that adjacent noinclude tags are merged"""
+        """
+        Test that adjacent noinclude tags are merged"""
         text = "<noinclude>content1</noinclude>\n<noinclude>content2</noinclude>"
         categories = "[[تصنيف:علوم]]"
         result = add_direct(text, categories)
@@ -193,7 +213,8 @@ class TestAddDirect:
         assert "<noinclude>" in result
 
     def test_adds_content_when_not_in_text(self):
-        """Test that content is added when not already in text"""
+        """
+        Test that content is added when not already in text"""
         text = "محتوى القالب"
         categories = "تصنيف:علوم"
         result = add_direct(text, categories)
@@ -205,18 +226,21 @@ class TestFindDocAndAdd:
     """Tests for find_doc_and_add function"""
 
     def test_skips_sandbox_pages(self, mocker):
-        """Test that sandbox pages are skipped"""
+        """
+        Test that sandbox pages are skipped"""
         result = find_doc_and_add("[[تصنيف:علوم]]", "قالب:اختبار/ملعب")
         assert result is False
 
     def test_skips_lab_pages(self, mocker):
-        """Test that lab pages are skipped"""
+        """
+        Test that lab pages are skipped"""
         result = find_doc_and_add("[[تصنيف:علوم]]", "قالب:اختبار/مختبر")
         assert result is False
 
     @pytest.mark.skip(reason="_lru_cache_wrapper does not have the attribute 'MainPage'")
     def test_returns_false_for_nonexistent_page(self, mocker):
-        """Test that False is returned for nonexistent page"""
+        """
+        Test that False is returned for nonexistent page"""
         mock_page = mocker.MagicMock()
         mock_page.get_text.return_value = ""
         mock_page.exists.return_value = False
@@ -231,14 +255,16 @@ class TestAddTextToTemplate:
     """Tests for add_text_to_template function"""
 
     def test_handles_doc_page(self, mocker):
-        """Test handling of /شرح pages"""
+        """
+        Test handling of /شرح pages"""
         mocker.patch("src.core.new_c18.tools.doc_handler.add_to_doc_page", return_value="نتيجة التوثيق")
 
         result = add_text_to_template("نص", "[[تصنيف:علوم]]", "قالب:اختبار/شرح")
         assert result == "نتيجة التوثيق"
 
     def test_handles_navbox_template(self):
-        """Test handling of navbox templates"""
+        """
+        Test handling of navbox templates"""
         text = "{{توثيق شريط}}"
         result = add_text_to_template(text, "[[تصنيف:علوم]]", "قالب:اختبار")
 
@@ -246,7 +272,8 @@ class TestAddTextToTemplate:
         assert "[[تصنيف:علوم]]" in result
 
     def test_handles_regular_template(self, mocker):
-        """Test handling of regular templates"""
+        """
+        Test handling of regular templates"""
         mocker.patch("src.core.new_c18.tools.doc_handler.find_doc_and_add", return_value=False)
 
         text = "محتوى القالب"

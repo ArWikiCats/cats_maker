@@ -17,7 +17,8 @@ class TestFormatSitelinks:
     """Tests for format_sitelinks function"""
 
     def test_formats_sitelinks_correctly(self):
-        """Test that sitelinks are formatted correctly"""
+        """
+        Test that sitelinks are formatted correctly"""
         sitelinks = {
             "enwiki": {"site": "enwiki", "title": "Science"},
             "arwiki": {"site": "arwiki", "title": "علوم"},
@@ -27,12 +28,14 @@ class TestFormatSitelinks:
         assert result["arwiki"] == "علوم"
 
     def test_returns_empty_dict_for_empty_input(self):
-        """Test that empty input returns empty dict"""
+        """
+        Test that empty input returns empty dict"""
         result = format_sitelinks({})
         assert result == {}
 
     def test_handles_various_sites(self):
-        """Test handling of various wiki sites"""
+        """
+        Test handling of various wiki sites"""
         sitelinks = {
             "dewiki": {"site": "dewiki", "title": "Wissenschaft"},
             "frwiki": {"site": "frwiki", "title": "Science"},
@@ -46,7 +49,8 @@ class TestFormatLabelsDescriptions:
     """Tests for format_labels_descriptions function"""
 
     def test_formats_labels_correctly(self):
-        """Test that labels are formatted correctly"""
+        """
+        Test that labels are formatted correctly"""
         labels = {
             "en": {"language": "en", "value": "Science"},
             "ar": {"language": "ar", "value": "علوم"},
@@ -56,7 +60,8 @@ class TestFormatLabelsDescriptions:
         assert result["ar"] == "علوم"
 
     def test_returns_empty_dict_for_empty_input(self):
-        """Test that empty input returns empty dict"""
+        """
+        Test that empty input returns empty dict"""
         result = format_labels_descriptions({})
         assert result == {}
 
@@ -65,7 +70,8 @@ class TestGetInfosWikidata:
     """Tests for Get_infos_wikidata function"""
 
     def test_returns_default_table_on_no_response(self, mocker):
-        """Test that function returns default table when API returns None"""
+        """
+        Test that function returns default table when API returns None"""
         mocker.patch("src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value=None)
 
         params = {"action": "wbgetentities", "ids": "Q12345", "props": "sitelinks|labels"}
@@ -74,7 +80,8 @@ class TestGetInfosWikidata:
         assert result == {"labels": {}, "sitelinks": {}, "q": ""}
 
     def test_returns_default_table_on_failed_success(self, mocker):
-        """Test that function returns default table when success is not 1"""
+        """
+        Test that function returns default table when success is not 1"""
         mocker.patch("src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value={"success": 0})
 
         params = {"action": "wbgetentities", "ids": "Q12345", "props": "sitelinks"}
@@ -83,7 +90,8 @@ class TestGetInfosWikidata:
         assert result == {"labels": {}, "sitelinks": {}, "q": ""}
 
     def test_returns_default_table_for_missing_entity(self, mocker):
-        """Test that function returns default table for -1 entity"""
+        """
+        Test that function returns default table for -1 entity"""
         mocker.patch(
             "src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value={"success": 1, "entities": {"-1": {}}}
         )
@@ -94,7 +102,8 @@ class TestGetInfosWikidata:
         assert result == {"labels": {}, "sitelinks": {}, "q": ""}
 
     def test_extracts_data_correctly(self, mocker):
-        """Test that function extracts data from valid response"""
+        """
+        Test that function extracts data from valid response"""
         mock_response = {
             "success": 1,
             "entities": {
@@ -118,7 +127,8 @@ class TestGetSitelinksFromWikidata:
     """Tests for Get_Sitelinks_From_wikidata function"""
 
     def test_adds_wiki_suffix_if_missing(self, mocker):
-        """Test that 'wiki' suffix is added to site code"""
+        """
+        Test that 'wiki' suffix is added to site code"""
         mock_info = mocker.patch(
             "src.shared.wd_api.wd_api_bot.Get_infos_wikidata", return_value={"sitelinks": {}, "q": ""}
         )
@@ -130,7 +140,8 @@ class TestGetSitelinksFromWikidata:
         assert call_args["sites"] == "enwiki"
 
     def test_returns_specific_sitelink_when_ssite_provided(self, mocker):
-        """Test that specific sitelink is returned when ssite is provided"""
+        """
+        Test that specific sitelink is returned when ssite is provided"""
         mocker.patch(
             "src.shared.wd_api.wd_api_bot.Get_infos_wikidata",
             return_value={"sitelinks": {"arwiki": "علوم"}, "q": "Q123"},
@@ -142,7 +153,8 @@ class TestGetSitelinksFromWikidata:
         assert result["sitelinks"]["arwiki"] == "علوم"
 
     def test_returns_table_when_no_ssite(self, mocker):
-        """Test that full table is returned when ssite is not provided"""
+        """
+        Test that full table is returned when ssite is not provided"""
         mock_table = {"sitelinks": {"enwiki": "Science"}, "q": "Q123"}
         mocker.patch("src.shared.wd_api.wd_api_bot.Get_infos_wikidata", return_value=mock_table)
         Get_Sitelinks_From_wikidata.cache_clear()
@@ -157,7 +169,8 @@ class TestGetP373API:
     """Tests for Get_P373_API function"""
 
     def test_returns_empty_string_on_no_response(self, mocker):
-        """Test that function returns empty string when API returns None"""
+        """
+        Test that function returns empty string when API returns None"""
         mocker.patch("src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value=None)
 
         result = Get_P373_API("Q12345")
@@ -165,7 +178,8 @@ class TestGetP373API:
         assert result == ""
 
     def test_extracts_commons_category(self, mocker):
-        """Test that function extracts Commons category from sitelinks"""
+        """
+        Test that function extracts Commons category from sitelinks"""
         mock_response = {
             "entities": {"Q123": {"sitelinks": {"commonswiki": {"title": "Category:Science"}}, "claims": {}}}
         }
@@ -176,7 +190,8 @@ class TestGetP373API:
         assert result == "Science"
 
     def test_extracts_p373_from_claims(self, mocker):
-        """Test that function extracts P373 value from claims"""
+        """
+        Test that function extracts P373 value from claims"""
         mock_response = {
             "entities": {
                 "Q123": {

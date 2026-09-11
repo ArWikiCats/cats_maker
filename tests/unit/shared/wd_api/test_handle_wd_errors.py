@@ -21,7 +21,8 @@ class TestWDErrorsHandler:
     """Tests for WdAPI class"""
 
     def test_handle_abusefilter_error(self, mock_wd_api):
-        """Test handling of abusefilter-disallowed error"""
+        """
+        Test handling of abusefilter-disallowed error"""
         error = {"code": "abusefilter-disallowed", "abusefilter": {"description": "Test filter"}}
 
         result = mock_wd_api.handle_err_wd(error)
@@ -29,7 +30,8 @@ class TestWDErrorsHandler:
         assert result == "Test filter"
 
     def test_handle_bot_delay_filter(self, mock_wd_api):
-        """Test handling of bot delay filter"""
+        """
+        Test handling of bot delay filter"""
 
         error = {"code": "abusefilter-disallowed", "abusefilter": {"description": "تأخير البوتات 3 ساعات"}}
 
@@ -38,7 +40,8 @@ class TestWDErrorsHandler:
         assert result is False
 
     def test_handle_no_such_entity_error(self, mock_wd_api):
-        """Test handling of no-such-entity error"""
+        """
+        Test handling of no-such-entity error"""
 
         error = {"code": "no-such-entity"}
 
@@ -47,7 +50,8 @@ class TestWDErrorsHandler:
         assert result is False
 
     def test_handle_protectedpage_error(self, mock_wd_api):
-        """Test handling of protectedpage error"""
+        """
+        Test handling of protectedpage error"""
 
         error = {"code": "protectedpage"}
 
@@ -56,7 +60,8 @@ class TestWDErrorsHandler:
         assert result is False
 
     def test_handle_articleexists_error(self, mock_wd_api):
-        """Test handling of articleexists error"""
+        """
+        Test handling of articleexists error"""
 
         error = {"code": "articleexists"}
 
@@ -65,7 +70,8 @@ class TestWDErrorsHandler:
         assert result == "articleexists"
 
     def test_handle_maxlag_error(self, mock_wd_api):
-        """Test handling of maxlag error"""
+        """
+        Test handling of maxlag error"""
 
         error = {"code": "maxlag"}
 
@@ -74,7 +80,8 @@ class TestWDErrorsHandler:
         assert result is False
 
     def test_handle_unknown_error(self, mock_wd_api):
-        """Test handling of unknown error"""
+        """
+        Test handling of unknown error"""
 
         error = {"code": "unknown_error", "info": "Unknown error occurred"}
         params = {"data": {"test": "data"}}
@@ -85,7 +92,8 @@ class TestWDErrorsHandler:
         assert params["data"] == {}
 
     def test_extracts_error_code(self, mock_wd_api):
-        """Test that error code is extracted"""
+        """
+        Test that error code is extracted"""
 
         error = {"code": "test_code", "info": "Test info"}
         params = {"data": {"test": "data"}}
@@ -94,7 +102,8 @@ class TestWDErrorsHandler:
         mock_wd_api.handle_err_wd(error, function="test_func", params=params)
 
     def test_extracts_error_info(self, mock_wd_api):
-        """Test that error info is extracted"""
+        """
+        Test that error info is extracted"""
 
         error = {"code": "unknown", "info": "Test error info"}
         params = {"data": {}}
