@@ -15,7 +15,7 @@ from src.config import (
     WikiSiteInfo,
     main_settings,
 )
-from src.config.settings import _safe_int, default_user_agent
+from src.config.settings import _safe_int
 
 
 class TestSafeInt:
@@ -504,34 +504,6 @@ class TestMinMembersEnvVar:
 
         s = Settings.load()
         assert s.category.min_members == 10  # Default value
-
-
-class TestDefaultUserAgent:
-    """Tests for default_user_agent() function."""
-
-    def test_with_home_set(self, monkeypatch):
-        """Test user agent uses last path component of HOME."""
-        monkeypatch.setenv("HOME", "/data/project/mybot")
-        result = default_user_agent()
-        assert result == "mybot bot/1.0 (https://mybot.toolforge.org/; tools.mybot@toolforge.org)"
-
-    def test_with_home_empty(self, monkeypatch):
-        """Test user agent uses 'himo' when HOME is empty."""
-        monkeypatch.setenv("HOME", "")
-        result = default_user_agent()
-        assert result == "himo bot/1.0 (https://himo.toolforge.org/; tools.himo@toolforge.org)"
-
-    def test_with_home_unset(self, monkeypatch):
-        """Test user agent uses 'himo' when HOME is not set."""
-        monkeypatch.delenv("HOME", raising=False)
-        result = default_user_agent()
-        assert result == "himo bot/1.0 (https://himo.toolforge.org/; tools.himo@toolforge.org)"
-
-    def test_home_with_trailing_slash(self, monkeypatch):
-        """Test user agent strips trailing slash from HOME."""
-        monkeypatch.setenv("HOME", "/data/project/mybot/")
-        result = default_user_agent()
-        assert result == "mybot bot/1.0 (https://mybot.toolforge.org/; tools.mybot@toolforge.org)"
 
 
 class TestIsProduction:

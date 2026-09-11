@@ -67,17 +67,30 @@ class Paths:
 
 
 @dataclass
-class WikipediaConfig:
-    """Configuration for Wikipedia API connections.
-
-    Attributes:
-        ar_family: Arabic Wikipedia family (default: "wikipedia")
-        ar_code: Arabic Wikipedia language code (default: "ar")
-        en_family: English Wikipedia family (default: "wikipedia")
-        en_code: English Wikipedia language code (default: "en")
-        user_agent: User agent string for API requests
-        default_timeout: Default timeout for API requests in seconds
+class WikipediaCedentials:
     """
+    Configuration for Wikipedia API connections.
+
+    username = os.getenv("WIKIPEDIA_BOT_USERNAME", "")
+    password = os.getenv("WIKIPEDIA_BOT_PASSWORD", "")
+    """
+
+    username: str | None = None
+    password: str | None = None
+
+    @classmethod
+    def load(cls) -> WikipediaCedentials:
+        """
+        Load Wikipedia configuration from environment variables."""
+        return cls(
+            username=os.getenv("WIKIPEDIA_BOT_USERNAME"),
+            password=os.getenv("WIKIPEDIA_BOT_PASSWORD"),
+        )
+
+
+@dataclass
+class WikipediaConfig:
+    """Configuration for Wikipedia API connections."""
 
     ar_family: str = "wikipedia"
     ar_code: str = "ar"
@@ -85,6 +98,7 @@ class WikipediaConfig:
     en_code: str = "en"
     user_agent: str = field(default_factory=default_user_agent)
     default_timeout: int = 10
+    credentials: WikipediaCedentials = field(default_factory=WikipediaCedentials)
 
     @classmethod
     def load(cls) -> WikipediaConfig:
@@ -97,6 +111,7 @@ class WikipediaConfig:
             en_code=os.getenv("WIKIPEDIA_EN_CODE") or "en",
             user_agent=os.getenv("WIKIPEDIA_USER_AGENT") or default_user_agent(),
             default_timeout=_safe_int(os.getenv("WIKIPEDIA_TIMEOUT"), 10),
+            credentials=WikipediaCedentials.load(),
         )
 
 
