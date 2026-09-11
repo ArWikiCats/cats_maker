@@ -3,7 +3,7 @@
 import logging
 import re
 
-from .config import ConfigLoader
+from ...config import main_settings
 from .repository import CategoryRepository
 
 logger = logging.getLogger(__name__)
@@ -14,9 +14,12 @@ class CategoryComparator:
     Service class to compare categories between English and Arabic Wikipedias.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, is_production: bool | None = None) -> None:
         self.repo = CategoryRepository()
-        self.config = ConfigLoader()
+        if is_production is None:
+            is_production = main_settings.is_production()
+
+        self.is_production = is_production
 
     @staticmethod
     def normalize_category_title(title: str, prefix_pattern: str) -> str:
@@ -40,7 +43,7 @@ class CategoryComparator:
         Returns:
             List of exclusive titles. Empty list if not in production or on error.
         """
-        if not self.config.is_production():
+        if not self.is_production:
             logger.info("Skipping category comparison: Not in production environment.")
             return []
 

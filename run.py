@@ -8,7 +8,7 @@ from pathlib import Path
 
 import requests
 
-from src.config import settings
+from src.config import main_settings
 from src.mk_cats import create_categories_from_list
 
 logger = logging.getLogger(__name__)
@@ -25,12 +25,12 @@ except ImportError:
     logger.warning("Failed to import new_all")
     new_all = None
 
-# Enable ask mode by default - now done via settings
-settings.bot.ask = True
-settings.debug = True
+# Enable ask mode by default - now done via main_settings
+main_settings.bot.ask = True
+main_settings.debug = True
 
 # base_logger.setLevel("ERROR")
-logger.setLevel("DEBUG" if settings.debug else "INFO")
+logger.setLevel("DEBUG" if main_settings.debug else "INFO")
 
 new_all_tab = {1: False}
 

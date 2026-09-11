@@ -65,19 +65,9 @@ NS_TEXT_EN: dict[str, str] = {
     "829": "Module talk",
 }
 
-# ---------------------------------------------------------------------------
-# Database connection templates
-# ---------------------------------------------------------------------------
-ANALYTICS_DB_TEMPLATE: str = "{wiki}.analytics.db.svc.wikimedia.cloud"
-DATABASE_SUFFIX: str = "_p"
-REPLICA_CNF_FILENAME: str = "replica.my.cnf"
-
 __all__ = [
-    "ANALYTICS_DB_TEMPLATE",
-    "DATABASE_SUFFIX",
     "NS_TEXT_AR",
     "NS_TEXT_EN",
-    "REPLICA_CNF_FILENAME",
     "SUFFIXED_WIKIS",
     "WIKI_ALIASES",
 ]

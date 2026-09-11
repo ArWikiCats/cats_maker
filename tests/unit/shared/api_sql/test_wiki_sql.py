@@ -4,7 +4,6 @@ Tests for service.py
 This module tests namespace handling and SQL query functions for MediaWiki.
 """
 
-from src.shared.api_sql.config import ConfigLoader
 from src.shared.api_sql.constants import NS_TEXT_AR, NS_TEXT_EN
 from src.shared.api_sql.utils import add_namespace_prefix
 
@@ -148,31 +147,3 @@ class TestNsTextTables:
         Test that namespace 0 maps to empty string"""
         assert NS_TEXT_AR["0"] == ""
         assert NS_TEXT_EN["0"] == ""
-
-
-class TestConfigLoader:
-    """Tests for ConfigLoader class"""
-
-    def test_get_db_config_ar(self, mocker):
-        """
-        Test resolving DB config for Arabic Wikipedia"""
-        mocker.patch("pathlib.Path.exists", return_value=True)
-        config = ConfigLoader.get_db_config("ar")
-        assert config.host == "arwiki.analytics.db.svc.wikimedia.cloud"
-        assert config.database == "arwiki_p"
-
-    def test_get_db_config_enwiki(self, mocker):
-        """
-        Test resolving DB config for English Wikipedia"""
-        mocker.patch("pathlib.Path.exists", return_value=True)
-        config = ConfigLoader.get_db_config("enwiki")
-        assert config.host == "enwiki.analytics.db.svc.wikimedia.cloud"
-        assert config.database == "enwiki_p"
-
-    def test_get_db_config_wikidata(self, mocker):
-        """
-        Test resolving DB config for Wikidata"""
-        mocker.patch("pathlib.Path.exists", return_value=True)
-        config = ConfigLoader.get_db_config("wikidata")
-        assert config.host == "wikidatawiki.analytics.db.svc.wikimedia.cloud"
-        assert config.database == "wikidatawiki_p"

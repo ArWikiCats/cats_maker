@@ -1,11 +1,8 @@
 """Unit tests for src/core/api_sql/constants.py module."""
 
 from src.shared.api_sql.constants import (
-    ANALYTICS_DB_TEMPLATE,
-    DATABASE_SUFFIX,
     NS_TEXT_AR,
     NS_TEXT_EN,
-    REPLICA_CNF_FILENAME,
     SUFFIXED_WIKIS,
     WIKI_ALIASES,
 )
@@ -86,19 +83,3 @@ class TestNsTextEn:
 
     def test_module(self):
         assert NS_TEXT_EN["828"] == "Module"
-
-
-class TestDatabaseConstants:
-    """Tests for database connection constants."""
-
-    def test_analytics_db_template_contains_placeholder(self):
-        assert "{wiki}" in ANALYTICS_DB_TEMPLATE
-
-    def test_analytics_db_template_suffix(self):
-        assert ANALYTICS_DB_TEMPLATE.endswith(".analytics.db.svc.wikimedia.cloud")
-
-    def test_database_suffix(self):
-        assert DATABASE_SUFFIX == "_p"
-
-    def test_replica_cnf_filename(self):
-        assert REPLICA_CNF_FILENAME == "replica.my.cnf"

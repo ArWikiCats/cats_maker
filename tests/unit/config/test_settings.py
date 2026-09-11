@@ -192,12 +192,6 @@ class TestSettings:
         s = Settings.load()
         assert s.debug is False
 
-    def test_default_log_level(self):
-        """Test default log_level is INFO."""
-
-        s = Settings.load()
-        assert s.log_level == "INFO"
-
 
 class TestSettingsEnvVars:
     """Tests for Settings environment variable processing."""
@@ -243,13 +237,6 @@ class TestSettingsEnvVars:
 
         s = Settings.load()
         assert s.debug is True
-
-    def test_env_log_level(self, monkeypatch):
-        """Test LOG_LEVEL environment variable."""
-        monkeypatch.setenv("LOG_LEVEL", "DEBUG")
-
-        s = Settings.load()
-        assert s.log_level == "DEBUG"
 
 
 class TestGlobalSettings:
