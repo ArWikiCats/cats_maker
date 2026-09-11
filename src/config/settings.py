@@ -25,14 +25,6 @@ try:
 except Exception:
     load_dotenv("$HOME/.env")
 
-
-@dataclass(frozen=True)
-class Paths:
-    cookies_dir: str | None
-    dont_add_to_pages_path: str | None
-    arwikicats_path: str | None
-
-
 def _safe_int(value: str | None, default: int) -> int:
     """Safely convert string to int, returning default on failure."""
     if not value:
@@ -43,10 +35,33 @@ def _safe_int(value: str | None, default: int) -> int:
         return default
 
 
+def _safe_bool(value: str | None, default: bool = False) -> bool:
+    """Safely convert string to bool."""
+    if not value:
+        return default
+    return value.lower() in ("true", "1", "yes")
+
+
 def default_user_agent() -> str:
     home = (os.getenv("HOME") or "").rstrip("/")
     tool = home.rsplit("/", 1)[-1] or "himo"
     return f"{tool} bot/1.0 (https://{tool}.toolforge.org/; tools.{tool}@toolforge.org)"
+
+
+@dataclass(frozen=True)
+class Paths:
+    cookies_dir: str | None
+    dont_add_to_pages_path: str | None
+    arwikicats_path: str | None
+
+    @classmethod
+    def load(cls) -> Paths:
+        """Load Paths configuration from environment variables."""
+        return cls(
+            cookies_dir=os.getenv("COOKIES_DIR"),
+            dont_add_to_pages_path=os.getenv("DONT_ADD_TO_PAGES_PATH"),
+            arwikicats_path=os.getenv("ARWIKICATS_PATH"),
+        )
 
 
 @dataclass
@@ -66,8 +81,20 @@ class WikipediaConfig:
     ar_code: str = "ar"
     en_family: str = "wikipedia"
     en_code: str = "en"
-    user_agent: str = default_user_agent()
+    user_agent: str = field(default_factory=default_user_agent)
     default_timeout: int = 10
+
+    @classmethod
+    def load(cls) -> WikipediaConfig:
+        """Load Wikipedia configuration from environment variables."""
+        return cls(
+            ar_family=os.getenv("WIKIPEDIA_AR_FAMILY") or "wikipedia",
+            ar_code=os.getenv("WIKIPEDIA_AR_CODE") or "ar",
+            en_family=os.getenv("WIKIPEDIA_EN_FAMILY") or "wikipedia",
+            en_code=os.getenv("WIKIPEDIA_EN_CODE") or "en",
+            user_agent=os.getenv("WIKIPEDIA_USER_AGENT") or default_user_agent(),
+            default_timeout=_safe_int(os.getenv("WIKIPEDIA_TIMEOUT"), 10),
+        )
 
 
 @dataclass
@@ -88,6 +115,17 @@ class WikidataConfig:
     maxlag: int = 5
     test_mode: bool = False
 
+    @classmethod
+    def load(cls) -> WikidataConfig:
+        """Load Wikidata configuration from environment variables."""
+        return cls(
+            endpoint=os.getenv("WIKIDATA_ENDPOINT") or "https://www.wikidata.org/w/api.php",
+            sparql_endpoint=os.getenv("WIKIDATA_SPARQL_ENDPOINT") or "https://query.wikidata.org/sparql",
+            timeout=_safe_int(os.getenv("WIKIDATA_TIMEOUT"), 30),
+            maxlag=_safe_int(os.getenv("WIKIDATA_MAXLAG"), 5),
+            test_mode=_safe_bool(os.getenv("WIKIDATA_TEST_MODE"), False),
+        )
+
 
 @dataclass
 class ApiClientConfig:
@@ -103,32 +141,43 @@ class ApiClientConfig:
     backoff_base: int = 1
     maxlag_header: str = "Retry-After"
 
+    @classmethod
+    def load(cls) -> ApiClientConfig:
+        """Load API client configuration from environment variables."""
+        return cls(
+            max_retries=_safe_int(os.getenv("API_CLIENT_MAX_RETRIES"), 5),
+            backoff_base=_safe_int(os.getenv("API_CLIENT_BACKOFF_BASE"), 1),
+            maxlag_header=os.getenv("API_CLIENT_MAXLAG_HEADER") or "Retry-After",
+        )
+
 
 @dataclass
 class DatabaseConfig:
     """
     Configuration for database connections.
     """
-    user: str
-    password: str
+    user: str = ""
+    password: str = ""
     host: str | None = None
     port: int = 3306
     use_sql: bool = True
     cache_ttl: int = 60 * 60 * 24 * 7  # 1 week
 
-
     @classmethod
     def load(cls) -> DatabaseConfig:
+        """Load Database configuration from environment variables."""
         return cls(
             host=os.getenv("DATABASE_HOST") or "",
             port=_safe_int(os.getenv("DATABASE_PORT"), 3306),
             user=os.getenv("TOOL_REPLICA_USER") or "",
             password=os.getenv("TOOL_REPLICA_PASSWORD") or "",
-            cache_ttl=int(os.getenv("TOOL_REPLICA_CACHE_TTL", 60 * 60 * 24 * 7)),
+            use_sql=_safe_bool(os.getenv("DATABASE_USE_SQL"), True),
+            cache_ttl=_safe_int(os.getenv("TOOL_REPLICA_CACHE_TTL"), 60 * 60 * 24 * 7),
         )
 
     def has_db_data(self) -> bool:
         return bool(self.user and self.password)
+
 
 @dataclass
 class DebugConfig:
@@ -141,6 +190,14 @@ class DebugConfig:
 
     print_url: bool = False
     do_post: bool = False
+
+    @classmethod
+    def load(cls) -> DebugConfig:
+        """Load Debug configuration from environment variables."""
+        return cls(
+            print_url=_safe_bool(os.getenv("DEBUG_PRINT_URL"), False),
+            do_post=_safe_bool(os.getenv("DEBUG_DO_POST"), False),
+        )
 
 
 @dataclass
@@ -164,6 +221,19 @@ class BotConfig:
     force_edit: bool = False
     no_login: bool = False
     no_cookies: bool = False
+
+    @classmethod
+    def load(cls) -> BotConfig:
+        """Load Bot configuration from environment variables."""
+        return cls(
+            ask=_safe_bool(os.getenv("BOT_ASK"), False),
+            no_diff=_safe_bool(os.getenv("BOT_NO_DIFF"), False),
+            show_diff=_safe_bool(os.getenv("BOT_SHOW_DIFF"), False),
+            no_false_edit=_safe_bool(os.getenv("BOT_NO_FALSE_EDIT"), False),
+            force_edit=_safe_bool(os.getenv("BOT_FORCE_EDIT"), False),
+            no_login=_safe_bool(os.getenv("BOT_NO_LOGIN"), False),
+            no_cookies=_safe_bool(os.getenv("BOT_NO_COOKIES"), False),
+        )
 
 
 @dataclass
@@ -194,6 +264,22 @@ class CategoryConfig:
     descqs: bool = False
     min_members: int = 10
 
+    @classmethod
+    def load(cls) -> CategoryConfig:
+        """Load Category configuration from environment variables."""
+        return cls(
+            stubs=_safe_bool(os.getenv("CATEGORY_STUBS"), False),
+            make_new_cat=_safe_bool(os.getenv("CATEGORY_MAKE_NEW_CAT"), True),
+            keep=_safe_bool(os.getenv("CATEGORY_KEEP"), False),
+            we_try=_safe_bool(os.getenv("CATEGORY_WE_TRY"), True),
+            no_dontadd=_safe_bool(os.getenv("CATEGORY_NO_DONTADD"), False),
+            test_add=_safe_bool(os.getenv("CATEGORY_TEST_ADD"), False),
+            test_mode=_safe_bool(os.getenv("CATEGORY_TEST_MODE"), False),
+            work_fr=_safe_bool(os.getenv("CATEGORY_WORK_FR"), False),
+            descqs=_safe_bool(os.getenv("CATEGORY_DESCQS"), False),
+            min_members=_safe_int(os.getenv("MIN_MEMBERS"), 10),
+        )
+
 
 @dataclass
 class QueryConfig:
@@ -212,6 +298,17 @@ class QueryConfig:
     to_limit: int = 10000
     ns_no_10: bool = False
     ns_only_14: bool = False
+
+    @classmethod
+    def load(cls) -> QueryConfig:
+        """Load Query configuration from environment variables."""
+        return cls(
+            offset=_safe_int(os.getenv("QUERY_OFFSET"), 0),
+            depth=_safe_int(os.getenv("QUERY_DEPTH"), 0),
+            to_limit=_safe_int(os.getenv("QUERY_TO_LIMIT"), 10000),
+            ns_no_10=_safe_bool(os.getenv("QUERY_NS_NO_10"), False),
+            ns_only_14=_safe_bool(os.getenv("QUERY_NS_ONLY_14"), False),
+        )
 
 
 @dataclass
@@ -232,6 +329,17 @@ class SiteConfig:
     secondary_family: str = ""
     use_secondary: bool = False
 
+    @classmethod
+    def load(cls) -> SiteConfig:
+        """Load Site configuration from environment variables."""
+        return cls(
+            custom_family=os.getenv("SITE_CUSTOM_FAMILY") or "",
+            custom_lang=os.getenv("SITE_CUSTOM_LANG") or "",
+            secondary_lang=os.getenv("SITE_SECONDARY_LANG") or "",
+            secondary_family=os.getenv("SITE_SECONDARY_FAMILY") or "",
+            use_secondary=_safe_bool(os.getenv("SITE_USE_SECONDARY"), False),
+        )
+
 
 @dataclass
 class WikiSiteInfo:
@@ -246,6 +354,16 @@ class WikiSiteInfo:
     family: str = "wikipedia"
     code: str = "en"
     use: bool = False
+
+    @classmethod
+    def load(cls) -> WikiSiteInfo:
+        """
+        Load WikiSiteInfo configuration from environment variables."""
+        return cls(
+            family=os.getenv("WIKI_SITE_FAMILY", "wikipedia"),
+            code=os.getenv("WIKI_SITE_CODE", "en"),
+            use=_safe_bool(os.getenv("WIKI_SITE_USE"), False),
+        )
 
     def __getitem__(self, key):
         """Support dictionary-like access for backward compatibility."""
@@ -285,26 +403,44 @@ class Settings:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR)
     """
 
-    wikipedia: WikipediaConfig = field(default_factory=WikipediaConfig)
-    wikidata: WikidataConfig = field(default_factory=WikidataConfig)
-    api_client: ApiClientConfig = field(default_factory=ApiClientConfig)
-    database: DatabaseConfig = field(default_factory=DatabaseConfig)
-    debug_config: DebugConfig = field(default_factory=DebugConfig)
-    bot: BotConfig = field(default_factory=BotConfig)
-    category: CategoryConfig = field(default_factory=CategoryConfig)
-    query: QueryConfig = field(default_factory=QueryConfig)
-    site: SiteConfig = field(default_factory=SiteConfig)
-
-    paths: Paths = Paths(
-        cookies_dir=os.getenv("COOKIES_DIR"),
-        dont_add_to_pages_path=os.getenv("DONT_ADD_TO_PAGES_PATH"),
-        arwikicats_path=os.getenv("ARWIKICATS_PATH"),
-    )
+    wikipedia: WikipediaConfig
+    wikidata: WikidataConfig
+    api_client: ApiClientConfig
+    database: DatabaseConfig
+    debug_config: DebugConfig
+    bot: BotConfig
+    category: CategoryConfig
+    query: QueryConfig
+    site: SiteConfig
+    paths: Paths
 
     # Global settings
     range_limit: int = 5
     debug: bool = False
     log_level: str = "INFO"
+
+    @classmethod
+    def load(cls) -> Settings:
+        """
+        Build a Settings instance purely from environment variables,
+        bypassing the default_factory values (which __post_init__ will
+        still refine further using argv).
+        """
+        return cls(
+            wikipedia=WikipediaConfig.load(),
+            wikidata=WikidataConfig.load(),
+            api_client=ApiClientConfig.load(),
+            database=DatabaseConfig.load(),
+            debug_config=DebugConfig.load(),
+            bot=BotConfig.load(),
+            category=CategoryConfig.load(),
+            query=QueryConfig.load(),
+            site=SiteConfig.load(),
+            paths=Paths.load(),
+            range_limit=_safe_int(os.getenv("RANGE_LIMIT"), 5),
+            debug=_safe_bool(os.getenv("DEBUG"), False),
+            log_level=os.getenv("LOG_LEVEL") or "INFO",
+        )
 
     @staticmethod
     def is_production() -> bool:
@@ -313,7 +449,8 @@ class Settings:
 
     @property
     def EEn_site(self) -> WikiSiteInfo:
-        """Get the English/source site configuration.
+        """
+        Get the English/source site configuration.
 
         Returns computed site info based on commons, custom_family, and custom_lang settings.
         """
@@ -325,7 +462,8 @@ class Settings:
 
     @property
     def AAr_site(self) -> WikiSiteInfo:
-        """Get the Arabic/target site configuration.
+        """
+        Get the Arabic/target site configuration.
 
         Returns computed site info based on custom_family settings.
         """
@@ -335,7 +473,8 @@ class Settings:
 
     @property
     def FR_site(self) -> WikiSiteInfo:
-        """Get the secondary/French site configuration.
+        """
+        Get the secondary/French site configuration.
 
         Returns computed site info based on secondary language settings.
         """
@@ -346,13 +485,11 @@ class Settings:
         return WikiSiteInfo(family="", code="fr", use=False)
 
     def __post_init__(self) -> None:
-        """Process command-line arguments and environment variables."""
-        self._process_env_vars()
+        """Process command-line arguments for runtime overrides."""
         self._process_argv()
 
     def _process_env_vars(self) -> None:
-        """Load configuration from environment variables."""
-        # Wikipedia config
+
         if os.getenv("WIKIPEDIA_AR_CODE"):
             self.wikipedia.ar_code = os.environ["WIKIPEDIA_AR_CODE"]
         if os.getenv("WIKIPEDIA_EN_CODE"):
@@ -513,6 +650,5 @@ class Settings:
         if self.query.to_limit != 0:
             self.query.to_limit = self.query.to_limit + self.query.offset
 
-
 # Global settings instance
-main_settings = Settings()
+main_settings = Settings.load()
