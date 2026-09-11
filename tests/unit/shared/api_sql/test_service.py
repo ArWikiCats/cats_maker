@@ -32,7 +32,7 @@ class TestCategoryComparator:
     def test_get_exclusive_category_titles_returns_empty_list_when_not_prod(self, mocker):
         """
         Test that empty list is returned when not in production"""
-        comparator = CategoryComparator(is_production=False)
+        comparator = CategoryComparator(can_use_sql=False)
         result = comparator.get_exclusive_category_titles("Science", "علوم")
         assert result == []
 
@@ -48,7 +48,7 @@ class TestCategoryComparator:
             return_value=["Page1", "Page2", "Page3"],
         )
 
-        comparator = CategoryComparator(is_production=True)
+        comparator = CategoryComparator(can_use_sql=True)
         result = comparator.get_exclusive_category_titles("Science", "علوم")
 
         assert result == ["Page3"]
@@ -56,7 +56,7 @@ class TestCategoryComparator:
     def test_get_exclusive_returns_empty_when_en_title_becomes_empty(self, mocker):
         """
         Test that empty list is returned when English title normalizes to empty"""
-        comparator = CategoryComparator(is_production=True)
+        comparator = CategoryComparator(can_use_sql=True)
         # An input that is entirely the prefix pattern will normalize to empty
         result = comparator.get_exclusive_category_titles("[[en:]]", "علوم")
         assert result == []
@@ -73,7 +73,7 @@ class TestCategoryComparator:
             return_value=["Page1"],
         )
 
-        comparator = CategoryComparator(is_production=True)
+        comparator = CategoryComparator(can_use_sql=True)
         # Arabic category that is entirely the prefix will normalize to empty
         result = comparator.get_exclusive_category_titles("Science", "تصنيف:")
         # ar_titles_set stays empty, so all EN titles are exclusive
@@ -92,6 +92,6 @@ class TestCategoryComparator:
             return_value=["A", "B"],
         )
 
-        comparator = CategoryComparator(is_production=True)
+        comparator = CategoryComparator(can_use_sql=True)
         result = comparator.get_exclusive_category_titles("Science", "علوم")
         assert result == ["A", "B"]

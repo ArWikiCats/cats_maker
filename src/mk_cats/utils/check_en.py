@@ -9,7 +9,7 @@ from ...shared import find_lcn
 logger = logging.getLogger(__name__)
 
 
-def check_en_temps(en_title) -> bool:
+def check_en_temps(en_title: str) -> bool:
     if en_title in skip_encats:
         logger.debug(f"category: {en_title} in skip_encats")
         return False

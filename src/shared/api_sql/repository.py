@@ -42,6 +42,11 @@ class CategoryRepository:
         Fetch Arabic page titles that belong to a specific category
         and have an English language link.
         """
+
+        if not WikiReplicaDB.can_use_sql():
+            logger.warning("WikiReplicaDB not available, returning empty list")
+            return []
+
         try:
             ar_db = WikiReplicaDB("arwiki")
             rows = ar_db.select_safe(query=_ARCAT_QUERY, params=(category_title,)) or []
@@ -61,6 +66,11 @@ class CategoryRepository:
         Fetch English language links (ll_title) for pages in a specific
         English category.
         """
+
+        if not WikiReplicaDB.can_use_sql():
+            logger.warning("WikiReplicaDB not available, returning empty list")
+            return []
+
         try:
             en_db = WikiReplicaDB("enwiki")
             rows = en_db.select_safe(query=_ENCAT_QUERY, params=(category_title,)) or []

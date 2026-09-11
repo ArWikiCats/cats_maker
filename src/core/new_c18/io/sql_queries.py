@@ -26,6 +26,9 @@ def fetch_ar_category_members(ar_cat: str) -> list[dict[str, Any]]:
         AND lt_namespace = 14
     """
 
+    if not WikiReplicaDB.can_use_sql():
+        logger.warning("WikiReplicaDB not available, returning empty list")
+        return []
     try:
         ar_db = WikiReplicaDB("arwiki")
         return ar_db.select_safe(query=query, params=(ar_cat2,)) or []
@@ -43,6 +46,10 @@ def fetch_en_category_langlinks(encat: str, wiki: str = "en") -> list[dict[str, 
         nss = "0, 14"
     if main_settings.query.ns_only_14:
         nss = "14"
+
+    if not WikiReplicaDB.can_use_sql():
+        logger.warning("WikiReplicaDB not available, returning empty list")
+        return []
 
     # nss is validated against known safe values above
     query = f"""
@@ -77,6 +84,9 @@ def fetch_dont_add_pages() -> list[str]:
         AND lt_title = "لا_للتصنيف_المعادل"
     """
 
+    if not WikiReplicaDB.can_use_sql():
+        logger.warning("WikiReplicaDB not available, returning empty list")
+        return []
     try:
         ar_db = WikiReplicaDB("arwiki")
         rows = ar_db.select_safe(query=query) or []

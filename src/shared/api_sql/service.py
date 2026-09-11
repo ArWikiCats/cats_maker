@@ -14,12 +14,12 @@ class CategoryComparator:
     Service class to compare categories between English and Arabic Wikipedias.
     """
 
-    def __init__(self, is_production: bool | None = None) -> None:
+    def __init__(self, can_use_sql: bool | None = None) -> None:
         self.repo = CategoryRepository()
-        if is_production is None:
-            is_production = main_settings.is_production()
+        if can_use_sql is None:
+            can_use_sql = main_settings.database.can_use_sql()
 
-        self.is_production = is_production
+        self.can_use_sql = can_use_sql
 
     @staticmethod
     def normalize_category_title(title: str, prefix_pattern: str) -> str:
@@ -43,8 +43,8 @@ class CategoryComparator:
         Returns:
             List of exclusive titles. Empty list if not in production or on error.
         """
-        if not self.is_production:
-            logger.info("Skipping category comparison: Not in production environment.")
+        if not self.can_use_sql:
+            logger.info("Skipping category comparison: WikiReplicaDB not available.")
             return []
 
         # Normalize inputs
