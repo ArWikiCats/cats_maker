@@ -33,7 +33,7 @@ class TestFetchCategoryMembers:
     @patch("src.core.new_c18.core.category_generator.load_main_api")
     def test_returns_titles(self, mock_load_api):
         mock_api = MagicMock()
-        mock_api.CatDepth.return_value = {
+        mock_api.catdepth.return_value = {
             "Page1": {"ns": 0},
             "Page2": {"ns": 0},
         }
@@ -45,7 +45,7 @@ class TestFetchCategoryMembers:
     @patch("src.core.new_c18.core.category_generator.load_main_api")
     def test_filters_by_namespace(self, mock_load_api):
         mock_api = MagicMock()
-        mock_api.CatDepth.return_value = {
+        mock_api.catdepth.return_value = {
             "Page1": {"ns": 0},
             "Cat1": {"ns": 14},
         }

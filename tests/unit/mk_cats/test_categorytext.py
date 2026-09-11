@@ -27,13 +27,13 @@ class TestGetPageLinkData:
         mock_api = MagicMock()
         mock_page = MagicMock()
         mock_page.page_links.return_value = None
-        mock_api.MainPage.return_value = mock_page
+        mock_api.mainpage.return_value = mock_page
         mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
 
         assert result == []
-        mock_api.MainPage.assert_called_once_with("TestPage")
+        mock_api.mainpage.assert_called_once_with("TestPage")
 
     def test_returns_empty_when_page_links_is_empty(self, mocker):
         """
@@ -41,7 +41,7 @@ class TestGetPageLinkData:
         mock_api = MagicMock()
         mock_page = MagicMock()
         mock_page.page_links.return_value = []
-        mock_api.MainPage.return_value = mock_page
+        mock_api.mainpage.return_value = mock_page
         mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
@@ -58,7 +58,7 @@ class TestGetPageLinkData:
             {"ns": 14, "title": "تصنيف:علوم", "exists": True},
             {"ns": 100, "title": "Portal:History", "exists": True},
         ]
-        mock_api.MainPage.return_value = mock_page
+        mock_api.mainpage.return_value = mock_page
         mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
@@ -74,7 +74,7 @@ class TestGetPageLinkData:
             {"ns": 100, "title": "Portal:Science", "exists": True},
             {"ns": 100, "title": "Portal:History", "exists": False},
         ]
-        mock_api.MainPage.return_value = mock_page
+        mock_api.mainpage.return_value = mock_page
         mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
@@ -91,7 +91,7 @@ class TestGetPageLinkData:
             {"ns": 100, "title": "", "exists": True},
             {"ns": 100, "exists": True},
         ]
-        mock_api.MainPage.return_value = mock_page
+        mock_api.mainpage.return_value = mock_page
         mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
@@ -107,7 +107,7 @@ class TestGetPageLinkData:
             {"ns": 10, "title": "Template:Stub", "exists": True},
             {"ns": 100, "title": "Portal:Science", "exists": True},
         ]
-        mock_api.MainPage.return_value = mock_page
+        mock_api.mainpage.return_value = mock_page
         mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 10)
@@ -120,7 +120,7 @@ class TestGetPageLinkData:
         mock_api = MagicMock()
         mock_page = MagicMock()
         mock_page.page_links.return_value = []
-        mock_api.MainPage.return_value = mock_page
+        mock_api.mainpage.return_value = mock_page
         mock_load = mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         get_page_link_data("TestPage", "ar", 100)

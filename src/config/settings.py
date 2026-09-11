@@ -178,7 +178,7 @@ class DatabaseConfig:
             user=os.getenv("TOOL_REPLICA_USER") or "",
             password=os.getenv("TOOL_REPLICA_PASSWORD") or "",
             cache_ttl=_safe_int(os.getenv("TOOL_REPLICA_CACHE_TTL"), 60 * 60 * 24 * 7),
-            use_sql=_safe_bool(os.getenv("DATABASE_USE_SQL"), False),
+            use_sql=_safe_bool(os.getenv("DATABASE_USE_SQL"), True),
         )
 
     def has_db_data(self) -> bool:
