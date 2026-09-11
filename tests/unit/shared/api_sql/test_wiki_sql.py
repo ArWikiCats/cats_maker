@@ -4,12 +4,8 @@ Tests for service.py
 This module tests namespace handling and SQL query functions for MediaWiki.
 """
 
-import pytest
-
 from src.shared.api_sql.config import ConfigLoader
 from src.shared.api_sql.constants import NS_TEXT_AR, NS_TEXT_EN
-from src.shared.api_sql.db_pool import db_manager
-from src.shared.api_sql.exceptions import DatabaseConnectionError
 from src.shared.api_sql.utils import add_namespace_prefix
 
 
@@ -180,22 +176,3 @@ class TestConfigLoader:
         config = ConfigLoader.get_db_config("wikidata")
         assert config.host == "wikidatawiki.analytics.db.svc.wikimedia.cloud"
         assert config.database == "wikidatawiki_p"
-
-
-class TestDatabaseManager:
-    """Tests for DatabaseManager class."""
-
-    def test_execute_query_raises_when_not_prod(self, mocker):
-        """
-        Test that DatabaseManager raises DatabaseConnectionError when not in production."""
-        mocker.patch("src.shared.api_sql.config.ConfigLoader.is_production", return_value=False)
-
-        with pytest.raises(DatabaseConnectionError):
-            db_manager.execute_query(wiki="ar", query="SELECT 1")
-
-    def test_execute_query_rejects_non_select(self):
-        """
-        Test that only SELECT queries are allowed."""
-
-        with pytest.raises(ValueError, match="Only SELECT queries are allowed"):
-            db_manager.execute_query(wiki="ar", query="DELETE FROM page")

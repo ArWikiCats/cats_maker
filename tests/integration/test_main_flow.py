@@ -11,7 +11,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.core.new_c18.core.category_resolver import CategoryResolver
 from src.mk_cats import create_categories_from_list, create_category_page, mknew
 from src.mk_cats.mknew import (
     clear_processing_state,
@@ -185,18 +184,6 @@ class TestMainFlowIntegration:
 
 class TestModuleInteraction:
     """Tests for interaction between different modules."""
-
-    def test_new_c18_integration_with_category_resolver(self, mocker):
-        """
-        Test that new_c18 module integrates with CategoryResolver."""
-        # Mock database connection
-        mock_connect = mocker.patch("src.shared.api_sql.db_pool.db_manager.execute_query")
-        mock_connect.return_value = []
-
-        # This tests that the modules can be imported and interact
-
-        # The module should be importable without errors
-        assert CategoryResolver is not None
 
     def test_mk_cats_integration_with_create_category_page(self, mocker):
         """

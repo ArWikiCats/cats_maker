@@ -2,7 +2,7 @@
 
 import logging
 
-from .db_pool import db_manager
+from ...db import WikiReplicaDB
 from .utils import add_namespace_prefix
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,8 @@ class CategoryRepository:
         and have an English language link.
         """
         try:
-            rows = db_manager.execute_query(wiki="ar", query=_ARCAT_QUERY, params=(category_title,))
+            ar_db = WikiReplicaDB("arwiki")
+            rows = ar_db.select_safe(query=_ARCAT_QUERY, params=(category_title,)) or []
 
             titles = [
                 add_namespace_prefix(row["page_title"].replace(" ", "_"), row["page_namespace"], lang="ar")
@@ -61,7 +62,8 @@ class CategoryRepository:
         English category.
         """
         try:
-            rows = db_manager.execute_query(wiki="enwiki", query=_ENCAT_QUERY, params=(category_title,))
+            en_db = WikiReplicaDB("enwiki")
+            rows = en_db.select_safe(query=_ENCAT_QUERY, params=(category_title,)) or []
 
             titles = sorted(row["ll_title"] for row in rows)
             logger.debug("Fetched %d English titles for category '%s'", len(titles), category_title)
