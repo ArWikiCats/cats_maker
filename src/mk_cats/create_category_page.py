@@ -31,7 +31,7 @@ def page_put(title, new_text, msg):
     used in tests
     """
     api = load_main_api("ar")
-    page = api.MainPage(title)
+    page = api.mainpage(title)
 
     text = page.get_text()
 
@@ -52,7 +52,7 @@ def page_put(title, new_text, msg):
     return save
 
 
-def create_Page(text: str, page) -> bool:
+def create_page(text: str, page) -> bool:
     """
     used in tests
     """
@@ -169,13 +169,13 @@ def make_category(categories, enca, title, qid, family: str = "") -> CategoryRes
     text += f"\n\n[[en:{enca}]]"
 
     api = load_main_api("ar")
-    page = api.MainPage(title)
+    page = api.mainpage(title)
 
     if page.get_text() or page.exists():
         logger.debug(f"page: {title} already exists")
         return CategoryResult(False, None, "Page already exists")
 
-    new_cat = create_Page(text, page)
+    new_cat = create_page(text, page)
 
     if new_cat:
         text = add_text_to_cat(text, categories, enca, title, qid)

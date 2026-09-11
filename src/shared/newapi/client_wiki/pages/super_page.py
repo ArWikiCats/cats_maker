@@ -399,13 +399,13 @@ class MainPage:
 
         return self.meta.userinfo
 
-    def isRedirect(self):
+    def is_redirect(self):
         if not self.meta.is_redirect:
             self.get_infos()
 
         return self.meta.is_redirect
 
-    def isDisambiguation(self):
+    def is_disambiguation(self):
         # if the title ends with '(توضيح)' or '(disambiguation)'
         self.meta.is_disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
 

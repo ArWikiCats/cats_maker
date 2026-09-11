@@ -7,8 +7,8 @@ This module tests the WikiApiHandler class and language link functions.
 from src.shared.lcn_new import (
     LC_bot,
     WikiApiHandler,
-    find_LCN,
-    find_Page_Cat_without_hidden,
+    find_lcn,
+    find_page_cat_without_hidden,
 )
 
 
@@ -94,18 +94,18 @@ class TestFindNonHiddenCategories:
 class TestBackwardCompatibilityFunctions:
     """Tests for backward compatibility wrapper functions"""
 
-    def test_find_LCN_calls_find_page_data(self, mocker):
+    def test_find_lcn_calls_find_page_data(self, mocker):
         """
-        Test find_LCN wrapper function"""
+        Test find_lcn wrapper function"""
         mock_method = mocker.patch.object(LC_bot, "find_page_data", return_value={"test": True})
-        find_LCN("Test", prop="langlinks", lllang="ar", first_site_code="en")
+        find_lcn("Test", prop="langlinks", lllang="ar", first_site_code="en")
         mock_method.assert_called_once_with(page_title="Test", prop="langlinks", lllang="ar", site_code="en")
 
-    def test_find_Page_Cat_without_hidden_wrapper(self, mocker):
+    def test_find_page_cat_without_hidden_wrapper(self, mocker):
         """
-        Test find_Page_Cat_without_hidden wrapper function"""
+        Test find_page_cat_without_hidden wrapper function"""
         mock_method = mocker.patch.object(LC_bot, "find_non_hidden_categories", return_value={"test": True})
-        find_Page_Cat_without_hidden("Test", prop="langlinks", site_code="ar")
+        find_page_cat_without_hidden("Test", prop="langlinks", site_code="ar")
         mock_method.assert_called_once()
 
 

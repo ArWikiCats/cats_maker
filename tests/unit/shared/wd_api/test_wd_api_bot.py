@@ -5,11 +5,11 @@ This module tests Wikidata API functions.
 """
 
 from src.shared.wd_api.wd_api_bot import (
-    Get_infos_wikidata,
-    Get_P373_API,
-    Get_Sitelinks_From_wikidata,
     format_labels_descriptions,
     format_sitelinks,
+    get_infos_wikidata,
+    get_p373_api,
+    get_sitelinks_from_wikidata,
 )
 
 
@@ -67,25 +67,25 @@ class TestFormatLabelsDescriptions:
 
 
 class TestGetInfosWikidata:
-    """Tests for Get_infos_wikidata function"""
+    """Tests for get_infos_wikidata function"""
 
     def test_returns_default_table_on_no_response(self, mocker):
         """
         Test that function returns default table when API returns None"""
-        mocker.patch("src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value=None)
+        mocker.patch("src.shared.wd_api.wd_api_bot.submitwikidataparams", return_value=None)
 
         params = {"action": "wbgetentities", "ids": "Q12345", "props": "sitelinks|labels"}
-        result = Get_infos_wikidata(params)
+        result = get_infos_wikidata(params)
 
         assert result == {"labels": {}, "sitelinks": {}, "q": ""}
 
     def test_returns_default_table_on_failed_success(self, mocker):
         """
         Test that function returns default table when success is not 1"""
-        mocker.patch("src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value={"success": 0})
+        mocker.patch("src.shared.wd_api.wd_api_bot.submitwikidataparams", return_value={"success": 0})
 
         params = {"action": "wbgetentities", "ids": "Q12345", "props": "sitelinks"}
-        result = Get_infos_wikidata(params)
+        result = get_infos_wikidata(params)
 
         assert result == {"labels": {}, "sitelinks": {}, "q": ""}
 
@@ -93,11 +93,11 @@ class TestGetInfosWikidata:
         """
         Test that function returns default table for -1 entity"""
         mocker.patch(
-            "src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value={"success": 1, "entities": {"-1": {}}}
+            "src.shared.wd_api.wd_api_bot.submitwikidataparams", return_value={"success": 1, "entities": {"-1": {}}}
         )
 
         params = {"action": "wbgetentities", "ids": "Q999999999", "props": "sitelinks"}
-        result = Get_infos_wikidata(params)
+        result = get_infos_wikidata(params)
 
         assert result == {"labels": {}, "sitelinks": {}, "q": ""}
 
@@ -113,10 +113,10 @@ class TestGetInfosWikidata:
                 }
             },
         }
-        mocker.patch("src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value=mock_response)
+        mocker.patch("src.shared.wd_api.wd_api_bot.submitwikidataparams", return_value=mock_response)
 
         params = {"action": "wbgetentities", "ids": "Q12345", "props": "sitelinks|labels"}
-        result = Get_infos_wikidata(params)
+        result = get_infos_wikidata(params)
 
         assert result["q"] == "Q12345"
         assert result["labels"]["en"] == "Test"
@@ -124,17 +124,17 @@ class TestGetInfosWikidata:
 
 
 class TestGetSitelinksFromWikidata:
-    """Tests for Get_Sitelinks_From_wikidata function"""
+    """Tests for get_sitelinks_from_wikidata function"""
 
     def test_adds_wiki_suffix_if_missing(self, mocker):
         """
         Test that 'wiki' suffix is added to site code"""
         mock_info = mocker.patch(
-            "src.shared.wd_api.wd_api_bot.Get_infos_wikidata", return_value={"sitelinks": {}, "q": ""}
+            "src.shared.wd_api.wd_api_bot.get_infos_wikidata", return_value={"sitelinks": {}, "q": ""}
         )
-        Get_Sitelinks_From_wikidata.cache_clear()
+        get_sitelinks_from_wikidata.cache_clear()
 
-        Get_Sitelinks_From_wikidata("en", "Test")
+        get_sitelinks_from_wikidata("en", "Test")
 
         call_args = mock_info.call_args[0][0]
         assert call_args["sites"] == "enwiki"
@@ -143,12 +143,12 @@ class TestGetSitelinksFromWikidata:
         """
         Test that specific sitelink is returned when ssite is provided"""
         mocker.patch(
-            "src.shared.wd_api.wd_api_bot.Get_infos_wikidata",
+            "src.shared.wd_api.wd_api_bot.get_infos_wikidata",
             return_value={"sitelinks": {"arwiki": "علوم"}, "q": "Q123"},
         )
-        Get_Sitelinks_From_wikidata.cache_clear()
+        get_sitelinks_from_wikidata.cache_clear()
 
-        result = Get_Sitelinks_From_wikidata("en", "Science")
+        result = get_sitelinks_from_wikidata("en", "Science")
 
         assert result["sitelinks"]["arwiki"] == "علوم"
 
@@ -156,24 +156,24 @@ class TestGetSitelinksFromWikidata:
         """
         Test that full table is returned when ssite is not provided"""
         mock_table = {"sitelinks": {"enwiki": "Science"}, "q": "Q123"}
-        mocker.patch("src.shared.wd_api.wd_api_bot.Get_infos_wikidata", return_value=mock_table)
-        Get_Sitelinks_From_wikidata.cache_clear()
+        mocker.patch("src.shared.wd_api.wd_api_bot.get_infos_wikidata", return_value=mock_table)
+        get_sitelinks_from_wikidata.cache_clear()
 
-        result = Get_Sitelinks_From_wikidata("en", "Science")
+        result = get_sitelinks_from_wikidata("en", "Science")
 
         assert "sitelinks" in result
         assert "q" in result
 
 
 class TestGetP373API:
-    """Tests for Get_P373_API function"""
+    """Tests for get_p373_api function"""
 
     def test_returns_empty_string_on_no_response(self, mocker):
         """
         Test that function returns empty string when API returns None"""
-        mocker.patch("src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value=None)
+        mocker.patch("src.shared.wd_api.wd_api_bot.submitwikidataparams", return_value=None)
 
-        result = Get_P373_API("Q12345")
+        result = get_p373_api("Q12345")
 
         assert result == ""
 
@@ -183,9 +183,9 @@ class TestGetP373API:
         mock_response = {
             "entities": {"Q123": {"sitelinks": {"commonswiki": {"title": "Category:Science"}}, "claims": {}}}
         }
-        mocker.patch("src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value=mock_response)
+        mocker.patch("src.shared.wd_api.wd_api_bot.submitwikidataparams", return_value=mock_response)
 
-        result = Get_P373_API("Q123")
+        result = get_p373_api("Q123")
 
         assert result == "Science"
 
@@ -200,8 +200,8 @@ class TestGetP373API:
                 }
             }
         }
-        mocker.patch("src.shared.wd_api.wd_api_bot.submitWikidataParams", return_value=mock_response)
+        mocker.patch("src.shared.wd_api.wd_api_bot.submitwikidataparams", return_value=mock_response)
 
-        result = Get_P373_API("Q123")
+        result = get_p373_api("Q123")
 
         assert result == "Test Category"

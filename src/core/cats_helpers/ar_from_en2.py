@@ -4,7 +4,7 @@
 import logging
 
 from ...config import main_settings
-from ...shared import find_LCN
+from ...shared import find_lcn
 from ...shared.api_page import load_main_api
 
 logger = logging.getLogger(__name__)
@@ -21,12 +21,12 @@ def get_ar_list_title_from_en_list(enlist, wiki: str = "en"):
         if part_list:
             part_list = part_list.removeprefix("|")
 
-            sito_code = main_settings.EEn_site.code
+            sito_code = main_settings.en_site.code
 
             if wiki == "fr":
-                sito_code = main_settings.FR_site.code
+                sito_code = main_settings.fr_site.code
 
-            new_list = find_LCN(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
+            new_list = find_lcn(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
 
             if new_list:
                 for p_w in new_list:
@@ -48,7 +48,7 @@ def en_category_members(enpage_title, wiki: str = "en"):
     namespace_ids = [0, 14, 100]
 
     api = load_main_api(wiki)
-    cat_members = api.CatDepth(enpage_title, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
+    cat_members = api.catdepth(enpage_title, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
 
     en_titles = []
 

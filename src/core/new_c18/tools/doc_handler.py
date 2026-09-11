@@ -117,17 +117,17 @@ def find_doc_and_add(final_categories: str, title: str, create: bool = False) ->
     doc_title = f"{title}/شرح"
 
     api = load_main_api("ar")
-    page = api.MainPage(doc_title)
+    page = api.mainpage(doc_title)
     text = page.get_text()
 
     if not text and not create:
         logger.info(f' text = "" {doc_title=}')
         return False
 
-    if page.isRedirect():
+    if page.is_redirect():
         return False
 
-    if page.isDisambiguation():
+    if page.is_disambiguation():
         return False
 
     if not page.exists() and not create:

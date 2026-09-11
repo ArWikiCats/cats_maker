@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 API_n_CALLS = {1: 0}
 
 
-def submitParams(params, site_code: str) -> dict[str, Any]:
+def submit_params(params, site_code: str) -> dict[str, Any]:
     site_api = load_main_api(site_code, "wikipedia")
     return site_api.login_bot.client_request_safe(params)
 
@@ -21,7 +21,7 @@ def sub_cats_query(enlink, sitecode, ctype: str = "") -> dict[str, Any]:
     if not enlink:
         return {}
 
-    langcode = main_settings.EEn_site.code  # 'en'
+    langcode = main_settings.en_site.code  # 'en'
     if sitecode == "en":
         langcode = "ar"
 
@@ -51,7 +51,7 @@ def sub_cats_query(enlink, sitecode, ctype: str = "") -> dict[str, Any]:
     logger.info(f"API_n_CALLS {API_n_CALLS[1]} for {sitecode}:{enlink}")
 
     try:
-        data = submitParams(params, sitecode)
+        data = submit_params(params, sitecode)
     except Exception:
         logger.exception(
             "sub_cats_query failed: sitecode=%s enlink=%s ctype=%s",

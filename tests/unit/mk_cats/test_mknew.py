@@ -170,7 +170,7 @@ class TestMakeAr:
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
         mocker.patch(
-            "src.mk_cats.mknew.Get_Sitelinks_From_wikidata",
+            "src.mk_cats.mknew.get_sitelinks_from_wikidata",
             return_value={"sitelinks": {"arwiki": "علوم"}, "q": "Q12345"},
         )
 
@@ -434,8 +434,8 @@ class TestMakeArMinMembers:
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
-        mocker.patch("src.mk_cats.mknew.Get_Sitelinks_From_wikidata", return_value={"q": "Q12345"})
-        mocker.patch("src.mk_cats.mknew.find_Page_Cat_without_hidden", return_value={})
+        mocker.patch("src.mk_cats.mknew.get_sitelinks_from_wikidata", return_value={"q": "Q12345"})
+        mocker.patch("src.mk_cats.mknew.find_page_cat_without_hidden", return_value={})
         # Return only 3 members (below default min_members of 5)
         mocker.patch("src.mk_cats.mknew.collect_category_members", return_value=["Article1", "Article2", "Article3"])
         mock_settings = mocker.patch("src.mk_cats.mknew.main_settings")
@@ -462,8 +462,8 @@ class TestMakeArMinMembers:
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
-        mocker.patch("src.mk_cats.mknew.Get_Sitelinks_From_wikidata", return_value={"q": "Q12345"})
-        mocker.patch("src.mk_cats.mknew.find_Page_Cat_without_hidden", return_value={})
+        mocker.patch("src.mk_cats.mknew.get_sitelinks_from_wikidata", return_value={"q": "Q12345"})
+        mocker.patch("src.mk_cats.mknew.find_page_cat_without_hidden", return_value={})
         # Return exactly 5 members (equals default min_members)
         mocker.patch(
             "src.mk_cats.mknew.collect_category_members",
@@ -502,8 +502,8 @@ class TestMakeArMinMembers:
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
-        mocker.patch("src.mk_cats.mknew.Get_Sitelinks_From_wikidata", return_value={"q": "Q12345"})
-        mocker.patch("src.mk_cats.mknew.find_Page_Cat_without_hidden", return_value={})
+        mocker.patch("src.mk_cats.mknew.get_sitelinks_from_wikidata", return_value={"q": "Q12345"})
+        mocker.patch("src.mk_cats.mknew.find_page_cat_without_hidden", return_value={})
         # Return 10 members (above default min_members of 5)
         mocker.patch(
             "src.mk_cats.mknew.collect_category_members",
@@ -541,8 +541,8 @@ class TestMakeArMinMembers:
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
-        mocker.patch("src.mk_cats.mknew.Get_Sitelinks_From_wikidata", return_value={"q": "Q12345"})
-        mocker.patch("src.mk_cats.mknew.find_Page_Cat_without_hidden", return_value={})
+        mocker.patch("src.mk_cats.mknew.get_sitelinks_from_wikidata", return_value={"q": "Q12345"})
+        mocker.patch("src.mk_cats.mknew.find_page_cat_without_hidden", return_value={})
         # Return 7 members
         mocker.patch(
             "src.mk_cats.mknew.collect_category_members", return_value=["A1", "A2", "A3", "A4", "A5", "A6", "A7"]
@@ -572,8 +572,8 @@ class TestMakeArMinMembers:
 
         mocker.patch.object(mknew, "scan_ar_title", return_value=True)
         mocker.patch.object(mknew, "check_if_artitle_exists", return_value=True)
-        mocker.patch("src.mk_cats.mknew.Get_Sitelinks_From_wikidata", return_value={"q": "Q12345"})
-        mocker.patch("src.mk_cats.mknew.find_Page_Cat_without_hidden", return_value={})
+        mocker.patch("src.mk_cats.mknew.get_sitelinks_from_wikidata", return_value={"q": "Q12345"})
+        mocker.patch("src.mk_cats.mknew.find_page_cat_without_hidden", return_value={})
         # Return only 1 member
         mocker.patch("src.mk_cats.mknew.collect_category_members", return_value=["Article1"])
         mock_settings = mocker.patch("src.mk_cats.mknew.main_settings")

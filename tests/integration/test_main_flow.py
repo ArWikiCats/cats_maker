@@ -31,11 +31,11 @@ class TestMainFlowIntegration:
         """
         Mock all external API calls for integration testing."""
         # Mock Wikidata API
-        mock_wikidata = mocker.patch("src.shared.wd_api.wd_api_bot.Get_Sitelinks_From_wikidata")
+        mock_wikidata = mocker.patch("src.shared.wd_api.wd_api_bot.get_sitelinks_from_wikidata")
         mock_wikidata.return_value = {"q": "Q12345", "sitelinks": {}}
 
         # Mock LCN (Language Code Navigator)
-        mock_lcn = mocker.patch("src.shared.lcn_new.find_Page_Cat_without_hidden")
+        mock_lcn = mocker.patch("src.shared.lcn_new.find_page_cat_without_hidden")
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in mknew)
@@ -214,7 +214,7 @@ class TestModuleInteraction:
         Test that wd_api module functions integrate properly."""
 
         # Mock the underlying API call
-        mock_api = mocker.patch("src.shared.wd_api.wd_api_bot.Get_infos_wikidata")
+        mock_api = mocker.patch("src.shared.wd_api.wd_api_bot.get_infos_wikidata")
         mock_api.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -227,7 +227,7 @@ class TestModuleInteraction:
         }
 
         # Test get_sitelinks function (mocking at the right level)
-        mock_sitelinks = mocker.patch("src.shared.wd_api.wd_api_bot.Get_Sitelinks_From_wikidata")
+        mock_sitelinks = mocker.patch("src.shared.wd_api.wd_api_bot.get_sitelinks_from_wikidata")
         mock_sitelinks.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -235,7 +235,7 @@ class TestModuleInteraction:
             }
         }
 
-        result = wd_api_bot.Get_Sitelinks_From_wikidata("en", "Science")
+        result = wd_api_bot.get_sitelinks_from_wikidata("en", "Science")
 
         assert result is not None
 

@@ -59,7 +59,7 @@ class NewApi(NewApiHelpers):
     def get_username(self):
         return self.username
 
-    def Find_pages_exists_or_not(
+    def find_pages_exists_or_not(
         self,
         liste,
         get_redirect: bool = False,
@@ -125,11 +125,11 @@ class NewApi(NewApiHelpers):
             else:
                 exists += 1
         # ---
-        logger.debug(f"Find_pages_exists_or_not : missing:{missing}, exists: {exists}, redirects: {redirects}")
+        logger.debug(f"find_pages_exists_or_not : missing:{missing}, exists: {exists}, redirects: {redirects}")
         # ---
         return table
 
-    def Find_pages_exists_or_not_with_qids(
+    def find_pages_exists_or_not_with_qids(
         self,
         liste,
         get_redirect: bool = False,
@@ -216,14 +216,14 @@ class NewApi(NewApiHelpers):
                 table[title_x]["exist"] = True
                 exists += 1
         # ---
-        logger.debug(f"Find_pages_exists_or_not : missing:{missing}, exists: {exists}, redirects: {redirects}")
+        logger.debug(f"find_pages_exists_or_not : missing:{missing}, exists: {exists}, redirects: {redirects}")
         # ---
         if return_all_jsons:
             return table, all_jsons
         # ---
         return table
 
-    def Get_All_pages(
+    def get_all_pages(
         self,
         start: str = "",
         namespace: str = "0",
@@ -234,7 +234,7 @@ class NewApi(NewApiHelpers):
     ) -> list[str]:
         # ---
         logger.debug(
-            f"Get_All_pages for start:{start}, limit:{limit},namespace:{namespace},apfilterredir:{apfilterredir}"
+            f"get_all_pages for start:{start}, limit:{limit},namespace:{namespace},apfilterredir:{apfilterredir}"
         )
         # ---
         params: dict[str, Any] = {
@@ -281,7 +281,7 @@ class NewApi(NewApiHelpers):
         # ---
         return Main_table
 
-    def Get_All_pages_generator(
+    def get_all_pages_generator(
         self,
         start: str = "",
         namespace: str = "0",
@@ -292,7 +292,7 @@ class NewApi(NewApiHelpers):
     ):
         # ---
         logger.debug(
-            f"Get_All_pages_generator for start:{start}, limit:{limit},namespace:{namespace},filterredir:{filterredir}"
+            f"get_all_pages_generator for start:{start}, limit:{limit},namespace:{namespace},filterredir:{filterredir}"
         )
         # ---
         params: dict[str, Any] = {
@@ -331,17 +331,17 @@ class NewApi(NewApiHelpers):
             max=limit_all,
         )
         # ---
-        logger.debug(f"<<lightpurple>> --- Get_All_pages_generator : find {len(newp)} pages.")
+        logger.debug(f"<<lightpurple>> --- get_all_pages_generator : find {len(newp)} pages.")
         # ---
         Main_table = {x["title"]: x for x in newp}
         # ---
         logger.debug(f"len of Main_table {len(Main_table)}.")
         # ---
-        logger.info(f"bot_api.py Get_All_pages_generator : find {len(Main_table)} pages.")
+        logger.info(f"bot_api.py get_all_pages_generator : find {len(Main_table)} pages.")
         # ---
         return Main_table
 
-    def PrefixSearch(
+    def prefixsearch(
         self,
         pssearch: str = "",
         ns: str = "0",
@@ -417,7 +417,7 @@ class NewApi(NewApiHelpers):
         # ---
         return Main_table
 
-    def Search(
+    def search_api(
         self,
         value: str = "",
         ns: str = "*",
@@ -475,7 +475,7 @@ class NewApi(NewApiHelpers):
         # ---
         return results
 
-    def Get_Newpages(
+    def get_newpages(
         self,
         limit: int | str = 5000,
         namespace: str = "0",
@@ -531,7 +531,7 @@ class NewApi(NewApiHelpers):
 
         return Main_table
 
-    def UserContribs(
+    def usercontribs(
         self,
         user,
         limit: int | str = 5000,
@@ -572,7 +572,7 @@ class NewApi(NewApiHelpers):
         # ---
         return results
 
-    def Get_langlinks_for_list(
+    def get_langlinks_for_list(
         self,
         titles: list[str],
         targtsitecode: str = "",
@@ -601,7 +601,7 @@ class NewApi(NewApiHelpers):
         """
 
         # ---
-        logger.debug(f'bot_api.Get_langlinks_for_list for "{len(titles)} pages". in wiki:{self.lang}')
+        logger.debug(f'bot_api.get_langlinks_for_list for "{len(titles)} pages". in wiki:{self.lang}')
         # ---
         targtsitecode = targtsitecode.removesuffix("wiki")
         # ---
@@ -666,7 +666,7 @@ class NewApi(NewApiHelpers):
                         find_targtsitecode += 1
         # ---
         logger.info(
-            f'bot_api.Get_langlinks_for_list find "{len(table)}" in table,find_targtsitecode:{targtsitecode}:{find_targtsitecode}'
+            f'bot_api.get_langlinks_for_list find "{len(table)}" in table,find_targtsitecode:{targtsitecode}:{find_targtsitecode}'
         )
         # ---
         return table
@@ -861,14 +861,14 @@ class NewApi(NewApiHelpers):
         # ---
         return results
 
-    def Get_template_pages(
+    def get_template_pages(
         self,
         title: str,
         namespace: str = "*",
         max: int = 10000,
     ) -> list[Any]:
         # ---
-        logger.debug(f'Get_template_pages for template:"{title}", limit:"{max}",namespace:"{namespace}"')
+        logger.debug(f'get_template_pages for template:"{title}", limit:"{max}",namespace:"{namespace}"')
         # ---
         params: dict[str, Any] = {
             "action": "query",
@@ -898,7 +898,7 @@ class NewApi(NewApiHelpers):
         # ---
         return pages
 
-    def Get_image_url(self, title: str) -> str:
+    def get_image_url(self, title: str) -> str:
         # ---
         if not title.startswith("File:") and not title.startswith("ملف:"):
             title = f"File:{title}"
@@ -930,7 +930,7 @@ class NewApi(NewApiHelpers):
         # ---
         return url
 
-    def Get_imageinfo(self, title: str) -> Any:
+    def get_imageinfo(self, title: str) -> Any:
         # ---
         if not title.startswith("File:") and not title.startswith("ملف:"):
             title = f"File:{title}"
@@ -1048,7 +1048,7 @@ class NewApi(NewApiHelpers):
         # ---
         return newtext
 
-    def Parse_Text(self, line, title: str) -> str:
+    def parse_text(self, line, title: str) -> str:
         # ---
         params: dict[str, Any] = {
             "action": "parse",
@@ -1174,7 +1174,7 @@ class NewApi(NewApiHelpers):
             params["tltemplates"] = findtemp
 
         tata = {
-            "isRedirectPage": False,
+            "is_redirectPage": False,
             "exists": True,
             "from": "",
             "to": "",
@@ -1211,7 +1211,7 @@ class NewApi(NewApiHelpers):
             logger.debug(f'page is redirects to : "{red["to"]}"')
 
             table2 = dict(tata)
-            table2["isRedirectPage"] = True
+            table2["is_redirectPage"] = True
             table2["exists"] = False
             table2["from"] = red["from"]
             table2["to"] = red["to"]

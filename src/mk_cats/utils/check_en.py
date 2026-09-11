@@ -4,7 +4,7 @@
 import logging
 
 from ...core.utils import NO_Templates_lower, skip_encats
-from ...shared import find_LCN
+from ...shared import find_lcn
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ def check_en_temps(en_title) -> bool:
         logger.debug(f"category: {en_title} in skip_encats")
         return False
 
-    category_data = find_LCN(en_title, prop="templates|categories", first_site_code="en")
+    category_data = find_lcn(en_title, prop="templates|categories", first_site_code="en")
 
     if not category_data:
         return True

@@ -132,9 +132,9 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
     ↓
 [get_ar_list_from_en] → قائمة عناوين المقالات العربية
     ↓
-[find_LCN, Get_Sitelinks] → روابط اللغات، Qid
+[find_lcn, get_Sitelinks] → روابط اللغات، Qid
     ↓
-[find_Page_Cat_without_hidden] → التصنيفات الأم (إنجليزي)
+[find_page_cat_without_hidden] → التصنيفات الأم (إنجليزي)
     ↓
 [collect_category_members] → صفحات الأعضاء (SQL, API, SubSub sources)
     ↓
@@ -378,8 +378,8 @@ print(settings.category.we_try)  # True
 print(settings.bot.ask)  # False
 
 # الوصول إلى خصائص الموقع المحسوبة
-print(settings.EEn_site["code"])  # 'en'
-print(settings.AAr_site["family"])  # 'wikipedia'
+print(settings.en_site["code"])  # 'en'
+print(settings.ar_site["family"])  # 'wikipedia'
 
 # الوصول إلى الإعدادات العامة
 print(settings.range_limit)  # 5

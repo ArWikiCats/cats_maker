@@ -3,13 +3,13 @@ python3 core8/pwb.py mk_cats/mknew
 """
 
 import logging
-from typing import Callable
+from collections.abc import Callable
 
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
-from ..shared import find_Page_Cat_without_hidden
+from ..shared import find_page_cat_without_hidden
 from ..shared.api_page import load_main_api
-from ..shared.wd_api import Get_Sitelinks_From_wikidata, add_labels, log_to_wikidata, log_to_wikidata_qid
+from ..shared.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
 from .add_bot import add_to_page
 from .create_category_page import new_category
 from .members_helper import collect_category_members
@@ -137,7 +137,7 @@ def check_if_artitle_exists(test_title) -> bool:
         test_title = f"تصنيف:{test_title}"
 
     api = load_main_api(WIKI_SITE_AR["code"])
-    page = api.MainPage(test_title)
+    page = api.mainpage(test_title)
 
     if page.exists():
         logger.debug(f"* category:{test_title} already exists in arwiki.")
@@ -171,7 +171,7 @@ def _check_wikidata_sitelink(en_site_lang: str, en_page_title: str, ar_site_wiki
     Returns:
         tuple: (has_ar_sitelink, ar_info_dict)
     """
-    ar_info = Get_Sitelinks_From_wikidata(en_site_lang, en_page_title) or {}
+    ar_info = get_sitelinks_from_wikidata(en_site_lang, en_page_title) or {}
 
     if ar_info and ("sitelinks" in ar_info) and (ar_site_wiki in ar_info["sitelinks"]):
         ar_page = ar_info["sitelinks"][ar_site_wiki]
@@ -191,7 +191,7 @@ def _extract_parent_categories(en_page_title: str):
             - en_cats_of_new_cat: English categories without Arabic equivalents
             - cats_of_new_cat: Arabic category titles
     """
-    cates = find_Page_Cat_without_hidden(
+    cates = find_page_cat_without_hidden(
         en_page_title,
         prop="langlinks",
         site_code=WIKI_SITE_EN["code"],
@@ -342,7 +342,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     )
 
 
-def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Callable | None =None) -> None:
+def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Callable | None = None) -> None:
     logger.debug(f"*:{num}/{lenth} cat: {cat}, arlab: {arlab}")
 
     ma_table = make_ar(cat, arlab, callback=callback)
@@ -421,7 +421,7 @@ def one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
     return process_catagories(en_title, labb, num, lenth, callback=callback)
 
 
-def create_categories_from_list(titles: list[str], callback: Callable | None =None) -> None:
+def create_categories_from_list(titles: list[str], callback: Callable | None = None) -> None:
     # clear_processing_state()
     lenth = len(titles)
 

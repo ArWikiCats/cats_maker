@@ -29,7 +29,7 @@
 ## 2. Non-Goals (Scope Guard)
 
 -   No changes to filtering/sorting **behavior** — output must be identical
--   No changes to external API calls (`find_LCN`, `load_main_api`, `Get_Sitelinks_From_wikidata`, etc.)
+-   No changes to external API calls (`find_lcn`, `load_main_api`, `get_sitelinks_from_wikidata`, etc.)
 -   No new CLI arguments or UI changes
 -   No database schema changes
 
@@ -243,7 +243,7 @@ Current responsibilities (all in one file):
 
 | New file                | Functions moved                                                                                                                       |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `tools/page_creator.py` | `new_category`, `make_category`, `add_text_to_cat`, `page_put`, `create_Page`, `CategoryResult`                                       |
+| `tools/page_creator.py` | `new_category`, `make_category`, `add_text_to_cat`, `page_put`, `create_page`, `CategoryResult`                                       |
 | `tools/page_text.py`    | Functions from `categorytext.py`: `generate_category_text`, `generate_portal_content`, `fetch_commons_category`, `get_page_link_data` |
 
 **5.2.3 Rename and move remaining files**
@@ -334,7 +334,7 @@ def _get_page(page_title: str):
     """No caching — always fetch fresh page state for a bot."""
     api = load_main_api("ar")
     page = api.MainPage(page_title)
-    if not page.exists() or page.isRedirect() or page.isDisambiguation():
+    if not page.exists() or page.is_redirect() or page.is_disambiguation():
         return False
     if not page.get_text():
         return False

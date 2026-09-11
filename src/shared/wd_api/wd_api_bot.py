@@ -18,7 +18,7 @@ from ...shared.api_page import load_main_api
 logger = logging.getLogger(__name__)
 
 
-def submitWikidataParams(params) -> dict[str, Any]:
+def submitwikidataparams(params) -> dict[str, Any]:
     wikidata_api = load_main_api("www", "wikidata")
     return wikidata_api.login_bot.client_request_safe(params)
 
@@ -31,10 +31,10 @@ def format_labels_descriptions(labels: dict[str, Any]) -> dict[str, Any]:
     return {x["language"]: x["value"] for _, x in labels.items()}
 
 
-def Get_infos_wikidata(params) -> dict[str, Any]:
+def get_infos_wikidata(params) -> dict[str, Any]:
     table = {"labels": {}, "sitelinks": {}, "q": ""}
 
-    json1 = submitWikidataParams(params)
+    json1 = submitwikidataparams(params)
 
     if not json1:
         return table
@@ -65,7 +65,7 @@ def Get_infos_wikidata(params) -> dict[str, Any]:
 
 
 @lru_cache(maxsize=5000)
-def Get_Sitelinks_From_wikidata(
+def get_sitelinks_from_wikidata(
     site,
     title,
 ) -> dict[str, Any]:
@@ -85,12 +85,12 @@ def Get_Sitelinks_From_wikidata(
         # "tltemplates": "Template:Category redirect",
     }
 
-    table = Get_infos_wikidata(params)
+    table = get_infos_wikidata(params)
 
     return table
 
 
-def Get_Sitelinks_from_qid(ids) -> dict[str, Any]:
+def get_sitelinks_from_qid(ids) -> dict[str, Any]:
     params: dict[str, Any] = {
         "action": "wbgetentities",
         "props": "sitelinks",
@@ -98,12 +98,12 @@ def Get_Sitelinks_from_qid(ids) -> dict[str, Any]:
         "ids": ids,
     }
 
-    table = Get_infos_wikidata(params)
+    table = get_infos_wikidata(params)
 
     return table
 
 
-def Get_P373_API(q, titles: str = "", sites: str = "") -> Any:
+def get_p373_api(q, titles: str = "", sites: str = "") -> Any:
     """
     Retrieve the P373 value from the Wikidata API.
     """
@@ -124,7 +124,7 @@ def Get_P373_API(q, titles: str = "", sites: str = "") -> Any:
         params["sites"] = sites
         params["titles"] = titles
 
-    json1 = submitWikidataParams(params) or {}
+    json1 = submitwikidataparams(params) or {}
 
     mainvalue = ""
 

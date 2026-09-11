@@ -6,9 +6,9 @@ from __future__ import annotations
 import logging
 
 from ....config import main_settings
-from ....shared import find_LCN, get_arpage_inside_encat, load_main_api
+from ....shared import find_lcn, get_arpage_inside_encat, load_main_api
 from ....shared.api_sql import add_namespace_prefix
-from ...cats_helpers import Categorized_Page_Generator
+from ...cats_helpers import categorized_page_generator
 from ..constants import DEFAULT_MEMBER_NAMESPACES
 from ..io.sql_queries import fetch_ar_category_members, fetch_en_category_langlinks
 from ..utils.text import normalize_category_title
@@ -41,7 +41,7 @@ class CategoryResolver:
 
         if not ar_list:
             api = load_main_api("ar")
-            cat_members = api.CatDepth("Category:" + ar_title, depth=0, ns="all")
+            cat_members = api.catdepth("Category:" + ar_title, depth=0, ns="all")
             ar_list = list(cat_members.keys())
 
         logger.info(f"length ar_list:{len(ar_list)}")
@@ -90,7 +90,7 @@ class CategoryResolver:
         logger.info(f"from category: {enpage_title}")
         namespace_ids = list(DEFAULT_MEMBER_NAMESPACES)
         api = load_main_api(wiki)
-        cat_members = api.CatDepth(enpage_title, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
+        cat_members = api.catdepth(enpage_title, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
         return [title for title, info in cat_members.items() if int(info["ns"]) in namespace_ids]
 
     def _translate_titles_to_ar(self, titles: list[str], wiki: str = "en", batch_size: int = 50) -> list[str]:
@@ -98,16 +98,16 @@ class CategoryResolver:
         Batch-translate page titles from source wiki to Arabic via langlinks."""
         new_ar_list: list[str] = []
 
-        sito_code = main_settings.EEn_site.code
+        sito_code = main_settings.en_site.code
         if wiki == "fr":
-            sito_code = main_settings.FR_site.code
+            sito_code = main_settings.fr_site.code
 
         for i in range(0, len(titles), batch_size):
             batch = titles[i : i + batch_size]
             part_list = "|".join(batch)
             part_list = part_list.removeprefix("|")
 
-            result = find_LCN(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
+            result = find_lcn(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
             if not result:
                 continue
 
@@ -134,7 +134,7 @@ class CategoryResolver:
         encat_clean = normalize_category_title(encat, lang="en")
 
         member_type = "cat" if item_type == "cat" else item_type
-        gent_faso_list = Categorized_Page_Generator(encat_clean, member_type)
+        gent_faso_list = categorized_page_generator(encat_clean, member_type)
 
         uux = get_arpage_inside_encat("Category:" + encat_clean)
         if uux:
@@ -149,7 +149,7 @@ class CategoryResolver:
             batch = gent_faso_list[i : i + 50]
             joined = "|".join(batch)
 
-            gent_sasa = find_LCN(joined, prop="langlinks", first_site_code=main_settings.EEn_site.code)
+            gent_sasa = find_lcn(joined, prop="langlinks", first_site_code=main_settings.en_site.code)
             if not gent_sasa:
                 continue
 

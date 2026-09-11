@@ -25,6 +25,7 @@ try:
 except Exception:
     load_dotenv("$HOME/.env")
 
+
 def _safe_int(value: str | None, default: int) -> int:
     """Safely convert string to int, returning default on failure."""
     if not value:
@@ -98,6 +99,7 @@ class WikipediaConfig:
             default_timeout=_safe_int(os.getenv("WIKIPEDIA_TIMEOUT"), 10),
         )
 
+
 @dataclass
 class WikidataConfig:
     """Configuration for Wikidata API connections.
@@ -158,6 +160,7 @@ class DatabaseConfig:
     """
     Configuration for database connections.
     """
+
     user: str = ""
     password: str = ""
     host: str | None = None
@@ -388,7 +391,7 @@ class Settings:
         return os.getenv("APP_ENV", "").lower() == "production"
 
     @property
-    def EEn_site(self) -> WikiSiteInfo:
+    def en_site(self) -> WikiSiteInfo:
         """
         Get the English/source site configuration.
 
@@ -401,7 +404,7 @@ class Settings:
         return WikiSiteInfo(family=self.wikipedia.en_family, code=self.wikipedia.en_code, use=False)
 
     @property
-    def AAr_site(self) -> WikiSiteInfo:
+    def ar_site(self) -> WikiSiteInfo:
         """
         Get the Arabic/target site configuration.
 
@@ -412,7 +415,7 @@ class Settings:
         return WikiSiteInfo(family=self.wikipedia.ar_family, code=self.wikipedia.ar_code, use=False)
 
     @property
-    def FR_site(self) -> WikiSiteInfo:
+    def fr_site(self) -> WikiSiteInfo:
         """
         Get the secondary/French site configuration.
 
@@ -554,6 +557,7 @@ class Settings:
         )
         settings._process_argv()
         return settings
+
 
 # Global settings instance
 main_settings = Settings.load()

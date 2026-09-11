@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from ....config import main_settings
-from ....shared import find_LCN, load_main_api
+from ....shared import find_lcn, load_main_api
 from ..constants import DEFAULT_MEMBER_NAMESPACES, STUB_MEMBER_NAMESPACES
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def fetch_category_members(title: str, wiki: str = "en", namespaces: list[int] |
         ns_str = "14"
 
     api = load_main_api(wiki)
-    cat_member = api.CatDepth(title, depth=0, ns=ns_str, with_lang="ar")
+    cat_member = api.catdepth(title, depth=0, ns=ns_str, with_lang="ar")
 
     return [title.replace("_", " ") for title, info in cat_member.items() if int(info["ns"]) in namespaces]
 
@@ -49,16 +49,16 @@ def translate_titles_to_ar(titles: list[str], source_wiki: str = "en", batch_siz
     """
     new_ar_list: list[str] = []
 
-    sito_code = main_settings.EEn_site.code
+    sito_code = main_settings.en_site.code
     if source_wiki == "fr":
-        sito_code = main_settings.FR_site.code
+        sito_code = main_settings.fr_site.code
 
     for i in range(0, len(titles), batch_size):
         batch = titles[i : i + batch_size]
         part_list = "|".join(batch)
         part_list = part_list.removeprefix("|")
 
-        result = find_LCN(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
+        result = find_lcn(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
         if not result:
             continue
 

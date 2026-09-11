@@ -393,71 +393,71 @@ class TestWikiSiteInfo:
 
 
 class TestEEnSiteProperty:
-    """Tests for Settings.EEn_site property."""
+    """Tests for Settings.en_site property."""
 
     def test_default_values(self):
-        """Test default EEn_site values."""
+        """Test default en_site values."""
 
         s = Settings.load()
-        assert s.EEn_site.family == "wikipedia"
-        assert s.EEn_site.code == "en"
+        assert s.en_site.family == "wikipedia"
+        assert s.en_site.code == "en"
 
     def test_custom_family(self):
-        """Test EEn_site with custom_family."""
+        """Test en_site with custom_family."""
 
         s = Settings.load()
         s.site.custom_family = "wikiquote"
-        assert s.EEn_site.family == "wikiquote"
-        assert s.EEn_site.code == "en"
+        assert s.en_site.family == "wikiquote"
+        assert s.en_site.code == "en"
 
     def test_custom_lang(self):
-        """Test EEn_site with custom_lang."""
+        """Test en_site with custom_lang."""
 
         s = Settings.load()
         s.site.custom_lang = "de"
-        assert s.EEn_site.family == "wikipedia"
-        assert s.EEn_site.code == "de"
+        assert s.en_site.family == "wikipedia"
+        assert s.en_site.code == "de"
 
 
 class TestAArSiteProperty:
-    """Tests for Settings.AAr_site property."""
+    """Tests for Settings.ar_site property."""
 
     def test_default_values(self):
-        """Test default AAr_site values."""
+        """Test default ar_site values."""
 
         s = Settings.load()
-        assert s.AAr_site.family == "wikipedia"
-        assert s.AAr_site.code == "ar"
+        assert s.ar_site.family == "wikipedia"
+        assert s.ar_site.code == "ar"
 
     def test_custom_family(self):
-        """Test AAr_site with custom_family."""
+        """Test ar_site with custom_family."""
 
         s = Settings.load()
         s.site.custom_family = "wikiquote"
-        assert s.AAr_site.family == "wikiquote"
-        assert s.AAr_site.code == "ar"
+        assert s.ar_site.family == "wikiquote"
+        assert s.ar_site.code == "ar"
 
 
 class TestFRSiteProperty:
-    """Tests for Settings.FR_site property."""
+    """Tests for Settings.fr_site property."""
 
     def test_default_values(self):
-        """Test default FR_site values."""
+        """Test default fr_site values."""
 
         s = Settings.load()
-        assert s.FR_site.code == "fr"
-        assert s.FR_site.use is False
+        assert s.fr_site.code == "fr"
+        assert s.fr_site.use is False
 
     def test_secondary_site(self):
-        """Test FR_site with secondary language."""
+        """Test fr_site with secondary language."""
 
         s = Settings.load()
         s.site.use_secondary = True
         s.site.secondary_lang = "es"
         s.site.secondary_family = "wikipedia"
-        assert s.FR_site.code == "es"
-        assert s.FR_site.family == "wikipedia"
-        assert s.FR_site.use is True
+        assert s.fr_site.code == "es"
+        assert s.fr_site.family == "wikipedia"
+        assert s.fr_site.use is True
 
 
 class TestCategoryConfig:
@@ -837,7 +837,7 @@ class TestProcessArgv:
         assert s.range_limit == 20
         assert s.bot.ask is True
 
-    def test_dontMakeNewCat(self, monkeypatch):
+    def test_dontmakenewcat(self, monkeypatch):
         """Test -dontMakeNewCat sets make_new_cat=False."""
         monkeypatch.setattr(sys, "argv", ["test", "-dontMakeNewCat"])
         s = Settings.load()

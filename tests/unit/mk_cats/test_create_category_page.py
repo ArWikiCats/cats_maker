@@ -19,8 +19,8 @@ class TestMakeCategory:
     def test_returns_false_for_skip_encats(self, mocker):
         """
         Test that make_category returns failed result for categories in skip_encats"""
-        # Mock the create_Page to not actually create pages
-        mocker.patch("src.mk_cats.create_category_page.create_Page", return_value=False)
+        # Mock the create_page to not actually create pages
+        mocker.patch("src.mk_cats.create_category_page.create_page", return_value=False)
 
         # Use a category that's in skip_encats
         if skip_encats:
@@ -31,7 +31,7 @@ class TestMakeCategory:
     def test_returns_false_for_non_arabic_category_title(self, mocker):
         """
         Test that make_category returns failed result for titles not starting with تصنيف:"""
-        mocker.patch("src.mk_cats.create_category_page.create_Page", return_value=False)
+        mocker.patch("src.mk_cats.create_category_page.create_page", return_value=False)
 
         result = make_category([], "Category:Test", "Test Category", "Q123")
         assert result.success is False
@@ -40,7 +40,7 @@ class TestMakeCategory:
     def test_returns_false_for_title_without_tasneef_prefix(self, mocker):
         """
         Test that title must start with تصنيف:"""
-        mocker.patch("src.mk_cats.create_category_page.create_Page", return_value=False)
+        mocker.patch("src.mk_cats.create_category_page.create_page", return_value=False)
 
         result = make_category([], "Category:Science", "علوم", "Q123")
         assert result.success is False

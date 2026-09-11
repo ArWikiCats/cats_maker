@@ -8,11 +8,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.core.cats_helpers.cat_tools2 import Categorized_Page_Generator
+from src.core.cats_helpers.cat_tools2 import categorized_page_generator
 
 
 class TestCategorizedPageGenerator:
-    """Tests for Categorized_Page_Generator function"""
+    """Tests for categorized_page_generator function"""
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
     def test_returns_list_of_titles(self, mocker):
@@ -30,7 +30,7 @@ class TestCategorizedPageGenerator:
             ),
         )
 
-        result = Categorized_Page_Generator("TestCategory", "page")
+        result = categorized_page_generator("TestCategory", "page")
         assert isinstance(result, list)
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
@@ -52,7 +52,7 @@ class TestCategorizedPageGenerator:
             ),
         )
 
-        result = Categorized_Page_Generator("TestCategory", "page")
+        result = categorized_page_generator("TestCategory", "page")
 
         assert "Article" in result
         assert "Category" in result
@@ -69,7 +69,7 @@ class TestCategorizedPageGenerator:
             return_value=MagicMock(CatDepth=MagicMock(return_value={})),
         )
 
-        Categorized_Page_Generator("TestCategory", "cat")
+        categorized_page_generator("TestCategory", "cat")
 
         call_kwargs = mock_cat_depth.return_value.CatDepth.call_args[1]
         assert call_kwargs["ns"] == "14"
@@ -83,7 +83,7 @@ class TestCategorizedPageGenerator:
             return_value=MagicMock(CatDepth=MagicMock(return_value={})),
         )
 
-        Categorized_Page_Generator("TestCategory", "page")
+        categorized_page_generator("TestCategory", "page")
 
         call_kwargs = mock_cat_depth.return_value.CatDepth.call_args[1]
         assert call_kwargs["ns"] == "all"
@@ -97,7 +97,7 @@ class TestCategorizedPageGenerator:
             return_value=MagicMock(CatDepth=MagicMock(return_value={})),
         )
 
-        Categorized_Page_Generator("TestCategory", "page")
+        categorized_page_generator("TestCategory", "page")
 
         call_kwargs = mock_cat_depth.return_value.CatDepth.call_args[1]
         assert call_kwargs["with_lang"] == "ar"
@@ -117,7 +117,7 @@ class TestCategorizedPageGenerator:
             ),
         )
 
-        result = Categorized_Page_Generator("TestCategory", "page")
+        result = categorized_page_generator("TestCategory", "page")
         assert "Page With Underscores" in result
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
@@ -129,7 +129,7 @@ class TestCategorizedPageGenerator:
             return_value=MagicMock(CatDepth=MagicMock(return_value={})),
         )
 
-        result = Categorized_Page_Generator("EmptyCategory", "page")
+        result = categorized_page_generator("EmptyCategory", "page")
         assert result == []
 
 

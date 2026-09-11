@@ -3,7 +3,6 @@
 Test file for make_years_template function
 """
 
-
 from src.temp.bots import make_years_template
 
 

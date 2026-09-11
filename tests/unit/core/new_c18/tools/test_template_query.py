@@ -47,9 +47,9 @@ class TestGetTemplates:
 
     def test_calls_find_lcn_for_uncached_link(self, mocker):
         """
-        Test that find_LCN is called for uncached links"""
+        Test that find_lcn is called for uncached links"""
         mock_find_lcn = mocker.patch(
-            "src.core.new_c18.tools.template_query.find_LCN",
+            "src.core.new_c18.tools.template_query.find_lcn",
             return_value={"test": {"templates": ["قالب:test"]}},
         )
 
@@ -61,7 +61,7 @@ class TestGetTemplates:
     def test_returns_none_when_no_templates_found(self, mocker):
         """
         Test that None is returned when no templates are found"""
-        mocker.patch("src.core.new_c18.tools.template_query.find_LCN", return_value={"test": {}})
+        mocker.patch("src.core.new_c18.tools.template_query.find_lcn", return_value={"test": {}})
 
         result = get_templates("no_templates_link", "ar")
         assert result is None
@@ -70,7 +70,7 @@ class TestGetTemplates:
         """
         Test that dict is returned for batch template queries"""
         mocker.patch(
-            "src.core.new_c18.tools.template_query.find_LCN",
+            "src.core.new_c18.tools.template_query.find_lcn",
             return_value={"test1": {"templates": ["قالب:test"]}, "test2": {"templates": ["قالب:test2"]}},
         )
 
@@ -79,8 +79,8 @@ class TestGetTemplates:
 
     def test_returns_none_when_find_lcn_returns_none_for_batch(self, mocker):
         """
-        Test that None is returned when find_LCN returns None for batch"""
-        mocker.patch("src.core.new_c18.tools.template_query.find_LCN", return_value=None)
+        Test that None is returned when find_lcn returns None for batch"""
+        mocker.patch("src.core.new_c18.tools.template_query.find_lcn", return_value=None)
 
         result = get_templates(["null_result_link"], "ar")
         assert result is None

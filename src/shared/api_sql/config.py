@@ -13,6 +13,7 @@ from .exceptions import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass(frozen=True)
 class DatabaseConfig:
     """Immutable database configuration container."""

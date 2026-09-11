@@ -26,7 +26,7 @@ class TestCheckEnTemps:
         """
         Test that check_en_temps returns True when no category data found."""
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
-        mocker.patch("src.mk_cats.utils.check_en.find_LCN", return_value=None)
+        mocker.patch("src.mk_cats.utils.check_en.find_lcn", return_value=None)
 
         from src.mk_cats.utils.check_en import check_en_temps
 
@@ -38,7 +38,7 @@ class TestCheckEnTemps:
         """
         Test that check_en_temps returns True when category has no templates."""
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
-        mocker.patch("src.mk_cats.utils.check_en.find_LCN", return_value={"Category:Test": {}})
+        mocker.patch("src.mk_cats.utils.check_en.find_lcn", return_value={"Category:Test": {}})
 
         from src.mk_cats.utils.check_en import check_en_temps
 
@@ -52,7 +52,7 @@ class TestCheckEnTemps:
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
         mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
         mocker.patch(
-            "src.mk_cats.utils.check_en.find_LCN",
+            "src.mk_cats.utils.check_en.find_lcn",
             return_value={"Category:Test": {"templates": ["Template:GoodTemplate"]}},
         )
 
@@ -68,7 +68,7 @@ class TestCheckEnTemps:
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
         mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
         mocker.patch(
-            "src.mk_cats.utils.check_en.find_LCN",
+            "src.mk_cats.utils.check_en.find_lcn",
             return_value={"Category:Test": {"templates": ["Template:BadTemplate"]}},
         )
 
@@ -84,7 +84,7 @@ class TestCheckEnTemps:
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
         mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
         mocker.patch(
-            "src.mk_cats.utils.check_en.find_LCN",
+            "src.mk_cats.utils.check_en.find_lcn",
             return_value={"Category:Test": {"templates": ["Template:BADTEMPLATE"]}},
         )
 
@@ -100,7 +100,7 @@ class TestCheckEnTemps:
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
         mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
         mocker.patch(
-            "src.mk_cats.utils.check_en.find_LCN",
+            "src.mk_cats.utils.check_en.find_lcn",
             return_value={"Category:Test": {"templates": ["template:badtemplate"]}},
         )
 
@@ -112,9 +112,9 @@ class TestCheckEnTemps:
 
     def test_calls_find_lcn_with_correct_params(self, mocker):
         """
-        Test that check_en_temps calls find_LCN with correct parameters."""
+        Test that check_en_temps calls find_lcn with correct parameters."""
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
-        mock_find_lcn = mocker.patch("src.mk_cats.utils.check_en.find_LCN", return_value=None)
+        mock_find_lcn = mocker.patch("src.mk_cats.utils.check_en.find_lcn", return_value=None)
 
         from src.mk_cats.utils.check_en import check_en_temps
 
@@ -126,7 +126,7 @@ class TestCheckEnTemps:
         """
         Test that check_en_temps handles empty templates list."""
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
-        mocker.patch("src.mk_cats.utils.check_en.find_LCN", return_value={"Category:Test": {"templates": []}})
+        mocker.patch("src.mk_cats.utils.check_en.find_lcn", return_value={"Category:Test": {"templates": []}})
 
         from src.mk_cats.utils.check_en import check_en_temps
 
@@ -140,7 +140,7 @@ class TestCheckEnTemps:
         mocker.patch("src.mk_cats.utils.check_en.skip_encats", [])
         mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
         mocker.patch(
-            "src.mk_cats.utils.check_en.find_LCN",
+            "src.mk_cats.utils.check_en.find_lcn",
             return_value={
                 "Category:Test": {
                     "templates": ["Template:GoodTemplate1", "Template:BadTemplate", "Template:GoodTemplate2"]

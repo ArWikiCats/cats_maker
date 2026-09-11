@@ -24,7 +24,7 @@ class TestGetArListTitleFromEnList:
     def test_processes_list_in_batches(self, mocker):
         """
         Test that list is processed in batches of 50"""
-        mock_find_lcn = mocker.patch("src.core.cats_helpers.ar_from_en2.find_LCN", return_value={})
+        mock_find_lcn = mocker.patch("src.core.cats_helpers.ar_from_en2.find_lcn", return_value={})
 
         # Create list with 55 items to ensure batching
         input_list = [f"Page{i}" for i in range(55)]
@@ -36,7 +36,7 @@ class TestGetArListTitleFromEnList:
         """
         Test that Arabic langlinks are extracted"""
         mocker.patch(
-            "src.core.cats_helpers.ar_from_en2.find_LCN",
+            "src.core.cats_helpers.ar_from_en2.find_lcn",
             return_value={
                 "Science": {"langlinks": {"ar": "علوم"}},
                 "History": {"langlinks": {"ar": "تاريخ"}},
@@ -50,18 +50,18 @@ class TestGetArListTitleFromEnList:
     def test_uses_correct_site_code_for_en(self, mocker):
         """
         Test that English site code is used by default"""
-        mock_find_lcn = mocker.patch("src.core.cats_helpers.ar_from_en2.find_LCN", return_value={})
+        mock_find_lcn = mocker.patch("src.core.cats_helpers.ar_from_en2.find_lcn", return_value={})
 
         get_ar_list_title_from_en_list(["Test"], wiki="en")
 
-        # Should use EEn_site.code which is "en"
+        # Should use en_site.code which is "en"
         call_kwargs = mock_find_lcn.call_args[1]
         assert call_kwargs["first_site_code"] == "en"
 
     def test_uses_correct_site_code_for_fr(self, mocker):
         """
         Test that French site code is used when wiki='fr'"""
-        mock_find_lcn = mocker.patch("src.core.cats_helpers.ar_from_en2.find_LCN", return_value={})
+        mock_find_lcn = mocker.patch("src.core.cats_helpers.ar_from_en2.find_lcn", return_value={})
 
         get_ar_list_title_from_en_list(["Test"], wiki="fr")
 
@@ -71,7 +71,7 @@ class TestGetArListTitleFromEnList:
     def test_handles_pipe_prefix(self, mocker):
         """
         Test handling of pipe prefix in joined list"""
-        mock_find_lcn = mocker.patch("src.core.cats_helpers.ar_from_en2.find_LCN", return_value={})
+        mock_find_lcn = mocker.patch("src.core.cats_helpers.ar_from_en2.find_lcn", return_value={})
 
         get_ar_list_title_from_en_list(["Page"])
 
