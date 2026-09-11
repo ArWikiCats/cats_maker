@@ -30,7 +30,7 @@ class TestALLAPIS:
     def test_main_page_returns_main_page(self, mock_wlc, mock_super_page, mock_login_bot):
         mock_wlc.return_value = mock_login_bot
         api = AllAPIS("ar", "wikipedia", "user", "pass")
-        result = api.MainPage("TestTitle")
+        result = api.mainpage("TestTitle")
         mock_super_page.MainPage.assert_called_once_with(mock_login_bot, "TestTitle", "ar", family="wikipedia")
         assert result == mock_super_page.MainPage.return_value
 
@@ -39,7 +39,7 @@ class TestALLAPIS:
     def test_cat_depth_calls_subcatquery(self, mock_wlc, mock_catdepth, mock_login_bot):
         mock_wlc.return_value = mock_login_bot
         api = AllAPIS("ar", "wikipedia", "user", "pass")
-        result = api.CatDepth("Category:Test", depth=2)
+        result = api.catdepth("Category:Test", depth=2)
         mock_catdepth.subcatquery.assert_called_once_with(
             mock_login_bot, "Category:Test", sitecode="ar", family="wikipedia", depth=2
         )

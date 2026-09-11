@@ -11,7 +11,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.core.new_c18.core.category_resolver import CategoryResolver
 from src.mk_cats import create_categories_from_list, create_category_page, mknew
 from src.mk_cats.mknew import (
     clear_processing_state,
@@ -28,13 +27,14 @@ class TestMainFlowIntegration:
 
     @pytest.fixture
     def mock_all_external_services(self, mocker):
-        """Mock all external API calls for integration testing."""
+        """
+        Mock all external API calls for integration testing."""
         # Mock Wikidata API
-        mock_wikidata = mocker.patch("src.shared.wd_api.wd_api_bot.Get_Sitelinks_From_wikidata")
+        mock_wikidata = mocker.patch("src.shared.wd_api.wd_api_bot.get_sitelinks_from_wikidata")
         mock_wikidata.return_value = {"q": "Q12345", "sitelinks": {}}
 
         # Mock LCN (Language Code Navigator)
-        mock_lcn = mocker.patch("src.shared.lcn_new.find_Page_Cat_without_hidden")
+        mock_lcn = mocker.patch("src.shared.lcn_new.find_page_cat_without_hidden")
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in mknew)
@@ -78,27 +78,31 @@ class TestMainFlowIntegration:
 
     @pytest.fixture
     def mock_ar_make_lab(self, mocker):
-        """Mock the ar_make_lab function that generates Arabic labels."""
+        """
+        Mock the ar_make_lab function that generates Arabic labels."""
         mock = mocker.patch("src.mk_cats.mknew.ar_make_lab")
         mock.return_value = "علوم"
         return mock
 
     @pytest.fixture
     def mock_check_en_temps(self, mocker):
-        """Mock check_en_temps to always return True."""
+        """
+        Mock check_en_temps to always return True."""
         mock = mocker.patch("src.mk_cats.mknew.check_en_temps")
         mock.return_value = True
         return mock
 
     @pytest.fixture
     def mock_filter_en(self, mocker):
-        """Mock filter_en.filter_category to always return True."""
+        """
+        Mock filter_en.filter_category to always return True."""
         mock = mocker.patch("src.mk_cats.utils.filter_en.filter_category")
         mock.return_value = True
         return mock
 
     def test_create_categories_from_list_empty_list(self):
-        """Test that create_categories_from_list handles empty list gracefully."""
+        """
+        Test that create_categories_from_list handles empty list gracefully."""
 
         # Should not raise any exceptions
         create_categories_from_list([])
@@ -106,7 +110,8 @@ class TestMainFlowIntegration:
     def test_create_categories_from_list_calls_one_cat_for_each_item(
         self, mocker, mock_ar_make_lab, mock_check_en_temps, mock_filter_en
     ):
-        """Test that create_categories_from_list iterates over all categories."""
+        """
+        Test that create_categories_from_list iterates over all categories."""
 
         # Mock the entire one_cat function to track calls
         mock_one_cat = mocker.patch("src.mk_cats.mknew.one_cat")
@@ -118,13 +123,15 @@ class TestMainFlowIntegration:
         assert mock_one_cat.call_count == 3
 
     def test_one_cat_filters_empty_title(self):
-        """Test that one_cat returns False for empty title."""
+        """
+        Test that one_cat returns False for empty title."""
 
         result = one_cat("", 1, 1)
         assert result is False
 
     def test_one_cat_filters_duplicate_categories(self, mocker):
-        """Test that duplicate categories are filtered out."""
+        """
+        Test that duplicate categories are filtered out."""
 
         # Clear processing state for this test
         clear_processing_state()
@@ -145,7 +152,8 @@ class TestMainFlowIntegration:
         mknew._done_d.clear()
 
     def test_process_catagories_calls_make_ar(self, mocker, mock_all_external_services):
-        """Test that process_catagories calls make_ar with correct parameters."""
+        """
+        Test that process_catagories calls make_ar with correct parameters."""
 
         # Mock make_ar to return an empty list (no subcategories)
         mock_make_ar = mocker.patch("src.mk_cats.mknew.make_ar")
@@ -160,13 +168,15 @@ class TestMainFlowIntegration:
         assert args[1] == "علوم"
 
     def test_make_ar_returns_empty_for_empty_ar_title(self):
-        """Test that make_ar returns empty list for empty Arabic title."""
+        """
+        Test that make_ar returns empty list for empty Arabic title."""
 
         result = make_ar("Category:Science", "")
         assert result == []
 
     def test_make_ar_returns_empty_for_whitespace_ar_title(self):
-        """Test that make_ar returns empty list for whitespace Arabic title."""
+        """
+        Test that make_ar returns empty list for whitespace Arabic title."""
 
         result = make_ar("Category:Science", "   ")
         assert result == []
@@ -175,19 +185,9 @@ class TestMainFlowIntegration:
 class TestModuleInteraction:
     """Tests for interaction between different modules."""
 
-    def test_new_c18_integration_with_category_resolver(self, mocker):
-        """Test that new_c18 module integrates with CategoryResolver."""
-        # Mock database connection
-        mock_connect = mocker.patch("src.shared.api_sql.db_pool.db_manager.execute_query")
-        mock_connect.return_value = []
-
-        # This tests that the modules can be imported and interact
-
-        # The module should be importable without errors
-        assert CategoryResolver is not None
-
     def test_mk_cats_integration_with_create_category_page(self, mocker):
-        """Test that mk_cats integrates with create_category_page."""
+        """
+        Test that mk_cats integrates with create_category_page."""
 
         # Mock all external calls in create_category_page
         mocker.patch("src.mk_cats.create_category_page.add_text_to_cat", return_value="Test text")
@@ -197,10 +197,11 @@ class TestModuleInteraction:
         assert create_category_page.new_category is not None
 
     def test_wd_bots_integration_with_get_bots(self, mocker):
-        """Test that wd_api module functions integrate properly."""
+        """
+        Test that wd_api module functions integrate properly."""
 
         # Mock the underlying API call
-        mock_api = mocker.patch("src.shared.wd_api.wd_api_bot.Get_infos_wikidata")
+        mock_api = mocker.patch("src.shared.wd_api.wd_api_bot.get_infos_wikidata")
         mock_api.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -213,7 +214,7 @@ class TestModuleInteraction:
         }
 
         # Test get_sitelinks function (mocking at the right level)
-        mock_sitelinks = mocker.patch("src.shared.wd_api.wd_api_bot.Get_Sitelinks_From_wikidata")
+        mock_sitelinks = mocker.patch("src.shared.wd_api.wd_api_bot.get_sitelinks_from_wikidata")
         mock_sitelinks.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -221,7 +222,7 @@ class TestModuleInteraction:
             }
         }
 
-        result = wd_api_bot.Get_Sitelinks_From_wikidata("en", "Science")
+        result = wd_api_bot.get_sitelinks_from_wikidata("en", "Science")
 
         assert result is not None
 
@@ -230,7 +231,8 @@ class TestCallbackIntegration:
     """Tests for callback functionality in the main flow."""
 
     def test_create_categories_with_callback(self, mocker):
-        """Test that callbacks are properly passed through the flow."""
+        """
+        Test that callbacks are properly passed through the flow."""
 
         callback_mock = MagicMock()
 
@@ -244,7 +246,8 @@ class TestCallbackIntegration:
         # but the function should not raise any errors
 
     def test_process_catagories_passes_callback_to_make_ar(self, mocker):
-        """Test that process_catagories passes callback to make_ar."""
+        """
+        Test that process_catagories passes callback to make_ar."""
 
         callback_mock = MagicMock()
 
@@ -263,7 +266,8 @@ class TestErrorHandling:
     """Tests for error handling in the integration flow."""
 
     def test_create_categories_handles_none_in_list(self, mocker):
-        """Test that the flow handles None values in the list."""
+        """
+        Test that the flow handles None values in the list."""
 
         # Mock one_cat to track calls
         mock_one_cat = mocker.patch("src.mk_cats.mknew.one_cat")
@@ -276,7 +280,8 @@ class TestErrorHandling:
         assert mock_one_cat.call_count == 3
 
     def test_scan_ar_title_handles_repeated_titles(self):
-        """Test that scan_ar_title correctly tracks repeated titles."""
+        """
+        Test that scan_ar_title correctly tracks repeated titles."""
 
         # Clear state
         clear_processing_state()
@@ -297,7 +302,8 @@ class TestDataFlowIntegration:
     """Tests for data flow between modules."""
 
     def test_category_data_flows_from_en_to_ar(self, mocker):
-        """Test that category data flows correctly from English to Arabic."""
+        """
+        Test that category data flows correctly from English to Arabic."""
         # Mock the translation/label generation
         mock_label = mocker.patch("src.mk_cats.mknew.ar_make_lab")
         mock_label.return_value = "علوم الحاسوب"

@@ -35,20 +35,20 @@ class AllAPIS:
         self.cookies_dir = cookies_dir
         self.login_bot = self._login()
 
-    def MainPage(self, title: str, *args, **kwargs) -> super_page.MainPage:
+    def mainpage(self, title: str, *args, **kwargs) -> super_page.MainPage:
         return super_page.MainPage(self.login_bot, title, self.lang, family=self.family)
 
-    def MainPageSolveReditect(self, title: str, *args, **kwargs) -> super_page.MainPage:
+    def main_page_solve_redirect(self, title: str, *args, **kwargs) -> super_page.MainPage:
         page = super_page.MainPage(self.login_bot, title, self.lang, family=self.family)
 
-        if page.isRedirect():
+        if page.is_redirect():
             target = page.get_redirect_target()
             if target:
                 return super_page.MainPage(self.login_bot, target, self.lang, family=self.family)
 
         return page
 
-    def CatDepth(
+    def catdepth(
         self,
         title: str,
         **kwargs,
@@ -61,7 +61,7 @@ class AllAPIS:
             **kwargs,
         )
 
-    def NewApi(self, *args, **kwargs) -> bot_api.NewApi:
+    def newapi(self, *args, **kwargs) -> bot_api.NewApi:
         # ---
         return bot_api.NewApi(self.login_bot, lang=self.lang, family=self.family)
 

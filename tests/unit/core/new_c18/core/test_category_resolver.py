@@ -11,7 +11,8 @@ class TestFetchArTitlesBasedOnEnCategory:
     """Tests for CategoryResolver._fetch_ar_titles_based_on_en_category method"""
 
     def test_calls_en_category_members(self, mocker):
-        """Test that _en_category_members is called"""
+        """
+        Test that _en_category_members is called"""
         mock_en_cat = mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver._en_category_members",
             return_value=["Page1", "Page2"],
@@ -27,7 +28,8 @@ class TestFetchArTitlesBasedOnEnCategory:
         mock_en_cat.assert_called_once_with("Science", wiki="en")
 
     def test_calls_translate_titles_to_ar(self, mocker):
-        """Test that _translate_titles_to_ar is called"""
+        """
+        Test that _translate_titles_to_ar is called"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver._en_category_members",
             return_value=["Page1", "Page2"],
@@ -43,7 +45,8 @@ class TestFetchArTitlesBasedOnEnCategory:
         mock_get_ar.assert_called_once_with(["Page1", "Page2"], wiki="en")
 
     def test_returns_arabic_titles(self, mocker):
-        """Test that Arabic titles are returned"""
+        """
+        Test that Arabic titles are returned"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver._en_category_members",
             return_value=["Science"],
@@ -63,7 +66,8 @@ class TestListArPagesInCat:
     """Tests for CategoryResolver.list_ar_pages_in_cat method"""
 
     def test_returns_list(self, mocker):
-        """Test that method returns a list"""
+        """
+        Test that method returns a list"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.fetch_ar_category_members",
             return_value=[{"page_title": "test", "page_namespace": 0}],
@@ -76,7 +80,8 @@ class TestListArPagesInCat:
         assert "test" in result
 
     def test_uses_sql_when_enabled(self, mocker):
-        """Test that SQL is used when enabled"""
+        """
+        Test that SQL is used when enabled"""
         mock_sql = mocker.patch(
             "src.core.new_c18.core.category_resolver.fetch_ar_category_members",
             return_value=[{"page_title": "صفحة1", "page_namespace": 0}],
@@ -88,7 +93,8 @@ class TestListArPagesInCat:
         mock_sql.assert_called_once()
 
     def test_replaces_spaces_with_underscores(self, mocker):
-        """Test that spaces are handled correctly"""
+        """
+        Test that spaces are handled correctly"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.fetch_ar_category_members",
             return_value=[{"page_title": "test", "page_namespace": 0}],
@@ -103,7 +109,8 @@ class TestListEnPagesWithArLinks:
     """Tests for CategoryResolver.list_en_pages_with_ar_links method"""
 
     def test_returns_list(self, mocker):
-        """Test that method returns a list"""
+        """
+        Test that method returns a list"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
             side_effect=Exception("SQL Error"),
@@ -120,7 +127,8 @@ class TestListEnPagesWithArLinks:
         assert isinstance(result, list)
 
     def test_uses_sql_when_enabled(self, mocker):
-        """Test that SQL is used when enabled"""
+        """
+        Test that SQL is used when enabled"""
         mock_sql = mocker.patch(
             "src.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
             return_value=[{"ll_title": "صفحة1"}, {"ll_title": "صفحة2"}],
@@ -132,7 +140,8 @@ class TestListEnPagesWithArLinks:
         mock_sql.assert_called_once()
 
     def test_falls_back_to_api_when_sql_disabled(self, mocker):
-        """Test fallback to API when SQL fails"""
+        """
+        Test fallback to API when SQL fails"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
             side_effect=Exception("SQL Error"),
@@ -149,7 +158,8 @@ class TestListEnPagesWithArLinks:
         mock_api.assert_called_once()
 
     def test_replaces_underscores_in_results(self, mocker):
-        """Test that underscores are replaced with spaces in results"""
+        """
+        Test that underscores are replaced with spaces in results"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
             return_value=[{"ll_title": "صفحة_اختبار"}],
@@ -165,7 +175,8 @@ class TestDiffMissingArPages:
     """Tests for CategoryResolver.diff_missing_ar_pages method"""
 
     def test_returns_list(self, mocker):
-        """Test that method returns a list"""
+        """
+        Test that method returns a list"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver.list_ar_pages_in_cat",
             return_value=[],
@@ -181,7 +192,8 @@ class TestDiffMissingArPages:
         assert isinstance(result, list)
 
     def test_returns_difference_of_lists(self, mocker):
-        """Test that result is pages in en but not in ar"""
+        """
+        Test that result is pages in en but not in ar"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver.list_ar_pages_in_cat",
             return_value=["صفحة1", "صفحة2"],
@@ -203,7 +215,8 @@ class TestResolveMembers:
     """Tests for CategoryResolver.resolve_members method"""
 
     def test_returns_list(self, mocker):
-        """Test that method returns a list"""
+        """
+        Test that method returns a list"""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
             return_value=[],
@@ -215,7 +228,8 @@ class TestResolveMembers:
         assert isinstance(result, list)
 
     def test_cleans_category_prefix(self, mocker):
-        """Test that Category: prefix is cleaned"""
+        """
+        Test that Category: prefix is cleaned"""
         mock_diff = mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
             return_value=[],
@@ -229,7 +243,8 @@ class TestResolveMembers:
         assert "تصنيف:" not in call_args[1]
 
     def test_replaces_underscores(self, mocker):
-        """Test that underscores are replaced with spaces"""
+        """
+        Test that underscores are replaced with spaces"""
         mock_diff = mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
             return_value=[],
@@ -243,7 +258,8 @@ class TestResolveMembers:
         assert "_" not in call_args[1]
 
     def test_passes_wiki_parameter(self, mocker):
-        """Test that wiki parameter is passed"""
+        """
+        Test that wiki parameter is passed"""
         mock_diff = mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
             return_value=[],

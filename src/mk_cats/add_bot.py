@@ -24,7 +24,7 @@ def add_text_to_articles(final_categories, newtext) -> str:
 @functools.lru_cache(maxsize=1024)
 def _get_page(page_title) -> MainPage | None:
     api = load_main_api("ar")
-    page = api.MainPage(page_title)
+    page = api.mainpage(page_title)
 
     text = page.get_text()
 
@@ -32,10 +32,10 @@ def _get_page(page_title) -> MainPage | None:
         logger.info(' text = "" ')
         return None
 
-    if page.isRedirect():
+    if page.is_redirect():
         return None
 
-    if page.isDisambiguation():
+    if page.is_disambiguation():
         return None
 
     if not page.exists():

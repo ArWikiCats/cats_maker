@@ -57,11 +57,13 @@ class RequestsHandler:
 
     @property
     def _session(self) -> requests.Session:
-        """The mwclient-managed session."""
+        """
+        The mwclient-managed session."""
         return self._site.connection
 
     def _refresh_csrf_token(self) -> str:
-        """Force mwclient to fetch a fresh CSRF token from the server."""
+        """
+        Force mwclient to fetch a fresh CSRF token from the server."""
         return self._site.get_token("csrf", force=True)
 
     @staticmethod

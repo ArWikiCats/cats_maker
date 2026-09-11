@@ -8,15 +8,16 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.core.cats_helpers.cat_tools2 import Categorized_Page_Generator
+from src.core.cats_helpers.cat_tools2 import categorized_page_generator
 
 
 class TestCategorizedPageGenerator:
-    """Tests for Categorized_Page_Generator function"""
+    """Tests for categorized_page_generator function"""
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
     def test_returns_list_of_titles(self, mocker):
-        """Test that function returns list of page titles"""
+        """
+        Test that function returns list of page titles"""
         mocker.patch(
             "src.core.cats_helpers.cat_tools2.load_main_api",
             return_value=MagicMock(
@@ -29,12 +30,13 @@ class TestCategorizedPageGenerator:
             ),
         )
 
-        result = Categorized_Page_Generator("TestCategory", "page")
+        result = categorized_page_generator("TestCategory", "page")
         assert isinstance(result, list)
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
     def test_filters_by_namespace(self, mocker):
-        """Test that results are filtered by namespace"""
+        """
+        Test that results are filtered by namespace"""
         mocker.patch(
             "src.core.cats_helpers.cat_tools2.load_main_api",
             return_value=MagicMock(
@@ -50,7 +52,7 @@ class TestCategorizedPageGenerator:
             ),
         )
 
-        result = Categorized_Page_Generator("TestCategory", "page")
+        result = categorized_page_generator("TestCategory", "page")
 
         assert "Article" in result
         assert "Category" in result
@@ -60,46 +62,50 @@ class TestCategorizedPageGenerator:
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
     def test_uses_correct_ns_parameter_for_cat_type(self, mocker):
-        """Test that ns='14' is used when typee='cat'"""
+        """
+        Test that ns='14' is used when typee='cat'"""
         mock_cat_depth = mocker.patch(
             "src.core.cats_helpers.cat_tools2.load_main_api",
             return_value=MagicMock(CatDepth=MagicMock(return_value={})),
         )
 
-        Categorized_Page_Generator("TestCategory", "cat")
+        categorized_page_generator("TestCategory", "cat")
 
         call_kwargs = mock_cat_depth.return_value.CatDepth.call_args[1]
         assert call_kwargs["ns"] == "14"
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
     def test_uses_all_ns_for_non_cat_type(self, mocker):
-        """Test that ns='all' is used when typee is not 'cat'"""
+        """
+        Test that ns='all' is used when typee is not 'cat'"""
         mock_cat_depth = mocker.patch(
             "src.core.cats_helpers.cat_tools2.load_main_api",
             return_value=MagicMock(CatDepth=MagicMock(return_value={})),
         )
 
-        Categorized_Page_Generator("TestCategory", "page")
+        categorized_page_generator("TestCategory", "page")
 
         call_kwargs = mock_cat_depth.return_value.CatDepth.call_args[1]
         assert call_kwargs["ns"] == "all"
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
     def test_requests_arabic_language(self, mocker):
-        """Test that with_lang='ar' is passed to CatDepth"""
+        """
+        Test that with_lang='ar' is passed to CatDepth"""
         mock_cat_depth = mocker.patch(
             "src.core.cats_helpers.cat_tools2.load_main_api",
             return_value=MagicMock(CatDepth=MagicMock(return_value={})),
         )
 
-        Categorized_Page_Generator("TestCategory", "page")
+        categorized_page_generator("TestCategory", "page")
 
         call_kwargs = mock_cat_depth.return_value.CatDepth.call_args[1]
         assert call_kwargs["with_lang"] == "ar"
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
     def test_replaces_underscores_in_titles(self, mocker):
-        """Test that underscores are replaced with spaces in titles"""
+        """
+        Test that underscores are replaced with spaces in titles"""
         mocker.patch(
             "src.core.cats_helpers.cat_tools2.load_main_api",
             return_value=MagicMock(
@@ -111,18 +117,19 @@ class TestCategorizedPageGenerator:
             ),
         )
 
-        result = Categorized_Page_Generator("TestCategory", "page")
+        result = categorized_page_generator("TestCategory", "page")
         assert "Page With Underscores" in result
 
     @pytest.mark.skip(reason="ru_cache_wrapper object does not have the attribute 'CatDepth'")
     def test_returns_empty_list_for_empty_category(self, mocker):
-        """Test that empty list is returned for empty category"""
+        """
+        Test that empty list is returned for empty category"""
         mocker.patch(
             "src.core.cats_helpers.cat_tools2.load_main_api",
             return_value=MagicMock(CatDepth=MagicMock(return_value={})),
         )
 
-        result = Categorized_Page_Generator("EmptyCategory", "page")
+        result = categorized_page_generator("EmptyCategory", "page")
         assert result == []
 
 
@@ -130,7 +137,8 @@ class TestTatoneNs:
     """Tests for namespace configuration"""
 
     def test_tatone_ns_default_includes_standard_namespaces(self):
-        """Test that default tatone_ns includes expected namespaces"""
+        """
+        Test that default tatone_ns includes expected namespaces"""
         from src.core.cats_helpers import cat_tools2
 
         assert 0 in cat_tools2.tatone_ns

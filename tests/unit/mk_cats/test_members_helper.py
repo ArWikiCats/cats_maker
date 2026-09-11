@@ -17,7 +17,8 @@ class TestGatherMembersFromSql:
     """Tests for gather_members_from_sql function."""
 
     def test_calls_get_listen_page_title(self, mocker):
-        """Test that gather_members_from_sql calls MemberLister.get_listen_page_title."""
+        """
+        Test that gather_members_from_sql calls MemberLister.get_listen_page_title."""
         mock_get_listen = mocker.patch(
             "src.core.new_c18.core.member_lister.MemberLister.get_listen_page_title",
             return_value=["Article1", "Article2"],
@@ -29,7 +30,8 @@ class TestGatherMembersFromSql:
         assert result == ["Article1", "Article2"]
 
     def test_returns_empty_list_when_no_members(self, mocker):
-        """Test that gather_members_from_sql returns empty list when no members found."""
+        """
+        Test that gather_members_from_sql returns empty list when no members found."""
         mocker.patch(
             "src.core.new_c18.core.member_lister.MemberLister.get_listen_page_title",
             return_value=[],
@@ -44,7 +46,8 @@ class TestGatherMembersFromApi:
     """Tests for gather_members_from_api function."""
 
     def test_calls_make_lit_api_way(self, mocker):
-        """Test that gather_members_from_api calls CategoryResolver.make_lit_api_way."""
+        """
+        Test that gather_members_from_api calls CategoryResolver.make_lit_api_way."""
         mock_api = mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=["Article1", "Article2"],
@@ -56,7 +59,8 @@ class TestGatherMembersFromApi:
         assert result == ["Article1", "Article2"]
 
     def test_returns_empty_list_when_api_returns_none(self, mocker):
-        """Test that gather_members_from_api returns empty list when API returns None."""
+        """
+        Test that gather_members_from_api returns empty list when API returns None."""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=None,
@@ -68,7 +72,8 @@ class TestGatherMembersFromApi:
         assert result == []
 
     def test_returns_empty_list_when_api_returns_false(self, mocker):
-        """Test that gather_members_from_api returns empty list when API returns False."""
+        """
+        Test that gather_members_from_api returns empty list when API returns False."""
         mocker.patch(
             "src.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=False,
@@ -84,7 +89,8 @@ class TestMergeMemberLists:
     """Tests for merge_member_lists function."""
 
     def test_merges_two_lists(self):
-        """Test that merge_member_lists merges two lists."""
+        """
+        Test that merge_member_lists merges two lists."""
         from src.mk_cats.members_helper import merge_member_lists
 
         result = merge_member_lists(["A", "B"], ["C", "D"])
@@ -92,7 +98,8 @@ class TestMergeMemberLists:
         assert set(result) == {"A", "B", "C", "D"}
 
     def test_removes_duplicates(self):
-        """Test that merge_member_lists removes duplicates."""
+        """
+        Test that merge_member_lists removes duplicates."""
         from src.mk_cats.members_helper import merge_member_lists
 
         result = merge_member_lists(["A", "B"], ["B", "C"])
@@ -101,7 +108,8 @@ class TestMergeMemberLists:
         assert set(result) == {"A", "B", "C"}
 
     def test_handles_empty_lists(self):
-        """Test that merge_member_lists handles empty lists."""
+        """
+        Test that merge_member_lists handles empty lists."""
         from src.mk_cats.members_helper import merge_member_lists
 
         result = merge_member_lists([], [])
@@ -109,7 +117,8 @@ class TestMergeMemberLists:
         assert result == []
 
     def test_merges_multiple_lists(self):
-        """Test that merge_member_lists merges multiple lists."""
+        """
+        Test that merge_member_lists merges multiple lists."""
         from src.mk_cats.members_helper import merge_member_lists
 
         result = merge_member_lists(["A"], ["B"], ["C"])
@@ -121,7 +130,8 @@ class TestFilterInvalidMembers:
     """Tests for filter_invalid_members function."""
 
     def test_filters_empty_strings(self):
-        """Test that filter_invalid_members filters empty strings."""
+        """
+        Test that filter_invalid_members filters empty strings."""
         from src.mk_cats.members_helper import filter_invalid_members
 
         result = filter_invalid_members(["A", "", "B"])
@@ -129,7 +139,8 @@ class TestFilterInvalidMembers:
         assert result == ["A", "B"]
 
     def test_filters_none_values(self):
-        """Test that filter_invalid_members filters None values."""
+        """
+        Test that filter_invalid_members filters None values."""
         from src.mk_cats.members_helper import filter_invalid_members
 
         result = filter_invalid_members(["A", None, "B"])
@@ -137,7 +148,8 @@ class TestFilterInvalidMembers:
         assert result == ["A", "B"]
 
     def test_filters_non_strings(self):
-        """Test that filter_invalid_members filters non-string values."""
+        """
+        Test that filter_invalid_members filters non-string values."""
         from src.mk_cats.members_helper import filter_invalid_members
 
         result = filter_invalid_members(["A", 123, "B", [], {}])
@@ -145,7 +157,8 @@ class TestFilterInvalidMembers:
         assert result == ["A", "B"]
 
     def test_returns_empty_list_for_all_invalid(self):
-        """Test that filter_invalid_members returns empty list when all invalid."""
+        """
+        Test that filter_invalid_members returns empty list when all invalid."""
         from src.mk_cats.members_helper import filter_invalid_members
 
         result = filter_invalid_members(["", None, 123])
@@ -157,7 +170,8 @@ class TestDeduplicateMembers:
     """Tests for deduplicate_members function."""
 
     def test_removes_duplicates(self):
-        """Test that deduplicate_members removes duplicates."""
+        """
+        Test that deduplicate_members removes duplicates."""
         from src.mk_cats.members_helper import deduplicate_members
 
         result = deduplicate_members(["A", "A", "B", "B"])
@@ -166,7 +180,8 @@ class TestDeduplicateMembers:
         assert len(result) == 2
 
     def test_handles_empty_list(self):
-        """Test that deduplicate_members handles empty list."""
+        """
+        Test that deduplicate_members handles empty list."""
         from src.mk_cats.members_helper import deduplicate_members
 
         result = deduplicate_members([])
@@ -174,7 +189,8 @@ class TestDeduplicateMembers:
         assert result == []
 
     def test_preserves_unique_items(self):
-        """Test that deduplicate_members preserves unique items."""
+        """
+        Test that deduplicate_members preserves unique items."""
         from src.mk_cats.members_helper import deduplicate_members
 
         result = deduplicate_members(["A", "B", "C"])
@@ -186,7 +202,8 @@ class TestCollectCategoryMembers:
     """Tests for collect_category_members function."""
 
     def test_collects_from_all_sources(self, mocker):
-        """Test that collect_category_members collects from all sources."""
+        """
+        Test that collect_category_members collects from all sources."""
         mocker.patch("src.mk_cats.members_helper.gather_members_from_sql", return_value=["SqlArticle"])
         mocker.patch("src.mk_cats.members_helper.gather_members_from_api", return_value=["ApiArticle"])
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
@@ -199,7 +216,8 @@ class TestCollectCategoryMembers:
         assert "SqlArticle" in result
 
     def test_skips_api_when_sql_has_results(self, mocker):
-        """Test that collect_category_members skips API when SQL has results."""
+        """
+        Test that collect_category_members skips API when SQL has results."""
         mock_sql = mocker.patch(
             "src.mk_cats.members_helper.gather_members_from_sql", return_value=["SqlArticle1", "SqlArticle2"]
         )
@@ -220,7 +238,8 @@ class TestCollectCategoryMembers:
         assert "SqlArticle2" in result
 
     def test_uses_api_when_sql_disabled(self, mocker):
-        """Test that collect_category_members uses API when SQL is disabled."""
+        """
+        Test that collect_category_members uses API when SQL is disabled."""
         mocker.patch("src.mk_cats.members_helper.gather_members_from_sql", return_value=["SqlArticle"])
         mock_api = mocker.patch("src.mk_cats.members_helper.gather_members_from_api", return_value=["ApiArticle"])
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
@@ -237,7 +256,8 @@ class TestCollectCategoryMembers:
         assert "ApiArticle" in result
 
     def test_returns_empty_list_when_no_members(self, mocker):
-        """Test that collect_category_members returns empty list when no members."""
+        """
+        Test that collect_category_members returns empty list when no members."""
         mocker.patch("src.mk_cats.members_helper.gather_members_from_sql", return_value=[])
         mocker.patch("src.mk_cats.members_helper.gather_members_from_api", return_value=[])
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", return_value=[])
@@ -253,7 +273,8 @@ class TestCollectCategoryMembers:
         assert result == []
 
     def test_removes_invalid_entries(self, mocker):
-        """Test that collect_category_members removes invalid entries."""
+        """
+        Test that collect_category_members removes invalid entries."""
         mocker.patch("src.mk_cats.members_helper.gather_members_from_sql", return_value=["Valid", "", None, 123])
         mocker.patch("src.mk_cats.members_helper.gather_members_from_api", return_value=[])
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
@@ -269,7 +290,8 @@ class TestCollectCategoryMembers:
         assert result == ["Valid"]
 
     def test_removes_duplicates(self, mocker):
-        """Test that collect_category_members removes duplicates."""
+        """
+        Test that collect_category_members removes duplicates."""
         mocker.patch("src.mk_cats.members_helper.gather_members_from_sql", return_value=["Article", "Article"])
         mocker.patch("src.mk_cats.members_helper.gather_members_from_api", return_value=[])
         mocker.patch("src.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)

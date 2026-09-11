@@ -11,17 +11,20 @@ class TestSkippedCategories:
     """Tests for SKIPPED_CATEGORIES constant"""
 
     def test_contains_expected_skip_categories(self):
-        """Test that expected categories are in skip list"""
+        """
+        Test that expected categories are in skip list"""
         assert "تصنيف:صفحات توضيح" in SKIPPED_CATEGORIES
         assert "تصنيف:قوالب معلومات" in SKIPPED_CATEGORIES
         assert "تصنيف:قوالب تستخدم بيانات من ويكي بيانات" in SKIPPED_CATEGORIES
 
     def test_contains_tracking_templates(self):
-        """Test that tracking template categories are in skip list"""
+        """
+        Test that tracking template categories are in skip list"""
         assert "تصنيف:قوالب بحقول إحداثيات" in SKIPPED_CATEGORIES
 
     def test_is_frozenset_type(self):
-        """Test that SKIPPED_CATEGORIES is a frozenset"""
+        """
+        Test that SKIPPED_CATEGORIES is a frozenset"""
         assert isinstance(SKIPPED_CATEGORIES, frozenset)
 
 
@@ -29,20 +32,24 @@ class TestFalseTemplates:
     """Tests for FALSE_TEMPLATES constant"""
 
     def test_contains_delete_template(self):
-        """Test that delete template is in list"""
+        """
+        Test that delete template is in list"""
         assert "شطب" in FALSE_TEMPLATES
 
     def test_contains_stub_template(self):
-        """Test that stub template is in list (unless -stubs arg)"""
+        """
+        Test that stub template is in list (unless -stubs arg)"""
         # Note: بذرة may be removed if -stubs in sys.argv
         assert "بذرة" in FALSE_TEMPLATES
 
     def test_contains_wikidata_template(self):
-        """Test that wikidata template is in list"""
+        """
+        Test that wikidata template is in list"""
         assert "ويكي بيانات" in FALSE_TEMPLATES
 
     def test_is_frozenset_type(self):
-        """Test that FALSE_TEMPLATES is a frozenset"""
+        """
+        Test that FALSE_TEMPLATES is a frozenset"""
         assert isinstance(FALSE_TEMPLATES, frozenset)
 
 
@@ -50,15 +57,18 @@ class TestPreText:
     """Tests for PRE_TEXT constant"""
 
     def test_is_string(self):
-        """Test that PRE_TEXT is a string"""
+        """
+        Test that PRE_TEXT is a string"""
         assert isinstance(PRE_TEXT, str)
 
     def test_contains_documentation_header(self):
-        """Test that PRE_TEXT contains documentation header"""
+        """
+        Test that PRE_TEXT contains documentation header"""
         assert "صفحة توثيق فرعية" in PRE_TEXT
 
     def test_contains_usage_section(self):
-        """Test that PRE_TEXT contains usage section"""
+        """
+        Test that PRE_TEXT contains usage section"""
         assert "استعمال" in PRE_TEXT
 
 
@@ -66,11 +76,13 @@ class TestToSearch:
     """Tests for TO_SEARCH constant"""
 
     def test_is_list(self):
-        """Test that TO_SEARCH is a list"""
+        """
+        Test that TO_SEARCH is a list"""
         assert isinstance(TO_SEARCH, list)
 
     def test_contains_expected_patterns(self):
-        """Test that expected patterns are in list"""
+        """
+        Test that expected patterns are in list"""
         assert "{{#استدعاء:شريط|شريط" in TO_SEARCH
 
 
@@ -78,10 +90,12 @@ class TestTosearchAndReplace:
     """Tests for TOSEARCH_AND_REPLACE constant"""
 
     def test_is_list(self):
-        """Test that TOSEARCH_AND_REPLACE is a list"""
+        """
+        Test that TOSEARCH_AND_REPLACE is a list"""
         assert isinstance(TOSEARCH_AND_REPLACE, list)
 
     def test_contains_expected_templates(self):
-        """Test that expected templates are in list"""
+        """
+        Test that expected templates are in list"""
         assert "{{توثيق شريط}}" in TOSEARCH_AND_REPLACE
         assert "{{Navbox documentation}}" in TOSEARCH_AND_REPLACE

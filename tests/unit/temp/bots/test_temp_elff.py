@@ -3,7 +3,6 @@
 Test file for make_millennium_template function
 """
 
-
 from src.temp.bots import make_millennium_template
 
 

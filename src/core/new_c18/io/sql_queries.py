@@ -7,7 +7,8 @@ import logging
 from typing import Any
 
 from ....config import main_settings
-from ....shared.api_sql import add_namespace_prefix, db_manager
+from ....db import WikiReplicaDB
+from ....shared.api_sql import add_namespace_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +26,12 @@ def fetch_ar_category_members(ar_cat: str) -> list[dict[str, Any]]:
         AND lt_namespace = 14
     """
 
+    if not WikiReplicaDB.can_use_sql():
+        logger.warning("WikiReplicaDB not available, returning empty list")
+        return []
     try:
-        return db_manager.execute_query(wiki="arwiki", query=query, params=(ar_cat2,))
+        ar_db = WikiReplicaDB("arwiki")
+        return ar_db.select_safe(query=query, params=(ar_cat2,)) or []
     except Exception as e:
         logger.error(f"SQL error in fetch_ar_category_members: {e}")
         return []
@@ -42,6 +47,10 @@ def fetch_en_category_langlinks(encat: str, wiki: str = "en") -> list[dict[str, 
     if main_settings.query.ns_only_14:
         nss = "14"
 
+    if not WikiReplicaDB.can_use_sql():
+        logger.warning("WikiReplicaDB not available, returning empty list")
+        return []
+
     # nss is validated against known safe values above
     query = f"""
         SELECT DISTINCT ll_title
@@ -56,7 +65,8 @@ def fetch_en_category_langlinks(encat: str, wiki: str = "en") -> list[dict[str, 
     """
 
     try:
-        return db_manager.execute_query(wiki=f"{wiki}wiki", query=query, params=(encat2,))
+        db = WikiReplicaDB(f"{wiki}wiki")
+        return db.select_safe(query=query, params=(encat2,)) or []
     except Exception as e:
         logger.error(f"SQL error in fetch_en_category_langlinks: {e}")
         return []
@@ -74,8 +84,12 @@ def fetch_dont_add_pages() -> list[str]:
         AND lt_title = "لا_للتصنيف_المعادل"
     """
 
+    if not WikiReplicaDB.can_use_sql():
+        logger.warning("WikiReplicaDB not available, returning empty list")
+        return []
     try:
-        rows = db_manager.execute_query(wiki="ar", query=query)
+        ar_db = WikiReplicaDB("arwiki")
+        rows = ar_db.select_safe(query=query) or []
         return [add_namespace_prefix(r["page_title"], r["page_namespace"], lang="ar") for r in rows]
     except Exception as e:
         logger.error(f"SQL error in fetch_dont_add_pages: {e}")

@@ -3,7 +3,7 @@
 import logging
 import re
 
-from .config import ConfigLoader
+from ...config import main_settings
 from .repository import CategoryRepository
 
 logger = logging.getLogger(__name__)
@@ -14,13 +14,17 @@ class CategoryComparator:
     Service class to compare categories between English and Arabic Wikipedias.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, can_use_sql: bool | None = None) -> None:
         self.repo = CategoryRepository()
-        self.config = ConfigLoader()
+        if can_use_sql is None:
+            can_use_sql = main_settings.database.can_use_sql()
+
+        self.can_use_sql = can_use_sql
 
     @staticmethod
     def normalize_category_title(title: str, prefix_pattern: str) -> str:
-        """Strip a category prefix and normalise spaces to underscores."""
+        """
+        Strip a category prefix and normalise spaces to underscores."""
         if not title:
             return title
         # Remove prefix case-insensitively
@@ -39,8 +43,8 @@ class CategoryComparator:
         Returns:
             List of exclusive titles. Empty list if not in production or on error.
         """
-        if not self.config.is_production():
-            logger.info("Skipping category comparison: Not in production environment.")
+        if not self.can_use_sql:
+            logger.info("Skipping category comparison: WikiReplicaDB not available.")
             return []
 
         # Normalize inputs

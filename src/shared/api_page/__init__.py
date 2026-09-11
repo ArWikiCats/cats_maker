@@ -4,25 +4,17 @@ from __future__ import annotations
 
 import functools
 import logging
-import os
-
-from dotenv import load_dotenv
 
 from ...config import main_settings
 from ...shared.newapi import AllAPIS, WikiLoginClient
 
 logger = logging.getLogger(__name__)
 
-try:
-    load_dotenv()
-except Exception:
-    logger.info("Failed to load environment variables from .env file.")
-
 
 @functools.lru_cache(maxsize=1)
 def _load_credentials() -> tuple[str, str]:
-    username = os.getenv("WIKIPEDIA_BOT_USERNAME", "")
-    password = os.getenv("WIKIPEDIA_BOT_PASSWORD", "")
+    username = main_settings.wikipedia.credentials.username or ""
+    password = main_settings.wikipedia.credentials.password or ""
     return username, password
 
 

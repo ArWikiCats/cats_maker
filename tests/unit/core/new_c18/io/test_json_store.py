@@ -90,7 +90,8 @@ class TestJsonStore:
 
 class TestLoadJsonEdgeCases:
     def test_creates_parent_directory(self, tmp_path):
-        """Test that _load_json creates parent directory for missing file."""
+        """
+        Test that _load_json creates parent directory for missing file."""
         path = tmp_path / "subdir" / "test.json"
         assert not path.parent.exists()
         result = _load_json(path)
@@ -98,7 +99,8 @@ class TestLoadJsonEdgeCases:
         assert result == []
 
     def test_permission_error_on_read(self, tmp_path):
-        """Test that PermissionError during read is caught."""
+        """
+        Test that PermissionError during read is caught."""
         path = tmp_path / "test.json"
         path.write_text("[]", encoding="utf-8")
         with patch("builtins.open", side_effect=PermissionError("denied")):
@@ -109,7 +111,8 @@ class TestLoadJsonEdgeCases:
 
 class TestSaveJsonEdgeCases:
     def test_permission_error_retry_path(self, tmp_path):
-        """Test that PermissionError triggers retry path."""
+        """
+        Test that PermissionError triggers retry path."""
         path = tmp_path / "test.json"
         call_count = 0
         original_open = open
@@ -127,7 +130,8 @@ class TestSaveJsonEdgeCases:
         assert call_count >= 2
 
     def test_oserror_on_write(self, tmp_path):
-        """Test that OSError during write is caught."""
+        """
+        Test that OSError during write is caught."""
         path = tmp_path / "test.json"
         with patch("builtins.open", side_effect=OSError("disk full")):
             _save_json(["data"], path)  # Should not raise
@@ -137,14 +141,16 @@ class TestGetDontAddPages:
     """Tests for get_dont_add_pages function"""
 
     def test_returns_empty_when_no_dontadd_enabled(self, mocker):
-        """Test that empty list is returned when no_dontadd is True"""
+        """
+        Test that empty list is returned when no_dontadd is True"""
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.no_dontadd", True)
 
         result = get_dont_add_pages()
         assert result == []
 
     def test_returns_empty_when_test_mode_enabled(self, mocker):
-        """Test that empty list is returned when test_mode is True"""
+        """
+        Test that empty list is returned when test_mode is True"""
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.no_dontadd", False)
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.test_mode", True)
 
@@ -152,7 +158,8 @@ class TestGetDontAddPages:
         assert result == []
 
     def test_returns_empty_when_not_production_and_no_test_add(self, mocker):
-        """Test that empty list is returned in non-production without test_add"""
+        """
+        Test that empty list is returned in non-production without test_add"""
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.no_dontadd", False)
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.test_mode", False)
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.test_add", False)
@@ -162,7 +169,8 @@ class TestGetDontAddPages:
         assert result == []
 
     def test_returns_empty_when_filename_none(self, mocker):
-        """Test that empty list is returned when _FILENAME_JSON is None"""
+        """
+        Test that empty list is returned when _FILENAME_JSON is None"""
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.no_dontadd", False)
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.test_mode", False)
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.test_add", True)
@@ -173,7 +181,8 @@ class TestGetDontAddPages:
         assert result == []
 
     def test_returns_empty_when_fetch_returns_dict(self, mocker):
-        """Test that empty list is returned when fetch returns dict instead of list"""
+        """
+        Test that empty list is returned when fetch returns dict instead of list"""
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.no_dontadd", False)
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.test_mode", False)
         mocker.patch("src.core.new_c18.io.json_store.main_settings.category.test_add", True)

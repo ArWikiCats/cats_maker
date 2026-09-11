@@ -46,7 +46,7 @@ class WikiApiHandler:
     ) -> dict[str, Any]:
         """
         Retrieves data (langlinks, categories, etc.) for a given page.
-        This is the refactored version of find_LCN.
+        This is the refactored version of find_lcn.
         """
         logger.debug("-----------")
         props = prop or "langlinks"
@@ -93,7 +93,7 @@ class WikiApiHandler:
         logger.debug(f" for page {site_code}:{page_title}")
 
         new_api = load_main_api(site_code, "wikipedia")
-        new_api = new_api.NewApi()
+        new_api = new_api.newapi()
         api_response = new_api.post_params(params)
 
         if not (api_response and "query" in api_response and "pages" in api_response["query"]):
@@ -122,7 +122,8 @@ class WikiApiHandler:
         site_code: str,
         props: str = "",
     ) -> dict[str, Any]:
-        """Helper to parse the 'pages' and 'redirects' part of an API response."""
+        """
+        Helper to parse the 'pages' and 'redirects' part of an API response."""
         results = {}
         redirect_map = {r["from"]: r["to"] for r in query.get("redirects", [])}
 
@@ -186,7 +187,7 @@ class WikiApiHandler:
     ) -> dict[str, Any]:
         """
         Retrieves non-hidden categories for a given page.
-        Refactored version of find_Page_Cat_without_hidden.
+        Refactored version of find_page_cat_without_hidden.
         """
         if not page_title or "#" in page_title:
             logger.info(f"(page_title == '{page_title}') or (page_title.find('#') != -1)")
@@ -227,7 +228,7 @@ class WikiApiHandler:
 
         # Submit the API request
         new_api = load_main_api(site_code, "wikipedia")
-        new_api = new_api.NewApi()
+        new_api = new_api.newapi()
         api_response = new_api.post_params(params)
 
         if not (api_response and "query" in api_response and "pages" in api_response["query"]):
@@ -321,7 +322,7 @@ class WikiApiHandler:
 LC_bot = WikiApiHandler()
 
 
-def find_LCN(
+def find_lcn(
     enlink,
     prop: str = "",
     lllang: str = "",
@@ -337,7 +338,7 @@ def find_LCN(
     )
 
 
-def find_Page_Cat_without_hidden(
+def find_page_cat_without_hidden(
     enlink,
     prop: str = "",
     site_code: str = "",
@@ -357,7 +358,7 @@ def get_arpage_inside_encat(key):
 
 __all__ = [
     "WikiApiHandler",
-    "find_LCN",
-    "find_Page_Cat_without_hidden",
+    "find_lcn",
+    "find_page_cat_without_hidden",
     "get_arpage_inside_encat",
 ]

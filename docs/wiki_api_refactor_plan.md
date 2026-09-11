@@ -126,7 +126,7 @@ src/core/wiki_api/
 
 ## Key Constraints
 
--   **Public API stability**: All 10 symbols in `__init__.__all__` keep their exact signatures (`submitAPI`, `find_LCN`, `find_Page_Cat_without_hidden`, `get_arpage_inside_encat`, `set_cache_L_C_N`, `get_cache_L_C_N`, `sub_cats_query`, `get_deleted_pages`, `get_page_info_from_wikipedia`, `remove_redirect_pages`).
+-   **Public API stability**: All 10 symbols in `__init__.__all__` keep their exact signatures (`submitAPI`, `find_lcn`, `find_page_cat_without_hidden`, `get_arpage_inside_encat`, `set_cache_L_C_N`, `get_cache_L_C_N`, `sub_cats_query`, `get_deleted_pages`, `get_page_info_from_wikipedia`, `remove_redirect_pages`).
 -   **No new external dependencies**: `requests` only.
 -   **Backward-compatible deprecation**: Old import paths work with deprecation warnings for one release cycle.
 -   **No behavior changes**: Same API endpoint construction, same default parameters, same caching semantics (but bugfixed).

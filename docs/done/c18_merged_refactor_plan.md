@@ -17,7 +17,7 @@ The unified `src/core/c18` module now drives Arabic Wikipedia category generatio
 
 Technical debt inherited from both modules:
 
--   **Inconsistent naming** — `MakeLitApiWay`, `get_listenpageTitle`, `typee`, `lenth` typo (from b18); `Categorized_Page_Generator`, `Dont_add_to_pages_def` (from c18)
+-   **Inconsistent naming** — `MakeLitApiWay`, `get_listenpageTitle`, `typee`, `lenth` typo (from b18); `categorized_page_generator`, `Dont_add_to_pages_def` (from c18)
 -   **Massive string-cleaning duplication** — every file manually strips `Category:`, `تصنيف:`, `[[`, `]]`, and swaps `_` / ` `
 -   **Mixed responsibilities** — SQL query strings, API fallback logic, and parameter sanitization live in the same file (`sql_cat.py`)
 -   **Poor return types** — `MakeLitApiWay` returns `False` instead of `[]`; `get_ar_list_from_encat` returns a `dict` when callers expect a list; c18 functions return `False` vs `""` vs `None`
@@ -35,7 +35,7 @@ Technical debt inherited from both modules:
 These are explicitly out of scope to protect business logic stability:
 
 -   Changing filtering or sorting **behavior** — output must be pixel-for-pixel identical
--   Rewriting external API wrappers (`find_LCN`, `load_main_api`, etc.)
+-   Rewriting external API wrappers (`find_lcn`, `load_main_api`, etc.)
 -   Introducing new CLI arguments or UI changes
 -   Switching databases or changing SQL schemas
 
@@ -150,9 +150,9 @@ Sources to consolidate:
 | ---------------------------- | ---------------------------- | ------ |
 | `MakeLitApiWay`              | `make_lit_api_way`           | b18    |
 | `get_listenpageTitle`        | `get_listen_page_title`      | b18    |
-| `Categorized_Page_Generator` | `generate_categorized_pages` | c18    |
+| `categorized_page_generator` | `generate_categorized_pages` | c18    |
 | `Dont_add_to_pages_def`      | `get_dont_add_pages`         | c18    |
-| `Get_ar_list_from_en_list`   | `get_ar_list_from_en_list`   | c18    |
+| `get_ar_list_from_en_list`   | `get_ar_list_from_en_list`   | c18    |
 | `english_page_link_from_api` | `_resolve_page_link_via_api` | c18    |
 | `filter_cats_text`           | `filter_category_text`       | c18    |
 
@@ -192,7 +192,7 @@ def translate_titles_to_ar(
     ...
 ```
 
-Also merge `Get_ar_list_from_en_list` and `get_ar_list_title_from_en_list` into `translate_titles_to_ar`. Extract `clean_category_input` into `utils/text.py`.
+Also merge `get_ar_list_from_en_list` and `get_ar_list_title_from_en_list` into `translate_titles_to_ar`. Extract `clean_category_input` into `utils/text.py`.
 
 Delete `ar_from_en2.py`. Leave `ar_from_en.py` as a shim for one release.
 

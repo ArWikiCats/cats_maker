@@ -7,8 +7,8 @@ import logging
 import re
 
 from ....config import main_settings
-from ....shared import find_LCN
-from ....shared.wd_api import Get_Sitelinks_from_qid, Get_Sitelinks_From_wikidata
+from ....shared import find_lcn
+from ....shared.wd_api import get_sitelinks_from_qid, get_sitelinks_from_wikidata
 from ..utils.text import extract_wikidata_qid
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def resolve_via_wikidata(text: str, link: str, firstsite_code: str, second_site_
         return None
 
     logger.debug(f">> get qid from text: {qid}")
-    data = Get_Sitelinks_from_qid(ids=qid)
+    data = get_sitelinks_from_qid(ids=qid)
     sitelinks = data.get("sitelinks", {})
 
     table: dict[str, str] = {}
@@ -56,7 +56,7 @@ def resolve_via_api(link: str, firstsite_code: str, second_site_code: str, text:
     link = link.replace("[[", "").replace("]]", "").replace("en:", "").replace("ar:", "")
     link1 = link.replace("_", " ")
 
-    sasa = find_LCN(link, prop="categories|langlinks", first_site_code=firstsite_code) or {}
+    sasa = find_lcn(link, prop="categories|langlinks", first_site_code=firstsite_code) or {}
     logger.debug(f">> sasa: {len(sasa)=}")
 
     results = ""
@@ -79,11 +79,11 @@ def resolve_via_api(link: str, firstsite_code: str, second_site_code: str, text:
     sitelinks2: dict[str, str] = {}
 
     if results:
-        tavr = Get_Sitelinks_From_wikidata("enwiki", results)
+        tavr = get_sitelinks_from_wikidata("enwiki", results)
         if tavr and "sitelinks" in tavr:
             sitelinks2 = tavr["sitelinks"]
     else:
-        tavr = Get_Sitelinks_From_wikidata(firstsite_code + "wiki", link)
+        tavr = get_sitelinks_from_wikidata(firstsite_code + "wiki", link)
         if tavr and "sitelinks" in tavr:
             sitelinks2 = tavr["sitelinks"]
             logger.info("sitelinks 2020.")
@@ -115,7 +115,7 @@ def get_page_link(link: str, firstsite_code: str, second_site_code: str, text: s
 
 def get_en_link_from_ar_text(title: str, site: str, sitetarget: str) -> str:
     """Fetch English (or other target) interwiki link for an Arabic page via Wikidata."""
-    enpage = Get_Sitelinks_From_wikidata(site, title)
+    enpage = get_sitelinks_from_wikidata(site, title)
     if not enpage:
         return ""
 

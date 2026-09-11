@@ -2,7 +2,6 @@
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import pytest
 from pytest_socket import disable_socket
@@ -57,17 +56,7 @@ def sample_page_info():
 @pytest.fixture
 def mock_wikidata_api(mocker):
     """Mock Wikidata API calls"""
-    return mocker.patch("src.shared.wd_api.wd_api_bot.Get_infos_wikidata")
-
-
-@pytest.fixture
-def mock_database(mocker):
-    """Mock database connections"""
-    mock_conn = MagicMock()
-    mock_cursor = MagicMock()
-    mock_conn.cursor.return_value = mock_cursor
-    mocker.patch("src.shared.api_sql.db_pool.db_manager.execute_query", return_value=[])
-    return mock_cursor
+    return mocker.patch("src.shared.wd_api.wd_api_bot.get_infos_wikidata")
 
 
 # ===== API Response Fixtures =====

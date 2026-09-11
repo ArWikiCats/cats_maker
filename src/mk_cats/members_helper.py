@@ -28,7 +28,7 @@ def load_non_redirects(lang: str, page_titles: list) -> dict:
 
     _bot = load_main_api(lang, "wikipedia")
 
-    result = _bot.NewApi().Find_pages_exists_or_not(page_titles, get_redirect=True)
+    result = _bot.newapi().find_pages_exists_or_not(page_titles, get_redirect=True)
     return result
 
 

@@ -5,12 +5,14 @@ This module provides dataclass-based configuration for all project settings,
 including Wikipedia, Wikidata, and database configurations.
 
 Example:
-    >>> from src.config import settings
-    >>> print(settings.wikipedia.ar_code)
+    >>> from src.config import main_settings
+    >>> print(main_settings.wikipedia.ar_code)
     'ar'
-    >>> print(settings.wikidata.endpoint)
+    >>> print(main_settings.wikidata.endpoint)
     'https://www.wikidata.org/w/api.php'
 """
+
+from __future__ import annotations
 
 import os
 import sys
@@ -24,19 +26,21 @@ except Exception:
     load_dotenv("$HOME/.env")
 
 
-@dataclass(frozen=True)
-class Paths:
-    cookies_dir: str | None
-    dont_add_to_pages_path: str | None
-    arwikicats_path: str | None
-
-
-def _safe_int(value: str, default: int) -> int:
+def _safe_int(value: str | None, default: int) -> int:
     """Safely convert string to int, returning default on failure."""
+    if not value:
+        return default
     try:
         return int(value)
     except (ValueError, TypeError):
         return default
+
+
+def _safe_bool(value: str | None, default: bool = False) -> bool:
+    """Safely convert string to bool."""
+    if not value:
+        return default
+    return value.lower() in ("true", "1", "yes")
 
 
 def default_user_agent() -> str:
@@ -45,25 +49,70 @@ def default_user_agent() -> str:
     return f"{tool} bot/1.0 (https://{tool}.toolforge.org/; tools.{tool}@toolforge.org)"
 
 
+@dataclass(frozen=True)
+class Paths:
+    cookies_dir: str | None
+    dont_add_to_pages_path: str | None
+    arwikicats_path: str | None
+
+    @classmethod
+    def load(cls) -> Paths:
+        """
+        Load Paths configuration from environment variables."""
+        return cls(
+            cookies_dir=os.getenv("COOKIES_DIR"),
+            dont_add_to_pages_path=os.getenv("DONT_ADD_TO_PAGES_PATH"),
+            arwikicats_path=os.getenv("ARWIKICATS_PATH"),
+        )
+
+
+@dataclass
+class WikipediaCedentials:
+    """
+    Configuration for Wikipedia API connections.
+
+    username = os.getenv("WIKIPEDIA_BOT_USERNAME", "")
+    password = os.getenv("WIKIPEDIA_BOT_PASSWORD", "")
+    """
+
+    username: str | None = None
+    password: str | None = None
+
+    @classmethod
+    def load(cls) -> WikipediaCedentials:
+        """
+        Load Wikipedia configuration from environment variables."""
+        return cls(
+            username=os.getenv("WIKIPEDIA_BOT_USERNAME"),
+            password=os.getenv("WIKIPEDIA_BOT_PASSWORD"),
+        )
+
+
 @dataclass
 class WikipediaConfig:
-    """Configuration for Wikipedia API connections.
-
-    Attributes:
-        ar_family: Arabic Wikipedia family (default: "wikipedia")
-        ar_code: Arabic Wikipedia language code (default: "ar")
-        en_family: English Wikipedia family (default: "wikipedia")
-        en_code: English Wikipedia language code (default: "en")
-        user_agent: User agent string for API requests
-        default_timeout: Default timeout for API requests in seconds
-    """
+    """Configuration for Wikipedia API connections."""
 
     ar_family: str = "wikipedia"
     ar_code: str = "ar"
     en_family: str = "wikipedia"
     en_code: str = "en"
-    user_agent: str = default_user_agent()
+    user_agent: str = field(default_factory=default_user_agent)
     default_timeout: int = 10
+    credentials: WikipediaCedentials = field(default_factory=WikipediaCedentials)
+
+    @classmethod
+    def load(cls) -> WikipediaConfig:
+        """
+        Load Wikipedia configuration from environment variables."""
+        return cls(
+            ar_family=os.getenv("WIKIPEDIA_AR_FAMILY") or "wikipedia",
+            ar_code=os.getenv("WIKIPEDIA_AR_CODE") or "ar",
+            en_family=os.getenv("WIKIPEDIA_EN_FAMILY") or "wikipedia",
+            en_code=os.getenv("WIKIPEDIA_EN_CODE") or "en",
+            user_agent=os.getenv("WIKIPEDIA_USER_AGENT") or default_user_agent(),
+            default_timeout=_safe_int(os.getenv("WIKIPEDIA_TIMEOUT"), 10),
+            credentials=WikipediaCedentials.load(),
+        )
 
 
 @dataclass
@@ -84,6 +133,17 @@ class WikidataConfig:
     maxlag: int = 5
     test_mode: bool = False
 
+    @classmethod
+    def load(cls) -> WikidataConfig:
+        """
+        Load Wikidata configuration from environment variables."""
+        return cls(
+            endpoint=os.getenv("WIKIDATA_ENDPOINT") or "https://www.wikidata.org/w/api.php",
+            sparql_endpoint=os.getenv("WIKIDATA_SPARQL_ENDPOINT") or "https://query.wikidata.org/sparql",
+            timeout=_safe_int(os.getenv("WIKIDATA_TIMEOUT"), 30),
+            maxlag=_safe_int(os.getenv("WIKIDATA_MAXLAG"), 5),
+        )
+
 
 @dataclass
 class ApiClientConfig:
@@ -99,20 +159,45 @@ class ApiClientConfig:
     backoff_base: int = 1
     maxlag_header: str = "Retry-After"
 
+    @classmethod
+    def load(cls) -> ApiClientConfig:
+        """
+        Load API client configuration from environment variables."""
+        return cls(
+            max_retries=_safe_int(os.getenv("API_CLIENT_MAX_RETRIES"), 5),
+            backoff_base=_safe_int(os.getenv("API_CLIENT_BACKOFF_BASE"), 1),
+            maxlag_header=os.getenv("API_CLIENT_MAXLAG_HEADER") or "Retry-After",
+        )
+
 
 @dataclass
 class DatabaseConfig:
-    """Configuration for database connections.
-
-    Attributes:
-        host: Database host (optional, derived from wiki code if not set)
-        port: Database port
-        use_sql: Whether to use SQL database for queries
+    """
+    Configuration for database connections.
     """
 
+    user: str = ""
+    password: str = ""
     host: str | None = None
     port: int = 3306
     use_sql: bool = True
+    cache_ttl: int = 60 * 60 * 24 * 7  # 1 week
+
+    @classmethod
+    def load(cls) -> DatabaseConfig:
+        """
+        Load Database configuration from environment variables."""
+        return cls(
+            host=os.getenv("DATABASE_HOST") or "",
+            port=_safe_int(os.getenv("DATABASE_PORT"), 3306),
+            user=os.getenv("TOOL_REPLICA_USER") or "",
+            password=os.getenv("TOOL_REPLICA_PASSWORD") or "",
+            cache_ttl=_safe_int(os.getenv("TOOL_REPLICA_CACHE_TTL"), 60 * 60 * 24 * 7),
+            use_sql=_safe_bool(os.getenv("DATABASE_USE_SQL"), True),
+        )
+
+    def can_use_sql(self) -> bool:
+        return bool(self.user and self.password)
 
 
 @dataclass
@@ -126,6 +211,10 @@ class DebugConfig:
 
     print_url: bool = False
     do_post: bool = False
+
+    @classmethod
+    def load(cls) -> DebugConfig:
+        return cls()
 
 
 @dataclass
@@ -149,6 +238,10 @@ class BotConfig:
     force_edit: bool = False
     no_login: bool = False
     no_cookies: bool = False
+
+    @classmethod
+    def load(cls) -> BotConfig:
+        return cls()
 
 
 @dataclass
@@ -179,6 +272,12 @@ class CategoryConfig:
     descqs: bool = False
     min_members: int = 10
 
+    @classmethod
+    def load(cls) -> CategoryConfig:
+        return cls(
+            min_members=_safe_int(os.getenv("MIN_MEMBERS"), 10),
+        )
+
 
 @dataclass
 class QueryConfig:
@@ -197,6 +296,10 @@ class QueryConfig:
     to_limit: int = 10000
     ns_no_10: bool = False
     ns_only_14: bool = False
+
+    @classmethod
+    def load(cls) -> QueryConfig:
+        return cls()
 
 
 @dataclass
@@ -217,6 +320,10 @@ class SiteConfig:
     secondary_family: str = ""
     use_secondary: bool = False
 
+    @classmethod
+    def load(cls) -> SiteConfig:
+        return cls()
+
 
 @dataclass
 class WikiSiteInfo:
@@ -232,8 +339,13 @@ class WikiSiteInfo:
     code: str = "en"
     use: bool = False
 
+    @classmethod
+    def load(cls) -> WikiSiteInfo:
+        return cls()
+
     def __getitem__(self, key):
-        """Support dictionary-like access for backward compatibility."""
+        """
+        Support dictionary-like access for backward compatibility."""
         if key == "family":
             return self.family
         elif key == "code":
@@ -245,7 +357,8 @@ class WikiSiteInfo:
         raise KeyError(key)
 
     def __contains__(self, key) -> bool:
-        """Support 'in' operator for backward compatibility."""
+        """
+        Support 'in' operator for backward compatibility."""
         return key in ("family", "code", "use", 1)
 
 
@@ -270,21 +383,16 @@ class Settings:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR)
     """
 
-    wikipedia: WikipediaConfig = field(default_factory=WikipediaConfig)
-    wikidata: WikidataConfig = field(default_factory=WikidataConfig)
-    api_client: ApiClientConfig = field(default_factory=ApiClientConfig)
-    database: DatabaseConfig = field(default_factory=DatabaseConfig)
-    debug_config: DebugConfig = field(default_factory=DebugConfig)
-    bot: BotConfig = field(default_factory=BotConfig)
-    category: CategoryConfig = field(default_factory=CategoryConfig)
-    query: QueryConfig = field(default_factory=QueryConfig)
-    site: SiteConfig = field(default_factory=SiteConfig)
-
-    paths: Paths = Paths(
-        cookies_dir=os.getenv("COOKIES_DIR"),
-        dont_add_to_pages_path=os.getenv("DONT_ADD_TO_PAGES_PATH"),
-        arwikicats_path=os.getenv("ARWIKICATS_PATH"),
-    )
+    wikipedia: WikipediaConfig
+    wikidata: WikidataConfig
+    api_client: ApiClientConfig
+    database: DatabaseConfig
+    debug_config: DebugConfig
+    bot: BotConfig
+    category: CategoryConfig
+    query: QueryConfig
+    site: SiteConfig
+    paths: Paths
 
     # Global settings
     range_limit: int = 5
@@ -293,12 +401,14 @@ class Settings:
 
     @staticmethod
     def is_production() -> bool:
-        """Check if the application is running in production mode."""
+        """
+        Check if the application is running in production mode."""
         return os.getenv("APP_ENV", "").lower() == "production"
 
     @property
-    def EEn_site(self) -> WikiSiteInfo:
-        """Get the English/source site configuration.
+    def en_site(self) -> WikiSiteInfo:
+        """
+        Get the English/source site configuration.
 
         Returns computed site info based on commons, custom_family, and custom_lang settings.
         """
@@ -309,8 +419,9 @@ class Settings:
         return WikiSiteInfo(family=self.wikipedia.en_family, code=self.wikipedia.en_code, use=False)
 
     @property
-    def AAr_site(self) -> WikiSiteInfo:
-        """Get the Arabic/target site configuration.
+    def ar_site(self) -> WikiSiteInfo:
+        """
+        Get the Arabic/target site configuration.
 
         Returns computed site info based on custom_family settings.
         """
@@ -319,8 +430,9 @@ class Settings:
         return WikiSiteInfo(family=self.wikipedia.ar_family, code=self.wikipedia.ar_code, use=False)
 
     @property
-    def FR_site(self) -> WikiSiteInfo:
-        """Get the secondary/French site configuration.
+    def fr_site(self) -> WikiSiteInfo:
+        """
+        Get the secondary/French site configuration.
 
         Returns computed site info based on secondary language settings.
         """
@@ -330,69 +442,9 @@ class Settings:
             )
         return WikiSiteInfo(family="", code="fr", use=False)
 
-    def __post_init__(self) -> None:
-        """Process command-line arguments and environment variables."""
-        self._process_env_vars()
-        self._process_argv()
-
-    def _process_env_vars(self) -> None:
-        """Load configuration from environment variables."""
-        # Wikipedia config
-        if os.getenv("WIKIPEDIA_AR_CODE"):
-            self.wikipedia.ar_code = os.environ["WIKIPEDIA_AR_CODE"]
-        if os.getenv("WIKIPEDIA_EN_CODE"):
-            self.wikipedia.en_code = os.environ["WIKIPEDIA_EN_CODE"]
-        if os.getenv("WIKIPEDIA_AR_FAMILY"):
-            self.wikipedia.ar_family = os.environ["WIKIPEDIA_AR_FAMILY"]
-        if os.getenv("WIKIPEDIA_EN_FAMILY"):
-            self.wikipedia.en_family = os.environ["WIKIPEDIA_EN_FAMILY"]
-        if os.getenv("WIKIPEDIA_USER_AGENT"):
-            self.wikipedia.user_agent = os.environ["WIKIPEDIA_USER_AGENT"]
-        if os.getenv("WIKIPEDIA_TIMEOUT"):
-            self.wikipedia.default_timeout = _safe_int(os.environ["WIKIPEDIA_TIMEOUT"], self.wikipedia.default_timeout)
-
-        # Wikidata config
-        if os.getenv("WIKIDATA_ENDPOINT"):
-            self.wikidata.endpoint = os.environ["WIKIDATA_ENDPOINT"]
-        if os.getenv("WIKIDATA_SPARQL_ENDPOINT"):
-            self.wikidata.sparql_endpoint = os.environ["WIKIDATA_SPARQL_ENDPOINT"]
-        if os.getenv("WIKIDATA_TIMEOUT"):
-            self.wikidata.timeout = _safe_int(os.environ["WIKIDATA_TIMEOUT"], self.wikidata.timeout)
-        if os.getenv("WIKIDATA_MAXLAG"):
-            self.wikidata.maxlag = _safe_int(os.environ["WIKIDATA_MAXLAG"], self.wikidata.maxlag)
-
-        # API Client config
-        if os.getenv("API_CLIENT_MAX_RETRIES"):
-            self.api_client.max_retries = _safe_int(os.environ["API_CLIENT_MAX_RETRIES"], self.api_client.max_retries)
-        if os.getenv("API_CLIENT_BACKOFF_BASE"):
-            self.api_client.backoff_base = _safe_int(
-                os.environ["API_CLIENT_BACKOFF_BASE"], self.api_client.backoff_base
-            )
-        if os.getenv("API_CLIENT_MAXLAG_HEADER"):
-            self.api_client.maxlag_header = os.environ["API_CLIENT_MAXLAG_HEADER"]
-
-        # Database config
-        if os.getenv("DATABASE_HOST"):
-            self.database.host = os.environ["DATABASE_HOST"]
-        if os.getenv("DATABASE_PORT"):
-            self.database.port = _safe_int(os.environ["DATABASE_PORT"], self.database.port)
-        if os.getenv("DATABASE_USE_SQL"):
-            self.database.use_sql = os.environ["DATABASE_USE_SQL"].lower() in ("true", "1", "yes")
-
-        # Global settings
-        if os.getenv("RANGE_LIMIT"):
-            self.range_limit = _safe_int(os.environ["RANGE_LIMIT"], self.range_limit)
-        if os.getenv("DEBUG"):
-            self.debug = os.environ["DEBUG"].lower() in ("true", "1", "yes")
-        if os.getenv("LOG_LEVEL"):
-            self.log_level = os.environ["LOG_LEVEL"]
-
-        # Category config
-        if os.getenv("MIN_MEMBERS"):
-            self.category.min_members = _safe_int(os.environ["MIN_MEMBERS"], self.category.min_members)
-
     def _process_argv(self) -> None:
-        """Process command-line arguments for configuration overrides."""
+        """
+        Process command-line arguments for configuration overrides."""
         for arg in sys.argv:
             arg_name, _, value = arg.partition(":")
 
@@ -498,6 +550,29 @@ class Settings:
         if self.query.to_limit != 0:
             self.query.to_limit = self.query.to_limit + self.query.offset
 
+    @classmethod
+    def load(cls) -> Settings:
+        """
+        Build a Settings instance from each sub-config's own load(),
+        """
+        settings = cls(
+            wikipedia=WikipediaConfig.load(),
+            wikidata=WikidataConfig.load(),
+            api_client=ApiClientConfig.load(),
+            database=DatabaseConfig.load(),
+            debug_config=DebugConfig.load(),
+            bot=BotConfig.load(),
+            category=CategoryConfig.load(),
+            query=QueryConfig.load(),
+            site=SiteConfig.load(),
+            paths=Paths.load(),
+            range_limit=_safe_int(os.getenv("RANGE_LIMIT"), 5),
+            debug=_safe_bool(os.getenv("DEBUG"), False),
+            log_level=os.getenv("LOG_LEVEL") or "INFO",
+        )
+        settings._process_argv()
+        return settings
+
 
 # Global settings instance
-main_settings = Settings()
+main_settings = Settings.load()

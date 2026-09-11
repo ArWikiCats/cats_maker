@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """
 
-# from .cat_tools2 import Categorized_Page_Generator
-# Categorized_Page_Generator(enpage_title, Type)
+# from .cat_tools2 import categorized_page_generator
+# categorized_page_generator(enpage_title, Type)
 
 """
 
@@ -19,7 +19,7 @@ if main_settings.category.stubs:
     tatone_ns = [14]
 
 
-def Categorized_Page_Generator(enpage_title, typee):
+def categorized_page_generator(enpage_title, typee):
     logger.info(f", enpage_title:{enpage_title}")
 
     nss = "all"
@@ -28,8 +28,8 @@ def Categorized_Page_Generator(enpage_title, typee):
 
     NN_cat_member = []
 
-    api = load_main_api(main_settings.EEn_site.code)
-    cat_member = api.CatDepth(enpage_title, depth=0, ns=nss, with_lang="ar")
+    api = load_main_api(main_settings.en_site.code)
+    cat_member = api.catdepth(enpage_title, depth=0, ns=nss, with_lang="ar")
 
     for title in cat_member:
         if int(cat_member[title]["ns"]) in tatone_ns:

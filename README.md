@@ -132,9 +132,9 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
     ↓
 [get_ar_list_from_en] → قائمة عناوين المقالات العربية
     ↓
-[find_LCN, Get_Sitelinks] → روابط اللغات، Qid
+[find_lcn, get_Sitelinks] → روابط اللغات، Qid
     ↓
-[find_Page_Cat_without_hidden] → التصنيفات الأم (إنجليزي)
+[find_page_cat_without_hidden] → التصنيفات الأم (إنجليزي)
     ↓
 [collect_category_members] → صفحات الأعضاء (SQL, API, SubSub sources)
     ↓
@@ -378,8 +378,8 @@ print(settings.category.we_try)  # True
 print(settings.bot.ask)  # False
 
 # الوصول إلى خصائص الموقع المحسوبة
-print(settings.EEn_site["code"])  # 'en'
-print(settings.AAr_site["family"])  # 'wikipedia'
+print(settings.en_site["code"])  # 'en'
+print(settings.ar_site["family"])  # 'wikipedia'
 
 # الوصول إلى الإعدادات العامة
 print(settings.range_limit)  # 5
@@ -555,18 +555,18 @@ pytest -m "not network"
 
 تتضمن تغطية الاختبار الحالية ما يقرب من **880+ اختبار** تغطي:
 
-| الوحدة      | الوصف                           | الحالة |
-| ----------- | ------------------------------- | ------ |
-| api_sql     | دوال استعلام قاعدة البيانات     | ✅     |
-| c18     | معالجة التصنيف والروابط + أدوات وتحويلات التصنيف | ✅     |
-| config      | الإعدادات والتكوين              | ✅     |
-| helps       | التسجيل والأدوات المساعدة       | ✅     |
-| mk_cats     | إنشاء التصنيف الأساسي           | ✅     |
-| utils       | قوائم التخطي والقوائم السوداء   | ✅     |
-| wd_bots     | تكامل ويكي بيانات               | ✅     |
-| wiki_api    | استدعاءات Wikipedia API         | ✅     |
-| temp        | توليد القالب                    | ✅     |
-| integration | اختبارات من البداية إلى النهاية | ✅     |
+| الوحدة      | الوصف                                            | الحالة |
+| ----------- | ------------------------------------------------ | ------ |
+| api_sql     | دوال استعلام قاعدة البيانات                      | ✅     |
+| c18         | معالجة التصنيف والروابط + أدوات وتحويلات التصنيف | ✅     |
+| config      | الإعدادات والتكوين                               | ✅     |
+| helps       | التسجيل والأدوات المساعدة                        | ✅     |
+| mk_cats     | إنشاء التصنيف الأساسي                            | ✅     |
+| utils       | قوائم التخطي والقوائم السوداء                    | ✅     |
+| wd_bots     | تكامل ويكي بيانات                                | ✅     |
+| wiki_api    | استدعاءات Wikipedia API                          | ✅     |
+| temp        | توليد القالب                                     | ✅     |
+| integration | اختبارات من البداية إلى النهاية                  | ✅     |
 
 ### علامات الاختبار
 
