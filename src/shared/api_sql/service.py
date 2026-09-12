@@ -44,7 +44,7 @@ class CategoryComparator:
             List of exclusive titles. Empty list if not in production or on error.
         """
         if not self.can_use_sql:
-            logger.info("Skipping category comparison: WikiReplicaDB not available.")
+            logger.debug("Skipping category comparison: WikiReplicaDB not available.")
             return []
 
         # Normalize inputs
