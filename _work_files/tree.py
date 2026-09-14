@@ -3,8 +3,8 @@ from pathlib import Path
 from directory_tree import DisplayTree
 
 tree_work = {
-    "tree.md": Path(__file__).parent.parent / "src",
-    "test_tree.md": Path(__file__).parent.parent / "tests",
+    Path(__file__).parent / "tree.md": Path(__file__).parent.parent / "src",
+    Path(__file__).parent / "test_tree.md": Path(__file__).parent.parent / "tests",
 }
 
 ignore_list = [
@@ -17,8 +17,7 @@ ignore_list = [
     "*.zip",
 ]
 
-for tree_name, tree_path in tree_work.items():
-    tree_save_path = Path(__file__).parent.parent / tree_name
+for tree_save_path, tree_path in tree_work.items():
 
     _tree: str = DisplayTree(
         dirPath=str(tree_path),
@@ -35,4 +34,4 @@ for tree_name, tree_path in tree_work.items():
     )  # type: ignore
 
     tree_save_path.write_text(f"```\n{_tree}\n```", encoding="utf-8")
-    print(f"Saved {tree_name}")
+    print(f"Saved {tree_save_path}")
