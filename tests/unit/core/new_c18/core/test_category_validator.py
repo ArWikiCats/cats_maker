@@ -12,7 +12,7 @@ from src.core.new_c18.models import ValidationResult
 
 
 class TestGetFalseTemplates:
-    @patch("src.core.new_c18.core.category_validator.global_false_entemps", ["Nobots", "Dead"])
+    @patch("src.core.new_c18.core.category_validator.GLOBAL_FALSE_ENTEMPS", ["Nobots", "Dead"])
     def test_returns_lowercased(self):
         result = _get_false_templates()
         assert "nobots" in result
