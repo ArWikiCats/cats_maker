@@ -50,7 +50,7 @@ class TestCheckEnTemps:
         """
         Test that check_en_temps returns True for allowed templates."""
         mocker.patch("src.mk_cats.utils.check_en.SKIP_ENCATS", [])
-        mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
+        mocker.patch("src.mk_cats.utils.check_en.GLOBAL_FALSE_ENTEMPS_LOWER", ["badtemplate"])
         mocker.patch(
             "src.mk_cats.utils.check_en.find_page_data",
             return_value={"Category:Test": {"templates": ["Template:GoodTemplate"]}},
@@ -66,7 +66,7 @@ class TestCheckEnTemps:
         """
         Test that check_en_temps returns False for blacklisted templates."""
         mocker.patch("src.mk_cats.utils.check_en.SKIP_ENCATS", [])
-        mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
+        mocker.patch("src.mk_cats.utils.check_en.GLOBAL_FALSE_ENTEMPS_LOWER", ["badtemplate"])
         mocker.patch(
             "src.mk_cats.utils.check_en.find_page_data",
             return_value={"Category:Test": {"templates": ["Template:BadTemplate"]}},
@@ -82,7 +82,7 @@ class TestCheckEnTemps:
         """
         Test that template check is case insensitive."""
         mocker.patch("src.mk_cats.utils.check_en.SKIP_ENCATS", [])
-        mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
+        mocker.patch("src.mk_cats.utils.check_en.GLOBAL_FALSE_ENTEMPS_LOWER", ["badtemplate"])
         mocker.patch(
             "src.mk_cats.utils.check_en.find_page_data",
             return_value={"Category:Test": {"templates": ["Template:BADTEMPLATE"]}},
@@ -98,7 +98,7 @@ class TestCheckEnTemps:
         """
         Test that check_en_temps removes 'template:' prefix."""
         mocker.patch("src.mk_cats.utils.check_en.SKIP_ENCATS", [])
-        mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
+        mocker.patch("src.mk_cats.utils.check_en.GLOBAL_FALSE_ENTEMPS_LOWER", ["badtemplate"])
         mocker.patch(
             "src.mk_cats.utils.check_en.find_page_data",
             return_value={"Category:Test": {"templates": ["template:badtemplate"]}},
@@ -138,7 +138,7 @@ class TestCheckEnTemps:
         """
         Test that check_en_temps returns False if any template is blacklisted."""
         mocker.patch("src.mk_cats.utils.check_en.SKIP_ENCATS", [])
-        mocker.patch("src.mk_cats.utils.check_en.NO_Templates_lower", ["badtemplate"])
+        mocker.patch("src.mk_cats.utils.check_en.GLOBAL_FALSE_ENTEMPS_LOWER", ["badtemplate"])
         mocker.patch(
             "src.mk_cats.utils.check_en.find_page_data",
             return_value={

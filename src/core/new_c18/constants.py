@@ -142,4 +142,4 @@ GLOBAL_FALSE_ENTEMPS = [
     # 'container category',      #تصنيف حاوية
 ]
 
-NO_Templates_lower = [x.lower() for x in GLOBAL_FALSE_ENTEMPS]
+GLOBAL_FALSE_ENTEMPS_LOWER = [x.lower() for x in GLOBAL_FALSE_ENTEMPS]
