@@ -5,16 +5,16 @@ from __future__ import annotations
 
 import logging
 
-from ..core.category_generator import fetch_category_members
-
 from ....config import main_settings
 from ....shared import find_page_data, get_arpage_inside_encat, load_main_api
 from ....shared.api_sql import add_namespace_prefix
 from ..constants import DEFAULT_MEMBER_NAMESPACES
+from ..core.category_generator import fetch_category_members
 from ..io.sql_queries import fetch_ar_category_members, fetch_en_category_langlinks
 from ..utils.text import normalize_category_title
 
 logger = logging.getLogger(__name__)
+
 
 class CategoryResolver:
     """Resolve category members across wikis via SQL or API."""

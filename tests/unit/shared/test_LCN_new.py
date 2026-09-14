@@ -7,8 +7,8 @@ This module tests the WikiApiHandler class and language link functions.
 from src.shared.lcn_new import (
     LC_bot,
     WikiApiHandler,
-    find_page_data,
     find_non_hidden_categories,
+    find_page_data,
 )
 
 

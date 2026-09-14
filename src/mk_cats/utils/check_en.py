@@ -3,7 +3,7 @@
 
 import logging
 
-from ...core.new_c18.constants import NO_Templates_lower, SKIP_ENCATS
+from ...core.new_c18.constants import SKIP_ENCATS, NO_Templates_lower
 from ...shared import find_page_data
 
 logger = logging.getLogger(__name__)

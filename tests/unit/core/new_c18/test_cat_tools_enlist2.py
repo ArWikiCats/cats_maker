@@ -21,5 +21,5 @@ class TestMakeLitApiWay:
         """
         Test that empty list is returned for None title"""
         resolver = CategoryResolver()
-        result = resolver.make_lit_api_way(None) # pyright: ignore[reportArgumentType]
+        result = resolver.make_lit_api_way(None)  # pyright: ignore[reportArgumentType]
         assert result == []
