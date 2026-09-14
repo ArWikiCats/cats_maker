@@ -37,7 +37,7 @@ class TestFetchCategoryMembers:
 
 
 class TestTranslateTitlesToAr:
-    @patch("src.core.new_c18.core.category_generator.find_lcn")
+    @patch("src.core.new_c18.core.category_generator.find_page_data")
     @patch("src.core.new_c18.core.category_generator.main_settings")
     def test_returns_translated_titles(self, mock_settings, mock_find_lcn):
         mock_settings.en_site.code = "en"
@@ -49,7 +49,7 @@ class TestTranslateTitlesToAr:
         assert "علوم" in result
         assert "رياضيات" in result
 
-    @patch("src.core.new_c18.core.category_generator.find_lcn")
+    @patch("src.core.new_c18.core.category_generator.find_page_data")
     @patch("src.core.new_c18.core.category_generator.main_settings")
     def test_skips_missing_translations(self, mock_settings, mock_find_lcn):
         mock_settings.en_site.code = "en"
@@ -59,7 +59,7 @@ class TestTranslateTitlesToAr:
         result = translate_titles_to_ar(["Science"])
         assert result == []
 
-    @patch("src.core.new_c18.core.category_generator.find_lcn")
+    @patch("src.core.new_c18.core.category_generator.find_page_data")
     @patch("src.core.new_c18.core.category_generator.main_settings")
     def test_empty_result(self, mock_settings, mock_find_lcn):
         mock_settings.en_site.code = "en"
