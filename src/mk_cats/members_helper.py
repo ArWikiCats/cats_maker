@@ -14,7 +14,7 @@ Responsibilities:
 import logging
 
 from ..config import main_settings
-from ..core.cats_helpers.sub_cats_bot import sub_cats_query
+from ..core.sub_cats_bot import sub_cats_query
 from ..core.new_c18 import CategoryResolver, MemberLister
 from ..shared.api_page import load_main_api
 

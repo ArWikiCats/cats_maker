@@ -7,7 +7,7 @@ from collections.abc import Callable
 
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
-from ..shared import find_page_cat_without_hidden
+from ..shared import find_non_hidden_categories
 from ..shared.api_page import load_main_api
 from ..shared.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
 from .add_bot import add_to_page
@@ -191,7 +191,7 @@ def _extract_parent_categories(en_page_title: str):
             - en_cats_of_new_cat: English categories without Arabic equivalents
             - cats_of_new_cat: Arabic category titles
     """
-    cates = find_page_cat_without_hidden(
+    cates = find_non_hidden_categories(
         en_page_title,
         prop="langlinks",
         site_code=WIKI_SITE_EN["code"],
@@ -255,7 +255,7 @@ def _finalize_category_creation(
     return en_cats_of_new_cat
 
 
-def make_ar(en_page_title, ar_title, callback=None):  # -> list:
+def make_ar(en_page_title: str, ar_title: str, callback=None):  # -> list:
     """
     Create an Arabic category based on the English category.
 

@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from ....config import main_settings
-from ....shared import find_lcn, load_main_api
+from ....shared import find_page_data, load_main_api
 from ..constants import DEFAULT_MEMBER_NAMESPACES
 
 logger = logging.getLogger(__name__)
@@ -56,7 +56,7 @@ def translate_titles_to_ar(titles: list[str], source_wiki: str = "en", batch_siz
         part_list = "|".join(batch)
         part_list = part_list.removeprefix("|")
 
-        result = find_lcn(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
+        result = find_page_data(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
         if not result:
             continue
 

@@ -7,8 +7,7 @@ import logging
 
 from ....config import main_settings
 from ....shared.api_page import load_main_api
-from ...utils import global_false_entemps
-from ..constants import NO_TEMPLATES_AR
+from ..constants import NO_TEMPLATES_AR, GLOBAL_FALSE_ENTEMPS
 from ..models import ValidationResult
 
 logger = logging.getLogger(__name__)
@@ -21,7 +20,7 @@ def _get_no_templates() -> frozenset[str]:
 
 def _get_false_templates() -> frozenset[str]:
     """Return lower-cased false templates from global helper."""
-    return frozenset(x.lower() for x in global_false_entemps)
+    return frozenset(x.lower() for x in GLOBAL_FALSE_ENTEMPS)
 
 
 def _check_page_status(

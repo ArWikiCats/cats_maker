@@ -5,16 +5,16 @@ from __future__ import annotations
 
 import logging
 
+from ..core.category_generator import fetch_category_members
+
 from ....config import main_settings
-from ....shared import find_lcn, get_arpage_inside_encat, load_main_api
+from ....shared import find_page_data, get_arpage_inside_encat, load_main_api
 from ....shared.api_sql import add_namespace_prefix
-from ...cats_helpers import categorized_page_generator
 from ..constants import DEFAULT_MEMBER_NAMESPACES
 from ..io.sql_queries import fetch_ar_category_members, fetch_en_category_langlinks
 from ..utils.text import normalize_category_title
 
 logger = logging.getLogger(__name__)
-
 
 class CategoryResolver:
     """Resolve category members across wikis via SQL or API."""
@@ -108,7 +108,7 @@ class CategoryResolver:
             part_list = "|".join(batch)
             part_list = part_list.removeprefix("|")
 
-            result = find_lcn(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
+            result = find_page_data(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
             if not result:
                 continue
 
@@ -134,23 +134,21 @@ class CategoryResolver:
         logger.info("* MakeLit ApiWay: ")
         encat_clean = normalize_category_title(encat, lang="en")
 
-        member_type = "cat" if item_type == "cat" else item_type
-        gent_faso_list = categorized_page_generator(encat_clean, member_type)
+        titles = fetch_category_members(title=encat_clean, wiki="en", namespaces=[0, 14, 10, 100])
 
-        uux = get_arpage_inside_encat("Category:" + encat_clean)
-        if uux:
-            logger.info("arpage inside_encat: " + (", ".join(uux)))
-            for x in uux:
-                gent_faso_list.append(x.replace("_", " "))
+        cached_titles = get_arpage_inside_encat("Category:" + encat_clean)
+        if cached_titles:
+            titles.extend([x.replace("_", " ") for x in cached_titles])
+            logger.info("arpage inside_encat: " + (", ".join(cached_titles)))
 
         listen_page_title: list[str] = []
-        logger.info(f" MakeLitApi: Way length : {len(gent_faso_list)}")
+        logger.info(f" MakeLitApi: Way length : {len(titles)}")
 
-        for i in range(0, len(gent_faso_list), 50):
-            batch = gent_faso_list[i : i + 50]
+        for i in range(0, len(titles), 50):
+            batch = titles[i : i + 50]
             joined = "|".join(batch)
 
-            gent_sasa = find_lcn(joined, prop="langlinks", first_site_code=main_settings.en_site.code)
+            gent_sasa = find_page_data(joined, prop="langlinks", first_site_code=main_settings.en_site.code)
             if not gent_sasa:
                 continue
 

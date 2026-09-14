@@ -119,3 +119,27 @@ QID_PATTERNS: list[str] = [
     r"Q\d+",
     r"wikidata\.org/wiki/(Q\d+)",
 ]
+
+SKIP_ENCATS = [
+    "Category:Invasions of Israel",
+]
+
+GLOBAL_FALSE_ENTEMPS = [
+    "Hidden category",
+    "Maintenance category",  # تصنيف صيانة
+    "Wikipedia category",  # تصنيف ويكيبيديا
+    "Sockpuppet",  #
+    "Empty category",  # تصنيف فارغ
+    "Possibly empty category",  # تصنيف فارغ
+    "Tracking category",  # تصنيف تتبع
+    "WPSS-cat",  # تصنيف مخفي
+    "Monthly clean-up category",  # تصنيف مخفي
+    "Category class",  # تصنيف مخفي
+    "Hiddencat",  # تصنيف مخفي
+    "Backlog subcategories",  #
+    "Category redirect",
+    "Stub Category",  # تصنيف بذرة
+    # 'container category',      #تصنيف حاوية
+]
+
+NO_Templates_lower = [x.lower() for x in GLOBAL_FALSE_ENTEMPS]
