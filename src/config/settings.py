@@ -494,8 +494,6 @@ class Settings:
                 self.bot.no_cookies = True
 
             # Category config
-            if arg_name in ("-stubs", "stubs"):
-                self.category.stubs = True
             if arg_name in ("-dontMakeNewCat", "-dontmakenewcat"):
                 self.category.make_new_cat = False
             if arg_name == "keep":

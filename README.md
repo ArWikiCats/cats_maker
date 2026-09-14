@@ -245,7 +245,6 @@ python run.py DEBUG -encat:Mathematics
 | `-We_Try`         | تمكين وضع إعادة المحاولة للتصنيفات الفاشلة                   | `-We_Try`         |
 | `-nowetry`        | تعطيل وضع إعادة المحاولة                                     | `-nowetry`        |
 | `-minmembers:<n>` | الحد الأدنى من الأعضاء المطلوبين لإنشاء التصنيف (افتراضي: 5) | `-minmembers:3`   |
-| `-stubs`          | معالجة تصنيفات البذور                                        | `-stubs`          |
 | `-dontMakeNewCat` | تعطيل إنشاء تصنيف جديد                                       | `-dontMakeNewCat` |
 | `-uselabels`      | استخدام تسميات ويكي بيانات لأسماء التصنيفات                  | `-uselabels`      |
 
@@ -350,7 +349,7 @@ process_catagories("Category:Science", ar_label, num=1, lenth=1)
 -   **DatabaseConfig**: إعدادات اتصال قاعدة البيانات (المضيف، المنفذ، use_sql)
 -   **DebugConfig**: خيارات التصحيح والتسجيل (print_url, print_data, raise_errors)
 -   **BotConfig**: إعدادات سلوك البوت (ask, no_diff, force_edit)
--   **CategoryConfig**: إعدادات معالجة التصنيف (stubs, min_members, we_try)
+-   **CategoryConfig**: إعدادات معالجة التصنيف (min_members, we_try)
 -   **QueryConfig**: معاملات الاستعلام (offset, depth, to_limit)
 -   **SiteConfig**: إعدادات الموقع البديل (use_commons, custom_family)
 

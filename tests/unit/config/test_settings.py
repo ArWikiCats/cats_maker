@@ -586,12 +586,6 @@ class TestProcessArgv:
         s = Settings.load()
         assert s.bot.ask is True
 
-    def test_stubs(self, monkeypatch):
-        """Test -stubs sets category.stubs=True."""
-        monkeypatch.setattr(sys, "argv", ["test", "-stubs"])
-        s = Settings.load()
-        assert s.category.stubs is True
-
     def test_stubs_alternative(self, monkeypatch):
         """Test stubs (without dash) sets category.stubs=True."""
         monkeypatch.setattr(sys, "argv", ["test", "stubs"])
