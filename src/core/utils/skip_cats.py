@@ -1,6 +1,5 @@
 """ """
 
-
 skip_encats = [
     "Category:Invasions of Israel",
 ]

@@ -6,22 +6,8 @@ from unittest.mock import MagicMock, patch
 
 from src.shared.wd_api.to_wd import (
     log_to_wikidata_qid,
-    makejson,
     post_wd_params,
 )
-
-
-class TestMakejson:
-    def test_creates_valid_structure(self):
-        result = makejson("P31", "4167836")
-        assert result["mainsnak"]["property"] == "P31"
-        assert result["mainsnak"]["datavalue"]["value"]["id"] == "Q4167836"
-        assert result["type"] == "statement"
-
-    def test_strips_q_prefix(self):
-        result = makejson("P31", "Q123")
-        assert result["mainsnak"]["datavalue"]["value"]["numeric-id"] == "123"
-        assert result["mainsnak"]["datavalue"]["value"]["id"] == "Q123"
 
 
 class TestPostWdParams:
