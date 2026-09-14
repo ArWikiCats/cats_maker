@@ -13,7 +13,7 @@ import os
 import sys
 from pathlib import Path
 
-from .logging_config import setup_logging
+from .logger_config import setup_logging
 
 use_colorlog = False
 # Optional ArWikiCats integration - configure via environment variable

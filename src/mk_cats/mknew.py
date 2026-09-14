@@ -7,7 +7,7 @@ from collections.abc import Callable
 
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
-from ..shared import find_page_cat_without_hidden
+from ..shared import find_non_hidden_categories
 from ..shared.api_page import load_main_api
 from ..shared.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
 from .add_bot import add_to_page
@@ -51,7 +51,7 @@ bad_words = [
 ]
 
 
-def add_to_final_list(final_list, title, callback=None) -> None:
+def _add_to_final_list(final_list, title, callback=None) -> None:
     title = title.replace("_", " ")
 
     if not title.startswith("تصنيف:"):
@@ -113,7 +113,7 @@ def ar_make_lab(title: str, *args, **kwargs) -> str:
     return label
 
 
-def scan_ar_title(title) -> bool:
+def _scan_ar_title(title) -> bool:
     if title in _already_created:
         logger.debug(f'title "{title}". in _already_created')
         return False
@@ -132,7 +132,7 @@ def scan_ar_title(title) -> bool:
     return True
 
 
-def check_if_artitle_exists(test_title) -> bool:
+def _check_if_artitle_exists(test_title) -> bool:
     if not test_title.startswith("تصنيف:"):
         test_title = f"تصنيف:{test_title}"
 
@@ -191,7 +191,7 @@ def _extract_parent_categories(en_page_title: str):
             - en_cats_of_new_cat: English categories without Arabic equivalents
             - cats_of_new_cat: Arabic category titles
     """
-    cates = find_page_cat_without_hidden(
+    cates = find_non_hidden_categories(
         en_page_title,
         prop="langlinks",
         site_code=WIKI_SITE_EN["code"],
@@ -240,12 +240,12 @@ def _finalize_category_creation(
     Returns:
         list: English categories of the new category
     """
-    add_to_final_list(members, ar_title, callback=callback)
+    _add_to_final_list(members, ar_title, callback=callback)
 
     if validate_categories_for_new_cat(ar_title, en_page_title, wiki="en"):
         listen = _resolver.resolve_members(en_page_title, ar_title, wiki="en") or []
         if listen:
-            add_to_final_list(listen, ar_title, callback=callback)
+            _add_to_final_list(listen, ar_title, callback=callback)
 
     if qid:
         log_to_wikidata_qid(ar_title, qid)
@@ -255,7 +255,7 @@ def _finalize_category_creation(
     return en_cats_of_new_cat
 
 
-def make_ar(en_page_title, ar_title, callback=None):  # -> list:
+def _make_ar(en_page_title: str, ar_title: str, callback=None):  # -> list:
     """
     Create an Arabic category based on the English category.
 
@@ -280,7 +280,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
         return []
 
     # Validation: Check if we've already processed this Arabic title
-    if not scan_ar_title(ar_title):
+    if not _scan_ar_title(ar_title):
         logger.debug("scan_ar_title failed.")
         return []
 
@@ -288,7 +288,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
     en_page_title = _normalize_en_page_title(en_page_title)
 
     # Validation: Check if Arabic category already exists
-    if not check_if_artitle_exists(ar_title):
+    if not _check_if_artitle_exists(ar_title):
         logger.debug("artitle already exists.")
         return []
 
@@ -345,7 +345,7 @@ def make_ar(en_page_title, ar_title, callback=None):  # -> list:
 def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Callable | None = None) -> None:
     logger.debug(f"*:{num}/{lenth} cat: {cat}, arlab: {arlab}")
 
-    ma_table = make_ar(cat, arlab, callback=callback)
+    ma_table = _make_ar(cat, arlab, callback=callback)
 
     for i in range(main_settings.range_limit):
         if not ma_table:
@@ -375,7 +375,7 @@ def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Cal
             if not en_list:
                 continue
 
-            enriched_article_list = make_ar(title, labe, callback=callback)
+            enriched_article_list = _make_ar(title, labe, callback=callback)
 
             enriched_titles.extend(enriched_article_list)
 
@@ -384,7 +384,7 @@ def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Cal
     logger.debug("tago done........... ")
 
 
-def one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
+def _one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
     logger.debug("_________________________________________________________")
 
     logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")
@@ -426,7 +426,7 @@ def create_categories_from_list(titles: list[str], callback: Callable | None = N
     lenth = len(titles)
 
     for num, en_title in enumerate(titles, 1):
-        one_cat(en_title, num, lenth, callback=callback)
+        _one_cat(en_title, num, lenth, callback=callback)
 
 
 __all__ = [

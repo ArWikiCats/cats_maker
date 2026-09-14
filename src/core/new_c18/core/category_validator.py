@@ -7,23 +7,10 @@ import logging
 
 from ....config import main_settings
 from ....shared.api_page import load_main_api
-from ...utils import global_false_entemps
-from ..constants import NO_TEMPLATES_AR, NO_TEMPLATES_AR_WITHOUT_STUBS
+from ..constants import GLOBAL_FALSE_ENTEMPS_LOWER, NO_TEMPLATES_AR
 from ..models import ValidationResult
 
 logger = logging.getLogger(__name__)
-
-
-def _get_no_templates() -> frozenset[str]:
-    """Return the appropriate template blacklist based on settings."""
-    if main_settings.category.stubs:
-        return NO_TEMPLATES_AR_WITHOUT_STUBS
-    return NO_TEMPLATES_AR
-
-
-def _get_false_templates() -> frozenset[str]:
-    """Return lower-cased false templates from global helper."""
-    return frozenset(x.lower() for x in global_false_entemps)
 
 
 def _check_page_status(
@@ -78,7 +65,7 @@ def _check_page_status(
                     reason=f"Blacklisted template: {target_temp2}",
                 )
         else:
-            if target_temp2.lower() in _get_false_templates() and not main_settings.category.keep:
+            if target_temp2.lower() in GLOBAL_FALSE_ENTEMPS_LOWER and not main_settings.category.keep:
                 logger.info(f"{title} has temp:{target_temp2}")
                 return ValidationResult(
                     valid=False,
@@ -100,7 +87,7 @@ def validate_categories_for_new_cat(arcat: str, encat: str, wiki: str = "en") ->
         site=wiki,
         title=encat2,
         expected_langlink=arcat2,
-        template_blacklist=_get_no_templates(),
+        template_blacklist=NO_TEMPLATES_AR,
         is_ar=False,
     )
     if not en_result.valid:
@@ -110,7 +97,7 @@ def validate_categories_for_new_cat(arcat: str, encat: str, wiki: str = "en") ->
         site="ar",
         title=arcat2,
         expected_langlink=encat2,
-        template_blacklist=_get_no_templates(),
+        template_blacklist=NO_TEMPLATES_AR,
         is_ar=True,
     )
     if not ar_result.valid:

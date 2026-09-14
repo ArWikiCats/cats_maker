@@ -468,12 +468,6 @@ class TestCategoryConfig:
         config = CategoryConfig(min_members=0)
         assert config.min_members == 0
 
-    def test_default_stubs(self):
-        """Test default stubs is False."""
-
-        config = CategoryConfig()
-        assert config.stubs is False
-
     def test_default_make_new_cat(self):
         """Test default make_new_cat is True."""
 
@@ -585,18 +579,6 @@ class TestProcessArgv:
         monkeypatch.setattr(sys, "argv", ["test", "ask"])
         s = Settings.load()
         assert s.bot.ask is True
-
-    def test_stubs(self, monkeypatch):
-        """Test -stubs sets category.stubs=True."""
-        monkeypatch.setattr(sys, "argv", ["test", "-stubs"])
-        s = Settings.load()
-        assert s.category.stubs is True
-
-    def test_stubs_alternative(self, monkeypatch):
-        """Test stubs (without dash) sets category.stubs=True."""
-        monkeypatch.setattr(sys, "argv", ["test", "stubs"])
-        s = Settings.load()
-        assert s.category.stubs is True
 
     def test_minmembers(self, monkeypatch):
         """Test -minmembers:5 sets min_members."""

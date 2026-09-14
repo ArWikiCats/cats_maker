@@ -261,7 +261,6 @@ class CategoryConfig:
         min_members: Minimum number of members required to create a category
     """
 
-    stubs: bool = False
     make_new_cat: bool = True
     keep: bool = False
     we_try: bool = True
@@ -494,8 +493,6 @@ class Settings:
                 self.bot.no_cookies = True
 
             # Category config
-            if arg_name in ("-stubs", "stubs"):
-                self.category.stubs = True
             if arg_name in ("-dontMakeNewCat", "-dontmakenewcat"):
                 self.category.make_new_cat = False
             if arg_name == "keep":

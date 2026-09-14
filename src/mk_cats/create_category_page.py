@@ -4,7 +4,7 @@
 import logging
 from typing import NamedTuple
 
-from ..core.utils import skip_encats
+from ..core.new_c18.constants import SKIP_ENCATS
 from ..shared.api_page import load_main_api
 from ..temp import main_make_temp_no_title
 from . import categorytext
@@ -148,8 +148,8 @@ def make_category(categories, enca, title, qid, family: str = "") -> CategoryRes
     Returns:
         CategoryResult with success status and page title
     """
-    if enca in skip_encats:
-        logger.debug(f"enca: {enca} in skip_encats")
+    if enca in SKIP_ENCATS:
+        logger.debug(f"enca: {enca} in SKIP_ENCATS")
         return CategoryResult(False, None, "Category in skip list")
 
     if not title.startswith("تصنيف:"):

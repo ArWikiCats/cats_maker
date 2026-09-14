@@ -5,37 +5,9 @@ Unit tests for src/core/new_c18/core/category_validator.py module.
 from unittest.mock import patch
 
 from src.core.new_c18.core.category_validator import (
-    _get_false_templates,
-    _get_no_templates,
     validate_categories_for_new_cat,
 )
 from src.core.new_c18.models import ValidationResult
-
-
-class TestGetNoTemplates:
-    @patch("src.core.new_c18.core.category_validator.main_settings")
-    @patch("src.core.new_c18.core.category_validator.NO_TEMPLATES_AR", frozenset(["stub"]))
-    @patch("src.core.new_c18.core.category_validator.NO_TEMPLATES_AR_WITHOUT_STUBS", frozenset(["redirect"]))
-    def test_returns_no_templates_ar(self, mock_settings):
-        mock_settings.category.stubs = False
-        result = _get_no_templates()
-        assert "stub" in result
-
-    @patch("src.core.new_c18.core.category_validator.main_settings")
-    @patch("src.core.new_c18.core.category_validator.NO_TEMPLATES_AR", frozenset(["stub"]))
-    @patch("src.core.new_c18.core.category_validator.NO_TEMPLATES_AR_WITHOUT_STUBS", frozenset(["redirect"]))
-    def test_returns_no_templates_without_stubs(self, mock_settings):
-        mock_settings.category.stubs = True
-        result = _get_no_templates()
-        assert "redirect" in result
-
-
-class TestGetFalseTemplates:
-    @patch("src.core.new_c18.core.category_validator.global_false_entemps", ["Nobots", "Dead"])
-    def test_returns_lowercased(self):
-        result = _get_false_templates()
-        assert "nobots" in result
-        assert "dead" in result
 
 
 class TestValidateCategoriesForNewCat:

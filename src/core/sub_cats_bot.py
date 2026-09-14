@@ -4,8 +4,8 @@
 import logging
 from typing import Any
 
-from ...config import main_settings
-from ...shared.api_page import load_main_api
+from ..config import main_settings
+from ..shared.api_page import load_main_api
 
 logger = logging.getLogger(__name__)
 

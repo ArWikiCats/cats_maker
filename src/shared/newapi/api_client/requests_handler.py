@@ -74,7 +74,7 @@ class RequestsHandler:
     # Retry loop  (called by WikiLoginClient.client_request)
     # ------------------------------------------------------------------
 
-    def _request_with_retry(
+    def request_with_retry(
         self,
         method: str,
         url: str,
@@ -87,7 +87,7 @@ class RequestsHandler:
         """
         Execute a request and automatically retry on transient API errors.
 
-        Retry conditions (each counted against ``settings.mediawiki.max_retries``):
+        Retry conditions (each counted against ``main_settings.mediawiki.max_retries``):
           - CSRF / bad token  → ``_handle_csrf``  → inject new token, retry
           - maxlag            → ``_handle_maxlag`` → sleep, retry
           - assertnameduserfailed → ``_on_assertnameduserfailed`` → retry once
@@ -110,9 +110,16 @@ class RequestsHandler:
         attempt = 0
         named_user_attempts = 0
 
+        def sleep(attempt: int) -> None:
+            if attempt >= self.max_retries:
+                raise WikiClientError(f"Ratelimit persists after {self.max_retries} attempts.")
+
+            ratelimit_sleep_time = 3
+            time.sleep(ratelimit_sleep_time)
+            logger.warning("ratelimited — sleeping for %d seconds before retrying", ratelimit_sleep_time)
+
         while attempt < self.max_retries:
             try:
-                # TODO: handle HTTPError: 429 Client Error: Too Many Requests
                 response = self._session.request(
                     method,
                     url,
@@ -121,6 +128,14 @@ class RequestsHandler:
                     files=files,
                 )
                 response.raise_for_status()
+            except requests.HTTPError as exc:
+                if exc.response.status_code == 429:
+                    # handle HTTPError: 429 Client Error: Too Many Requests
+                    attempt += 1
+                    sleep(attempt)
+                    continue
+                logger.error("HTTPError: %s", exc)
+                raise
             except Exception as e:
                 logger.error("Request failed: %s", e)
                 raise
@@ -191,12 +206,7 @@ class RequestsHandler:
             # ── ratelimited ───────────────────────────────────────────────
             if error_code == "ratelimited":
                 attempt += 1
-                if attempt >= self.max_retries:
-                    raise WikiClientError(f"Ratelimit persists after {self.max_retries} attempts.")
-
-                ratelimit_sleep_time = 3
-                time.sleep(ratelimit_sleep_time)
-                logger.warning("ratelimited — sleeping for %d seconds before retrying", ratelimit_sleep_time)
+                sleep(attempt)
                 continue
 
             # ── any other error — let the caller decide ───────────────────
@@ -217,8 +227,8 @@ class RequestsHandler:
         error_code: str,
         error_info: str,
         attempt: int,
-        data: dict,
-        params: dict,
+        data: dict[str, Any],
+        params: dict[str, Any],
     ) -> tuple[dict, dict]:
         """
         Refresh the CSRF token and reinject it into whichever dict carries it.
@@ -242,7 +252,7 @@ class RequestsHandler:
         return data, params
 
     @staticmethod
-    def _inject_token(token: str, data: dict, params: dict) -> tuple[dict, dict]:
+    def _inject_token(token: str, data: dict[str, Any], params: dict[str, Any]) -> tuple[dict, dict]:
         """
         Return (data, params) copies with ``token`` updated to *token*.
         Only one dict should ever carry the key; we update the first match.
