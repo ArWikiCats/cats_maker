@@ -7,14 +7,12 @@ import logging
 
 from ....config import main_settings
 from ....shared import find_lcn, load_main_api
-from ..constants import DEFAULT_MEMBER_NAMESPACES, STUB_MEMBER_NAMESPACES
+from ..constants import DEFAULT_MEMBER_NAMESPACES
 
 logger = logging.getLogger(__name__)
 
 
 def _get_namespace_ids() -> list[int]:
-    if main_settings.category.stubs:
-        return list(STUB_MEMBER_NAMESPACES)
     return list(DEFAULT_MEMBER_NAMESPACES)
 
 

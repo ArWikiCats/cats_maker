@@ -15,9 +15,6 @@ logger = logging.getLogger(__name__)
 
 tatone_ns = [0, 14, 10, 100]
 
-if main_settings.category.stubs:
-    tatone_ns = [14]
-
 
 def categorized_page_generator(enpage_title, typee):
     logger.info(f", enpage_title:{enpage_title}")

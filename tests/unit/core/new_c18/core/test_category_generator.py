@@ -5,28 +5,9 @@ Unit tests for src/core/new_c18/core/category_generator.py module.
 from unittest.mock import MagicMock, patch
 
 from src.core.new_c18.core.category_generator import (
-    _get_namespace_ids,
     fetch_category_members,
     translate_titles_to_ar,
 )
-
-
-class TestGetNamespaceIds:
-    @patch("src.core.new_c18.core.category_generator.main_settings")
-    @patch("src.core.new_c18.core.category_generator.DEFAULT_MEMBER_NAMESPACES", [0, 10, 14])
-    @patch("src.core.new_c18.core.category_generator.STUB_MEMBER_NAMESPACES", [0, 14])
-    def test_default_namespaces(self, mock_settings):
-        mock_settings.category.stubs = False
-        result = _get_namespace_ids()
-        assert result == [0, 10, 14]
-
-    @patch("src.core.new_c18.core.category_generator.main_settings")
-    @patch("src.core.new_c18.core.category_generator.DEFAULT_MEMBER_NAMESPACES", [0, 10, 14])
-    @patch("src.core.new_c18.core.category_generator.STUB_MEMBER_NAMESPACES", [0, 14])
-    def test_stub_namespaces(self, mock_settings):
-        mock_settings.category.stubs = True
-        result = _get_namespace_ids()
-        assert result == [0, 14]
 
 
 class TestFetchCategoryMembers:

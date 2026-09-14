@@ -46,15 +46,6 @@ FALSE_TEMPLATES: frozenset[str] = frozenset(
     }
 )
 
-FALSE_TEMPLATES_WITHOUT_STUBS: frozenset[str] = frozenset(
-    {
-        "شطب",
-        "مقالات متعلقة",
-        "ويكي بيانات",
-        "تستند على",
-    }
-)
-
 NO_TEMPLATES_AR: frozenset[str] = frozenset(
     {
         "تصنيف ويكيبيديا",
@@ -63,16 +54,6 @@ NO_TEMPLATES_AR: frozenset[str] = frozenset(
         "تصنيف تهذيب شهري",
         "تصنيف مخفي",
         "تصنيف بذرة",
-        "تصنيف حاوية",
-    }
-)
-
-NO_TEMPLATES_AR_WITHOUT_STUBS: frozenset[str] = frozenset(
-    {
-        "تصنيف ويكيبيديا",
-        "تحويل تصنيف",
-        "تصنيف تتبع",
-        "تصنيف تهذيب شهري",
         "تصنيف حاوية",
     }
 )

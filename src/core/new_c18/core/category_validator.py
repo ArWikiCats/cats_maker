@@ -8,7 +8,7 @@ import logging
 from ....config import main_settings
 from ....shared.api_page import load_main_api
 from ...utils import global_false_entemps
-from ..constants import NO_TEMPLATES_AR, NO_TEMPLATES_AR_WITHOUT_STUBS
+from ..constants import NO_TEMPLATES_AR
 from ..models import ValidationResult
 
 logger = logging.getLogger(__name__)
@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 def _get_no_templates() -> frozenset[str]:
     """Return the appropriate template blacklist based on settings."""
-    if main_settings.category.stubs:
-        return NO_TEMPLATES_AR_WITHOUT_STUBS
     return NO_TEMPLATES_AR
 
 

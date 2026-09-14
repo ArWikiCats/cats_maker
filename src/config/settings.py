@@ -261,7 +261,6 @@ class CategoryConfig:
         min_members: Minimum number of members required to create a category
     """
 
-    stubs: bool = False
     make_new_cat: bool = True
     keep: bool = False
     we_try: bool = True
