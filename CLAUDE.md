@@ -45,20 +45,20 @@ run.py (CLI args) → config/settings.py (dataclass config) → mk_cats/mknew.py
 
 ## Key Modules
 
-- `src/config/settings.py`: Centralized dataclass-based configuration. All settings accessed via `from src.config import settings`
-- `src/mk_cats/mknew.py`: Core functions - `create_categories_from_list()`, `ar_make_lab()`, `process_catagories()`
-- `src/mk_cats/members_helper.py`: Member collection from SQL, API, and SubSub sources
-- `src/mk_cats/categorytext.py`: Generates wikitext content for category pages
-- `src/mk_cats/create_category_page.py`: Page creation and saving logic (`make_category()`)
-- `src/core/wd_bots/`: Wikidata API integration (`wd_api_bot.py`, `to_wd.py`, `lag_bot.py`)
-- `src/core/wiki_api/`: MediaWiki API calls (`himoBOT2.py`, `api_requests.py`, `sub_cats_bot.py`)
-- `src/core/api_sql/`: Database access layer with connection pooling (`db_pool.py`, `repository.py`, `service.py`)
-- `src/core/utils/skip_cats.py`: Category blacklists - always check before processing
+- `src/app/config/settings.py`: Centralized dataclass-based configuration. All settings accessed via `from src.app.config import settings`
+- `src/app/mk_cats/mknew.py`: Core functions - `create_categories_from_list()`, `ar_make_lab()`, `process_catagories()`
+- `src/app/mk_cats/members_helper.py`: Member collection from SQL, API, and SubSub sources
+- `src/app/mk_cats/categorytext.py`: Generates wikitext content for category pages
+- `src/app/mk_cats/create_category_page.py`: Page creation and saving logic (`make_category()`)
+- `src/app/core/wd_bots/`: Wikidata API integration (`wd_api_bot.py`, `to_wd.py`, `lag_bot.py`)
+- `src/app/core/wiki_api/`: MediaWiki API calls (`himoBOT2.py`, `api_requests.py`, `sub_cats_bot.py`)
+- `src/app/core/api_sql/`: Database access layer with connection pooling (`db_pool.py`, `repository.py`, `service.py`)
+- `src/app/core/utils/skip_cats.py`: Category blacklists - always check before processing
 - `src/app/templates/bots/`: Template generation for centuries, decades, years
 
 ## Configuration
 
-Settings are dataclasses in `src/config/settings.py`:
+Settings are dataclasses in `src/app/config/settings.py`:
 
 - `WikipediaConfig`: language codes, user agent, timeout
 - `WikidataConfig`: endpoints, maxlag, test_mode
@@ -97,10 +97,10 @@ Environment variables (loaded via `python-dotenv`): `WIKIPEDIA_AR_CODE`, `WIKIDA
 
 ```python
 # Import main functions from mk_cats
-from src.mk_cats import create_categories_from_list, ar_make_lab, make_category
+from src.app.mk_cats import create_categories_from_list, ar_make_lab, make_category
 
 # Access settings
-from src.config import settings
+from src.app.config import settings
 settings.category.min_members  # minimum members threshold
 settings.database.use_sql      # whether to use SQL queries
 
@@ -120,5 +120,5 @@ create_categories_from_list(["Category:Science"], callback=my_callback)
 
 - Arabic text handling: ensure proper Unicode/RTL support
 - Wikipedia bot policies: respect rate limits, use bot accounts
-- Blacklists in `src/core/utils/skip_cats.py`: always check before processing categories
+- Blacklists in `src/app/core/utils/skip_cats.py`: always check before processing categories
 - SQL database access is optional (Wikimedia Tool Labs)

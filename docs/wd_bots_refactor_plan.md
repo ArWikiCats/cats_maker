@@ -2,12 +2,12 @@
 
 ## Overview
 
-The `wd_bots` module handles all Wikidata interactions — reads (API queries) and writes (creating items, setting labels, sitelinks). It lives at `src/core/wd_bots/` and is consumed by `mk_cats`, `c18`, and other modules. The module has working test coverage for reads and error handling but has significant architectural debt.
+The `wd_bots` module handles all Wikidata interactions — reads (API queries) and writes (creating items, setting labels, sitelinks). It lives at `src/app/core/wd_bots/` and is consumed by `mk_cats`, `c18`, and other modules. The module has working test coverage for reads and error handling but has significant architectural debt.
 
 ## Current Architecture
 
 ```
-src/core/wd_bots/
+src/app/core/wd_bots/
 ├── __init__.py          # Public API exports
 ├── wd_bots_main.py      # WD_API class (auth'd API client) + login
 ├── wd_api_bot.py        # Read-only Wikidata API query functions
@@ -34,7 +34,7 @@ src/core/wd_bots/
 ## Proposed Target Architecture
 
 ```
-src/core/wd_bots/
+src/app/core/wd_bots/
 ├── __init__.py           # Public API exports (unchanged)
 ├── client.py             # Low-level authenticated API client (HTTP transport + retry)
 ├── queries.py            # Read-only query functions (moved from wd_api_bot.py)

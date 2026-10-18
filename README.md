@@ -307,7 +307,7 @@ python run.py DEBUG -encat:Mathematics
 ### الاستخدام البرمجي
 
 ```python
-from src.mk_cats import create_categories_from_list
+from src.app.mk_cats import create_categories_from_list
 
 # معالجة قائمة من التصنيفات
 categories = [
@@ -326,7 +326,7 @@ create_categories_from_list(categories, callback=my_callback)
 ### الدوال الفردية
 
 ```python
-from src.mk_cats import ar_make_lab, process_catagories
+from src.app.mk_cats import ar_make_lab, process_catagories
 
 # الحصول على التسمية العربية لتصنيف إنجليزي
 ar_label = ar_make_lab("Category:Science")
@@ -338,7 +338,7 @@ process_catagories("Category:Science", ar_label, num=1, lenth=1)
 
 ## الإعدادات
 
-تتم إدارة الإعدادات من خلال وحدة `src/config/settings.py`، التي توفر إعدادات تعتمد على dataclass يمكن تكوينها عبر متغيرات البيئة أو معاملات سطر الأوامر. جميع الإعدادات مركزية وآمنة من حيث النوع.
+تتم إدارة الإعدادات من خلال وحدة `src/app/config/settings.py`، التي توفر إعدادات تعتمد على dataclass يمكن تكوينها عبر متغيرات البيئة أو معاملات سطر الأوامر. جميع الإعدادات مركزية وآمنة من حيث النوع.
 
 ### فئات الإعدادات
 
@@ -356,7 +356,7 @@ process_catagories("Category:Science", ar_label, num=1, lenth=1)
 ### الاستخدام
 
 ```python
-from src.config import settings
+from src.app.config import settings
 
 # الوصول إلى إعدادات ويكيبيديا
 print(settings.wikipedia.ar_code)  # 'ar'
@@ -583,15 +583,15 @@ pytest -m "not network"
 
 ```python
 import pytest
-from src.mk_cats.mknew import ar_make_lab
+from src.app.mk_cats.mknew import ar_make_lab
 
 class TestArMakeLab:
     """اختبارات لدالة ar_make_lab"""
 
     def test_returns_label_for_valid_category(self, mocker):
         """اختبار أن التصنيفات الصالحة تُرجع التسميات العربية"""
-        mocker.patch('src.mk_cats.mknew.filter_en.filter_cat', return_value=True)
-        mocker.patch('src.mk_cats.mknew.resolve_arabic_category_label',
+        mocker.patch('src.app.mk_cats.mknew.filter_en.filter_cat', return_value=True)
+        mocker.patch('src.app.mk_cats.mknew.resolve_arabic_category_label',
                      return_value='علوم')
 
         result = ar_make_lab("Category:Science")
@@ -599,7 +599,7 @@ class TestArMakeLab:
 
     def test_returns_empty_for_filtered_category(self, mocker):
         """اختبار أن التصنيفات المصفاة تُرجع سلسلة فارغة"""
-        mocker.patch('src.mk_cats.mknew.filter_en.filter_cat', return_value=False)
+        mocker.patch('src.app.mk_cats.mknew.filter_en.filter_cat', return_value=False)
 
         result = ar_make_lab("Category:Stubs")
         assert result == ""
