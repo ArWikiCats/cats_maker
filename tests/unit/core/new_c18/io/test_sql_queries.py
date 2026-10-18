@@ -23,7 +23,6 @@ def mock_db(monkeypatch):
 
 
 class TestFetchArCategoryMembers:
-
     def test_returns_rows(self, mock_db):
         mock_db.select_safe.return_value = [{"page_title": "Test", "page_namespace": 0}]
         result = fetch_ar_category_members("تصنيف:علوم")
@@ -43,7 +42,6 @@ class TestFetchArCategoryMembers:
 
 
 class TestFetchEnCategoryLanglinks:
-
     @patch("src.app.core.new_c18.io.sql_queries.main_settings")
     def test_returns_rows(self, mock_settings, mock_db):
         mock_settings.query.ns_no_10 = False
@@ -71,7 +69,6 @@ class TestFetchEnCategoryLanglinks:
 
 
 class TestFetchDontAddPages:
-
     @patch("src.app.core.new_c18.io.sql_queries.add_namespace_prefix")
     def test_returns_prefixed_titles(self, mock_prefix, mock_db):
         mock_db.select_safe.return_value = [{"page_title": "Test", "page_namespace": 0}]

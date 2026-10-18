@@ -101,8 +101,9 @@ from src.app.mk_cats import create_categories_from_list, ar_make_lab, make_categ
 
 # Access settings
 from src.app.config import settings
+
 settings.category.min_members  # minimum members threshold
-settings.database.use_sql      # whether to use SQL queries
+settings.database.use_sql  # whether to use SQL queries
 
 # Process categories with callback
 create_categories_from_list(["Category:Science"], callback=my_callback)

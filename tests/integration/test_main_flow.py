@@ -13,11 +13,11 @@ import pytest
 
 from src.app.mk_cats import create_categories_from_list, create_category_page, mknew
 from src.app.mk_cats.mknew import (
-    clear_processing_state,
     _make_ar,
     _one_cat,
-    process_catagories,
     _scan_ar_title,
+    clear_processing_state,
+    process_catagories,
 )
 from src.app.shared.wd_api import wd_api_bot
 
@@ -38,7 +38,9 @@ class TestMainFlowIntegration:
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in mknew)
-        mock_sql = mocker.patch("src.app.core.new_c18.core.category_resolver.CategoryResolver.list_en_pages_with_ar_links")
+        mock_sql = mocker.patch(
+            "src.app.core.new_c18.core.category_resolver.CategoryResolver.list_en_pages_with_ar_links"
+        )
         mock_sql.return_value = ["Test Article 1", "Test Article 2"]
 
         # Mock category page creation

@@ -179,7 +179,6 @@ class TestHandleMaxlag:
         response.headers = {}
 
         with patch("src.app.shared.newapi.api_client.requests_handler.time.sleep") as mock_sleep:
-
             client.requests_handler._handle_maxlag(response, 2)
             mock_sleep.assert_called_with(4.0)  # 1 * 2^2
 

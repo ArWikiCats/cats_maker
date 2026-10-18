@@ -67,6 +67,7 @@ src/app/mk_cats/
 ```python
 # src/app/mk_cats/mknew.py (legacy shim)
 import warnings
+
 warnings.warn("mk_cats.mknew is deprecated; use mk_cats.core.category_pipeline", DeprecationWarning, stacklevel=2)
 from .core.category_pipeline import create_categories_from_list, process_categories, _make_ar  # noqa: F401
 from .tools.label_resolver import ar_make_lab  # noqa: F401
@@ -97,11 +98,13 @@ Centralise everything scattered across the module:
 ```python
 from enum import IntEnum
 
+
 class Namespace(IntEnum):
     MAIN = 0
     TEMPLATE = 10
     CATEGORY = 14
     PORTAL = 100
+
 
 # Wiki site config
 WIKI_SITE_AR = {"family": "wikipedia", "code": "ar"}
@@ -113,23 +116,43 @@ CAT_PREFIX_EN = "Category:"
 PORTAL_PREFIX_EN = "Portal:"
 
 # Filter blacklists (immutable)
-BLACKLIST_SUBSTRINGS: tuple[str, ...] = (     # was BBlcak
-    "Disambiguation", "wikiproject", "sockpuppets",
-    "without a source", "images for deletion",
+BLACKLIST_SUBSTRINGS: tuple[str, ...] = (  # was BBlcak
+    "Disambiguation",
+    "wikiproject",
+    "sockpuppets",
+    "without a source",
+    "images for deletion",
 )
-BLACKLIST_PREFIXES: tuple[str, ...] = (        # was blcak_starts
-    "Clean-up", "Cleanup", "Uncategorized", "Unreferenced",
-    "Unverifiable", "Unverified", "Wikipedia", "Wikipedia articles",
-    "Articles about", "Articles containing", "Articles covered",
-    "Articles lacking", "Articles needing", "Articles prone",
-    "Articles requiring", "Articles slanted", "Articles sourced",
-    "Articles tagged", "Articles that", "Articles to", "Articles with",
-    "use ", "User pages", "Userspace",
+BLACKLIST_PREFIXES: tuple[str, ...] = (  # was blcak_starts
+    "Clean-up",
+    "Cleanup",
+    "Uncategorized",
+    "Unreferenced",
+    "Unverifiable",
+    "Unverified",
+    "Wikipedia",
+    "Wikipedia articles",
+    "Articles about",
+    "Articles containing",
+    "Articles covered",
+    "Articles lacking",
+    "Articles needing",
+    "Articles prone",
+    "Articles requiring",
+    "Articles slanted",
+    "Articles sourced",
+    "Articles tagged",
+    "Articles that",
+    "Articles to",
+    "Articles with",
+    "use ",
+    "User pages",
+    "Userspace",
 )
 MONTH_NAMES: tuple[str, ...] = ("January", "February", ...)
 
 # Label filters
-BAD_WORDS: tuple[str, ...] = ("ذكور",)        # was bad_words in mknew.py
+BAD_WORDS: tuple[str, ...] = ("ذكور",)  # was bad_words in mknew.py
 
 # Minimum members for category creation default
 DEFAULT_MIN_MEMBERS: int = 5
@@ -203,11 +226,14 @@ class ProcessingState:
         self.new_cat_attempts.clear()
         self.already_created.clear()
 
+
 # Thread-safe version uses threading.local if needed
 _state = ProcessingState()
 
+
 def get_state() -> ProcessingState:
     return _state
+
 
 def clear_state() -> None:
     _state.clear()
@@ -316,6 +342,7 @@ _OPERATIONS: list[Callable] = [
     _add_nav_template,
 ]
 
+
 def add_text_to_cat(text, categories, en_title, title, qid, family=""):
     if family != "wikipedia" and family:
         return text
@@ -369,6 +396,7 @@ Move code into the new directory layout from Section 3. Order:
 ```python
 from dataclasses import dataclass
 from typing import Optional
+
 
 @dataclass
 class CategoryResult:

@@ -310,15 +310,13 @@ python run.py DEBUG -encat:Mathematics
 from src.app.mk_cats import create_categories_from_list
 
 # معالجة قائمة من التصنيفات
-categories = [
-    "Category:Science",
-    "Category:Mathematics",
-    "Category:Physics"
-]
+categories = ["Category:Science", "Category:Mathematics", "Category:Physics"]
+
 
 # callback اختياري لمعالجة النتائج
 def my_callback(title, **kwargs):
     print(f"Processed: {title}")
+
 
 create_categories_from_list(categories, callback=my_callback)
 ```
@@ -585,21 +583,21 @@ pytest -m "not network"
 import pytest
 from src.app.mk_cats.mknew import ar_make_lab
 
+
 class TestArMakeLab:
     """اختبارات لدالة ar_make_lab"""
 
     def test_returns_label_for_valid_category(self, mocker):
         """اختبار أن التصنيفات الصالحة تُرجع التسميات العربية"""
-        mocker.patch('src.app.mk_cats.mknew.filter_en.filter_cat', return_value=True)
-        mocker.patch('src.app.mk_cats.mknew.resolve_arabic_category_label',
-                     return_value='علوم')
+        mocker.patch("src.app.mk_cats.mknew.filter_en.filter_cat", return_value=True)
+        mocker.patch("src.app.mk_cats.mknew.resolve_arabic_category_label", return_value="علوم")
 
         result = ar_make_lab("Category:Science")
         assert result == "علوم"
 
     def test_returns_empty_for_filtered_category(self, mocker):
         """اختبار أن التصنيفات المصفاة تُرجع سلسلة فارغة"""
-        mocker.patch('src.app.mk_cats.mknew.filter_en.filter_cat', return_value=False)
+        mocker.patch("src.app.mk_cats.mknew.filter_en.filter_cat", return_value=False)
 
         result = ar_make_lab("Category:Stubs")
         assert result == ""

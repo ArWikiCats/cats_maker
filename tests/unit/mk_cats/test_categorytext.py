@@ -198,7 +198,9 @@ class TestGeneratePortalContent:
     def test_translates_multiple_portals(self, mocker):
         """
         Test that multiple portals are translated and joined"""
-        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Olympics", "Portal:Iceland"])
+        mocker.patch(
+            "src.app.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Olympics", "Portal:Iceland"]
+        )
 
         result = generate_portal_content("تصنيف:ألعاب أولمبية", "Category:Olympics")
 

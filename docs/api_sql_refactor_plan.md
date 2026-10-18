@@ -90,22 +90,49 @@ Move namespace dicts and wiki config from `service.py`:
 ```python
 # Mapping of namespace IDs to localized text
 NS_TEXT_AR: dict[str, str] = {
-    "0": "", "1": "نقاش", "2": "مستخدم", "3": "نقاش المستخدم",
-    "4": "ويكيبيديا", "5": "نقاش ويكيبيديا", "6": "ملف",
-    "7": "نقاش الملف", "10": "قالب", "11": "نقاش القالب",
-    "12": "مساعدة", "13": "نقاش المساعدة", "14": "تصنيف",
-    "15": "نقاش التصنيف", "100": "بوابة", "101": "نقاش البوابة",
-    "828": "وحدة", "829": "نقاش الوحدة", "2600": "موضوع",
-    "1728": "فعالية", "1729": "نقاش الفعالية",
+    "0": "",
+    "1": "نقاش",
+    "2": "مستخدم",
+    "3": "نقاش المستخدم",
+    "4": "ويكيبيديا",
+    "5": "نقاش ويكيبيديا",
+    "6": "ملف",
+    "7": "نقاش الملف",
+    "10": "قالب",
+    "11": "نقاش القالب",
+    "12": "مساعدة",
+    "13": "نقاش المساعدة",
+    "14": "تصنيف",
+    "15": "نقاش التصنيف",
+    "100": "بوابة",
+    "101": "نقاش البوابة",
+    "828": "وحدة",
+    "829": "نقاش الوحدة",
+    "2600": "موضوع",
+    "1728": "فعالية",
+    "1729": "نقاش الفعالية",
 }
 
 NS_TEXT_EN: dict[str, str] = {
-    "0": "", "1": "Talk", "2": "User", "3": "User talk",
-    "4": "Project", "5": "Project talk", "6": "File",
-    "7": "File talk", "8": "MediaWiki", "9": "MediaWiki talk",
-    "10": "Template", "11": "Template talk", "12": "Help",
-    "13": "Help talk", "14": "Category", "15": "Category talk",
-    "100": "Portal", "101": "Portal talk", "828": "Module",
+    "0": "",
+    "1": "Talk",
+    "2": "User",
+    "3": "User talk",
+    "4": "Project",
+    "5": "Project talk",
+    "6": "File",
+    "7": "File talk",
+    "8": "MediaWiki",
+    "9": "MediaWiki talk",
+    "10": "Template",
+    "11": "Template talk",
+    "12": "Help",
+    "13": "Help talk",
+    "14": "Category",
+    "15": "Category talk",
+    "100": "Portal",
+    "101": "Portal talk",
+    "828": "Module",
     "829": "Module talk",
 }
 
@@ -260,9 +287,8 @@ Currently `_sql_connect_pymysql` unconditionally calls `cursor.fetchall()`. For 
 def _is_select_query(query: str) -> bool:
     return query.lstrip().upper().startswith("SELECT")
 
-def _sql_connect_pymysql(
-    query: str, db: str = "", host: str = "", values: tuple | None = None
-) -> list[dict[str, Any]]:
+
+def _sql_connect_pymysql(query: str, db: str = "", host: str = "", values: tuple | None = None) -> list[dict[str, Any]]:
     ...
     with connection as conn, conn.cursor() as cursor:
         cursor.execute(query, params)

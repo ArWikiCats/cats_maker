@@ -36,7 +36,6 @@ def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass
 
 
 class TestEnrichParams:
-
     @patch("src.app.shared.newapi.api_client.client.mwclient.Site")
     @patch("src.app.shared.newapi.api_client.cookies_client.get_cookie_path")
     def test_query_action_strips_bot_and_summary(self, mock_path, mock_site):
@@ -240,7 +239,6 @@ class TestSiteProperty:
 
 
 class TestRepr:
-
     @patch("src.app.shared.newapi.api_client.client.mwclient.Site")
     @patch("src.app.shared.newapi.api_client.cookies_client.get_cookie_path")
     def test_repr(self, mock_path, mock_site):

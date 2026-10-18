@@ -437,7 +437,9 @@ class TestMakeArMinMembers:
         mocker.patch("src.app.mk_cats.mknew.get_sitelinks_from_wikidata", return_value={"q": "Q12345"})
         mocker.patch("src.app.mk_cats.mknew.find_non_hidden_categories", return_value={})
         # Return only 3 members (below default min_members of 5)
-        mocker.patch("src.app.mk_cats.mknew.collect_category_members", return_value=["Article1", "Article2", "Article3"])
+        mocker.patch(
+            "src.app.mk_cats.mknew.collect_category_members", return_value=["Article1", "Article2", "Article3"]
+        )
         mock_settings = mocker.patch("src.app.mk_cats.mknew.main_settings")
         mock_settings.category.min_members = 5
 

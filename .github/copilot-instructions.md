@@ -188,7 +188,7 @@ create_categories_from_list(categories, callback=my_callback)
 ### Mocking in Tests
 ```python
 def test_example(mocker):
-    mocker.patch('src.module.function', return_value='expected')
+    mocker.patch("src.module.function", return_value="expected")
     # Test code
 ```
 
