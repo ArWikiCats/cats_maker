@@ -121,6 +121,7 @@ class WikiLoginClient:
         self.family = family
         self.username = username
         self._password = password  # kept private — never log or expose this
+        self._is_bot_cached: bool | None = None
 
         self.cookies_client = CookiesClient(lang, family, username, cookies_dir, use_cookies)
 
@@ -180,9 +181,49 @@ class WikiLoginClient:
 
     @property
     def site(self) -> mwclient.Site:
-        """
-        The underlying ``mwclient.Site`` — use for high-level wiki access."""
+        """The underlying ``mwclient.Site`` — use for high-level wiki access."""
         return self._site
+
+    @property
+    def is_bot(self) -> bool:
+        """
+        Check if the logged-in user is a bot.
+        Caches the result to avoid redundant API queries.
+        """
+        if self._is_bot_cached is not None:
+            return self._is_bot_cached
+
+        self._is_bot_cached = False
+
+        if not self.username:
+            return self._is_bot_cached
+
+        if self.username.lower().endswith("bot"):
+            self._is_bot_cached = True
+            return self._is_bot_cached
+
+        # Query user groups to see if the user belongs to the 'bot' group
+        params = {
+            "action": "query",
+            "format": "json",
+            "list": "users",
+            "ususers": self.username,
+            "usprop": "groups",
+            "formatversion": 2,
+        }
+        try:
+            data = self.client_request_safe(params, method="get")
+            if data:
+                users = data.get("query", {}).get("users", [])
+                if users:
+                    groups = users[0].get("groups", [])
+                    self._is_bot_cached = "bot" in groups
+                else:
+                    self._is_bot_cached = False
+        except Exception as exc:
+            logger.warning("Failed to query user groups for %s: %s", self.username, exc)
+
+        return self._is_bot_cached or False
 
     # ------------------------------------------------------------------
     # Private helpers
@@ -190,7 +231,7 @@ class WikiLoginClient:
 
     def _client_request(
         self,
-        params: dict,
+        params: dict[str, Any],
         method: str = "post",
         files: Any | None = None,
         **kwargs,
@@ -254,7 +295,7 @@ class WikiLoginClient:
             if files:
                 args["files"] = files
 
-        return self.requests_handler._request_with_retry(
+        return self.requests_handler.request_with_retry(
             method,
             self.api_url,
             **args,
@@ -283,7 +324,7 @@ class WikiLoginClient:
         # if not self._site.logged_in: self._do_login()
         # don't login yet, user can use login() method
 
-    def _enrich_params(self, params: dict) -> dict[str, Any]:
+    def _enrich_params(self, params: dict[str, Any]) -> dict[str, Any]:
         """
         Inject write-action safety parameters.
 
@@ -352,7 +393,7 @@ class WikiLoginClient:
 
     def client_request(
         self,
-        params: dict,
+        params: dict[str, Any],
         method: str = "post",
         files: Any | None = None,
         **kwargs,
@@ -367,7 +408,7 @@ class WikiLoginClient:
 
     def client_request_safe(
         self,
-        params: dict,
+        params: dict[str, Any],
         method: str = "post",
         files: Any | None = None,
         **kwargs,
@@ -386,7 +427,7 @@ class WikiLoginClient:
 
     def client_request_retry(
         self,
-        params: dict,
+        params: dict[str, Any],
         method: str = "post",
         files: Any | None = None,
         **kwargs,
@@ -406,7 +447,7 @@ class WikiLoginClient:
     def post_continue_dict(
         self,
         *,
-        params: dict,
+        params: dict[str, Any],
         action: str,
         _load_data: Callable,
         max: int | str | None = None,
@@ -431,7 +472,16 @@ class WikiLoginClient:
         results = {}
         continue_params: dict = {}
 
+        max_attempt = 100
+        attempt = 0
+
         while True:
+            attempt += 1
+            if attempt > max_attempt:
+                # raise to solve infinite loop
+                logger.error(f"max attempt reached, {max_attempt=}")
+                break
+
             page_params = copy.deepcopy(params)
 
             if continue_params:
@@ -469,7 +519,7 @@ class WikiLoginClient:
     def post_continue_list(
         self,
         *,
-        params: dict,
+        params: dict[str, Any],
         action: str,
         _load_data: Callable,
         max: int | str | None = None,
@@ -496,7 +546,16 @@ class WikiLoginClient:
         results: list = []
         continue_params: dict = {}
 
+        max_attempt = 100
+        attempt = 0
+
         while True:
+            attempt += 1
+            if attempt > max_attempt:
+                # raise to solve infinite loop
+                logger.error(f"max attempt reached, {max_attempt=}")
+                break
+
             page_params = copy.deepcopy(params)
 
             logger.debug("Applying continue_params: %s", continue_params)

@@ -7,7 +7,7 @@ import logging
 from collections import defaultdict
 from typing import Any
 
-from ....shared import find_lcn
+from ....shared import find_page_data
 from ..constants import SKIP_CATEGORIES
 
 logger = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ def _query_multi(enlink: str, sitecode: str):
 
     logger.info(f"templatequery {sitecode}:{enlink} . ")
 
-    sasa = find_lcn(enlink, prop="templates", first_site_code=sitecode)
+    sasa = find_page_data(enlink, prop="templates", first_site_code=sitecode)
     result = sasa if sasa else None
 
     _cache.set(enlink, sitecode, result)

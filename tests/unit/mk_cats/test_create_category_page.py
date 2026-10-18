@@ -4,7 +4,6 @@ Tests for create_category_page.py
 This module tests category page creation functionality.
 """
 
-from src.core.utils.skip_cats import skip_encats
 from src.mk_cats.create_category_page import (
     CategoryResult,
     add_text_to_cat,
@@ -15,18 +14,6 @@ from src.mk_cats.create_category_page import (
 
 class TestMakeCategory:
     """Tests for make_category function"""
-
-    def test_returns_false_for_skip_encats(self, mocker):
-        """
-        Test that make_category returns failed result for categories in skip_encats"""
-        # Mock the create_page to not actually create pages
-        mocker.patch("src.mk_cats.create_category_page.create_page", return_value=False)
-
-        # Use a category that's in skip_encats
-        if skip_encats:
-            result = make_category([], skip_encats[0], "تصنيف:اختبار", "Q123")
-            assert result.success is False
-            assert result.error_message == "Category in skip list"
 
     def test_returns_false_for_non_arabic_category_title(self, mocker):
         """

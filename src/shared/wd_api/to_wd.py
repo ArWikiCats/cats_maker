@@ -136,28 +136,6 @@ def create_new_item(
     return True
 
 
-def makejson(property, numeric) -> dict[str, Any]:
-    numeric = numeric.replace("Q", "")
-    Q = f"Q{numeric}"
-    return {
-        "mainsnak": {
-            "snaktype": "value",
-            "property": property,
-            "datavalue": {
-                "value": {
-                    "entity-type": "item",
-                    "numeric-id": numeric,
-                    "id": Q,
-                },
-                "type": "wikibase-entityid",
-            },
-            "datatype": "wikibase-item",
-        },
-        "type": "statement",
-        "rank": "normal",
-    }
-
-
 def log_to_wikidata_qid(artitle, qid) -> None:
     add_sitelinks_to_wikidata(qid, artitle, "arwiki")
     add_labels(qid, artitle, "ar")
@@ -177,7 +155,27 @@ def log_to_wikidata(artitle, entitle) -> None | str:
     data = {
         "sitelinks": {enwiki: {"site": enwiki, "title": entitle}, arwiki: {"site": arwiki, "title": artitle}},
         "labels": {"ar": {"language": "ar", "value": artitle}, "en": {"language": "en", "value": entitle}},
-        "claims": {"P31": [makejson("P31", "Q4167836")]},
+        "claims": {
+            "P31": [
+                {
+                    "mainsnak": {
+                        "snaktype": "value",
+                        "property": "P31",
+                        "datavalue": {
+                            "value": {
+                                "entity-type": "item",
+                                "numeric-id": 4167836,
+                                "id": "Q4167836",
+                            },
+                            "type": "wikibase-entityid",
+                        },
+                        "datatype": "wikibase-item",
+                    },
+                    "type": "statement",
+                    "rank": "normal",
+                }
+            ]
+        },
     }
 
     summary = f"Bot: New item from [[w:en:{entitle}|{enwiki}]]/[[w:ar:{artitle}|{arwiki}]]."

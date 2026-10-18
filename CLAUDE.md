@@ -63,7 +63,7 @@ Settings are dataclasses in `src/config/settings.py`:
 -   `WikipediaConfig`: language codes, user agent, timeout
 -   `WikidataConfig`: endpoints, maxlag, test_mode
 -   `DatabaseConfig`: SQL connection settings (host, port, use_sql)
--   `CategoryConfig`: min_members (default: 10), stubs, we_try mode, test_mode
+-   `CategoryConfig`: min_members (default: 10), we_try mode, test_mode
 -   `BotConfig`: ask confirmation, diff display, force_edit, no_login
 -   `QueryConfig`: offset, depth, to_limit, namespace filters
 -   `SiteConfig`: custom_family, custom_lang, secondary_lang

@@ -46,7 +46,6 @@ class WikiApiHandler:
     ) -> dict[str, Any]:
         """
         Retrieves data (langlinks, categories, etc.) for a given page.
-        This is the refactored version of find_lcn.
         """
         logger.debug("-----------")
         props = prop or "langlinks"
@@ -187,7 +186,6 @@ class WikiApiHandler:
     ) -> dict[str, Any]:
         """
         Retrieves non-hidden categories for a given page.
-        Refactored version of find_page_cat_without_hidden.
         """
         if not page_title or "#" in page_title:
             logger.info(f"(page_title == '{page_title}') or (page_title.find('#') != -1)")
@@ -322,7 +320,7 @@ class WikiApiHandler:
 LC_bot = WikiApiHandler()
 
 
-def find_lcn(
+def find_page_data(
     enlink,
     prop: str = "",
     lllang: str = "",
@@ -338,7 +336,7 @@ def find_lcn(
     )
 
 
-def find_page_cat_without_hidden(
+def find_non_hidden_categories(
     enlink,
     prop: str = "",
     site_code: str = "",
@@ -358,7 +356,7 @@ def get_arpage_inside_encat(key):
 
 __all__ = [
     "WikiApiHandler",
-    "find_lcn",
-    "find_page_cat_without_hidden",
+    "find_page_data",
+    "find_non_hidden_categories",
     "get_arpage_inside_encat",
 ]

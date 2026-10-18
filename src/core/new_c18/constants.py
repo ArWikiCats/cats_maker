@@ -46,15 +46,6 @@ FALSE_TEMPLATES: frozenset[str] = frozenset(
     }
 )
 
-FALSE_TEMPLATES_WITHOUT_STUBS: frozenset[str] = frozenset(
-    {
-        "شطب",
-        "مقالات متعلقة",
-        "ويكي بيانات",
-        "تستند على",
-    }
-)
-
 NO_TEMPLATES_AR: frozenset[str] = frozenset(
     {
         "تصنيف ويكيبيديا",
@@ -63,16 +54,6 @@ NO_TEMPLATES_AR: frozenset[str] = frozenset(
         "تصنيف تهذيب شهري",
         "تصنيف مخفي",
         "تصنيف بذرة",
-        "تصنيف حاوية",
-    }
-)
-
-NO_TEMPLATES_AR_WITHOUT_STUBS: frozenset[str] = frozenset(
-    {
-        "تصنيف ويكيبيديا",
-        "تحويل تصنيف",
-        "تصنيف تتبع",
-        "تصنيف تهذيب شهري",
         "تصنيف حاوية",
     }
 )
@@ -138,3 +119,27 @@ QID_PATTERNS: list[str] = [
     r"Q\d+",
     r"wikidata\.org/wiki/(Q\d+)",
 ]
+
+SKIP_ENCATS = [
+    "Category:Invasions of Israel",
+]
+
+GLOBAL_FALSE_ENTEMPS = [
+    "Hidden category",
+    "Maintenance category",  # تصنيف صيانة
+    "Wikipedia category",  # تصنيف ويكيبيديا
+    "Sockpuppet",  #
+    "Empty category",  # تصنيف فارغ
+    "Possibly empty category",  # تصنيف فارغ
+    "Tracking category",  # تصنيف تتبع
+    "WPSS-cat",  # تصنيف مخفي
+    "Monthly clean-up category",  # تصنيف مخفي
+    "Category class",  # تصنيف مخفي
+    "Hiddencat",  # تصنيف مخفي
+    "Backlog subcategories",  #
+    "Category redirect",
+    "Stub Category",  # تصنيف بذرة
+    # 'container category',      #تصنيف حاوية
+]
+
+GLOBAL_FALSE_ENTEMPS_LOWER = [x.lower() for x in GLOBAL_FALSE_ENTEMPS]

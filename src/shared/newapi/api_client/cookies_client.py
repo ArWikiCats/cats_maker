@@ -64,7 +64,7 @@ def get_cookie_path(
     except OSError as exc:
         logger.debug("Could not chmod cookies dir %s: %s", base, exc)
 
-    logger.info("cookie path: %s", base)
+    logger.debug("cookie path: %s", base)
 
     # ── Normalise filename components ──────────────────────────────────────
     family = family.lower()

@@ -15,7 +15,7 @@
 | Typo `lenth` → `length`                                | `mknew.py:337,379`               | Cosmetic but flagrant                                      |
 | Typo `BBlcak` / `blcak_starts`                         | `utils/filter_en.py:9,17`        | Confusing naming                                           |
 | Module-level mutable state leaks between runs          | `mknew.py:49-51`                 | State pollution across tests/calls                         |
-| `make_ar` does everything (85 lines)                   | `mknew.py:249-334`               | Validates, checks WD, collects members, creates page, logs |
+| `_make_ar` does everything (85 lines)                  | `mknew.py:249-334`               | Validates, checks WD, collects members, creates page, logs |
 | `add_text_to_cat` does everything (65 lines)           | `create_category_page.py:63-129` | Adds cats, commons, portal, nav template in one function   |
 | Inconsistent return types                              | Multiple                         | `False` vs `[]` vs `""` vs `None`                          |
 | Hardcoded strings everywhere                           | All files                        | No `constants.py`                                          |
@@ -28,10 +28,10 @@
 
 ## 2. Non-Goals (Scope Guard)
 
--   No changes to filtering/sorting **behavior** — output must be identical
--   No changes to external API calls (`find_lcn`, `load_main_api`, `get_sitelinks_from_wikidata`, etc.)
--   No new CLI arguments or UI changes
--   No database schema changes
+- No changes to filtering/sorting **behavior** — output must be identical
+- No changes to external API calls (`find_lcn`, `load_main_api`, `get_sitelinks_from_wikidata`, etc.)
+- No new CLI arguments or UI changes
+- No database schema changes
 
 ---
 
@@ -44,14 +44,14 @@ src/mk_cats/
 ├── models.py                    # Dataclasses: CategoryResult (moved from create_category_page.py)
 ├── core/
 │   ├── __init__.py
-│   ├── category_pipeline.py     # create_categories_from_list, process_categories, make_ar
+│   ├── category_pipeline.py     # create_categories_from_list, process_categories, _make_ar
 │   └── member_collector.py      # collect_category_members + helpers (from members_helper.py)
 ├── tools/
 │   ├── __init__.py
 │   ├── label_resolver.py        # ar_make_lab + resolve_arabic_category_label wrapper
 │   ├── page_creator.py          # new_category, make_category, add_text_to_cat (from create_category_page.py)
 │   ├── page_text.py             # generate_category_text, portal, commons (from categorytext.py)
-│   └── page_updater.py          # add_to_final_list, add_to_page (from add_bot.py)
+│   └── page_updater.py          # _add_to_final_list, add_to_page (from add_bot.py)
 ├── filters/
 │   ├── __init__.py
 │   ├── en_category.py           # filter_cat (was utils/filter_en.py)
@@ -68,7 +68,7 @@ src/mk_cats/
 # src/mk_cats/mknew.py (legacy shim)
 import warnings
 warnings.warn("mk_cats.mknew is deprecated; use mk_cats.core.category_pipeline", DeprecationWarning, stacklevel=2)
-from .core.category_pipeline import create_categories_from_list, process_categories, make_ar  # noqa: F401
+from .core.category_pipeline import create_categories_from_list, process_categories, _make_ar  # noqa: F401
 from .tools.label_resolver import ar_make_lab  # noqa: F401
 ```
 
@@ -76,11 +76,11 @@ from .tools.label_resolver import ar_make_lab  # noqa: F401
 
 ## 4. Quick Wins (Execute Before Any Phase)
 
--   [ ] Replace mutable `BBlcak` list with `tuple[str, ...]` — `filters/en_category.py`
--   [ ] Replace mutable `blcak_starts` list with `tuple[str, ...]` — `filters/en_category.py`
--   [ ] Replace `months` list created inside function with module-level `tuple` — `filters/en_category.py`
--   [ ] Remove `__pycache__` from version control and add to `.gitignore`
--   [ ] Add `__all__` to every `__init__.py` that lacks it
+- [ ] Replace mutable `BBlcak` list with `tuple[str, ...]` — `filters/en_category.py`
+- [ ] Replace mutable `blcak_starts` list with `tuple[str, ...]` — `filters/en_category.py`
+- [ ] Replace `months` list created inside function with module-level `tuple` — `filters/en_category.py`
+- [ ] Remove `__pycache__` from version control and add to `.gitignore`
+- [ ] Add `__all__` to every `__init__.py` that lacks it
 
 ---
 
@@ -170,15 +170,15 @@ DEFAULT_RANGE_LIMIT: int = 5
 
 **5.1.3 Add type hints and normalize return types**
 
--   Add full type hints to all public functions
--   Replace every `return False` where a list or string is expected:
-    -   `scan_ar_title` returns `bool` (correct)
-    -   `check_if_artitle_exists` returns `bool` (correct)
-    -   `make_ar` returns `list[str]` (currently returns `[]` consistently — good)
-    -   `ar_make_lab` returns `str` (currently `""` on failure — good)
-    -   `one_cat` returns `bool` (currently `False` — change to `False` → keep `bool`)
-    -   `filter_cat` returns `bool` (currently `False`/`True` — correct)
-    -   `check_en_temps` returns `bool` (correct)
+- Add full type hints to all public functions
+- Replace every `return False` where a list or string is expected:
+    - `_scan_ar_title` returns `bool` (correct)
+    - `_check_if_artitle_exists` returns `bool` (correct)
+    - `_make_ar` returns `list[str]` (currently returns `[]` consistently — good)
+    - `ar_make_lab` returns `str` (currently `""` on failure — good)
+    - `_one_cat` returns `bool` (currently `False` — change to `False` → keep `bool`)
+    - `filter_cat` returns `bool` (currently `False`/`True` — correct)
+    - `check_en_temps` returns `bool` (correct)
 
 **5.1.4 Encapsulate module-level state**
 
@@ -226,18 +226,18 @@ def clear_state() -> None:
 Current responsibilities (all in one file):
 
 1. `create_categories_from_list` — entry point, iterates list
-2. `one_cat` — single-category orchestrator
+2. `_one_cat` — single-category orchestrator
 3. `process_catagories` — recursive subcategory processor
-4. `make_ar` — the big one: validate → WD check → members → create → log
+4. `_make_ar` — the big one: validate → WD check → members → create → log
 5. `ar_make_lab` — Arabic label resolution
-6. Helper functions: `scan_ar_title`, `check_if_artitle_exists`, `_normalize_en_page_title`, `_get_site_identifiers`, `_check_wikidata_sitelink`, `_extract_parent_categories`, `_finalize_category_creation`, `clear_processing_state`, `get_processing_state`
+6. Helper functions: `_scan_ar_title`, `_check_if_artitle_exists`, `_normalize_en_page_title`, `_get_site_identifiers`, `_check_wikidata_sitelink`, `_extract_parent_categories`, `_finalize_category_creation`, `clear_processing_state`, `get_processing_state`
 
 **Split plan:**
 
-| New file                    | Functions moved                                                                                                                                                                                                                                                        |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `core/category_pipeline.py` | `create_categories_from_list`, `one_cat`, `process_categories`, `make_ar`, `_normalize_en_page_title`, `_get_site_identifiers`, `_check_wikidata_sitelink`, `_extract_parent_categories`, `_finalize_category_creation`, `ProcessingState`, `get_state`, `clear_state` |
-| `tools/label_resolver.py`   | `ar_make_lab`, `scan_ar_title`, `check_if_artitle_exists`, plus `resolve_arabic_category_label` wrapper                                                                                                                                                                |
+| New file                    | Functions moved                                                                                                                                                                                                                                                         |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core/category_pipeline.py` | `create_categories_from_list`, `_one_cat`, `process_categories`, `_make_ar`, `_normalize_en_page_title`, `_get_site_identifiers`, `_check_wikidata_sitelink`, `_extract_parent_categories`, `_finalize_category_creation`, `ProcessingState`, `get_state`, `clear_state` |
+| `tools/label_resolver.py`   | `ar_make_lab`, `_scan_ar_title`, `_check_if_artitle_exists`, plus `resolve_arabic_category_label` wrapper                                                                                                                                                                 |
 
 **5.2.2 Split `create_category_page.py` (207 lines)**
 
@@ -248,16 +248,16 @@ Current responsibilities (all in one file):
 
 **5.2.3 Rename and move remaining files**
 
-| Old file                     | New file                         | Notes                                                                   |
-| ---------------------------- | -------------------------------- | ----------------------------------------------------------------------- |
-| `members_helper.py`          | `core/member_collector.py`       | `collect_category_members` + helpers — already well factored            |
-| `add_bot.py`                 | `tools/page_updater.py`          | `add_to_final_list`, `add_to_page`, `_get_page`, `add_text_to_articles` |
-| `categorytext.py`            | Merged into `tools/page_text.py` | See 5.2.2                                                               |
-| `categorytext_data.py`       | `data/category_mappings.py`      | Pure data                                                               |
-| `utils/portal_list.py`       | `data/portal_map.py`             | JSON loading + dict building                                            |
-| `utils/filter_en.py`         | `filters/en_category.py`         | `filter_cat`                                                            |
-| `utils/check_en.py`          | `filters/en_template.py`         | `check_en_temps`                                                        |
-| `utils/New_Portal_List.json` | `data/New_Portal_List.json`      | Kept as JSON asset                                                      |
+| Old file                     | New file                         | Notes                                                                    |
+| ---------------------------- | -------------------------------- | ------------------------------------------------------------------------ |
+| `members_helper.py`          | `core/member_collector.py`       | `collect_category_members` + helpers — already well factored             |
+| `add_bot.py`                 | `tools/page_updater.py`          | `_add_to_final_list`, `add_to_page`, `_get_page`, `add_text_to_articles` |
+| `categorytext.py`            | Merged into `tools/page_text.py` | See 5.2.2                                                                |
+| `categorytext_data.py`       | `data/category_mappings.py`      | Pure data                                                                |
+| `utils/portal_list.py`       | `data/portal_map.py`             | JSON loading + dict building                                             |
+| `utils/filter_en.py`         | `filters/en_category.py`         | `filter_cat`                                                             |
+| `utils/check_en.py`          | `filters/en_template.py`         | `check_en_temps`                                                         |
+| `utils/New_Portal_List.json` | `data/New_Portal_List.json`      | Kept as JSON asset                                                       |
 
 **Success criteria:** All old paths importable via deprecation shims. All new paths work. Code volume stays same (pure restructuring).
 
@@ -265,14 +265,14 @@ Current responsibilities (all in one file):
 
 ### Phase 3 — Complexity Reduction
 
-**5.3.1 Simplify `make_ar`**
+**5.3.1 Simplify `_make_ar`**
 
 Current flow (85 lines in one function): validation → scan → normalize → exists check → WD check → parent cats → members → min-members check → create page → finalize
 
 Extract clear steps:
 
 ```python
-def make_ar(en_title: str, ar_title: str, callback=None) -> list[str]:
+def _make_ar(en_title: str, ar_title: str, callback=None) -> list[str]:
     result = _validate_inputs(en_title, ar_title)
     if result is not None:
         return result
@@ -343,7 +343,7 @@ def _get_page(page_title: str):
     return page
 ```
 
-**Success criteria:** `make_ar` ≤ 40 lines (down from 85). `add_text_to_cat` ≤ 25 lines (down from 65). Each extracted function has a single clear responsibility.
+**Success criteria:** `_make_ar` ≤ 40 lines (down from 85). `add_text_to_cat` ≤ 25 lines (down from 65). Each extracted function has a single clear responsibility.
 
 ---
 
@@ -387,17 +387,17 @@ class CategoryResult:
 
 Tests need updating to match the refactored structure:
 
--   Replace `from src.mk_cats.mknew import process_catagories` → `from src.mk_cats.core.category_pipeline import process_categories`
--   Remove module-level state manipulation (`_done_d.clear()` etc.) — use `clear_state()` instead
--   Fix assertions to use new function names
+- Replace `from src.mk_cats.mknew import process_catagories` → `from src.mk_cats.core.category_pipeline import process_categories`
+- Remove module-level state manipulation (`_done_d.clear()` etc.) — use `clear_state()` instead
+- Fix assertions to use new function names
 
 **5.5.2 Add missing unit tests**
 
 | Function                   | Test cases                                                               |
 | -------------------------- | ------------------------------------------------------------------------ |
 | `filter_cat`               | Month regex patterns, case-insensitive prefix matching, caching behavior |
-| `scan_ar_title`            | Already created, max retries exceeded (currently missing), new title     |
-| `check_if_artitle_exists`  | Page exists, page doesn't exist, API error                               |
+| `_scan_ar_title`            | Already created, max retries exceeded (currently missing), new title     |
+| `_check_if_artitle_exists`  | Page exists, page doesn't exist, API error                               |
 | `normalize_en_page_title`  | `[[brackets]]`, underscores, already clean                               |
 | `_check_wikidata_sitelink` | Sitelink exists, no sitelink, no arwiki key, empty response              |
 | `ProcessingState`          | Mark done, is done, clear, duplicate tracking                            |
@@ -425,25 +425,25 @@ diff before_phase_N.txt after_phase_N.txt   # must be empty
 | `mk_cats.create_categories_from_list`  | `mk_cats.core.category_pipeline.create_categories_from_list` | Yes, 1 release    |
 | `mk_cats.ar_make_lab`                  | `mk_cats.tools.label_resolver.ar_make_lab`                   | Yes, 1 release    |
 | `mk_cats.make_category`                | `mk_cats.tools.page_creator.make_category`                   | Yes, 1 release    |
-| `mk_cats.mknew.scan_ar_title`          | Not exported publicly — internal                             | No shim needed    |
+| `mk_cats.mknew._scan_ar_title`          | Not exported publicly — internal                             | No shim needed    |
 | `mk_cats.mknew.clear_processing_state` | `category_pipeline.clear_state`                              | Via mknew.py shim |
 
 ---
 
 ## 7. Acceptance Criteria
 
--   [ ] `process_catagories` renamed to `process_categories`; old name works via deprecation shim
--   [ ] `lenth` → `length`, `BBlcak` → `BLACKLIST_SUBSTRINGS`, `blcak_starts` → `BLACKLIST_PREFIXES`
--   [ ] All hardcoded strings moved to `constants.py`
--   [ ] Module-level mutable state (`_done_d`, `_new_cat_done`, `_already_created`) encapsulated in `ProcessingState`
--   [ ] `_get_page` no longer uses `lru_cache`
--   [ ] `make_ar` broken into < 50 lines with extracted helper functions
--   [ ] `add_text_to_cat` uses an operation dispatch list
--   [ ] All old file paths remain importable with `DeprecationWarning`
--   [ ] `ruff check src/mk_cats` reports zero errors
--   [ ] `mypy src/mk_cats --ignore-missing-imports` passes
--   [ ] `pytest tests/mk_cats/` passes with ≥ 80% coverage
--   [ ] Integration diff on `Science` category is empty before → after
+- [ ] `process_catagories` renamed to `process_categories`; old name works via deprecation shim
+- [ ] `lenth` → `length`, `BBlcak` → `BLACKLIST_SUBSTRINGS`, `blcak_starts` → `BLACKLIST_PREFIXES`
+- [ ] All hardcoded strings moved to `constants.py`
+- [ ] Module-level mutable state (`_done_d`, `_new_cat_done`, `_already_created`) encapsulated in `ProcessingState`
+- [ ] `_get_page` no longer uses `lru_cache`
+- [ ] `_make_ar` broken into < 50 lines with extracted helper functions
+- [ ] `add_text_to_cat` uses an operation dispatch list
+- [ ] All old file paths remain importable with `DeprecationWarning`
+- [ ] `ruff check src/mk_cats` reports zero errors
+- [ ] `mypy src/mk_cats --ignore-missing-imports` passes
+- [ ] `pytest tests/mk_cats/` passes with ≥ 80% coverage
+- [ ] Integration diff on `Science` category is empty before → after
 
 ---
 

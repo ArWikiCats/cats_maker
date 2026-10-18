@@ -22,7 +22,6 @@ Technical debt inherited from both modules:
 -   **Mixed responsibilities** — SQL query strings, API fallback logic, and parameter sanitization live in the same file (`sql_cat.py`)
 -   **Poor return types** — `MakeLitApiWay` returns `False` instead of `[]`; `get_ar_list_from_encat` returns a `dict` when callers expect a list; c18 functions return `False` vs `""` vs `None`
 -   **Global mutable state** — `pages_in_arcat_toMake` in `cat_tools_enlist.py` (b18); mutable `tatone_ns` and `Skippe_Cat` (c18)
--   **Tight coupling to global config** — `settings.query.ns_no_10`, `settings.category.stubs`, `settings.database.use_sql`
 -   **Duplicated validation logic** — `check_category_status` and `check_arabic_category_status` in `sql_cat_checker.py` are mirror images
 -   **Near-complete duplication** between `ar_from_en.py` and `ar_from_en2.py` (c18)
 -   **`filter_cats_text`** — O(n²) list mutation, 140+ lines, high cyclomatic complexity (c18)
@@ -357,7 +356,6 @@ Move `pre_text` into a separate `.txt` asset or clearly named constant. Use `wik
     ```python
     def is_blacklisted_template(template: str, lang: str = "ar") -> bool: ...
     ```
--   Remove the import-time mutation of `NO_Templates_ar` based on `settings.category.stubs`; make it a runtime parameter.
 -   **Standardize return type** to a `ValidationResult` dataclass instead of bare `bool`:
     ```python
     @dataclass
