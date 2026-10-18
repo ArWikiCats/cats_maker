@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Cats Maker New is a Python automation bot that creates Arabic Wikipedia categories from their English counterparts. It resolves Arabic translations via [ArWikiCats](https://github.com/MrIbrahem/ArWikiCats), creates category pages with proper templates/portals, and links them to Wikidata.
+Cats Maker New is a Python automation bot that creates Arabic Wikipedia categories from their English counterparts. It resolves Arabic translations via [ArWikiCats](https://github.com/ArWikiCats/ArWikiCats), creates category pages with proper templates/portals, and links them to Wikidata.
 
 ## Development Commands
 

@@ -1,19 +1,10 @@
 """ """
 
-import os
-import sys
 from pathlib import Path
 
 from .logger_config import setup_logging
 
 use_colorlog = False
-# Optional ArWikiCats integration - configure via environment variable
-_arwikicats_path = os.getenv("ARWIKICATS_PATH")
-if _arwikicats_path:
-    use_colorlog = True
-    _arwikicats_path = Path(_arwikicats_path)
-    if _arwikicats_path.exists():
-        sys.path.insert(0, str(_arwikicats_path.parent))
 
 from .app import (  # noqa: E402
     ar_make_lab,

@@ -53,7 +53,6 @@ def default_user_agent() -> str:
 class Paths:
     cookies_dir: str | None
     dont_add_to_pages_path: str | None
-    arwikicats_path: str | None
 
     @classmethod
     def load(cls) -> Paths:
@@ -62,7 +61,6 @@ class Paths:
         return cls(
             cookies_dir=os.getenv("COOKIES_DIR"),
             dont_add_to_pages_path=os.getenv("DONT_ADD_TO_PAGES_PATH"),
-            arwikicats_path=os.getenv("ARWIKICATS_PATH"),
         )
 
 
