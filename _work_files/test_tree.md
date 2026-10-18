@@ -124,7 +124,7 @@ tests/
         │   ├── test_temp_elff.py
         │   └── test_temp_years.py
         │
-        ├── test_temp.py
+        ├── test_main_temps.py
         └── test_temp_more_data.py
 
 ```
