@@ -281,7 +281,7 @@ def _make_ar(en_page_title: str, ar_title: str, callback=None):  # -> list:
 
     # Validation: Check if we've already processed this Arabic title
     if not _scan_ar_title(ar_title):
-        logger.debug("scan_ar_title failed.")
+        logger.debug("_scan_ar_title failed.")
         return []
 
     # Normalize the English page title

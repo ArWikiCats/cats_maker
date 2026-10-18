@@ -79,8 +79,8 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
 │      طبقة منطق الأعمال                 │
 │      mk_cats/mknew.py                   │
 │      - create_categories_from_list()    │
-│      - one_cat(), process_catagories()  │
-│      - make_ar(), ar_make_lab()         │
+│      - _one_cat(), process_catagories()  │
+│      - _make_ar(), ar_make_lab()         │
 └─────────────┬───────────────────────────┘
               │
               ↓

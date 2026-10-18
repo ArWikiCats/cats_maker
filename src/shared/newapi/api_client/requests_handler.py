@@ -129,7 +129,7 @@ class RequestsHandler:
                 )
                 response.raise_for_status()
             except requests.HTTPError as exc:
-                if exc.response.status_code == 429:
+                if exc.response is not None and exc.response.status_code == 429:
                     # handle HTTPError: 429 Client Error: Too Many Requests
                     attempt += 1
                     sleep(attempt)

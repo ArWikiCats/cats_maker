@@ -14,10 +14,10 @@ import pytest
 from src.mk_cats import create_categories_from_list, create_category_page, mknew
 from src.mk_cats.mknew import (
     clear_processing_state,
-    make_ar,
-    one_cat,
+    _make_ar,
+    _one_cat,
     process_catagories,
-    scan_ar_title,
+    _scan_ar_title,
 )
 from src.shared.wd_api import wd_api_bot
 
@@ -113,20 +113,20 @@ class TestMainFlowIntegration:
         """
         Test that create_categories_from_list iterates over all categories."""
 
-        # Mock the entire one_cat function to track calls
-        mock_one_cat = mocker.patch("src.mk_cats.mknew.one_cat")
+        # Mock the entire _one_cat function to track calls
+        mock_one_cat = mocker.patch("src.mk_cats.mknew._one_cat")
 
         categories = ["Category:Science", "Category:Technology", "Category:Art"]
         create_categories_from_list(categories)
 
-        # Verify one_cat was called for each category
+        # Verify _one_cat was called for each category
         assert mock_one_cat.call_count == 3
 
     def test_one_cat_filters_empty_title(self):
         """
-        Test that one_cat returns False for empty title."""
+        Test that _one_cat returns False for empty title."""
 
-        result = one_cat("", 1, 1)
+        result = _one_cat("", 1, 1)
         assert result is False
 
     def test_one_cat_filters_duplicate_categories(self, mocker):
@@ -140,10 +140,10 @@ class TestMainFlowIntegration:
         mocker.patch("src.mk_cats.mknew.ar_make_lab", return_value="")
 
         # First call should process
-        one_cat("Category:Test", 1, 2)
+        _one_cat("Category:Test", 1, 2)
 
         # Second call with same category should be filtered
-        result2 = one_cat("Category:Test", 2, 2)
+        result2 = _one_cat("Category:Test", 2, 2)
 
         # Both should return False (no label), but second should be filtered first
         assert result2 is False
@@ -153,15 +153,15 @@ class TestMainFlowIntegration:
 
     def test_process_catagories_calls_make_ar(self, mocker, mock_all_external_services):
         """
-        Test that process_catagories calls make_ar with correct parameters."""
+        Test that process_catagories calls _make_ar with correct parameters."""
 
-        # Mock make_ar to return an empty list (no subcategories)
-        mock_make_ar = mocker.patch("src.mk_cats.mknew.make_ar")
+        # Mock _make_ar to return an empty list (no subcategories)
+        mock_make_ar = mocker.patch("src.mk_cats.mknew._make_ar")
         mock_make_ar.return_value = []
 
         process_catagories("Category:Science", "علوم", 1, 1)
 
-        # Verify make_ar was called
+        # Verify _make_ar was called
         mock_make_ar.assert_called_once()
         args = mock_make_ar.call_args[0]
         assert args[0] == "Category:Science"
@@ -169,16 +169,16 @@ class TestMainFlowIntegration:
 
     def test_make_ar_returns_empty_for_empty_ar_title(self):
         """
-        Test that make_ar returns empty list for empty Arabic title."""
+        Test that _make_ar returns empty list for empty Arabic title."""
 
-        result = make_ar("Category:Science", "")
+        result = _make_ar("Category:Science", "")
         assert result == []
 
     def test_make_ar_returns_empty_for_whitespace_ar_title(self):
         """
-        Test that make_ar returns empty list for whitespace Arabic title."""
+        Test that _make_ar returns empty list for whitespace Arabic title."""
 
-        result = make_ar("Category:Science", "   ")
+        result = _make_ar("Category:Science", "   ")
         assert result == []
 
 
@@ -247,12 +247,12 @@ class TestCallbackIntegration:
 
     def test_process_catagories_passes_callback_to_make_ar(self, mocker):
         """
-        Test that process_catagories passes callback to make_ar."""
+        Test that process_catagories passes callback to _make_ar."""
 
         callback_mock = MagicMock()
 
-        # Mock make_ar to capture the callback
-        mock_make_ar = mocker.patch("src.mk_cats.mknew.make_ar")
+        # Mock _make_ar to capture the callback
+        mock_make_ar = mocker.patch("src.mk_cats.mknew._make_ar")
         mock_make_ar.return_value = []
 
         process_catagories("Category:Test", "اختبار", 1, 1, callback=callback_mock)
@@ -269,29 +269,29 @@ class TestErrorHandling:
         """
         Test that the flow handles None values in the list."""
 
-        # Mock one_cat to track calls
-        mock_one_cat = mocker.patch("src.mk_cats.mknew.one_cat")
+        # Mock _one_cat to track calls
+        mock_one_cat = mocker.patch("src.mk_cats.mknew._one_cat")
 
         # Should handle list with None gracefully
         # The actual implementation strips empty strings
         create_categories_from_list(["Category:Valid", "", "Category:Another"])
 
-        # Should call one_cat for all items (including empty string)
+        # Should call _one_cat for all items (including empty string)
         assert mock_one_cat.call_count == 3
 
     def test_scan_ar_title_handles_repeated_titles(self):
         """
-        Test that scan_ar_title correctly tracks repeated titles."""
+        Test that _scan_ar_title correctly tracks repeated titles."""
 
         # Clear state
         clear_processing_state()
 
         # First call should return True
-        result1 = scan_ar_title("تصنيف:اختبار")
+        result1 = _scan_ar_title("تصنيف:اختبار")
         assert result1 is True
 
         # Second call should return False (already tracked)
-        result2 = scan_ar_title("تصنيف:اختبار")
+        result2 = _scan_ar_title("تصنيف:اختبار")
         assert result2 is False
 
         # Clean up

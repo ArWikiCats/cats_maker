@@ -32,8 +32,8 @@ Zero-risk changes that can be done immediately, in any order:
 | 0.3 | Remove empty `__init__` methods                        | new_api                     |
 | 0.4 | Remove dead functions (`decode_bytes`, unused imports) | api_sql (**done**), new_api |
 | 0.5 | Fix mutable default args (`values=[]` → `values=()`)   | api_sql (**done**)          |
-| 0.6 | Replace mutable lists with tuples/frozensets           | mk_cats, c18            |
-| 0.7 | Add `__pycache__` to `.gitignore`                      | mk_cats, c18            |
+| 0.6 | Replace mutable lists with tuples/frozensets           | mk_cats, c18                |
+| 0.7 | Add `__pycache__` to `.gitignore`                      | mk_cats, c18                |
 | 0.8 | Run `ruff` across all modules, fix auto-fixable issues | All 7                       |
 
 **Estimated effort:** 1-2 hours. **Goal:** Get type-checking and linting baseline passing.
@@ -48,12 +48,12 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Execute per plan:** `wiki_api_refactor_plan.md`
 
--   Phase 1: Fix `r22` NameError bug in `transport.py` (urgent)
--   Phase 2: Extract `cache.py` with real TTL eviction
--   Phase 3: Create unified `client.py` (merge WikiApiHandler + NEW_API)
--   Phase 4: Clean up `himoBOT2.py`
--   Phase 5: Clean up `sub_cats_bot.py`
--   Phase 6: Add `_compat.py` backward-compat layer
+- Phase 1: Fix `r22` NameError bug in `transport.py` (urgent)
+- Phase 2: Extract `cache.py` with real TTL eviction
+- Phase 3: Create unified `client.py` (merge WikiApiHandler + NEW_API)
+- Phase 4: Clean up `himoBOT2.py`
+- Phase 5: Clean up `sub_cats_bot.py`
+- Phase 6: Add `_compat.py` backward-compat layer
 
 **Verification:** `pytest tests/wiki_api/` passes, `ruff check src/core/wiki_api` is clean.
 
@@ -78,9 +78,9 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Why alongside:** Reduces duplication before business-layer refactoring starts.
 
--   Create `src/core/constants.py` with shared namespace dicts (from api_sql + new_api)
--   Create `src/core/utils/text.py` with `normalize_category_title()`, `clean_wiki_brackets()`, `extract_wikidata_qid()`
--   Ensure both are importable by `c18`, `mk_cats`
+- Create `src/core/constants.py` with shared namespace dicts (from api_sql + new_api)
+- Create `src/core/utils/text.py` with `normalize_category_title()`, `clean_wiki_brackets()`, `extract_wikidata_qid()`
+- Ensure both are importable by `c18`, `mk_cats`
 
 ### Step 1.4 — `wd_bots` refactoring
 
@@ -88,12 +88,12 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Execute per plan:** `wd_bots_refactor_plan.md`
 
--   Phase 1: Extract `lag.py` (LagManager class)
--   Phase 2: Unified `errors.py` (merge handle_err_wd + out_json)
--   Phase 3: Extract `client.py` (APIClient)
--   Phase 4: Refactor `queries.py` (from wd_api_bot.py)
--   Phase 5: Refactor `operations.py` (from to_wd.py)
--   Phase 6: Update `__init__.py`
+- Phase 1: Extract `lag.py` (LagManager class)
+- Phase 2: Unified `errors.py` (merge handle_err_wd + out_json)
+- Phase 3: Extract `client.py` (APIClient)
+- Phase 4: Refactor `queries.py` (from wd_api_bot.py)
+- Phase 5: Refactor `operations.py` (from to_wd.py)
+- Phase 6: Update `__init__.py`
 
 **Verification:** `pytest tests/wd_bots/` passes, 0% → >= 80% coverage on write layer.
 
@@ -103,14 +103,14 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Execute per plan:** `new_api_refactor_plan.md`
 
--   Phase 1: Hygiene (`__all__`, type hints, spelling fixes, constants extraction)
--   Phase 2: Global mutable state → instance-scoped
--   Phase 3: Split `bot.py` → `transport.py` + `auth.py` + `client.py`
--   Phase 4: Refactor `super_page.py` (MainPage) — composition over mixins
--   Phase 5: Fix error handling (recursion → iteration, exponential backoff)
--   Phase 6: Refactor `catdepth_new.py`
--   Phase 7: Fix `params_w` mutation bug
--   Phase 8: Tests
+- Phase 1: Hygiene (`__all__`, type hints, spelling fixes, constants extraction)
+- Phase 2: Global mutable state → instance-scoped
+- Phase 3: Split `bot.py` → `transport.py` + `auth.py` + `client.py`
+- Phase 4: Refactor `super_page.py` (MainPage) — composition over mixins
+- Phase 5: Fix error handling (recursion → iteration, exponential backoff)
+- Phase 6: Refactor `catdepth_new.py`
+- Phase 7: Fix `params_w` mutation bug
+- Phase 8: Tests
 
 **Verification:** `pytest tests/new_api/` passes, >= 75% coverage.
 
@@ -124,11 +124,11 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Execute per plan:** `mk_cats_refactor_plan.md`
 
--   Phase 1: `constants.py`, type hints, snake_case, encapsulate module state (ProcessingState)
--   Phase 2: Structural split — `mknew.py` into `category_pipeline.py` + `label_resolver.py`
--   Phase 3: Complexity reduction — simplify `make_ar` and `add_text_to_cat`
--   Phase 4: Move files to new directory structure
--   Phase 5: Tests
+- Phase 1: `constants.py`, type hints, snake_case, encapsulate module state (ProcessingState)
+- Phase 2: Structural split — `mknew.py` into `category_pipeline.py` + `label_resolver.py`
+- Phase 3: Complexity reduction — simplify `_make_ar` and `add_text_to_cat`
+- Phase 4: Move files to new directory structure
+- Phase 5: Tests
 
 **Verification:** `pytest tests/mk_cats/` passes, >= 80% coverage. Integration diff on `Science` category is empty.
 
@@ -138,11 +138,11 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Execute per plan:** `c18_merged_refactor_plan.md`
 
--   Phase 1: `constants.py`, snake_case, type hints
--   Phase 2: Deduplication — merge `ar_from_en.py` + `ar_from_en2.py`, merge templatequery files
--   Phase 3: Complexity reduction — `filter_cats_text` predicates, cross-wiki linker, sort, doc_handler
--   Phase 4: Structural reorganization into `core/`, `tools/`, `io/`, `utils/`
--   Phase 5: Tests
+- Phase 1: `constants.py`, snake_case, type hints
+- Phase 2: Deduplication — merge `ar_from_en.py` + `ar_from_en2.py`, merge templatequery files
+- Phase 3: Complexity reduction — `filter_cats_text` predicates, cross-wiki linker, sort, doc_handler
+- Phase 4: Structural reorganization into `core/`, `tools/`, `io/`, `utils/`
+- Phase 5: Tests
 
 **Verification:** `pytest tests/c18/` passes, >= 80% coverage. `radon cc` shows no function above grade B.
 
