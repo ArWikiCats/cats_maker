@@ -1,8 +1,8 @@
 """
-Unit tests for src/mk_cats/categorytext_data.py module.
+Unit tests for src/app/mk_cats/categorytext_data.py module.
 """
 
-from src.mk_cats.categorytext_data import LocalLanguageLinks, category_mapping
+from src.app.mk_cats.categorytext_data import LocalLanguageLinks, category_mapping
 
 
 class TestCategoryMapping:

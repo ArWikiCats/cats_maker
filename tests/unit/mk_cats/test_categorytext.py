@@ -6,7 +6,7 @@ This module tests category text generation functions.
 
 from unittest.mock import MagicMock
 
-from src.mk_cats.categorytext import (
+from src.app.mk_cats.categorytext import (
     LocalLanguageLinks,
     category_mapping,
     fetch_commons_category,
@@ -28,7 +28,7 @@ class TestGetPageLinkData:
         mock_page = MagicMock()
         mock_page.page_links.return_value = None
         mock_api.mainpage.return_value = mock_page
-        mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
+        mocker.patch("src.app.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
 
@@ -42,7 +42,7 @@ class TestGetPageLinkData:
         mock_page = MagicMock()
         mock_page.page_links.return_value = []
         mock_api.mainpage.return_value = mock_page
-        mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
+        mocker.patch("src.app.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
 
@@ -59,7 +59,7 @@ class TestGetPageLinkData:
             {"ns": 100, "title": "Portal:History", "exists": True},
         ]
         mock_api.mainpage.return_value = mock_page
-        mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
+        mocker.patch("src.app.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
 
@@ -75,7 +75,7 @@ class TestGetPageLinkData:
             {"ns": 100, "title": "Portal:History", "exists": False},
         ]
         mock_api.mainpage.return_value = mock_page
-        mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
+        mocker.patch("src.app.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
 
@@ -92,7 +92,7 @@ class TestGetPageLinkData:
             {"ns": 100, "exists": True},
         ]
         mock_api.mainpage.return_value = mock_page
-        mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
+        mocker.patch("src.app.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 100)
 
@@ -108,7 +108,7 @@ class TestGetPageLinkData:
             {"ns": 100, "title": "Portal:Science", "exists": True},
         ]
         mock_api.mainpage.return_value = mock_page
-        mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
+        mocker.patch("src.app.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         result = get_page_link_data("TestPage", "en", 10)
 
@@ -121,7 +121,7 @@ class TestGetPageLinkData:
         mock_page = MagicMock()
         mock_page.page_links.return_value = []
         mock_api.mainpage.return_value = mock_page
-        mock_load = mocker.patch("src.mk_cats.categorytext.load_main_api", return_value=mock_api)
+        mock_load = mocker.patch("src.app.mk_cats.categorytext.load_main_api", return_value=mock_api)
 
         get_page_link_data("TestPage", "ar", 100)
 
@@ -137,7 +137,7 @@ class TestFetchCommonsCategory:
     def test_returns_template_when_p373_exists(self, mocker):
         """
         Test that fetch_commons_category returns a template when P373 value exists"""
-        mocker.patch("src.mk_cats.categorytext.get_p373_api", return_value="Yemen")
+        mocker.patch("src.app.mk_cats.categorytext.get_p373_api", return_value="Yemen")
 
         result = fetch_commons_category("Category:Yemen", "Q805")
 
@@ -146,7 +146,7 @@ class TestFetchCommonsCategory:
     def test_returns_empty_when_p373_is_empty(self, mocker):
         """
         Test that fetch_commons_category returns empty string when P373 is empty"""
-        mocker.patch("src.mk_cats.categorytext.get_p373_api", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.get_p373_api", return_value="")
 
         result = fetch_commons_category("Category:Science", "Q123")
 
@@ -155,7 +155,7 @@ class TestFetchCommonsCategory:
     def test_returns_empty_when_p373_is_none(self, mocker):
         """
         Test that fetch_commons_category returns empty string when P373 is None"""
-        mocker.patch("src.mk_cats.categorytext.get_p373_api", return_value=None)
+        mocker.patch("src.app.mk_cats.categorytext.get_p373_api", return_value=None)
 
         result = fetch_commons_category("Category:Science", "Q123")
 
@@ -164,7 +164,7 @@ class TestFetchCommonsCategory:
     def test_calls_get_p373_api_with_correct_args(self, mocker):
         """
         Test that get_p373_api is called with correct arguments"""
-        mock_p373 = mocker.patch("src.mk_cats.categorytext.get_p373_api", return_value="Test")
+        mock_p373 = mocker.patch("src.app.mk_cats.categorytext.get_p373_api", return_value="Test")
 
         fetch_commons_category("Category:Test", "Q999")
 
@@ -180,7 +180,7 @@ class TestGeneratePortalContent:
     def test_returns_empty_string_when_no_portals(self, mocker):
         """
         Test that generate_portal_content returns empty string when no portals found"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=[])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=[])
 
         result = generate_portal_content("تصنيف:تصنيف_بدون_بوابات", "Category:NoPortals")
 
@@ -189,7 +189,7 @@ class TestGeneratePortalContent:
     def test_returns_string_and_empty_list_with_return_list(self, mocker):
         """
         Test that generate_portal_content returns tuple"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=[])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=[])
 
         result = generate_portal_content("تصنيف:اختبار", "Category:Test")
 
@@ -198,7 +198,7 @@ class TestGeneratePortalContent:
     def test_translates_multiple_portals(self, mocker):
         """
         Test that multiple portals are translated and joined"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Olympics", "Portal:Iceland"])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Olympics", "Portal:Iceland"])
 
         result = generate_portal_content("تصنيف:ألعاب أولمبية", "Category:Olympics")
 
@@ -208,7 +208,7 @@ class TestGeneratePortalContent:
     def test_adds_portal_from_category_mapping(self, mocker):
         """
         Test that portals from category_mapping are added based on title content"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=[])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=[])
 
         # Title contains "أفلام" which maps to "سينما"
         result = generate_portal_content("تصنيف:أفلام مصرية", "Category:Egyptian films")
@@ -218,7 +218,7 @@ class TestGeneratePortalContent:
     def test_adds_portal_from_local_language_links(self, mocker):
         """
         Test that portals from LocalLanguageLinks are added based on title content"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=[])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=[])
 
         # Title contains "فلسطين" which is in LocalLanguageLinks
         result = generate_portal_content("تصنيف:تاريخ فلسطين", "Category:History of Palestine")
@@ -228,7 +228,7 @@ class TestGeneratePortalContent:
     def test_adds_portal_from_title_start(self, mocker):
         """
         Test that portals are matched at the start of the title"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=[])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=[])
 
         # Title starts with "تصنيف:اليمن "
         result = generate_portal_content("تصنيف:اليمن في القرن العشرين", "Category:Yemen in 20th century")
@@ -238,7 +238,7 @@ class TestGeneratePortalContent:
     def test_adds_portal_from_title_end(self, mocker):
         """
         Test that portals are matched at the end of the title"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=[])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=[])
 
         result = generate_portal_content("تصنيف:تاريخ اليمن", "Category:History of Yemen")
 
@@ -247,7 +247,7 @@ class TestGeneratePortalContent:
     def test_no_duplicate_portals(self, mocker):
         """
         Test that portals are not duplicated"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Iceland"])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Iceland"])
 
         # Title contains "آيسلندا" and also portal link has Iceland
         result = generate_portal_content("تصنيف:تاريخ آيسلندا", "Category:History of Iceland")
@@ -257,7 +257,7 @@ class TestGeneratePortalContent:
     def test_returns_list_when_return_list_true(self, mocker):
         """
         Test that generate_portal_content returns list when"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Iceland"])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Iceland"])
 
         result = generate_portal_content("تصنيف:اختبار", "Category:Test")
 
@@ -267,7 +267,7 @@ class TestGeneratePortalContent:
     def test_category_mapping_in_category_not_duplicated(self, mocker):
         """
         Test that category_mapping portals are not duplicated if already in list"""
-        mocker.patch("src.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Olympics"])
+        mocker.patch("src.app.mk_cats.categorytext.get_page_link_data", return_value=["Portal:Olympics"])
 
         # Title contains "الألعاب الأولمبية" which maps to "ألعاب أولمبية"
         # The portal link also gives "ألعاب أولمبية"
@@ -285,9 +285,9 @@ class TestGenerateCategoryText:
     def test_includes_template_when_present(self, mocker):
         """
         Test that template is included when main_make_temp_no_title returns content"""
-        mocker.patch("src.mk_cats.categorytext.main_make_temp_no_title", return_value="{{قالب تصفح}}")
-        mocker.patch("src.mk_cats.categorytext.generate_portal_content", return_value="")
-        mocker.patch("src.mk_cats.categorytext.fetch_commons_category", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.main_make_temp_no_title", return_value="{{قالب تصفح}}")
+        mocker.patch("src.app.mk_cats.categorytext.generate_portal_content", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.fetch_commons_category", return_value="")
 
         result = generate_category_text("Category:Science", "تصنيف:علوم", "Q123")
 
@@ -296,9 +296,9 @@ class TestGenerateCategoryText:
     def test_no_template_when_absent(self, mocker):
         """
         Test that no template is added when main_make_temp_no_title returns empty"""
-        mocker.patch("src.mk_cats.categorytext.main_make_temp_no_title", return_value="")
-        mocker.patch("src.mk_cats.categorytext.generate_portal_content", return_value="")
-        mocker.patch("src.mk_cats.categorytext.fetch_commons_category", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.main_make_temp_no_title", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.generate_portal_content", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.fetch_commons_category", return_value="")
 
         result = generate_category_text("Category:Science", "تصنيف:علوم", "Q123")
 
@@ -307,9 +307,9 @@ class TestGenerateCategoryText:
     def test_no_template_when_none(self, mocker):
         """
         Test that no template is added when main_make_temp_no_title returns None"""
-        mocker.patch("src.mk_cats.categorytext.main_make_temp_no_title", return_value=None)
-        mocker.patch("src.mk_cats.categorytext.generate_portal_content", return_value="")
-        mocker.patch("src.mk_cats.categorytext.fetch_commons_category", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.main_make_temp_no_title", return_value=None)
+        mocker.patch("src.app.mk_cats.categorytext.generate_portal_content", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.fetch_commons_category", return_value="")
 
         result = generate_category_text("Category:Science", "تصنيف:علوم", "Q123")
 
@@ -318,9 +318,9 @@ class TestGenerateCategoryText:
     def test_calls_main_make_temp_no_title_with_correct_args(self, mocker):
         """
         Test that main_make_temp_no_title is called with correct arguments"""
-        mock_temp = mocker.patch("src.mk_cats.categorytext.main_make_temp_no_title", return_value="")
-        mocker.patch("src.mk_cats.categorytext.generate_portal_content", return_value="")
-        mocker.patch("src.mk_cats.categorytext.fetch_commons_category", return_value="")
+        mock_temp = mocker.patch("src.app.mk_cats.categorytext.main_make_temp_no_title", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.generate_portal_content", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.fetch_commons_category", return_value="")
 
         generate_category_text("Category:Science", "تصنيف:علوم", "Q123")
 
@@ -329,9 +329,9 @@ class TestGenerateCategoryText:
     def test_always_includes_lomawjod_template(self, mocker):
         """
         Test that the lomawjod template is always present"""
-        mocker.patch("src.mk_cats.categorytext.main_make_temp_no_title", return_value="")
-        mocker.patch("src.mk_cats.categorytext.generate_portal_content", return_value="")
-        mocker.patch("src.mk_cats.categorytext.fetch_commons_category", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.main_make_temp_no_title", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.generate_portal_content", return_value="")
+        mocker.patch("src.app.mk_cats.categorytext.fetch_commons_category", return_value="")
 
         result = generate_category_text("Category:Test", "تصنيف:اختبار", "Q1")
 

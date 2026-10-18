@@ -1,9 +1,9 @@
 """
-Unit tests for src/core/wd_api/wd_bots_main.py module.
+Unit tests for src/app/core/wd_api/wd_bots_main.py module.
 TODO: write tests
 """
 
-from src.shared.wd_api.wd_bots_main import WdAPI
+from src.app.shared.wd_api.wd_bots_main import WdAPI
 
 
 class TestWDAPI:

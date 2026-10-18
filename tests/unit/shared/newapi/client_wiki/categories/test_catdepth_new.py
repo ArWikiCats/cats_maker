@@ -1,10 +1,10 @@
 """
-Unit tests for src/core/client_wiki/categories/catdepth_new.py module.
+Unit tests for src/app/core/client_wiki/categories/catdepth_new.py module.
 """
 
 from unittest.mock import MagicMock, patch
 
-from src.shared.newapi.client_wiki.categories.catdepth_new import args_group, subcatquery, title_process
+from src.app.shared.newapi.client_wiki.categories.catdepth_new import args_group, subcatquery, title_process
 
 
 class TestTitleProcess:
@@ -49,8 +49,8 @@ class TestArgsGroup:
 
 
 class TestSubcatquery:
-    @patch("src.shared.newapi.client_wiki.categories.catdepth_new.CategoryDepth")
-    @patch("src.shared.newapi.client_wiki.categories.catdepth_new.title_process", return_value="Category:Test")
+    @patch("src.app.shared.newapi.client_wiki.categories.catdepth_new.CategoryDepth")
+    @patch("src.app.shared.newapi.client_wiki.categories.catdepth_new.title_process", return_value="Category:Test")
     def test_basic_call(self, mock_title, mock_cd_class):
         mock_bot = MagicMock()
         mock_bot.subcatquery_.return_value = {"Page1": {}}
@@ -64,8 +64,8 @@ class TestSubcatquery:
         mock_bot.subcatquery_.assert_called_once()
         assert result == {"Page1": {}}
 
-    @patch("src.shared.newapi.client_wiki.categories.catdepth_new.CategoryDepth")
-    @patch("src.shared.newapi.client_wiki.categories.catdepth_new.title_process", return_value="Category:Test")
+    @patch("src.app.shared.newapi.client_wiki.categories.catdepth_new.CategoryDepth")
+    @patch("src.app.shared.newapi.client_wiki.categories.catdepth_new.title_process", return_value="Category:Test")
     def test_get_revids(self, mock_title, mock_cd_class):
         mock_bot = MagicMock()
         mock_bot.subcatquery_.return_value = {}

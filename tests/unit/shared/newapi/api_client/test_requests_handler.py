@@ -1,21 +1,21 @@
 """
-Unit tests for src/core/api_client/requests_handler.py - RequestsHandler and related methods.
+Unit tests for src/app/core/api_client/requests_handler.py - RequestsHandler and related methods.
 """
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.shared.newapi.api_client.client import WikiLoginClient
-from src.shared.newapi.api_client.exceptions import MaxlagError
-from src.shared.newapi.api_client.requests_handler import RequestsHandler
+from src.app.shared.newapi.api_client.client import WikiLoginClient
+from src.app.shared.newapi.api_client.exceptions import MaxlagError
+from src.app.shared.newapi.api_client.requests_handler import RequestsHandler
 
 
 def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass"):
     """Create a WikiLoginClient with all external dependencies mocked."""
     with (
-        patch("src.shared.newapi.api_client.client.mwclient.Site") as mock_site,
-        patch("src.shared.newapi.api_client.cookies_client.get_cookie_path") as mock_path,
+        patch("src.app.shared.newapi.api_client.client.mwclient.Site") as mock_site,
+        patch("src.app.shared.newapi.api_client.cookies_client.get_cookie_path") as mock_path,
     ):
         mock_path.return_value = MagicMock()
         site_instance = mock_site.return_value
@@ -75,7 +75,7 @@ class TestMaxlagHandling:
 
         site.connection.request.side_effect = [maxlag_response, success_response]
 
-        with patch("src.shared.newapi.api_client.requests_handler.time.sleep"):
+        with patch("src.app.shared.newapi.api_client.requests_handler.time.sleep"):
             result = client.client_request_retry({"action": "query"}, method="get")
             assert "query" in result
 
@@ -87,7 +87,7 @@ class TestMaxlagHandling:
         maxlag_response.json.return_value = {"error": {"code": "maxlag", "info": "Lag"}}
         site.connection.request.return_value = maxlag_response
 
-        with patch("src.shared.newapi.api_client.requests_handler.time.sleep"):
+        with patch("src.app.shared.newapi.api_client.requests_handler.time.sleep"):
             with pytest.raises(MaxlagError):
                 client.client_request_retry({"action": "query"}, method="get")
 
@@ -160,7 +160,7 @@ class TestHandleMaxlag:
         response = MagicMock()
         response.headers = {"Retry-After": "3"}
 
-        with patch("src.shared.newapi.api_client.requests_handler.time.sleep") as mock_sleep:
+        with patch("src.app.shared.newapi.api_client.requests_handler.time.sleep") as mock_sleep:
             client.requests_handler._handle_maxlag(response, 1)
             mock_sleep.assert_called_with(3.0)
 
@@ -169,7 +169,7 @@ class TestHandleMaxlag:
         response = MagicMock()
         response.headers = {"Retry-After": "not_a_number"}
 
-        with patch("src.shared.newapi.api_client.requests_handler.time.sleep") as mock_sleep:
+        with patch("src.app.shared.newapi.api_client.requests_handler.time.sleep") as mock_sleep:
             client.requests_handler._handle_maxlag(response, 1)
             mock_sleep.assert_called_with(2.0)  # 1 * 2^1
 
@@ -178,7 +178,7 @@ class TestHandleMaxlag:
         response = MagicMock()
         response.headers = {}
 
-        with patch("src.shared.newapi.api_client.requests_handler.time.sleep") as mock_sleep:
+        with patch("src.app.shared.newapi.api_client.requests_handler.time.sleep") as mock_sleep:
 
             client.requests_handler._handle_maxlag(response, 2)
             mock_sleep.assert_called_with(4.0)  # 1 * 2^2

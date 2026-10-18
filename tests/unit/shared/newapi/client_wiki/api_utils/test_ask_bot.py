@@ -1,9 +1,9 @@
 """
-Unit tests for src/core/client_wiki/api_utils/ask_bot.py module.
+Unit tests for src/app/core/client_wiki/api_utils/ask_bot.py module.
 """
 
-from src.shared.newapi.client_wiki.api_utils import ask_bot
-from src.shared.newapi.client_wiki.api_utils.ask_bot import AskBot
+from src.app.shared.newapi.client_wiki.api_utils import ask_bot
+from src.app.shared.newapi.client_wiki.api_utils.ask_bot import AskBot
 
 
 class TestASKBOT:

@@ -1,8 +1,8 @@
-"""Unit tests for src/core/api_sql/exceptions.py module."""
+"""Unit tests for src/app/core/api_sql/exceptions.py module."""
 
 import pytest
 
-from src.shared.api_sql.exceptions import (
+from src.app.shared.api_sql.exceptions import (
     ConfigurationError,
     DatabaseConnectionError,
     DatabaseError,

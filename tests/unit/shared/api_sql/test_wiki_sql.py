@@ -4,8 +4,8 @@ Tests for service.py
 This module tests namespace handling and SQL query functions for MediaWiki.
 """
 
-from src.shared.api_sql.constants import NS_TEXT_AR, NS_TEXT_EN
-from src.shared.api_sql.utils import add_namespace_prefix
+from src.app.shared.api_sql.constants import NS_TEXT_AR, NS_TEXT_EN
+from src.app.shared.api_sql.utils import add_namespace_prefix
 
 
 class TestAddNamespacePrefix:

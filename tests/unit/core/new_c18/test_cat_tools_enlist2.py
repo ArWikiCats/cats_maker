@@ -4,7 +4,7 @@ Tests for category_resolver.py
 This module tests category member API functions.
 """
 
-from src.core.new_c18.core.category_resolver import CategoryResolver
+from src.app.core.new_c18.core.category_resolver import CategoryResolver
 
 
 class TestMakeLitApiWay:

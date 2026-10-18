@@ -1,17 +1,17 @@
 """
-Unit tests for src/core/new_c18/core/category_generator.py module.
+Unit tests for src/app/core/new_c18/core/category_generator.py module.
 """
 
 from unittest.mock import MagicMock, patch
 
-from src.core.new_c18.core.category_generator import (
+from src.app.core.new_c18.core.category_generator import (
     fetch_category_members,
     translate_titles_to_ar,
 )
 
 
 class TestFetchCategoryMembers:
-    @patch("src.core.new_c18.core.category_generator.load_main_api")
+    @patch("src.app.core.new_c18.core.category_generator.load_main_api")
     def test_returns_titles(self, mock_load_api):
         mock_api = MagicMock()
         mock_api.catdepth.return_value = {
@@ -23,7 +23,7 @@ class TestFetchCategoryMembers:
         assert "Page1" in result
         assert "Page2" in result
 
-    @patch("src.core.new_c18.core.category_generator.load_main_api")
+    @patch("src.app.core.new_c18.core.category_generator.load_main_api")
     def test_filters_by_namespace(self, mock_load_api):
         mock_api = MagicMock()
         mock_api.catdepth.return_value = {
@@ -37,8 +37,8 @@ class TestFetchCategoryMembers:
 
 
 class TestTranslateTitlesToAr:
-    @patch("src.core.new_c18.core.category_generator.find_page_data")
-    @patch("src.core.new_c18.core.category_generator.main_settings")
+    @patch("src.app.core.new_c18.core.category_generator.find_page_data")
+    @patch("src.app.core.new_c18.core.category_generator.main_settings")
     def test_returns_translated_titles(self, mock_settings, mock_find_lcn):
         mock_settings.en_site.code = "en"
         mock_find_lcn.return_value = {
@@ -49,8 +49,8 @@ class TestTranslateTitlesToAr:
         assert "علوم" in result
         assert "رياضيات" in result
 
-    @patch("src.core.new_c18.core.category_generator.find_page_data")
-    @patch("src.core.new_c18.core.category_generator.main_settings")
+    @patch("src.app.core.new_c18.core.category_generator.find_page_data")
+    @patch("src.app.core.new_c18.core.category_generator.main_settings")
     def test_skips_missing_translations(self, mock_settings, mock_find_lcn):
         mock_settings.en_site.code = "en"
         mock_find_lcn.return_value = {
@@ -59,8 +59,8 @@ class TestTranslateTitlesToAr:
         result = translate_titles_to_ar(["Science"])
         assert result == []
 
-    @patch("src.core.new_c18.core.category_generator.find_page_data")
-    @patch("src.core.new_c18.core.category_generator.main_settings")
+    @patch("src.app.core.new_c18.core.category_generator.find_page_data")
+    @patch("src.app.core.new_c18.core.category_generator.main_settings")
     def test_empty_result(self, mock_settings, mock_find_lcn):
         mock_settings.en_site.code = "en"
         mock_find_lcn.return_value = None

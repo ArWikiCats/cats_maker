@@ -8,8 +8,8 @@ from pathlib import Path
 
 import requests
 
-from src.config import main_settings
-from src.mk_cats import create_categories_from_list
+from src.app.config import main_settings
+from src.app.mk_cats import create_categories_from_list
 
 logger = logging.getLogger(__name__)
 

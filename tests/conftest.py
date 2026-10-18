@@ -56,7 +56,7 @@ def sample_page_info():
 @pytest.fixture
 def mock_wikidata_api(mocker):
     """Mock Wikidata API calls"""
-    return mocker.patch("src.shared.wd_api.wd_api_bot.get_infos_wikidata")
+    return mocker.patch("src.app.shared.wd_api.wd_api_bot.get_infos_wikidata")
 
 
 # ===== API Response Fixtures =====

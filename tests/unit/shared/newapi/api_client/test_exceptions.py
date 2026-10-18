@@ -1,8 +1,8 @@
 """
-Unit tests for src/core/api_client/exceptions.py module.
+Unit tests for src/app/core/api_client/exceptions.py module.
 """
 
-from src.shared.newapi.api_client.exceptions import (
+from src.app.shared.newapi.api_client.exceptions import (
     CookieError,
     CSRFError,
     LoginError,

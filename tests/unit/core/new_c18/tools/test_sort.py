@@ -4,7 +4,7 @@ Tests for sort.py
 This module tests category sorting functions.
 """
 
-from src.core.new_c18.tools.sort import sort_categories, sort_text
+from src.app.core.new_c18.tools.sort import sort_categories, sort_text
 
 
 class TestSortText:

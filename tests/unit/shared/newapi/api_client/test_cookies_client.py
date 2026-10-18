@@ -1,12 +1,12 @@
 """
-Unit tests for src/core/api_client/cookies.py module.
+Unit tests for src/app/core/api_client/cookies.py module.
 """
 
 import os
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
 
-from src.shared.newapi.api_client.cookies_client import (
+from src.app.shared.newapi.api_client.cookies_client import (
     _COOKIE_MAX_AGE_DAYS,
     _delete_cookie_file,
     _delete_if_stale,
@@ -81,9 +81,9 @@ class TestConstants:
 class TestCookieSaving:
     """Tests for cookie saving error handling."""
 
-    @patch("src.shared.newapi.api_client.cookies_client.logger")
+    @patch("src.app.shared.newapi.api_client.cookies_client.logger")
     def test_save_cookies_failure_is_logged(self, mock_logger):
-        from src.shared.newapi.api_client.cookies_client import CookiesClient
+        from src.app.shared.newapi.api_client.cookies_client import CookiesClient
 
         mock_cj = MagicMock()
         mock_cj.save.side_effect = Exception("IO Error")
