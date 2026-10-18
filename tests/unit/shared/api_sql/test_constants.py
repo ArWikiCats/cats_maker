@@ -1,6 +1,6 @@
-"""Unit tests for src/app/core/api_sql/constants.py module."""
+"""Unit tests for src/cats_maker/core/api_sql/constants.py module."""
 
-from src.app.shared.api_sql.constants import (
+from src.cats_maker.shared.api_sql.constants import (
     NS_TEXT_AR,
     NS_TEXT_EN,
     SUFFIXED_WIKIS,

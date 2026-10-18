@@ -4,7 +4,7 @@ Tests for constants.py
 This module tests category filtering functions.
 """
 
-from src.app.core.new_c18.constants import (
+from src.cats_maker.core.new_c18.constants import (
     FALSE_TEMPLATES,
     PRE_TEXT,
     SKIPPED_CATEGORIES,

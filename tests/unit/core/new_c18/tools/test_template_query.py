@@ -4,7 +4,7 @@ Tests for template_query.py
 This module tests template query functions for Wikipedia categories.
 """
 
-from src.app.core.new_c18.tools.template_query import TemplateCache, _cache, get_templates
+from src.cats_maker.core.new_c18.tools.template_query import TemplateCache, _cache, get_templates
 
 
 class TestTemplateCache:
@@ -49,7 +49,7 @@ class TestGetTemplates:
         """
         Test that find_page_data is called for uncached links"""
         mock_find_lcn = mocker.patch(
-            "src.app.core.new_c18.tools.template_query.find_page_data",
+            "src.cats_maker.core.new_c18.tools.template_query.find_page_data",
             return_value={"test": {"templates": ["قالب:test"]}},
         )
 
@@ -61,7 +61,7 @@ class TestGetTemplates:
     def test_returns_none_when_no_templates_found(self, mocker):
         """
         Test that None is returned when no templates are found"""
-        mocker.patch("src.app.core.new_c18.tools.template_query.find_page_data", return_value={"test": {}})
+        mocker.patch("src.cats_maker.core.new_c18.tools.template_query.find_page_data", return_value={"test": {}})
 
         result = get_templates("no_templates_link", "ar")
         assert result is None
@@ -70,7 +70,7 @@ class TestGetTemplates:
         """
         Test that dict is returned for batch template queries"""
         mocker.patch(
-            "src.app.core.new_c18.tools.template_query.find_page_data",
+            "src.cats_maker.core.new_c18.tools.template_query.find_page_data",
             return_value={"test1": {"templates": ["قالب:test"]}, "test2": {"templates": ["قالب:test2"]}},
         )
 
@@ -80,7 +80,7 @@ class TestGetTemplates:
     def test_returns_none_when_find_lcn_returns_none_for_batch(self, mocker):
         """
         Test that None is returned when find_page_data returns None for batch"""
-        mocker.patch("src.app.core.new_c18.tools.template_query.find_page_data", return_value=None)
+        mocker.patch("src.cats_maker.core.new_c18.tools.template_query.find_page_data", return_value=None)
 
         result = get_templates(["null_result_link"], "ar")
         assert result is None

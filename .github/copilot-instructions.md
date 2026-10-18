@@ -170,7 +170,7 @@ python run.py DEBUG -encat:Mathematics
 ### Arabic Label Resolution
 ```python
 # ar_make_lab is re-exported from mk_cats/__init__.py
-from src.app.mk_cats import ar_make_lab
+from src.cats_maker.mk_cats import ar_make_lab
 
 # Get Arabic label for English category
 ar_label = ar_make_lab("Category:Science")
@@ -179,7 +179,7 @@ ar_label = ar_make_lab("Category:Science")
 ### Category Processing
 ```python
 # create_categories_from_list is re-exported from mk_cats/__init__.py
-from src.app.mk_cats import create_categories_from_list
+from src.cats_maker.mk_cats import create_categories_from_list
 
 categories = ["Category:Science", "Category:Mathematics"]
 create_categories_from_list(categories, callback=my_callback)

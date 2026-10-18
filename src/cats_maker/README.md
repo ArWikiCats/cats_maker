@@ -30,14 +30,7 @@ pip install git+https://github.com/ArWikiCats/cats_maker.git
     cd cats_maker
     ```
 
-2. **Set up a virtual environment:**
-
-    ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-    ```
-
-3. **Install in editable mode with development dependencies:**
+2. **Install in editable mode with development dependencies:**
     ```bash
     pip install -e ".[dev]"
     ```

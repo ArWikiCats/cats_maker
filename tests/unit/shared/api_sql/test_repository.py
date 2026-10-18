@@ -1,8 +1,8 @@
-"""Unit tests for src/app/core/api_sql/repository.py module."""
+"""Unit tests for src/cats_maker/core/api_sql/repository.py module."""
 
 import pytest
 
-from src.app.shared.api_sql.repository import CategoryRepository
+from src.cats_maker.shared.api_sql.repository import CategoryRepository
 
 
 @pytest.fixture
@@ -10,7 +10,7 @@ def mock_db(mocker):
     """Mock WikiReplicaDB class and return its instance mock."""
     mock_instance = mocker.MagicMock()
     mocker.patch(
-        "src.app.shared.api_sql.repository.WikiReplicaDB",
+        "src.cats_maker.shared.api_sql.repository.WikiReplicaDB",
         return_value=mock_instance,
     )
     return mock_instance

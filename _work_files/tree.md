@@ -2,7 +2,7 @@
 src/
 ├── __init__.py
 │
-├── app/
+├── cats_maker/
 │   ├── __init__.py
 │   │
 │   ├── config/

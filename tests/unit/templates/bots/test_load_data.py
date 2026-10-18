@@ -1,8 +1,8 @@
 """
-Unit tests for src/app/templates/load_data.py module.
+Unit tests for src/cats_maker/templates/load_data.py module.
 """
 
-from src.app.templates.load_data import (
+from src.cats_maker.templates.load_data import (
     Baco,
     Baco_centries,
     Baco_decades,

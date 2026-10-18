@@ -4,7 +4,7 @@ Tests for service.py
 This module tests namespace handling and SQL query functions for MediaWiki.
 """
 
-from src.app.shared.api_sql.service import CategoryComparator
+from src.cats_maker.shared.api_sql.service import CategoryComparator
 
 
 class TestCategoryComparator:
@@ -40,11 +40,11 @@ class TestCategoryComparator:
         """
         Test that result is difference of en and ar lists"""
         mocker.patch(
-            "src.app.shared.api_sql.repository.CategoryRepository.fetch_arabic_titles_with_english_links",
+            "src.cats_maker.shared.api_sql.repository.CategoryRepository.fetch_arabic_titles_with_english_links",
             return_value=["Page1", "Page2"],
         )
         mocker.patch(
-            "src.app.shared.api_sql.repository.CategoryRepository.fetch_english_titles_with_arabic_links",
+            "src.cats_maker.shared.api_sql.repository.CategoryRepository.fetch_english_titles_with_arabic_links",
             return_value=["Page1", "Page2", "Page3"],
         )
 
@@ -65,11 +65,11 @@ class TestCategoryComparator:
         """
         Test that Arabic repo is not called when ar_category normalizes to empty."""
         mock_ar = mocker.patch(
-            "src.app.shared.api_sql.repository.CategoryRepository.fetch_arabic_titles_with_english_links",
+            "src.cats_maker.shared.api_sql.repository.CategoryRepository.fetch_arabic_titles_with_english_links",
             return_value=[],
         )
         mocker.patch(
-            "src.app.shared.api_sql.repository.CategoryRepository.fetch_english_titles_with_arabic_links",
+            "src.cats_maker.shared.api_sql.repository.CategoryRepository.fetch_english_titles_with_arabic_links",
             return_value=["Page1"],
         )
 
@@ -84,11 +84,11 @@ class TestCategoryComparator:
         """
         Test that all EN titles are returned when AR set is empty"""
         mocker.patch(
-            "src.app.shared.api_sql.repository.CategoryRepository.fetch_arabic_titles_with_english_links",
+            "src.cats_maker.shared.api_sql.repository.CategoryRepository.fetch_arabic_titles_with_english_links",
             return_value=[],
         )
         mocker.patch(
-            "src.app.shared.api_sql.repository.CategoryRepository.fetch_english_titles_with_arabic_links",
+            "src.cats_maker.shared.api_sql.repository.CategoryRepository.fetch_english_titles_with_arabic_links",
             return_value=["A", "B"],
         )
 

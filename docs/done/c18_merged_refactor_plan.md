@@ -1,6 +1,6 @@
 # c18 — Merged Refactoring Plan (b18 + c18)
 
-> **Status:** `src/app/core/b18` has been merged into `src/app/core/c18`.
+> **Status:** `src/cats_maker/core/b18` has been merged into `src/cats_maker/core/c18`.
 > This plan supersedes `b18_new_refactor_plan.md` and `c18_new_refactor_plan.md`.
 > _Synthesized 2026-04-27_
 
@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-The unified `src/app/core/c18` module now drives Arabic Wikipedia category generation, cross-wiki page linking (EN→AR, FR→AR), template handling, filtering/sorting, **and** the former `b18` responsibilities:
+The unified `src/cats_maker/core/c18` module now drives Arabic Wikipedia category generation, cross-wiki page linking (EN→AR, FR→AR), template handling, filtering/sorting, **and** the former `b18` responsibilities:
 
 -   Resolving English/French category members into Arabic page titles (via SQL or API)
 -   Validating Arabic/English category pairs before creation
@@ -43,7 +43,7 @@ These are explicitly out of scope to protect business logic stability:
 ## 3. Proposed Directory Structure
 
 ```
-src/app/core/c18/
+src/cats_maker/core/c18/
 ├── __init__.py                  # Export only the public interface; add __all__
 ├── constants.py                 # All magic strings, namespace IDs, template names (merged b18 + c18)
 ├── models.py                    # Lightweight dataclasses: WikiPage, Category, Sitelink, ValidationResult
@@ -164,7 +164,7 @@ Sources to consolidate:
 -   Replace every `return False` where a list or string is expected with `return []` or `return None`.
 -   Standardize `english_page_link` family and b18 resolver family to return `list[str]` or `str | None` consistently.
 
-**Success criteria:** `ruff check src/app/core/c18` and `mypy src/app/core/c18 --ignore-missing-imports` pass with zero errors.
+**Success criteria:** `ruff check src/cats_maker/core/c18` and `mypy src/cats_maker/core/c18 --ignore-missing-imports` pass with zero errors.
 
 ---
 
@@ -383,7 +383,7 @@ Move `pre_text` into a separate `.txt` asset or clearly named constant. Use `wik
 -   Move the orchestration logic (SQL → API → cache) into a thin `MemberLister` class.
 -   Remove the direct dependency on `settings.database.use_sql` by delegating to `CategoryResolver`.
 
-**Success criteria:** `radon cc src/app/core/c18 -s` shows the top 5 functions have dropped from grade C/D to grade A/B (cyclomatic complexity ≤ 10).
+**Success criteria:** `radon cc src/cats_maker/core/c18 -s` shows the top 5 functions have dropped from grade C/D to grade A/B (cyclomatic complexity ≤ 10).
 
 ---
 
@@ -505,7 +505,7 @@ Expected: ≥ 30% speedup from O(n²) → O(n).
 
 **Test migration note:** Existing tests in `tests/b18_new/` should be moved into `tests/c18/` (or merged into the relevant `test_*.py` files) as part of this phase.
 
-**CI/CD:** `pytest tests/c18/ --cov=src/app/core/c18 --cov-report=term-missing` must show ≥ 80% coverage in GitHub Actions.
+**CI/CD:** `pytest tests/c18/ --cov=src/cats_maker/core/c18 --cov-report=term-missing` must show ≥ 80% coverage in GitHub Actions.
 
 ---
 
@@ -536,8 +536,8 @@ Expected: ≥ 30% speedup from O(n²) → O(n).
 -   [ ] All category-title normalization uses `utils/text.py` — no inline `.replace(...)` chains
 -   [ ] `sql_cat_checker.py` duplication is eliminated; a single generic checker handles both EN and AR pages
 -   [ ] `pytest tests/c18/` passes with ≥ 80% coverage
--   [ ] `ruff check src/app/core/c18` reports zero errors
--   [ ] `radon cc src/app/core/c18 -s` shows no function above grade B (complexity ≤ 10)
+-   [ ] `ruff check src/cats_maker/core/c18` reports zero errors
+-   [ ] `radon cc src/cats_maker/core/c18 -s` shows no function above grade B (complexity ≤ 10)
 -   [ ] Integration diff on `Science` category is empty before → after
 
 ---

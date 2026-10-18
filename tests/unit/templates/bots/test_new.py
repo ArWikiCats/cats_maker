@@ -1,8 +1,8 @@
 """
-Unit tests for src/app/templates/new.py module.
+Unit tests for src/cats_maker/templates/new.py module.
 """
 
-from src.app.templates.new import (
+from src.cats_maker.templates.new import (
     TemplatesMaker,
     main_make_temp,
     make_century_template,

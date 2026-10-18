@@ -55,7 +55,7 @@ Zero-risk changes that can be done immediately, in any order:
 - Phase 5: Clean up `sub_cats_bot.py`
 - Phase 6: Add `_compat.py` backward-compat layer
 
-**Verification:** `pytest tests/wiki_api/` passes, `ruff check src/app/core/wiki_api` is clean.
+**Verification:** `pytest tests/wiki_api/` passes, `ruff check src/cats_maker/core/wiki_api` is clean.
 
 ### Step 1.2 — `api_sql` refactoring _(Phases 1, 2, 4, 5 done; Phase 3 pending)_
 
@@ -78,8 +78,8 @@ Zero-risk changes that can be done immediately, in any order:
 
 **Why alongside:** Reduces duplication before business-layer refactoring starts.
 
-- Create `src/app/core/constants.py` with shared namespace dicts (from api_sql + new_api)
-- Create `src/app/core/utils/text.py` with `normalize_category_title()`, `clean_wiki_brackets()`, `extract_wikidata_qid()`
+- Create `src/cats_maker/core/constants.py` with shared namespace dicts (from api_sql + new_api)
+- Create `src/cats_maker/core/utils/text.py` with `normalize_category_title()`, `clean_wiki_brackets()`, `extract_wikidata_qid()`
 - Ensure both are importable by `c18`, `mk_cats`
 
 ### Step 1.4 — `wd_bots` refactoring
@@ -153,10 +153,10 @@ Zero-risk changes that can be done immediately, in any order:
 | Step | Task                                 | Verification                                                |
 | ---- | ------------------------------------ | ----------------------------------------------------------- |
 | 3.1  | Run full test suite                  | `pytest tests/` — all pass                                  |
-| 3.2  | Run linter across entire `src/app/core/` | `ruff check src/app/core/` — zero errors                        |
-| 3.3  | Run type checker                     | `mypy src/app/core/ --ignore-missing-imports` — passes          |
+| 3.2  | Run linter across entire `src/cats_maker/core/` | `ruff check src/cats_maker/core/` — zero errors                        |
+| 3.3  | Run type checker                     | `mypy src/cats_maker/core/ --ignore-missing-imports` — passes          |
 | 3.4  | Integration diff test                | Run `python run.py -encat:Science` before/after, diff empty |
-| 3.5  | Complexity gate                      | `radon cc src/app/core/ -s` — no function above grade B         |
+| 3.5  | Complexity gate                      | `radon cc src/cats_maker/core/ -s` — no function above grade B         |
 | 3.6  | Coverage gate                        | All modules >= 80% coverage                                 |
 
 ---
@@ -165,8 +165,8 @@ Zero-risk changes that can be done immediately, in any order:
 
 ```bash
 # 1. Get linting/typing baseline
-ruff check src/app/core/ --statistics
-mypy src/app/core/ --ignore-missing-imports --statistics
+ruff check src/cats_maker/core/ --statistics
+mypy src/cats_maker/core/ --ignore-missing-imports --statistics
 
 # 2. Fix wiki_api NameError bug (most urgent)
 #    wiki_api_refactor_plan.md → Phase 1
@@ -183,7 +183,7 @@ mypy src/app/core/ --ignore-missing-imports --statistics
 #    mk_cats → c18
 
 # 6. Validate
-pytest tests/ --cov=src/app/core --cov-report=term-missing
+pytest tests/ --cov=src/cats_maker/core --cov-report=term-missing
 ```
 
 **Total estimated effort:** ~40-60 hours across all modules.

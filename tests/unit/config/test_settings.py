@@ -6,7 +6,7 @@ import sys
 
 import pytest
 
-from src.app.config import (
+from src.cats_maker.config import (
     CategoryConfig,
     DatabaseConfig,
     Settings,
@@ -15,7 +15,7 @@ from src.app.config import (
     WikiSiteInfo,
     main_settings,
 )
-from src.app.config.settings import _safe_int
+from src.cats_maker.config.settings import _safe_int
 
 
 class TestSafeInt:

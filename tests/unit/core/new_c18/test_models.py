@@ -1,10 +1,10 @@
 """
-Unit tests for src/app/core/new_c18/models.py module.
+Unit tests for src/cats_maker/core/new_c18/models.py module.
 """
 
 import pytest
 
-from src.app.core.new_c18.models import Category, CategoryRef, PageRef, ValidationResult, WikiPage
+from src.cats_maker.core.new_c18.models import Category, CategoryRef, PageRef, ValidationResult, WikiPage
 
 
 class TestCategoryRef:

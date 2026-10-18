@@ -6,7 +6,7 @@ from .logger_config import setup_logging
 
 use_colorlog = False
 
-from .app import (  # noqa: E402
+from .cats_maker import (  # noqa: E402
     ar_make_lab,
     create_categories_from_list,
     process_catagories,

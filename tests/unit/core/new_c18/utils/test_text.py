@@ -1,8 +1,8 @@
 """
-Unit tests for src/app/core/new_c18/utils/text.py module.
+Unit tests for src/cats_maker/core/new_c18/utils/text.py module.
 """
 
-from src.app.core.new_c18.utils.text import clean_category_input, extract_wikidata_qid, normalize_category_title
+from src.cats_maker.core.new_c18.utils.text import clean_category_input, extract_wikidata_qid, normalize_category_title
 
 
 class TestCleanCategoryInput:

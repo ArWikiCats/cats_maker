@@ -1,8 +1,8 @@
 """
-Unit tests for src/app/mk_cats/utils/filter_en.py module.
+Unit tests for src/cats_maker/mk_cats/utils/filter_en.py module.
 """
 
-from src.app.mk_cats.utils.filter_en import filter_category
+from src.cats_maker.mk_cats.utils.filter_en import filter_category
 
 
 class TestFilterCategory:

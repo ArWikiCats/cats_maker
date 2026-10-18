@@ -5,7 +5,7 @@ This module provides dataclass-based configuration for all project settings,
 including Wikipedia, Wikidata, and database configurations.
 
 Example:
-    >>> from src.app.config import main_settings
+    >>> from src.cats_maker.config import main_settings
     >>> print(main_settings.wikipedia.ar_code)
     'ar'
     >>> print(main_settings.wikidata.endpoint)

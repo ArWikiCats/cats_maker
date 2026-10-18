@@ -1,6 +1,6 @@
 import pytest
 
-from src.app.templates import main_make_temp
+from src.cats_maker.templates import main_make_temp
 
 test_data_general = {
     "تصنيف:عقد 90 حسب البلد": ["{{تصنيف عقد|قرن=1|عقد=90|حسب=حسب البلد}}", "تصنيف عقد"],

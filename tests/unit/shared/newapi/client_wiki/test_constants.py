@@ -1,8 +1,8 @@
 """
-Unit tests for src/app/core/client_wiki/constants.py module.
+Unit tests for src/cats_maker/core/client_wiki/constants.py module.
 """
 
-from src.app.shared.newapi.client_wiki.constants import CATEGORY_PREFIXES
+from src.cats_maker.shared.newapi.client_wiki.constants import CATEGORY_PREFIXES
 
 
 class TestCategoryPrefixes:

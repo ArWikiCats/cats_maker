@@ -24,7 +24,7 @@ dependencies = ["requests>=2.31.0", "wikitextparser>=0.55.0"]
 dev = ["pytest>=7.4.0"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["cats_maker"]
+packages = ["src/cats_maker"]
 
 # ============================================
 #                 BLACK
@@ -67,7 +67,7 @@ ensure_newline_before_comments = true
 
 # Project paths
 src_paths = "src"
-known_first_party = "src/app"
+known_first_party = "src/cats_maker"
 
 skip = [
     ".env",

@@ -1,8 +1,8 @@
-"""Unit tests for src/app/core/api_sql/utils.py module."""
+"""Unit tests for src/cats_maker/core/api_sql/utils.py module."""
 
 import pytest
 
-from src.app.shared.api_sql.utils import add_namespace_prefix
+from src.cats_maker.shared.api_sql.utils import add_namespace_prefix
 
 
 class TestAddNamespacePrefix:

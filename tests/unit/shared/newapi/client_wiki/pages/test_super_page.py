@@ -1,12 +1,12 @@
 """
-Unit tests for src/app/core/client_wiki/pages/super_page.py module.
+Unit tests for src/cats_maker/core/client_wiki/pages/super_page.py module.
 """
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.app.shared.newapi.client_wiki.pages.super_page import (
+from src.cats_maker.shared.newapi.client_wiki.pages.super_page import (
     CategoriesData,
     Content,
     LinksData,
@@ -19,7 +19,7 @@ from src.app.shared.newapi.client_wiki.pages.super_page import (
 
 @pytest.fixture
 def mock_login_bot():
-    from src.app.shared.newapi.api_client.client import WikiLoginClient
+    from src.cats_maker.shared.newapi.api_client.client import WikiLoginClient
 
     mock = MagicMock(spec=WikiLoginClient)
     mock.client_request = MagicMock()
@@ -28,7 +28,7 @@ def mock_login_bot():
 
 @pytest.fixture
 def page(mock_login_bot):
-    with patch("src.app.shared.newapi.client_wiki.pages.super_page.change_codes", {}):
+    with patch("src.cats_maker.shared.newapi.client_wiki.pages.super_page.change_codes", {}):
         return MainPage(mock_login_bot, "TestPage", "ar", family="wikipedia")
 
 

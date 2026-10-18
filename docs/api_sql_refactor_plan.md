@@ -9,7 +9,7 @@
 
 ## 1. Executive Summary
 
-`src/app/core/api_sql` provides SQL-based access to Wikimedia Analytics DB replicas to fetch Wikipedia page data (category members, cross-language differences). It has three layers:
+`src/cats_maker/core/api_sql` provides SQL-based access to Wikimedia Analytics DB replicas to fetch Wikipedia page data (category members, cross-language differences). It has three layers:
 
 | Layer | File         | Lines | Responsibility                                                            |
 | ----- | ------------ | ----- | ------------------------------------------------------------------------- |
@@ -48,7 +48,7 @@ Key issues:
 ## 3. Proposed Directory Structure
 
 ```
-src/app/core/api_sql/
+src/cats_maker/core/api_sql/
 ├── __init__.py                  # Public API; re-exports
 ├── constants.py                 # Namespace dicts, default config values
 ├── models.py                    # Dataclasses: QueryResult, DbConfig
@@ -181,7 +181,7 @@ DATABASE_SUFFIX = "_p"
 | `ns_text_tab_en`        | `NS_TEXT_EN` (module-level constant) | `service.py`                  |
 | `t1`, `t2` (parameters) | `title_key`, `ns_key`                | `service.py:sql_new_title_ns` |
 
-**Success criteria:** `ruff check src/app/core/api_sql` passes. `mypy src/app/core/api_sql --ignore-missing-imports` passes (except `pymysql` stub issues).
+**Success criteria:** `ruff check src/cats_maker/core/api_sql` passes. `mypy src/cats_maker/core/api_sql --ignore-missing-imports` passes (except `pymysql` stub issues).
 
 ---
 
@@ -357,7 +357,7 @@ Run the full `find_sql` flow before/after each phase to verify identical output:
 pytest tests/api_sql/ tests/integration/test_main_flow.py -v
 ```
 
-**Success criteria:** All existing tests pass. `pytest tests/api_sql/ --cov=src/app/core/api_sql --cov-report=term-missing` shows ≥ 85% coverage. _(DONE — 78 tests pass, 99% coverage)_
+**Success criteria:** All existing tests pass. `pytest tests/api_sql/ --cov=src/cats_maker/core/api_sql --cov-report=term-missing` shows ≥ 85% coverage. _(DONE — 78 tests pass, 99% coverage)_
 
 ---
 
@@ -388,8 +388,8 @@ The public API exported from `__init__.py` stays **identical** — no consumer c
 -   [x] `_run_query` handles non-SELECT queries without calling `fetchall`
 -   [x] Namespace dicts moved to `constants.py`
 -   [ ] All old file paths remain importable via shims _(pending Phase 3)_
--   [x] `ruff check src/app/core/api_sql` passes with zero errors
--   [x] `mypy src/app/core/api_sql --ignore-missing-imports` passes
+-   [x] `ruff check src/cats_maker/core/api_sql` passes with zero errors
+-   [x] `mypy src/cats_maker/core/api_sql --ignore-missing-imports` passes
 -   [x] `pytest tests/api_sql/` passes — 78/78 pass, 99% coverage
 -   [ ] `pytest tests/integration/test_main_flow.py` passes
 -   [ ] All downstream consumers (`c18/sql_cat.py`, `c18/cat_tools_enlist.py`, `c18/dontadd.py`, `c18/cats_tools/ar_from_en.py`) continue to work with zero import changes
@@ -412,7 +412,7 @@ The public API exported from `__init__.py` stays **identical** — no consumer c
 
 ```
 Current:                              Target:
-src/app/core/api_sql/                          src/app/core/api_sql/
+src/cats_maker/core/api_sql/                          src/cats_maker/core/api_sql/
 ├── __init__.py                       ├── __init__.py          (unchanged exports)
 ├── db_pool.py                   ├── constants.py         (new — namespace dicts, config)
 ├── service.py                       ├── models.py            (new — dataclasses)
@@ -450,9 +450,9 @@ After refactoring, verify these consumer files still work (imports unchanged due
 
 | Consumer file                          | Symbols imported from api_sql |
 | -------------------------------------- | ----------------------------- |
-| `src/app/core/c18/sql_cat.py`          | `GET_SQL`, `sql_new_title_ns` |
-| `src/app/core/c18/cat_tools_enlist.py` | (via settings-based SQL flag) |
-| `src/app/core/c18/dontadd.py`          | (via settings-based SQL flag) |
+| `src/cats_maker/core/c18/sql_cat.py`          | `GET_SQL`, `sql_new_title_ns` |
+| `src/cats_maker/core/c18/cat_tools_enlist.py` | (via settings-based SQL flag) |
+| `src/cats_maker/core/c18/dontadd.py`          | (via settings-based SQL flag) |
 | `tests/integration/test_main_flow.py`  | (mock-based import test)      |
 
 No import changes are needed — `api_sql/__init__.py` re-exports all public symbols unchanged.

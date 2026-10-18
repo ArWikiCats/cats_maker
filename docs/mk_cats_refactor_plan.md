@@ -1,13 +1,13 @@
 # mk_cats — Refactoring Plan
 
 > Companion plan to `c18_master_refactoring_plan.md`.
-> Applies the same principles — clean structure, phased execution, backward-compatible shims — to the `src/app/mk_cats` module.
+> Applies the same principles — clean structure, phased execution, backward-compatible shims — to the `src/cats_maker/mk_cats` module.
 
 ---
 
 ## 1. Executive Summary
 
-`src/app/mk_cats` drives Arabic Wikipedia category creation: given an English category, it resolves an Arabic label, collects members, creates the page, adds templates/portals/categories, then cross-links onto member pages. It works but carries technical debt:
+`src/cats_maker/mk_cats` drives Arabic Wikipedia category creation: given an English category, it resolves an Arabic label, collects members, creates the page, adds templates/portals/categories, then cross-links onto member pages. It works but carries technical debt:
 
 | Issue                                                  | Location                         | Impact                                                     |
 | ------------------------------------------------------ | -------------------------------- | ---------------------------------------------------------- |
@@ -38,7 +38,7 @@
 ## 3. Proposed Directory Structure
 
 ```
-src/app/mk_cats/
+src/cats_maker/mk_cats/
 ├── __init__.py                  # Public API; deprecation shims for renames
 ├── constants.py                 # All hardcoded strings, blacklists, config values
 ├── models.py                    # Dataclasses: CategoryResult (moved from create_category_page.py)
@@ -65,7 +65,7 @@ src/app/mk_cats/
 **Migration shim pattern** — old files become thin re-exporters with a deprecation warning:
 
 ```python
-# src/app/mk_cats/mknew.py (legacy shim)
+# src/cats_maker/mk_cats/mknew.py (legacy shim)
 import warnings
 
 warnings.warn("mk_cats.mknew is deprecated; use mk_cats.core.category_pipeline", DeprecationWarning, stacklevel=2)
@@ -239,7 +239,7 @@ def clear_state() -> None:
     _state.clear()
 ```
 
-**Success criteria:** All module-level variables (`_done_d`, `_new_cat_done`, `_already_created`) are encapsulated. `ruff check` and `mypy` pass on `src/app/mk_cats`.
+**Success criteria:** All module-level variables (`_done_d`, `_new_cat_done`, `_already_created`) are encapsulated. `ruff check` and `mypy` pass on `src/cats_maker/mk_cats`.
 
 ---
 
@@ -415,7 +415,7 @@ class CategoryResult:
 
 Tests need updating to match the refactored structure:
 
-- Replace `from src.app.mk_cats.mknew import process_catagories` → `from src.app.mk_cats.core.category_pipeline import process_categories`
+- Replace `from src.cats_maker.mk_cats.mknew import process_catagories` → `from src.cats_maker.mk_cats.core.category_pipeline import process_categories`
 - Remove module-level state manipulation (`_done_d.clear()` etc.) — use `clear_state()` instead
 - Fix assertions to use new function names
 
@@ -441,7 +441,7 @@ python run.py -encat:Science 2>&1 | tee after_phase_N.txt
 diff before_phase_N.txt after_phase_N.txt   # must be empty
 ```
 
-**Success criteria:** All existing tests pass with updated imports. `pytest tests/mk_cats/ --cov=src/app/mk_cats --cov-report=term-missing` shows ≥ 80% coverage.
+**Success criteria:** All existing tests pass with updated imports. `pytest tests/mk_cats/ --cov=src/cats_maker/mk_cats --cov-report=term-missing` shows ≥ 80% coverage.
 
 ---
 
@@ -468,8 +468,8 @@ diff before_phase_N.txt after_phase_N.txt   # must be empty
 - [ ] `_make_ar` broken into < 50 lines with extracted helper functions
 - [ ] `add_text_to_cat` uses an operation dispatch list
 - [ ] All old file paths remain importable with `DeprecationWarning`
-- [ ] `ruff check src/app/mk_cats` reports zero errors
-- [ ] `mypy src/app/mk_cats --ignore-missing-imports` passes
+- [ ] `ruff check src/cats_maker/mk_cats` reports zero errors
+- [ ] `mypy src/cats_maker/mk_cats --ignore-missing-imports` passes
 - [ ] `pytest tests/mk_cats/` passes with ≥ 80% coverage
 - [ ] Integration diff on `Science` category is empty before → after
 
@@ -491,7 +491,7 @@ diff before_phase_N.txt after_phase_N.txt   # must be empty
 
 ```
 Current:                              Target:
-src/app/mk_cats/                          src/app/mk_cats/
+src/cats_maker/mk_cats/                          src/cats_maker/mk_cats/
 ├── __init__.py                       ├── __init__.py          (shim)
 ├── mknew.py (421 lines)              ├── constants.py         (new)
 ├── members_helper.py                 ├── models.py            (new)

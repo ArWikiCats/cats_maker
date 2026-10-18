@@ -1,5 +1,5 @@
 """
-Unit tests for src/app/core/api_client/client.py module.
+Unit tests for src/cats_maker/core/api_client/client.py module.
 """
 
 from unittest.mock import MagicMock, patch
@@ -7,8 +7,8 @@ from unittest.mock import MagicMock, patch
 import mwclient.errors
 import pytest
 
-from src.app.shared.newapi.api_client.client import WikiLoginClient
-from src.app.shared.newapi.api_client.exceptions import LoginError, WikiClientError
+from src.cats_maker.shared.newapi.api_client.client import WikiLoginClient
+from src.cats_maker.shared.newapi.api_client.exceptions import LoginError, WikiClientError
 
 # ── Helper to construct a patched WikiLoginClient ────────────────────────────
 
@@ -16,8 +16,8 @@ from src.app.shared.newapi.api_client.exceptions import LoginError, WikiClientEr
 def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass", cookies_dir=None):
     """Create a WikiLoginClient with all external dependencies mocked."""
     with (
-        patch("src.app.shared.newapi.api_client.client.mwclient.Site") as mock_site,
-        patch("src.app.shared.newapi.api_client.cookies_client.get_cookie_path") as mock_path,
+        patch("src.cats_maker.shared.newapi.api_client.client.mwclient.Site") as mock_site,
+        patch("src.cats_maker.shared.newapi.api_client.cookies_client.get_cookie_path") as mock_path,
     ):
         mock_path.return_value = MagicMock()
         site_instance = mock_site.return_value
@@ -36,8 +36,8 @@ def _make_client(lang="en", family="wikipedia", username="MyBot", password="pass
 
 
 class TestEnrichParams:
-    @patch("src.app.shared.newapi.api_client.client.mwclient.Site")
-    @patch("src.app.shared.newapi.api_client.cookies_client.get_cookie_path")
+    @patch("src.cats_maker.shared.newapi.api_client.client.mwclient.Site")
+    @patch("src.cats_maker.shared.newapi.api_client.cookies_client.get_cookie_path")
     def test_query_action_strips_bot_and_summary(self, mock_path, mock_site):
         mock_path.return_value = MagicMock()
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
@@ -49,8 +49,8 @@ class TestEnrichParams:
         assert "summary" not in result
         assert result["titles"] == "Python"
 
-    @patch("src.app.shared.newapi.api_client.client.mwclient.Site")
-    @patch("src.app.shared.newapi.api_client.cookies_client.get_cookie_path")
+    @patch("src.cats_maker.shared.newapi.api_client.client.mwclient.Site")
+    @patch("src.cats_maker.shared.newapi.api_client.cookies_client.get_cookie_path")
     def test_write_action_injects_bot_and_assertuser(self, mock_path, mock_site):
         mock_path.return_value = MagicMock()
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
@@ -116,8 +116,8 @@ class TestEnrichParams:
 class TestClientRequestRetry:
     def test_invalid_method_raises(self):
         with (
-            patch("src.app.shared.newapi.api_client.client.mwclient.Site") as mock_site,
-            patch("src.app.shared.newapi.api_client.cookies_client.get_cookie_path"),
+            patch("src.cats_maker.shared.newapi.api_client.client.mwclient.Site") as mock_site,
+            patch("src.cats_maker.shared.newapi.api_client.cookies_client.get_cookie_path"),
         ):
             mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
             client = WikiLoginClient("en", "wikipedia", "bot", "pass")
@@ -126,8 +126,8 @@ class TestClientRequestRetry:
 
     def test_api_error_raises_wiki_client_error(self):
         with (
-            patch("src.app.shared.newapi.api_client.client.mwclient.Site") as mock_site,
-            patch("src.app.shared.newapi.api_client.cookies_client.get_cookie_path"),
+            patch("src.cats_maker.shared.newapi.api_client.client.mwclient.Site") as mock_site,
+            patch("src.cats_maker.shared.newapi.api_client.cookies_client.get_cookie_path"),
         ):
             site_instance = mock_site.return_value
             site_instance.api.return_value = {"query": {"userinfo": {"id": 1}}}
@@ -239,8 +239,8 @@ class TestSiteProperty:
 
 
 class TestRepr:
-    @patch("src.app.shared.newapi.api_client.client.mwclient.Site")
-    @patch("src.app.shared.newapi.api_client.cookies_client.get_cookie_path")
+    @patch("src.cats_maker.shared.newapi.api_client.client.mwclient.Site")
+    @patch("src.cats_maker.shared.newapi.api_client.cookies_client.get_cookie_path")
     def test_repr(self, mock_path, mock_site):
         mock_site.return_value.api.return_value = {"query": {"userinfo": {"id": 1}}}
         client = WikiLoginClient("en", "wikipedia", "MyBot", "pass")

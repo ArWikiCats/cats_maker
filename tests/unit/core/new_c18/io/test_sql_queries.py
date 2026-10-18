@@ -1,12 +1,12 @@
 """
-Unit tests for src/app/core/new_c18/io/sql_queries.py module.
+Unit tests for src/cats_maker/core/new_c18/io/sql_queries.py module.
 """
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.app.core.new_c18.io.sql_queries import (
+from src.cats_maker.core.new_c18.io.sql_queries import (
     fetch_ar_category_members,
     fetch_dont_add_pages,
     fetch_en_category_langlinks,
@@ -18,7 +18,7 @@ def mock_db(monkeypatch):
     """Mock database connections."""
     mock_instance = MagicMock()
     mock_class = MagicMock(return_value=mock_instance)
-    monkeypatch.setattr("src.app.core.new_c18.io.sql_queries.WikiReplicaDB", mock_class)
+    monkeypatch.setattr("src.cats_maker.core.new_c18.io.sql_queries.WikiReplicaDB", mock_class)
     return mock_instance
 
 
@@ -42,7 +42,7 @@ class TestFetchArCategoryMembers:
 
 
 class TestFetchEnCategoryLanglinks:
-    @patch("src.app.core.new_c18.io.sql_queries.main_settings")
+    @patch("src.cats_maker.core.new_c18.io.sql_queries.main_settings")
     def test_returns_rows(self, mock_settings, mock_db):
         mock_settings.query.ns_no_10 = False
         mock_settings.query.ns_only_14 = False
@@ -50,7 +50,7 @@ class TestFetchEnCategoryLanglinks:
         result = fetch_en_category_langlinks("Science")
         assert len(result) == 1
 
-    @patch("src.app.core.new_c18.io.sql_queries.main_settings")
+    @patch("src.cats_maker.core.new_c18.io.sql_queries.main_settings")
     def test_strips_category_prefix(self, mock_settings, mock_db):
         mock_settings.query.ns_no_10 = False
         mock_settings.query.ns_only_14 = False
@@ -59,7 +59,7 @@ class TestFetchEnCategoryLanglinks:
         call_args = mock_db.select_safe.call_args
         assert call_args[1]["params"] == ("Science",)
 
-    @patch("src.app.core.new_c18.io.sql_queries.main_settings")
+    @patch("src.cats_maker.core.new_c18.io.sql_queries.main_settings")
     def test_returns_empty_on_error(self, mock_settings, mock_db):
         mock_settings.query.ns_no_10 = False
         mock_settings.query.ns_only_14 = False
@@ -69,7 +69,7 @@ class TestFetchEnCategoryLanglinks:
 
 
 class TestFetchDontAddPages:
-    @patch("src.app.core.new_c18.io.sql_queries.add_namespace_prefix")
+    @patch("src.cats_maker.core.new_c18.io.sql_queries.add_namespace_prefix")
     def test_returns_prefixed_titles(self, mock_prefix, mock_db):
         mock_db.select_safe.return_value = [{"page_title": "Test", "page_namespace": 0}]
         mock_prefix.return_value = "مقالة:Test"

@@ -1,12 +1,12 @@
 """
-Unit tests for src/app/core/client_wiki/all_apis.py module.
+Unit tests for src/cats_maker/core/client_wiki/all_apis.py module.
 """
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.app.shared.newapi.client_wiki.all_apis import AllAPIS
+from src.cats_maker.shared.newapi.client_wiki.all_apis import AllAPIS
 
 
 @pytest.fixture
@@ -15,7 +15,7 @@ def mock_login_bot():
 
 
 class TestALLAPIS:
-    @patch("src.app.shared.newapi.client_wiki.all_apis.WikiLoginClient")
+    @patch("src.cats_maker.shared.newapi.client_wiki.all_apis.WikiLoginClient")
     def test_init_sets_attributes(self, mock_wlc, mock_login_bot):
         mock_wlc.return_value = mock_login_bot
         api = AllAPIS("ar", "wikipedia", "user", "pass")
@@ -25,8 +25,8 @@ class TestALLAPIS:
         assert api.password == "pass"
         assert api.login_bot == mock_login_bot
 
-    @patch("src.app.shared.newapi.client_wiki.all_apis.super_page")
-    @patch("src.app.shared.newapi.client_wiki.all_apis.WikiLoginClient")
+    @patch("src.cats_maker.shared.newapi.client_wiki.all_apis.super_page")
+    @patch("src.cats_maker.shared.newapi.client_wiki.all_apis.WikiLoginClient")
     def test_main_page_returns_main_page(self, mock_wlc, mock_super_page, mock_login_bot):
         mock_wlc.return_value = mock_login_bot
         api = AllAPIS("ar", "wikipedia", "user", "pass")
@@ -34,8 +34,8 @@ class TestALLAPIS:
         mock_super_page.MainPage.assert_called_once_with(mock_login_bot, "TestTitle", "ar", family="wikipedia")
         assert result == mock_super_page.MainPage.return_value
 
-    @patch("src.app.shared.newapi.client_wiki.all_apis.catdepth_new")
-    @patch("src.app.shared.newapi.client_wiki.all_apis.WikiLoginClient")
+    @patch("src.cats_maker.shared.newapi.client_wiki.all_apis.catdepth_new")
+    @patch("src.cats_maker.shared.newapi.client_wiki.all_apis.WikiLoginClient")
     def test_cat_depth_calls_subcatquery(self, mock_wlc, mock_catdepth, mock_login_bot):
         mock_wlc.return_value = mock_login_bot
         api = AllAPIS("ar", "wikipedia", "user", "pass")

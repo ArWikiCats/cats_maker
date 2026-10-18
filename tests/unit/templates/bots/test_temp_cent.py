@@ -3,7 +3,7 @@
 Test file for make_century_template function
 """
 
-from src.app.templates.temp_cent import make_century_template
+from src.cats_maker.templates.temp_cent import make_century_template
 
 
 def test_make_century_template_basic():
