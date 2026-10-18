@@ -172,7 +172,7 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
 2. **تثبيت التبعيات:**
 
     ```bash
-    pip install -r requirements.in
+    pip install -r requirements.txt
     ```
 
 3. **إعداد متغيرات البيئة:**
@@ -442,7 +442,7 @@ print(settings.debug)  # False
 ```
 cats_maker/
 ├── run.py                    # نقطة الدخول الرئيسية
-├── requirements.in           # تبعيات Python
+├── requirements.txt           # تبعيات Python
 ├── pyproject.toml           # إعدادات المشروع (Black, isort, ruff)
 ├── pytest.ini               # إعدادات Pytest
 ├── refactoring_plan.md      # وثائق إعادة الهيكلة الفنية
@@ -611,7 +611,7 @@ class TestArMakeLab:
 
 1. تفريع المستودع
 2. إنشاء فرع ميزة: `git checkout -b feature/my-feature`
-3. تثبيت تبعيات التطوير: `pip install -r requirements.in`
+3. تثبيت تبعيات التطوير: `pip install -r requirements.txt`
 4. إجراء التغييرات
 5. تشغيل الاختبارات: `pytest`
 6. تشغيل linters: `ruff check src/`

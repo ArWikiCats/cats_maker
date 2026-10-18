@@ -6,7 +6,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from ...config import main_settings
+from ..config import main_settings
 from .replica_db import WikiReplicaBaseDB
 
 logger = logging.getLogger(__name__)

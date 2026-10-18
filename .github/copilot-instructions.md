@@ -143,7 +143,7 @@ Utilities (helps/, utils/, cats_maker/)
 
 ### Installation
 ```bash
-pip install -r requirements.in
+pip install -r requirements.txt
 ```
 
 ### Running the Application

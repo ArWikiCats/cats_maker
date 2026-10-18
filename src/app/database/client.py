@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from ...config import main_settings
+from ..config import main_settings
 from .maps import WikiReplicaMaps
 from .replica_db import WikiReplicaBaseDB
 

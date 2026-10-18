@@ -10,7 +10,7 @@ Cats Maker New is a Python automation bot that creates Arabic Wikipedia categori
 
 ```bash
 # Install dependencies
-pip install -r requirements.in
+pip install -r requirements.txt
 
 # Run the bot
 python run.py -encat:Science              # Single category

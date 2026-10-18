@@ -3,7 +3,7 @@
 Test file for make_decades_template function
 """
 
-from src.app.templates.bots import make_decades_template
+from src.app.templates.temp_decades import make_decades_template
 
 
 def test_makedecades_temp_basic():
