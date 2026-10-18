@@ -1,13 +1,4 @@
-"""
-NOTE: ar_make_lab, create_categories_from_list, process_catagories
-    is used by external scripts and should not be changed.
-
-from cats_maker_new import (
-    process_catagories,
-    create_categories_from_list,
-    ar_make_lab,
-)
-"""
+""" """
 
 import os
 import sys
@@ -24,7 +15,7 @@ if _arwikicats_path:
     if _arwikicats_path.exists():
         sys.path.insert(0, str(_arwikicats_path.parent))
 
-from .mk_cats import (  # noqa: E402
+from .app import (  # noqa: E402
     ar_make_lab,
     create_categories_from_list,
     process_catagories,

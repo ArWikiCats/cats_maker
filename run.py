@@ -89,14 +89,14 @@ def main():
 
         argn = argn.removeprefix("-")
 
-        # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:357357
-        # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:231528
-        # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:299753
-        # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:475921
-        # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:320152
-        # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 quarry:300040
-        # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 encat:Department_stores_of_the_United_States
-        # python3 core8/pwb.py I:/core/bots/cats_maker_new/run.py -depth:5 encat:1988_war_films
+        # python3 core8/pwb.py I:/core/bots/cats_maker/run.py -depth:5 quarry:357357
+        # python3 core8/pwb.py I:/core/bots/cats_maker/run.py -depth:5 quarry:231528
+        # python3 core8/pwb.py I:/core/bots/cats_maker/run.py -depth:5 quarry:299753
+        # python3 core8/pwb.py I:/core/bots/cats_maker/run.py -depth:5 quarry:475921
+        # python3 core8/pwb.py I:/core/bots/cats_maker/run.py -depth:5 quarry:320152
+        # python3 core8/pwb.py I:/core/bots/cats_maker/run.py -depth:5 quarry:300040
+        # python3 core8/pwb.py I:/core/bots/cats_maker/run.py -depth:5 encat:Department_stores_of_the_United_States
+        # python3 core8/pwb.py I:/core/bots/cats_maker/run.py -depth:5 encat:1988_war_films
 
         if argn == "quarry":
             list_data = get_quarry_result(value)

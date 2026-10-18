@@ -50,7 +50,7 @@ def setup_file_handler(
 
 def setup_logging(
     level: str = "INFO",
-    name: str = "cats_maker_new",
+    name: str = "cats_maker",
     log_file: str | None = None,
     error_log_file: str | None = None,
     use_colorlog: bool = False,

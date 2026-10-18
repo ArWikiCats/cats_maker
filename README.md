@@ -119,7 +119,7 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
               ↓
 ┌─────────────────────────────────────────┐
 │      طبقة الأدوات المساعدة             │
-│      helps/, utils/, cats_maker_new/              │
+│      helps/, utils/, cats_maker/              │
 └─────────────────────────────────────────┘
 ```
 
@@ -165,8 +165,8 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
 1. **استنساخ المستودع:**
 
     ```bash
-    git clone https://github.com/MrIbrahem/cats_maker_new.git
-    cd cats_maker_new
+    git clone https://github.com/MrIbrahem/cats_maker.git
+    cd cats_maker
     ```
 
 2. **تثبيت التبعيات:**
@@ -202,7 +202,7 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
 | `PROJECT_PATH`             | مسار المشروع (اختياري)                          | فارغ                             |
 | `ARWIKICATS_PATH`          | مسار تثبيت ArWikiCats (اختياري)                 | فارغ                             |
 | `CATS_MAKER_EXTERNAL_PATH` | مسار خارجي للتكاملات الاختيارية                 | فارغ                             |
-| `CATS_MAKER_LOG_FILE`      | مسار ملف السجل                                  | `~/BOTS_LOGS/cats_maker_new.log` |
+| `CATS_MAKER_LOG_FILE`      | مسار ملف السجل                                  | `~/BOTS_LOGS/cats_maker.log` |
 
 > **ملاحظة:** لا تشارك ملف `.env` أبداً - فهو مُضاف إلى `.gitignore` لحمايه.
 > **تلميح:** اضبط `APP_ENV=production` لتمكين استعلامات SQL في بيئة الإنتاج.
@@ -440,7 +440,7 @@ print(settings.debug)  # False
 ## هيكل المشروع
 
 ```
-cats_maker_new/
+cats_maker/
 ├── run.py                    # نقطة الدخول الرئيسية
 ├── requirements.in           # تبعيات Python
 ├── pyproject.toml           # إعدادات المشروع (Black, isort, ruff)
@@ -492,7 +492,7 @@ cats_maker_new/
 │   │   ├── log.py          # غلاف التسجيل
 │   │   └── printe_helper.py # تنسيق الطباعة
 │   │
-│   ├── cats_maker_new/               # توليد القالب
+│   ├── cats_maker/               # توليد القالب
 │   │   └── *_temp.py       # قوالب القرن، العقد، السنة
 │   │
 │   └── utils/              # أدوات مساعدة عامة
@@ -507,7 +507,7 @@ cats_maker_new/
 │   ├── wiki_api/          # اختبارات wiki_api
 │   ├── api_sql/           # اختبارات api_sql
 │   ├── integration/       # اختبارات التكامل
-│   └── cats_maker_new/              # اختبارات القالب
+│   └── cats_maker/              # اختبارات القالب
 │
 └── .github/
     ├── workflows/
@@ -564,7 +564,7 @@ pytest -m "not network"
 | utils       | قوائم التخطي والقوائم السوداء                    | ✅     |
 | wd_bots     | تكامل ويكي بيانات                                | ✅     |
 | wiki_api    | استدعاءات Wikipedia API                          | ✅     |
-| cats_maker_new        | توليد القالب                                     | ✅     |
+| cats_maker        | توليد القالب                                     | ✅     |
 | integration | اختبارات من البداية إلى النهاية                  | ✅     |
 
 ### علامات الاختبار

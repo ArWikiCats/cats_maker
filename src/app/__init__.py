@@ -9,20 +9,26 @@ from cats_maker import (
 )
 """
 
-import os
-from pathlib import Path
+import logging
 
-_arwikicats_path = os.getenv("ARWIKICATS_PATH")
-if _arwikicats_path:
-    _arwikicats_path = Path(_arwikicats_path)
-    if _arwikicats_path.exists():
-        sys.path.insert(0, str(_arwikicats_path.parent))
-
-from .mk_cats import (  # noqa: E402
+from .mk_cats import (
     ar_make_lab,
     create_categories_from_list,
     process_catagories,
 )
+
+try:
+    from ArWikiCats import resolve_arabic_category_label  # type: ignore  # noqa: F401
+except ImportError:
+    logging.warning("ArWikiCats not available.")
+    msg = """
+    Please install ArWikiCats from https://github.com/ArWikiCats/ArWikiCats
+        - `pip install git+https://github.com/ArWikiCats/ArWikiCats.git -U`
+        or clone ArWikiCats into your workspace and inside `ArWikiCats` folder run:
+        - `pip install -e .`
+    """
+    logging.error(msg)
+
 
 __all__ = [
     "ar_make_lab",
