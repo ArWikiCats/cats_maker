@@ -18,7 +18,6 @@ ignore_list = [
 ]
 
 for tree_save_path, tree_path in tree_work.items():
-
     _tree: str = DisplayTree(
         dirPath=str(tree_path),
         stringRep=True,
@@ -31,6 +30,7 @@ for tree_save_path, tree_path in tree_work.items():
         sortBy=0,
         raiseException=False,
         printErrorTraceback=False,
+        spacing=True,
     )  # type: ignore
 
     tree_save_path.write_text(f"```\n{_tree}\n```", encoding="utf-8")
