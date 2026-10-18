@@ -1,6 +1,6 @@
 import pytest
 
-from src.temp import main_make_temp_no_title
+from src.app.templates import main_make_temp_no_title
 
 test_data_dump = {
     "تصنيف:رياضة سويسرية نسائية في 2024": "{{تصنيف موسم}}",

@@ -2,7 +2,7 @@
 
 import logging
 
-from ...db import WikiReplicaDB
+from ...database import WikiReplicaDB
 from .utils import add_namespace_prefix
 
 logger = logging.getLogger(__name__)

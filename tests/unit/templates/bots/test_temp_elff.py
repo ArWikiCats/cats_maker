@@ -3,7 +3,7 @@
 Test file for make_millennium_template function
 """
 
-from src.temp.bots import make_millennium_template
+from src.app.templates.bots import make_millennium_template
 
 
 def test_make_millennium_template_basic():

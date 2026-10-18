@@ -5,7 +5,7 @@
 
 بوت لإضافة قالب السنوات للتصنيفات
 
-from .temp import main_make_temp, make_years_template
+from .templates import main_make_temp, make_years_template
 
 """
 

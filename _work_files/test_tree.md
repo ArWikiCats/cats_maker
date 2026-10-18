@@ -113,7 +113,7 @@ tests/
     │       ├── test_wd_api_bot.py
     │       └── test_wd_bots_main.py
     │
-    └── temp/
+    └── templates/
         ├── _test_temp_more.py
         │
         ├── bots/

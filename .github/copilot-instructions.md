@@ -88,7 +88,7 @@ Data Processing (c18/)
     ↓
 External Services (wiki_api/, wd_bots/, api_sql/)
     ↓
-Utilities (helps/, utils/, temp/)
+Utilities (helps/, utils/, cats_maker_new/)
 ```
 
 ### Key Modules
@@ -112,7 +112,7 @@ Utilities (helps/, utils/, temp/)
 4. **wiki_api/**: Wikipedia API calls
    - `himoBOT2.py`: General Wikipedia API functions
 
-5. **temp/**: Template generation for centuries, decades, years
+5. **cats_maker_new/**: Template generation for centuries, decades, years
 
 ## Important Conventions
 

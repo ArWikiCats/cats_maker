@@ -1,8 +1,8 @@
 """
-Unit tests for src/temp/bots/new.py module.
+Unit tests for src/app/templates/bots/new.py module.
 """
 
-from src.temp.bots.new import (
+from src.app.templates.bots.new import (
     TemplatesMaker,
     main_make_temp,
     make_century_template,

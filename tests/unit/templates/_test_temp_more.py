@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from src.temp import main_make_temp_no_title
+from src.app.templates import main_make_temp_no_title
 
 test_data = {}
 

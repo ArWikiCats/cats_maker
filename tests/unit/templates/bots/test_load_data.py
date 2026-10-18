@@ -1,8 +1,8 @@
 """
-Unit tests for src/temp/bots/load_data.py module.
+Unit tests for src/app/templates/bots/load_data.py module.
 """
 
-from src.temp.bots.load_data import (
+from src.app.templates.bots.load_data import (
     Baco,
     Baco_centries,
     Baco_decades,

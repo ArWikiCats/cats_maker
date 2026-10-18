@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Wikidata functions for cats_maker_new bot
+Wikidata functions for cats maker bot
 """
 
 import functools

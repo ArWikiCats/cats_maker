@@ -136,7 +136,7 @@ src/
 │       ├── wd_api_bot.py
 │       └── wd_bots_main.py
 │
-└── temp/
+└── templates/
     ├── __init__.py
     │
     └── bots/

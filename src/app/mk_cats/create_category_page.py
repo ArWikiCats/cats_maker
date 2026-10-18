@@ -6,7 +6,7 @@ from typing import NamedTuple
 
 from ..core.new_c18.constants import SKIP_ENCATS
 from ..shared.api_page import load_main_api
-from ..temp import main_make_temp_no_title
+from ..templates import main_make_temp_no_title
 from . import categorytext
 
 logger = logging.getLogger(__name__)

@@ -59,14 +59,14 @@ def _check_page_status(
         target_temp2 = target_temp.replace(template_prefix, "")
         if is_ar:
             if target_temp2 in template_blacklist and not main_settings.category.keep:
-                logger.info(f"{title} has temp:{target_temp2}")
+                logger.info(f"{title} has template:{target_temp2}")
                 return ValidationResult(
                     valid=False,
                     reason=f"Blacklisted template: {target_temp2}",
                 )
         else:
             if target_temp2.lower() in GLOBAL_FALSE_ENTEMPS_LOWER and not main_settings.category.keep:
-                logger.info(f"{title} has temp:{target_temp2}")
+                logger.info(f"{title} has template:{target_temp2}")
                 return ValidationResult(
                     valid=False,
                     reason=f"Blacklisted template: {target_temp2}",

@@ -7,7 +7,7 @@ import logging
 from typing import Any
 
 from ....config import main_settings
-from ....db import WikiReplicaDB
+from ....database import WikiReplicaDB
 from ....shared.api_sql import add_namespace_prefix
 
 logger = logging.getLogger(__name__)
