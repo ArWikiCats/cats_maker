@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import functools
 import logging
+from typing import Any
 
 from ...utils import function_timer
 from ..constants import CATEGORY_PREFIXES
@@ -26,7 +27,7 @@ def title_process(title: str, site_code: str) -> str:
     return title
 
 
-def args_group(title: str, kwargs: dict) -> dict:
+def args_group(title: str, kwargs: dict[str, Any]) -> dict[str, Any]:
     args2 = {
         "title": title,
         "depth": None,
@@ -53,7 +54,7 @@ def subcatquery(
     title: str,
     site_code: str = SITECODE,
     **kwargs,
-) -> dict:
+) -> dict[str, Any]:
     print_s = kwargs.get("print_s", True)
     get_revids = kwargs.get("get_revids", False)
 

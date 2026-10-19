@@ -47,7 +47,7 @@ def page_put(title, new_text, msg):
     if not page_edit:
         return False
 
-    save = page.save(newtext=new_text, summary=msg, nocreate=1)
+    save = page.edit(newtext=new_text, summary=msg, nocreate=1)
 
     return save
 

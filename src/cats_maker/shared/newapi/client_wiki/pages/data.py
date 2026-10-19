@@ -1,14 +1,9 @@
-"""
-
-from .data import Content, Meta, RevisionsData, LinksData, CategoriesData, TemplateData
-
-(Exists|all_categories_with_hidden|back_links|can_be_edit|categories|create_data|extlinks|flagged|hidden_categories|info|is_disambig|is_redirect|iwlinks|length|links_here|links|newrevid|pageid|revid|revisions|summary|templates|templates_api|text_html|timestamp|touched|userinfo|username|wikibase_item|words)
-
-"""
+""" """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -24,16 +19,37 @@ class Content:
 @dataclass
 class Meta:
     is_disambig: bool = False
-    can_be_edit: bool = False
+    can_be_edit: None | bool = None
     # ns: int = 0
     userinfo: dict = field(default_factory=dict)
     create_data: dict = field(default_factory=dict)
-    info: dict = field(default_factory=lambda: {"done": False})
+    info: dict[str, Any] = field(default_factory=lambda: {"done": False})
     username: str = ""
     Exists: bool = False
     is_redirect: bool = False
     flagged: bool = False
     wikibase_item: str = ""
+
+    def log_create_data(self, page_data) -> None:
+        """
+        _revisions_example = [
+            {
+                "revid": 76529179,
+                "parentid": 0,
+                "minor": False,
+                "user": "~2026-49145-25",
+                "temp": True,
+                "userid": 3029517,
+                "timestamp": "2026-09-11T23:05:07Z",
+            }
+        ]
+        """
+        self.create_data = {
+            "timestamp": page_data["timestamp"],
+            "user": page_data.get("user", ""),
+            "anon": page_data.get("anon"),
+            "temp": page_data.get("temp"),
+        }
 
 
 @dataclass
@@ -44,6 +60,20 @@ class RevisionsData:
     timestamp: str = ""
     revisions: list = field(default_factory=list)
     touched: str = ""
+
+    def update_from_edit(self, edit: dict[str, Any]) -> None:
+        if edit.get("pageid"):
+            self.pageid = edit["pageid"]
+
+        if edit.get("newrevid"):
+            self.revid = edit["newrevid"]
+            self.newrevid = edit["newrevid"]
+
+        if edit.get("newtimestamp"):
+            self.timestamp = edit["newtimestamp"]
+
+        if edit.get("touched"):
+            self.timestamp = edit["touched"]
 
 
 @dataclass

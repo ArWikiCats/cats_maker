@@ -9,6 +9,7 @@ from typing import Any
 from .....config import main_settings
 from ...api_client import WikiLoginClient
 from ...client_wiki.api_utils.handel_errors import HandleErrors
+from ..api_formatter import ApiFormatData
 from ..api_utils import change_codes
 from ..api_utils.ask_bot import AskBot
 from ..api_utils.bot_edit import is_page_editable
@@ -30,7 +31,7 @@ def find_edit_error(old, new) -> bool:
     return False
 
 
-class MainPage:
+class MainPage(ApiFormatData):
     """
     Main page class for interacting with MediaWiki pages.
 
@@ -44,7 +45,6 @@ class MainPage:
         lang: str = "",
         family: str = "wikipedia",
     ) -> None:
-        # print(f"class MainPage: {lang=}")
         """
         Initializes a MainPage instance for interacting with a MediaWiki page.
 
@@ -61,10 +61,11 @@ class MainPage:
 
         self.text: str = ""
         self.newtext: str = ""
-        self.ns: bool | int = False
+        self.ns: None | int = None
         self.langlinks: dict[str, str] = {}
 
         self.meta = Meta()
+        self.meta.username = self.login_bot.username
         self.content = Content()
         self.revisions_data = RevisionsData()
         self.links_data = LinksData()
@@ -93,7 +94,24 @@ class MainPage:
             **kwargs,
         )
 
-    def false_edit(self) -> bool:
+    # -----------------
+    # checkers
+    # -----------------
+    def is_bot_edit_invalid(self, summary: str | None = None) -> bool:
+        """
+        Ensures that MediaWiki page edits are blocked and aborted with error code empty_summary
+        if the logged-in user is a bot
+        """
+        actual_summary = summary or self.content.summary
+        if self.login_bot.is_bot:
+            if not actual_summary or not actual_summary.strip():
+                logger.warning(
+                    f"Aborting edit for {self.title} because the user is a bot and the summary is empty or only whitespace."
+                )
+                return True
+        return False
+
+    def is_false_edit(self) -> bool:
         # self.newtext
         # self.text
         """
@@ -101,7 +119,7 @@ class MainPage:
 
         Returns True if the edit is likely to be a false or destructive edit, such as removing over 90% of the page content or matching language-specific error conditions (e.g., for Arabic pages). Returns False if the edit is allowed or if the page is not in the main namespace.
         """
-        if self.ns is False or self.ns != 0:
+        if self.ns is None or self.ns != 0:
             return False
 
         if main_settings.bot.no_false_edit:
@@ -117,12 +135,41 @@ class MainPage:
             logger.exception(text_err)
             return True
 
-        if self.lang == "ar" and self.ns == 0:
+        if self.lang == "ar" and str(self.ns) == "0":
             if find_edit_error(self.text, self.newtext):
                 return True
 
         return False
 
+    def can_edit(self, script: str = "", delay: int = 0) -> bool:
+        if self.family != "wikipedia":
+            return True
+
+        if not self.text:
+            self.text = self.get_text()
+
+        if main_settings.bot.force_edit:
+            return True
+
+        self.meta.can_be_edit = is_page_editable(
+            text=self.text,
+            title_page=self.title,
+            bot_script=script,
+            page_data={
+                "ns": self.ns,
+                "lang": self.lang,
+                "create_data": self.get_create_data(),
+                "userinfo": self.get_userinfo(),
+                "timestamp": self.get_timestamp(),
+            },
+            delay=delay,
+        )
+
+        return self.meta.can_be_edit
+
+    # -----------------
+    # loaders
+    # -----------------
     def find_create_data(self):
         """
         Retrieves and stores the creation metadata of the page's first revision.
@@ -141,21 +188,20 @@ class MainPage:
             "rvslots": "*",
             "rvlimit": "1",
             "rvdir": "newer",
+            "formatversion": 1,
         }
 
         data = self.login_bot.client_request_safe(params, method="get")
 
-        pages = data.get("query", {}).get("pages", {})
+        pages = data.get("query", {}).get("pages") or []
 
-        for _, v in pages.items():
-            page_data = v.get("revisions", [{}])[0]
+        if isinstance(pages, dict):
+            pages = list(pages.values())
 
+        for page in pages:
+            page_data = page.get("revisions", [{}])[0]
             if "parentid" in page_data and page_data["parentid"] == 0:
-                self.meta.create_data = {
-                    "timestamp": page_data["timestamp"],
-                    "user": page_data.get("user", ""),
-                    "anon": page_data.get("anon", False),
-                }
+                self.meta.log_create_data(page_data)
 
             break
 
@@ -186,13 +232,16 @@ class MainPage:
             params["redirects"] = 1
         data = self.login_bot.client_request_safe(params, method="get")
 
-        pages = data.get("query", {}).get("pages", {})
+        pages = data.get("query", {}).get("pages") or []
 
-        for k, v in pages.items():
+        if isinstance(pages, dict):
+            pages = list(pages.values())
+
+        for v in pages:
             if "ns" in v:
-                self.ns = v["ns"]  # ns = 0 !
+                self.ns = int(v["ns"])  # ns = 0 !
 
-            if "missing" in v or k == "-1":
+            if "missing" in v:
                 self.meta.Exists = False
                 # break
             else:
@@ -217,12 +266,7 @@ class MainPage:
             self.revisions_data.timestamp = page_data.get("timestamp") or self.revisions_data.timestamp
 
             if "parentid" in page_data and page_data["parentid"] == 0:
-                self.meta.create_data = {
-                    "timestamp": page_data["timestamp"],
-                    "user": page_data.get("user", ""),
-                    "anon": page_data.get("anon", False),
-                }
-
+                self.meta.log_create_data(page_data)
             break
 
         return self.text
@@ -259,7 +303,7 @@ class MainPage:
             "tllimit": "max",  # templates
             "lhlimit": "max",  # linkshere
             "iwlimit": "max",  # iwlinks
-            "formatversion": "2",
+            "formatversion": 2,
             # "normalize": 1,
             "tlnamespace": "10",
         }
@@ -284,8 +328,6 @@ class MainPage:
         self.meta.is_redirect = True if "redirect" in ta else False
 
         for cat in ta.get("categories", []):
-            # _cat_ = { "ns": 14, "title": "تصنيف:بوابة سباق الدراجات الهوائية/مقالات متعلقة", "sortkey": "d8b7", "sortkeyprefix": "", "hidden": True }
-
             if "sortkey" in cat:
                 del cat["sortkey"]
 
@@ -293,21 +335,17 @@ class MainPage:
 
             self.categories_data.all_categories_with_hidden[category_title] = cat
 
-            if cat.get("hidden") is True:
+            if cat.get("hidden") in ("", True):
                 self.categories_data.hidden_categories[category_title] = cat
             else:
                 del cat["hidden"]
                 self.categories_data.categories[category_title] = cat
 
-        if ta.get("langlinks", []) != []:
-            # {"lang": "ca", "*": "UCI World Tour 2023"} or {'lang': 'bh', 'title': 'टेम्पलेट:AWB'}
+        if ta.get("langlinks", []):
+            self.langlinks = self.map_langlinks_to_titles(ta.get("langlinks", []))
 
-            self.langlinks = {ta["lang"]: ta.get("*") or ta.get("title") for ta in ta.get("langlinks", [])}
-
-        if ta.get("templates", []) != []:
-            # 'templates': [{'ns': 10, 'title': 'قالب:No redirect'}],
-
-            self.template_data.templates_api = [ta["title"] for ta in ta.get("templates", [])]
+        if ta.get("templates", []):
+            self.template_data.templates_api = self.extract_template_titles(ta.get("templates", []))
 
         # "linkshere": [{"pageid": 189150,"ns": 0,"title": "طواف فرنسا"}, {"pageid": 308641,"ns": 10,"title": "قالب:AWB","redirect": ""}]
         self.links_data.links_here = ta.get("linkshere", [])
@@ -345,7 +383,7 @@ class MainPage:
             "format": "json",
             "prop": "extlinks",
             "titles": self.title,
-            "formatversion": "2",
+            "formatversion": 2,
             "utf8": 1,
             "ellimit": "max",
         }
@@ -353,7 +391,17 @@ class MainPage:
         links: list = []
 
         continue_params = {}
+
+        max_attempt = 100
+        attempt = 0
+
         while True:
+            attempt += 1
+            if attempt > max_attempt:
+                # raise to solve infinite loop
+                logger.error(f"max attempt reached, {max_attempt=}")
+                break
+
             if continue_params:
                 # params: dict[str, Any] = {**params, **continue_params}
                 params.update(continue_params)
@@ -383,7 +431,7 @@ class MainPage:
                 "action": "query",
                 "format": "json",
                 "list": "users",
-                "formatversion": "2",
+                "formatversion": 2,
                 "usprop": "groups",
                 "ususers": self.user,
             }
@@ -398,6 +446,115 @@ class MainPage:
                 self.meta.userinfo = ff[0]
 
         return self.meta.userinfo
+
+    def page_links(self) -> list:
+        """
+        Get the links on the page.
+        Return:
+            list: A list of links on the page, where each link is represented as a dictionary containing its namespace, title, and existence status.
+        Example of returned data:
+            [
+                {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True},
+                {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}
+            ]
+        """
+        params: dict[str, Any] = {
+            "action": "parse",
+            "prop": "links",
+            "formatversion": 2,
+            "page": self.title,
+        }
+        # data = self.client_request_safe(params)
+        # data = data.get('parse', {}).get('links', [])
+
+        def _load_data(body):
+            return body.get("parse", {}).get("links") or []
+
+        data: list = self.login_bot.post_continue_list(
+            params=params,
+            action="parse",
+            _load_data=_load_data,
+        )
+
+        # [{'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True}, {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}]
+
+        self.links_data.links2 = data
+
+        return self.links_data.links2
+
+    def page_links_query(self, plnamespace: str = "*"):
+        params: dict[str, Any] = {
+            "action": "query",
+            "prop": "links",
+            "formatversion": 2,
+            "titles": self.title,
+            "plnamespace": plnamespace,
+            "pllimit": "max",
+            "converttitles": 1,
+        }
+        # data = self.client_request_safe(params)
+        # data = data.get('query', {}).get('links', [])
+
+        def _load_data(body):
+            return body.get("query", {}).get("links") or []
+
+        data: list = self.login_bot.post_continue_list(
+            params=params,
+            action="query",
+            _load_data=_load_data,
+        )
+
+        # [{'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True}, {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}]
+
+        self.links_data.links = data
+
+        return self.links_data.links
+
+    def get_revisions(self, rvprops=None) -> list:
+        rvprop = [
+            "comment",
+            "timestamp",
+            "user",
+            # "content",
+            "ids",
+        ]
+
+        if rvprops:
+            for x in rvprops:
+                if x not in rvprop:
+                    rvprop.append(x)
+
+        params: dict[str, Any] = {
+            "action": "query",
+            "format": "json",
+            "prop": "revisions",
+            "titles": self.title,
+            "utf8": 1,
+            "formatversion": 2,
+            "rvdir": "newer",
+            "rvslots": "*",
+            "rvlimit": "max",
+            # "rvprop": "comment|timestamp|user|content|ids",
+            "rvprop": "|".join(rvprop),
+        }
+
+        def _load_data(body):
+            return body.get("query", {}).get("pages") or []
+
+        _revisions = self.login_bot.post_continue_list(
+            params=params,
+            action="query",
+            _load_data=_load_data,
+        )
+
+        revisions: list = []
+
+        for x in _revisions:
+            revisions.extend(x["revisions"])
+
+        self.revisions_data.revisions = revisions
+
+        return revisions
 
     def is_redirect(self):
         if not self.meta.is_redirect:
@@ -430,37 +587,11 @@ class MainPage:
 
         return self.categories_data.hidden_categories
 
-    def get_langlinks(self) -> dict:
+    def get_langlinks(self) -> dict[str, str]:
         if not self.meta.info["done"]:
             self.get_infos()
 
         return self.langlinks
-
-    def can_edit(self, script: str = "", delay: int = 0) -> bool:
-        if self.family != "wikipedia":
-            return True
-
-        if not self.text:
-            self.text = self.get_text()
-
-        if main_settings.bot.force_edit:
-            return True
-
-        self.meta.can_be_edit = is_page_editable(
-            text=self.text,
-            title_page=self.title,
-            bot_script=script,
-            page_data={
-                "ns": self.ns,
-                "lang": self.lang,
-                "create_data": self.get_create_data(),
-                "userinfo": self.get_userinfo(),
-                "timestamp": self.get_timestamp(),
-            },
-            delay=delay,
-        )
-
-        return self.meta.can_be_edit
 
     def get_create_data(self):
         """
@@ -490,11 +621,17 @@ class MainPage:
             logger.info(f'page "{self.title}" not exists in {self.lang}:{self.family}')
         return self.meta.Exists
 
-    def namespace(self) -> bool | int:
-        if self.ns is False:
+    def namespace(self) -> int:
+        if self.ns is None:
             self.get_text()
+
         logger.debug(f"namespace: {self.ns}")
-        return self.ns
+        # assert self.ns is not None
+        return int(self.ns)  # pyright: ignore[reportArgumentType]
+
+    # ------------
+    # actions
+    # ------------
 
     def edit(
         self,
@@ -512,7 +649,7 @@ class MainPage:
         if summary:
             self.content.summary = summary
 
-        if self.false_edit():
+        if self.is_false_edit():
             return {"success": False, "error_code": "false_edit"}
 
         message = f"Do you want to save this page? ({self.lang}:{self.title})"
@@ -552,13 +689,13 @@ class MainPage:
 
         # params['basetimestamp'] = self.revisions_data.timestamp
 
-        pop = self.login_bot.client_request_safe(params, method="post")
+        api_response = self.login_bot.client_request_safe(params, method="post")
 
-        if not pop:
+        if not api_response:
             return {"success": False, "error_code": "no_response"}
 
-        error = pop.get("error", {})
-        edit = pop.get("edit", {})
+        error_dict = api_response.get("error", {})
+        edit = api_response.get("edit", {})
         result = edit.get("result", "")
 
         # {'edit': {'result': 'Success', 'pageid': 5013, 'title': 'User:Mr. Ibrahem/sandbox', 'contentmodel': 'wikitext', 'oldrevid': 1336986, 'newrevid': 1343447, 'newtimestamp': '2023-04-01T23:14:07Z', 'watched': ''}}
@@ -569,43 +706,19 @@ class MainPage:
             logger.warning(f"** true .. [[{self.lang}:{self.family}:{self.title}]] ")
             logger.debug(f"save success for {self.title}")
 
-            self._update_revisions_data(edit)
+            self.revisions_data.update_from_edit(edit)
 
             return {"success": True}
 
-        if error:
-            logger.debug(pop)
+        if error_dict:
+            logger.debug(api_response)
             return self.error_handler.handle_err(
-                error,
+                error_dict,
                 function="Save",
                 params=params,
             )
 
         return {"success": False, "error_code": "unknown"}
-
-    def save(
-        self,
-        newtext: str = "",
-        summary: str = "",
-        nocreate: int = 1,
-        minor: str = "0",
-        tags: str = "",
-    ) -> bool | str | dict:
-        result = self.edit(
-            newtext=newtext,
-            summary=summary,
-            nocreate=nocreate,
-            minor=minor,
-            tags=tags,
-        )
-
-        if result.get("success") is True:
-            return True
-
-        if result.get("error"):
-            return result["error"]
-
-        return False
 
     def create(
         self,
@@ -651,13 +764,13 @@ class MainPage:
             "createonly": 1,
         }
 
-        pop = self.login_bot.client_request_safe(params)
+        api_response = self.login_bot.client_request_safe(params)
 
-        if not pop:
+        if not api_response:
             return {"success": False, "error_code": "no_response"}
 
-        error = pop.get("error", {})
-        edit = pop.get("edit", {})
+        error = api_response.get("error", {})
+        edit = api_response.get("edit", {})
         result = edit.get("result", "")
 
         # {'edit': {'new': '', 'result': 'Success', 'pageid': 9090918, 'title': 'مستخدم:Mr. Ibrahem/test2024', 'contentmodel': 'wikitext', 'oldrevid': 0, 'newrevid': 61016221, 'newtimestamp': '2023-02-01T21:52:42Z'}}
@@ -667,12 +780,12 @@ class MainPage:
             logger.warning(f"** true .. [[{self.lang}:{self.family}:{self.title}]] ")
             logger.debug(f"create success for {self.title}")
 
-            self._update_revisions_data(edit)
+            self.revisions_data.update_from_edit(edit)
 
             return {"success": True}
 
         if error:
-            logger.debug(pop)
+            logger.debug(api_response)
             return self.error_handler.handle_err(
                 error,
                 function="Create",
@@ -681,124 +794,9 @@ class MainPage:
 
         return {"success": False, "error_code": "unknown"}
 
-    def _update_revisions_data(self, edit) -> None:
-        self.revisions_data.pageid = edit.get("pageid") or self.revisions_data.pageid
-        self.revisions_data.revid = edit.get("newrevid") or self.revisions_data.revid
-        self.revisions_data.newrevid = edit.get("newrevid") or self.revisions_data.newrevid
-        self.revisions_data.touched = edit.get("touched") or self.revisions_data.touched
-        self.revisions_data.timestamp = edit.get("newtimestamp") or self.revisions_data.timestamp
-
-    def page_links(self) -> list:
-        """
-        Get the links on the page.
-        Return:
-            list: A list of links on the page, where each link is represented as a dictionary containing its namespace, title, and existence status.
-        Example of returned data:
-            [
-                {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True},
-                {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}
-            ]
-        """
-        params: dict[str, Any] = {
-            "action": "parse",
-            "prop": "links",
-            "formatversion": "2",
-            "page": self.title,
-        }
-        # data = self.client_request_safe(params)
-        # data = data.get('parse', {}).get('links', [])
-
-        def _load_data(body):
-            return body.get("parse", {}).get("links") or []
-
-        # ---
-        data: list = self.login_bot.post_continue_list(
-            params=params,
-            action="parse",
-            _load_data=_load_data,
-        )
-
-        # [{'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True}, {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}]
-
-        self.links_data.links2 = data
-
-        return self.links_data.links2
-
-    def page_links_query(self, plnamespace: str = "*"):
-        params: dict[str, Any] = {
-            "action": "query",
-            "prop": "links",
-            "formatversion": "2",
-            "titles": self.title,
-            "plnamespace": plnamespace,
-            "pllimit": "max",
-            "converttitles": 1,
-        }
-        # data = self.client_request_safe(params)
-        # data = data.get('query', {}).get('links', [])
-
-        def _load_data(body):
-            return body.get("query", {}).get("links") or []
-
-        data: list = self.login_bot.post_continue_list(
-            params=params,
-            action="query",
-            _load_data=_load_data,
-        )
-
-        # [{'ns': 14, 'title': 'تصنيف:مقالات بحاجة لشريط بوابات', 'exists': True}, {'ns': 14, 'title': 'تصنيف:مقالات بحاجة لصندوق معلومات', 'exists': False}]
-
-        self.links_data.links = data
-
-        return self.links_data.links
-
-    def get_revisions(self, rvprops=None) -> list:
-        rvprop = [
-            "comment",
-            "timestamp",
-            "user",
-            # "content",
-            "ids",
-        ]
-
-        if rvprops:
-            for x in rvprops:
-                if x not in rvprop:
-                    rvprop.append(x)
-
-        params: dict[str, Any] = {
-            "action": "query",
-            "format": "json",
-            "prop": "revisions",
-            "titles": self.title,
-            "utf8": 1,
-            "formatversion": "2",
-            "rvdir": "newer",
-            "rvslots": "*",
-            "rvlimit": "max",
-            # "rvprop": "comment|timestamp|user|content|ids",
-            "rvprop": "|".join(rvprop),
-        }
-
-        def _load_data(body):
-            return body.get("query", {}).get("pages") or []
-
-        # ---
-        _revisions = self.login_bot.post_continue_list(
-            params=params,
-            action="query",
-            _load_data=_load_data,
-        )
-
-        revisions: list = []
-
-        for x in _revisions:
-            revisions.extend(x["revisions"])
-
-        self.revisions_data.revisions = revisions
-
-        return revisions
-
+    # ------------
+    # helpers
+    # ------------
     def __getitem__(self, key):
         if key == "q":
             return self.get_qid()

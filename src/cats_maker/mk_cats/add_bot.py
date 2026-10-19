@@ -91,10 +91,10 @@ def add_to_page(page_title, arcat) -> bool:
 
     newtext = sort_categories(newtext, page_title)
 
-    save = page.save(newtext=newtext, summary=susu)
+    save = page.edit(newtext=newtext, summary=susu)
 
     if not save:
-        logger.error(f"page.save() failed for {page_title=}, {arcat=}")
+        logger.error(f"page.edit() failed for {page_title=}, {arcat=}")
         return False
 
     return True

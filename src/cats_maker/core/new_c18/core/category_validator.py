@@ -40,8 +40,8 @@ def _check_page_status(
         logger.info(f"({title}) not exists")
         return ValidationResult(valid=False, reason=f"Page does not exist: {title}")
 
-    if info.get("is_redirectPage"):
-        logger.info(f"({title}) is_redirectPage")
+    if info.get("is_redirect_page"):
+        logger.info(f"({title}) is_redirect_page")
         return ValidationResult(valid=False, reason=f"Page is a redirect: {title}")
 
     if expected_langlink:

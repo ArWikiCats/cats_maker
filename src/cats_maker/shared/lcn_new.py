@@ -93,7 +93,7 @@ class WikiApiHandler:
 
         new_api = AllAPIS.load(site_code, "wikipedia")
         new_api = new_api.newapi()
-        api_response = new_api.post_params(params)
+        api_response = new_api.client_request_safe(params)
 
         if not (api_response and "query" in api_response and "pages" in api_response["query"]):
             logger.debug("API call failed or returned no query/pages.")
@@ -227,7 +227,7 @@ class WikiApiHandler:
         # Submit the API request
         new_api = AllAPIS.load(site_code, "wikipedia")
         new_api = new_api.newapi()
-        api_response = new_api.post_params(params)
+        api_response = new_api.client_request_safe(params)
 
         if not (api_response and "query" in api_response and "pages" in api_response["query"]):
             return {}

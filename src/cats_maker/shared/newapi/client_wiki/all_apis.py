@@ -89,7 +89,7 @@ class AllAPIS:
         )
 
     @classmethod
-    def load(cls, lang: str, family: str) -> AllAPIS:
+    def load(cls, lang: str, family: str="wikipedia") -> AllAPIS:
         username = main_settings.wikipedia.credentials.username or ""
         password = main_settings.wikipedia.credentials.password or ""
         login_bot = WikiLoginClient.load(

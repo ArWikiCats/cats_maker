@@ -144,7 +144,7 @@ def find_doc_and_add(final_categories: str, title: str, create: bool = False) ->
     summary = f"بوت [[مستخدم:Mr.Ibrahembot/التصانیف المعادلة|التصانيف المعادلة]]: +({fi})"
 
     if new_text != text:
-        save = page.save(new_text, summary=summary, nocreate=not create)
+        save = page.edit(new_text, summary=summary, nocreate=not create)
         if save:
             return True
 

@@ -216,13 +216,13 @@ class TestMergeCategories:
 class TestPagesTableWork:
     def test_processes_pages(self, bot):
         table = {}
-        pages = {
-            "Page1": {
+        pages = [
+            {
                 "title": "Page1",
                 "ns": 0,
                 "revisions": [{"timestamp": "2024-01-01T00:00:00Z", "revid": 100}],
             }
-        }
+        ]
         result = bot.pages_table_work(table, pages)
         assert "Page1" in result
         assert bot.len_pages == 1

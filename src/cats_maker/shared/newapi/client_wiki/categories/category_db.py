@@ -98,7 +98,7 @@ class CategoryDepth:
         self.ns = str(kwargs.get("ns") or "all")
         self.nslist = kwargs.get("nslist") or []
 
-    def _determine_gcmtype(self, params: dict) -> dict:
+    def _determine_gcmtype(self, params: dict[str, Any]) -> dict[str, Any]:
         if self.no_gcm_sort:
             del params["gcmsort"]
             del params["gcmdir"]
@@ -118,7 +118,7 @@ class CategoryDepth:
 
         return t_props
 
-    def params_work(self, params: dict) -> dict:
+    def params_work(self, params: dict[str, Any]) -> dict[str, Any]:
         t_props = self._build_prop_list()
 
         params = self._determine_gcmtype(params)
@@ -135,7 +135,7 @@ class CategoryDepth:
 
         if self.ns in ["0", "10"]:
             params["gcmtype"] = "page"
-        elif self.ns in ["14"]:
+        elif str(self.ns) == "14":
             params["gcmtype"] = "subcat"
 
         if self.nslist == [14]:
@@ -160,9 +160,10 @@ class CategoryDepth:
 
         return params
 
-    def _extract_timestamp_revid(self, caca: dict) -> tuple:
-        timestamp = caca.get("revisions", [{}])[0].get("timestamp", "")
-        revid = caca.get("revisions", [{}])[0].get("revid", "")
+    def _extract_timestamp_revid(self, caca: dict[str, Any]) -> tuple:
+        revisions = caca.get("revisions") or [{}]
+        timestamp = revisions[0].get("timestamp", "")
+        revid = revisions[0].get("revid", "")
         return timestamp, revid
 
     def _filter_by_namespace(self, p_ns: str) -> bool:
@@ -174,7 +175,7 @@ class CategoryDepth:
                 return False
         return True
 
-    def _merge_templates(self, tablese: dict, caca: dict) -> None:
+    def _merge_templates(self, tablese: dict[str, Any], caca: dict[str, Any]) -> None:
         templates = [x["title"] for x in caca.get("templates", {})]
         if templates:
             if tablese.get("templates"):
@@ -183,7 +184,7 @@ class CategoryDepth:
                 tablese["templates"] = templates
             tablese["templates"] = list(set(tablese["templates"]))
 
-    def _merge_langlinks(self, tablese: dict, caca: dict) -> None:
+    def _merge_langlinks(self, tablese: dict[str, Any], caca: dict[str, Any]) -> None:
         langlinks = {fo["lang"]: fo.get("title") or fo.get("*") or "" for fo in caca.get("langlinks", [])}
         if langlinks:
             if tablese.get("langlinks"):
@@ -191,7 +192,7 @@ class CategoryDepth:
             else:
                 tablese["langlinks"] = langlinks
 
-    def _merge_categories(self, tablese: dict, caca: dict) -> None:
+    def _merge_categories(self, tablese: dict[str, Any], caca: dict[str, Any]) -> None:
         categories = [x["title"] for x in caca.get("categories", {})]
         if categories:
             if tablese.get("categories"):
@@ -199,37 +200,41 @@ class CategoryDepth:
             else:
                 tablese["categories"] = categories
 
-    def pages_table_work(self, table: dict, pages: dict | Any) -> dict:
-        self.len_pages += len(pages)
+    def pages_table_work(
+        self,
+        results: dict[str, Any],
+        pages_list: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        self.len_pages += len(pages_list)
 
-        for category in pages:
-            caca = pages[category] if isinstance(pages, dict) else category
-            cate_title = caca["title"]
+        for item_data in pages_list:
+            # item_data exampe: { "pageid": 350939, "ns": 0, "title": "Yemen", "langlinks": [ { "lang": "ar", "title": "اليمن" } ] }
+            cate_title = item_data["title"]
 
-            timestamp, revid = self._extract_timestamp_revid(caca)
+            timestamp, revid = self._extract_timestamp_revid(item_data)
             self.timestamps[cate_title] = timestamp
             self.revids[cate_title] = revid
 
-            p_ns = str(caca.get("ns", 0))
+            p_ns = str(item_data.get("ns", 0))
 
-            tablese = table.get(cate_title, {})
+            tablese = results.get(cate_title, {})
             if revid:
                 tablese["revid"] = revid
 
             if p_ns:
-                tablese["ns"] = caca["ns"]
+                tablese["ns"] = item_data.get("ns", 0)
                 if not self._filter_by_namespace(p_ns):
                     continue
 
-            self._merge_templates(tablese, caca)
-            self._merge_langlinks(tablese, caca)
-            self._merge_categories(tablese, caca)
+            self._merge_templates(tablese, item_data)
+            self._merge_langlinks(tablese, item_data)
+            self._merge_categories(tablese, item_data)
 
-            table[cate_title] = tablese
+            results[cate_title] = tablese
 
-        return table
+        return results
 
-    def get_cat_new(self, cac: str) -> dict:
+    def get_cat_new(self, cac: str) -> dict[str, Any]:
         params: dict[str, Any] = {
             "action": "query",
             "format": "json",
@@ -238,7 +243,7 @@ class CategoryDepth:
             "gcmprop": "title",
             "gcmtype": "page|subcat",
             "gcmlimit": self.gcmlimit,
-            "formatversion": "1",
+            "formatversion": 1,
             "gcmsort": "timestamp",
             "gcmdir": "newer",
         }
@@ -250,7 +255,16 @@ class CategoryDepth:
         results = {}
         continue_params = {}
 
+        max_attempt = 100
+        attempt = 0
+
         while True:
+            attempt += 1
+            if attempt > max_attempt:
+                # raise to solve infinite loop
+                logger.error(f"max attempt reached, {max_attempt=}")
+                break
+
             if self.limit > 0 and len(results) >= self.limit:
                 logger.debug(f"<<yellow>> limit:{self.limit} reached, len of results: {len(results)} break ..")
                 break
@@ -265,15 +279,25 @@ class CategoryDepth:
                 break
 
             continue_params = api_data.get("continue", {})
-            pages = api_data.get("query", {}).get("pages", {})
-            results = self.pages_table_work(results, pages)
+
+            pages = api_data.get("query", {}).get("pages") or []
+
+            pages_list = []
+            if isinstance(pages, list):
+                # {"pages": [{ "pageid": 3648118, "ns": 10, "title": "قالب:Ill-WD2/test", "revisions": [] }, ...
+                pages_list = pages
+            elif isinstance(pages, dict):
+                # {"pages": { "3648118": { "pageid": 3648118, "ns": 10, "title": "قالب:Ill-WD2/test", "revisions": [] }, ...
+                pages_list = list(pages.values())
+
+            results = self.pages_table_work(results, pages_list)
 
             if not continue_params:
                 break
 
         return results
 
-    def add_to_result_table(self, x: str, tab: dict) -> None:
+    def add_to_result_table(self, x: str, tab: dict[str, Any]) -> None:
         if self.without_lang:
             no_langs = tab.get("langlinks", {}).get(self.without_lang, "")
             if no_langs:
@@ -304,8 +328,8 @@ class CategoryDepth:
         logger.debug(f"starting subcatquery for {self.title}, depth={self.depth}")
         tablemember = self.get_cat_new(self.title)
 
-        for x, zz in tablemember.items():
-            self.add_to_result_table(x, zz)
+        for x, time_stamps in tablemember.items():
+            self.add_to_result_table(x, time_stamps)
 
         new_list = [x for x, xx in tablemember.items() if int(xx["ns"]) == 14]
 
@@ -334,7 +358,11 @@ class CategoryDepth:
             new_list = new_tab2
 
         if not self.no_gcm_sort:
-            soro = sorted(self.result_table.items(), key=lambda item: self.timestamps.get(item[0], 0), reverse=True)
+
+            def _get_timestamps(item) -> str:
+                return self.timestamps.get(item[0], "")
+
+            soro = sorted(self.result_table.items(), key=_get_timestamps, reverse=True)
             self.result_table = dict(soro)
 
         logger.info(f"{self.title=}, {self.depth}, {len(self.result_table)} total results")
