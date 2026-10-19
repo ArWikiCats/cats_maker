@@ -2,10 +2,7 @@
 
 import json
 import logging
-import os
 import sys
-from pathlib import Path
-
 import requests
 
 from src.cats_maker.config import main_settings
@@ -13,31 +10,12 @@ from src.cats_maker.mk_cats import create_categories_from_list
 
 logger = logging.getLogger(__name__)
 
-# Optional external integration - configure via environment variable
-new_all = None
-external_path = os.getenv("CATS_MAKER_EXTERNAL_PATH", "D:/categories_bot/make2_new")
-if external_path and Path(external_path).exists():
-    sys.path.append(external_path)
-
-try:
-    from new_all import work_bot as new_all  # type: ignore
-except ImportError:
-    logger.warning("Failed to import new_all")
-    new_all = None
-
 # Enable ask mode by default - now done via main_settings
 main_settings.bot.ask = True
 main_settings.debug = True
 
 # base_logger.setLevel("ERROR")
 logger.setLevel("DEBUG" if main_settings.debug else "INFO")
-
-new_all_tab = {1: False}
-
-
-def new_all_work_on_title(title, **kwargs):
-    if new_all:
-        new_all.work_on_title(title=title, dont_create=True, **kwargs)
 
 
 def get_url_result(url):
@@ -110,7 +88,7 @@ def main():
     categories_list = [f"Category:{x}" if not x.startswith("Category:") else x for x in categories_list]
     if categories_list:
         logger.info(f"categories_list work with {len(categories_list)} cats.")
-        create_categories_from_list(categories_list, callback=new_all_work_on_title)
+        create_categories_from_list(categories_list)
 
 
 if __name__ == "__main__":

@@ -194,14 +194,12 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
 
 ### متغيرات البيئة
 
-| المتغير                    | الوصف                                           | القيمة الافتراضية            |
-| -------------------------- | ----------------------------------------------- | ---------------------------- |
-| `APP_ENV`                  | بيئة التطبيق (production, development, testing) | `development`                |
-| `WIKIPEDIA_BOT_USERNAME`   | اسم مستخدم البوت لـ Wikipedia API               | فارغ                         |
-| `WIKIPEDIA_BOT_PASSWORD`   | كلمة مرور البوت لـ Wikipedia API                | فارغ                         |
-| `PROJECT_PATH`             | مسار المشروع (اختياري)                          | فارغ                         |
-| `CATS_MAKER_EXTERNAL_PATH` | مسار خارجي للتكاملات الاختيارية                 | فارغ                         |
-| `CATS_MAKER_LOG_FILE`      | مسار ملف السجل                                  | `~/BOTS_LOGS/cats_maker.log` |
+| المتغير                  | الوصف                                           | القيمة الافتراضية            |
+| ------------------------ | ----------------------------------------------- | ---------------------------- |
+| `APP_ENV`                | بيئة التطبيق (production, development, testing) | `development`                |
+| `WIKIPEDIA_BOT_USERNAME` | اسم مستخدم البوت لـ Wikipedia API               | فارغ                         |
+| `WIKIPEDIA_BOT_PASSWORD` | كلمة مرور البوت لـ Wikipedia API                | فارغ                         |
+| `CATS_MAKER_LOG_FILE`    | مسار ملف السجل                                  | `~/BOTS_LOGS/cats_maker.log` |
 
 > **ملاحظة:** لا تشارك ملف `.env` أبداً - فهو مُضاف إلى `.gitignore` لحمايه.
 > **تلميح:** اضبط `APP_ENV=production` لتمكين استعلامات SQL في بيئة الإنتاج.
