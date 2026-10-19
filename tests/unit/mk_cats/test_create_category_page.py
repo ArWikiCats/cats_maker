@@ -61,7 +61,8 @@ class TestNewCategory:
         Test that new_category returns successful result when make_category succeeds"""
 
         mocker.patch(
-            "src.cats_maker.mk_cats.create_category_page.make_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
+            "src.cats_maker.mk_cats.create_category_page.make_category",
+            return_value=CategoryResult(True, "تصنيف:علوم", None),
         )
 
         result = new_category("Category:Science", "تصنيف:علوم", ["تصنيف:علوم طبيعية"], "Q123")
@@ -84,8 +85,12 @@ class TestAddTextToCat:
         Test that add_text_to_cat handles empty categories list"""
         mocker.patch("src.cats_maker.mk_cats.create_category_page.page_put", return_value=False)
         mocker.patch("src.cats_maker.mk_cats.create_category_page.categorytext.fetch_commons_category", return_value="")
-        mocker.patch("src.cats_maker.mk_cats.create_category_page.categorytext.generate_portal_content", return_value=[])
-        mocker.patch("src.cats_maker.mk_cats.create_category_page.categorytext.main_make_temp_no_title", return_value="")
+        mocker.patch(
+            "src.cats_maker.mk_cats.create_category_page.categorytext.generate_portal_content", return_value=[]
+        )
+        mocker.patch(
+            "src.cats_maker.mk_cats.create_category_page.categorytext.main_make_temp_no_title", return_value=""
+        )
 
         text = "Test text"
         result = add_text_to_cat(text, [], "Category:Test", "تصنيف:اختبار", "Q123", family="wikipedia")
@@ -96,8 +101,12 @@ class TestAddTextToCat:
         Test that add_text_to_cat filters out None and False categories"""
         mocker.patch("src.cats_maker.mk_cats.create_category_page.page_put", return_value=False)
         mocker.patch("src.cats_maker.mk_cats.create_category_page.categorytext.fetch_commons_category", return_value="")
-        mocker.patch("src.cats_maker.mk_cats.create_category_page.categorytext.generate_portal_content", return_value=[])
-        mocker.patch("src.cats_maker.mk_cats.create_category_page.categorytext.main_make_temp_no_title", return_value="")
+        mocker.patch(
+            "src.cats_maker.mk_cats.create_category_page.categorytext.generate_portal_content", return_value=[]
+        )
+        mocker.patch(
+            "src.cats_maker.mk_cats.create_category_page.categorytext.main_make_temp_no_title", return_value=""
+        )
 
         text = "Test text"
         categories = [None, False, "تصنيف:صالح", None]

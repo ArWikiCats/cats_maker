@@ -86,7 +86,9 @@ class TestResolveViaApi:
             "src.cats_maker.core.new_c18.core.cross_wiki_linker.find_page_data",
             return_value={"Science": {"langlinks": {"ar": "علوم"}}},
         )
-        mocker.patch("src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None)
+        mocker.patch(
+            "src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None
+        )
 
         result = resolve_via_api("[[en:Science]]", "en", "ar")
         assert result is None
@@ -98,7 +100,9 @@ class TestResolveViaApi:
             "src.cats_maker.core.new_c18.core.cross_wiki_linker.find_page_data",
             return_value={"Science": {"langlinks": {"ar": "علوم", "en": "Science"}}},
         )
-        mocker.patch("src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None)
+        mocker.patch(
+            "src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None
+        )
 
         result = resolve_via_api("Science", "en", "ar")
         assert result is None
@@ -110,7 +114,9 @@ class TestResolveViaApi:
             "src.cats_maker.core.new_c18.core.cross_wiki_linker.find_page_data",
             return_value={"Science": {"langlinks": {"ar": "different", "en": "Different"}}},
         )
-        mocker.patch("src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None)
+        mocker.patch(
+            "src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None
+        )
 
         result = resolve_via_api("Science", "en", "ar")
         assert result is None
@@ -123,7 +129,9 @@ class TestGetPageLink:
         """
         Test that double brackets are removed from link"""
         mocker.patch("src.cats_maker.core.new_c18.core.cross_wiki_linker.find_page_data", return_value=None)
-        mocker.patch("src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None)
+        mocker.patch(
+            "src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None
+        )
 
         get_page_link("[[علوم]]", "ar", "en")
         # Function should process without error
@@ -132,7 +140,9 @@ class TestGetPageLink:
         """
         Test that None is returned when no langlink is found"""
         mocker.patch("src.cats_maker.core.new_c18.core.cross_wiki_linker.find_page_data", return_value=None)
-        mocker.patch("src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None)
+        mocker.patch(
+            "src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None
+        )
 
         result = get_page_link("nonexistent", "ar", "en")
         assert result is None
@@ -144,7 +154,9 @@ class TestGetEnLinkFromArText:
     def test_returns_empty_string_when_no_sitelinks(self, mocker):
         """
         Test that empty string is returned when no sitelinks"""
-        mocker.patch("src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None)
+        mocker.patch(
+            "src.cats_maker.core.new_c18.core.cross_wiki_linker.get_sitelinks_from_wikidata", return_value=None
+        )
 
         result = get_en_link_from_ar_text("علوم", "arwiki", "enwiki")
         assert result == ""
@@ -193,7 +205,8 @@ class TestGetEnglishPageTitle:
         """
         Test that Sandbox pages are blacklisted"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.core.cross_wiki_linker.get_en_link_from_ar_text", return_value="User:Test/Sandbox"
+            "src.cats_maker.core.new_c18.core.cross_wiki_linker.get_en_link_from_ar_text",
+            return_value="User:Test/Sandbox",
         )
 
         result, site = get_english_page_title("", "علوم", "", {})

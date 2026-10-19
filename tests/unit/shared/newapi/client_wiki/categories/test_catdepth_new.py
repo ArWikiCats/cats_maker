@@ -50,7 +50,9 @@ class TestArgsGroup:
 
 class TestSubcatquery:
     @patch("src.cats_maker.shared.newapi.client_wiki.categories.catdepth_new.CategoryDepth")
-    @patch("src.cats_maker.shared.newapi.client_wiki.categories.catdepth_new.title_process", return_value="Category:Test")
+    @patch(
+        "src.cats_maker.shared.newapi.client_wiki.categories.catdepth_new.title_process", return_value="Category:Test"
+    )
     def test_basic_call(self, mock_title, mock_cd_class):
         mock_bot = MagicMock()
         mock_bot.subcatquery_.return_value = {"Page1": {}}
@@ -65,7 +67,9 @@ class TestSubcatquery:
         assert result == {"Page1": {}}
 
     @patch("src.cats_maker.shared.newapi.client_wiki.categories.catdepth_new.CategoryDepth")
-    @patch("src.cats_maker.shared.newapi.client_wiki.categories.catdepth_new.title_process", return_value="Category:Test")
+    @patch(
+        "src.cats_maker.shared.newapi.client_wiki.categories.catdepth_new.title_process", return_value="Category:Test"
+    )
     def test_get_revids(self, mock_title, mock_cd_class):
         mock_bot = MagicMock()
         mock_bot.subcatquery_.return_value = {}

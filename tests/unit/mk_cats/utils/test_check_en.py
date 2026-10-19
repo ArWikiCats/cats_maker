@@ -126,7 +126,9 @@ class TestCheckEnTemps:
         """
         Test that check_en_temps handles empty templates list."""
         mocker.patch("src.cats_maker.mk_cats.utils.check_en.SKIP_ENCATS", [])
-        mocker.patch("src.cats_maker.mk_cats.utils.check_en.find_page_data", return_value={"Category:Test": {"templates": []}})
+        mocker.patch(
+            "src.cats_maker.mk_cats.utils.check_en.find_page_data", return_value={"Category:Test": {"templates": []}}
+        )
 
         from src.cats_maker.mk_cats.utils.check_en import check_en_temps
 

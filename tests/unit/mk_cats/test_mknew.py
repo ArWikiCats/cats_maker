@@ -547,7 +547,8 @@ class TestMakeArMinMembers:
         mocker.patch("src.cats_maker.mk_cats.mknew.find_non_hidden_categories", return_value={})
         # Return 7 members
         mocker.patch(
-            "src.cats_maker.mk_cats.mknew.collect_category_members", return_value=["A1", "A2", "A3", "A4", "A5", "A6", "A7"]
+            "src.cats_maker.mk_cats.mknew.collect_category_members",
+            return_value=["A1", "A2", "A3", "A4", "A5", "A6", "A7"],
         )
         mock_settings = mocker.patch("src.cats_maker.mk_cats.mknew.main_settings")
         mock_settings.category.min_members = 10  # Custom value higher than 7

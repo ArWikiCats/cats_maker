@@ -93,7 +93,8 @@ class TestGetInfosWikidata:
         """
         Test that function returns default table for -1 entity"""
         mocker.patch(
-            "src.cats_maker.shared.wd_api.wd_api_bot.submitwikidataparams", return_value={"success": 1, "entities": {"-1": {}}}
+            "src.cats_maker.shared.wd_api.wd_api_bot.submitwikidataparams",
+            return_value={"success": 1, "entities": {"-1": {}}},
         )
 
         params = {"action": "wbgetentities", "ids": "Q999999999", "props": "sitelinks"}

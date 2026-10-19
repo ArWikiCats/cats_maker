@@ -206,7 +206,9 @@ class TestCollectCategoryMembers:
         Test that collect_category_members collects from all sources."""
         mocker.patch("src.cats_maker.mk_cats.members_helper.gather_members_from_sql", return_value=["SqlArticle"])
         mocker.patch("src.cats_maker.mk_cats.members_helper.gather_members_from_api", return_value=["ApiArticle"])
-        mocker.patch("src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
+        mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members
+        )
         mocker.patch("src.cats_maker.mk_cats.members_helper.main_settings")
 
         from src.cats_maker.mk_cats.members_helper import collect_category_members
@@ -221,8 +223,12 @@ class TestCollectCategoryMembers:
         mock_sql = mocker.patch(
             "src.cats_maker.mk_cats.members_helper.gather_members_from_sql", return_value=["SqlArticle1", "SqlArticle2"]
         )
-        mock_api = mocker.patch("src.cats_maker.mk_cats.members_helper.gather_members_from_api", return_value=["ApiArticle"])
-        mocker.patch("src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
+        mock_api = mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.gather_members_from_api", return_value=["ApiArticle"]
+        )
+        mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members
+        )
 
         # Mock settings to enable SQL
         mock_settings = mocker.patch("src.cats_maker.mk_cats.members_helper.main_settings")
@@ -241,8 +247,12 @@ class TestCollectCategoryMembers:
         """
         Test that collect_category_members uses API when SQL is disabled."""
         mocker.patch("src.cats_maker.mk_cats.members_helper.gather_members_from_sql", return_value=["SqlArticle"])
-        mock_api = mocker.patch("src.cats_maker.mk_cats.members_helper.gather_members_from_api", return_value=["ApiArticle"])
-        mocker.patch("src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
+        mock_api = mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.gather_members_from_api", return_value=["ApiArticle"]
+        )
+        mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members
+        )
 
         # Mock settings to disable SQL
         mock_settings = mocker.patch("src.cats_maker.mk_cats.members_helper.main_settings")
@@ -275,9 +285,13 @@ class TestCollectCategoryMembers:
     def test_removes_invalid_entries(self, mocker):
         """
         Test that collect_category_members removes invalid entries."""
-        mocker.patch("src.cats_maker.mk_cats.members_helper.gather_members_from_sql", return_value=["Valid", "", None, 123])
+        mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.gather_members_from_sql", return_value=["Valid", "", None, 123]
+        )
         mocker.patch("src.cats_maker.mk_cats.members_helper.gather_members_from_api", return_value=[])
-        mocker.patch("src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
+        mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members
+        )
 
         # Mock settings to enable SQL
         mock_settings = mocker.patch("src.cats_maker.mk_cats.members_helper.main_settings")
@@ -292,9 +306,13 @@ class TestCollectCategoryMembers:
     def test_removes_duplicates(self, mocker):
         """
         Test that collect_category_members removes duplicates."""
-        mocker.patch("src.cats_maker.mk_cats.members_helper.gather_members_from_sql", return_value=["Article", "Article"])
+        mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.gather_members_from_sql", return_value=["Article", "Article"]
+        )
         mocker.patch("src.cats_maker.mk_cats.members_helper.gather_members_from_api", return_value=[])
-        mocker.patch("src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members)
+        mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.remove_redirect_pages", side_effect=lambda lang, members: members
+        )
 
         # Mock settings to enable SQL
         mock_settings = mocker.patch("src.cats_maker.mk_cats.members_helper.main_settings")

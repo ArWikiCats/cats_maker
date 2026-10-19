@@ -52,7 +52,9 @@ class TestMainFlowIntegration:
         mock_listen.return_value = ["Article1", "Article2"]
 
         # Mock CategoryResolver.make_lit_api_way (used in members_helper)
-        mock_lit_api = mocker.patch("src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way")
+        mock_lit_api = mocker.patch(
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way"
+        )
         mock_lit_api.return_value = []
 
         # Mock to_wd.log_to_wikidata
@@ -63,7 +65,9 @@ class TestMainFlowIntegration:
         mock_validate.return_value = MagicMock(valid=True)
 
         # Mock CategoryResolver.resolve_members (used in mknew)
-        mock_make_ar_list = mocker.patch("src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.resolve_members")
+        mock_make_ar_list = mocker.patch(
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.resolve_members"
+        )
         mock_make_ar_list.return_value = []
 
         return {
