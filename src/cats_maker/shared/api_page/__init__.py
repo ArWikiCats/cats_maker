@@ -6,7 +6,7 @@ import functools
 import logging
 
 from ...config import main_settings
-from ...shared.newapi import AllAPIS, WikiLoginClient
+from ...shared.newapi import AllAPIS
 
 logger = logging.getLogger(__name__)
 
@@ -46,19 +46,6 @@ def load_main_api(
     )
 
 
-@functools.lru_cache(maxsize=1024)
-def load_login_bot(lang: str = "ar", family: str = "wikipedia") -> WikiLoginClient:
-    username, password = _load_credentials()
-    return WikiLoginClient(
-        lang=lang,
-        family=family,
-        username=username,
-        password=password,
-        cookies_dir=main_settings.paths.cookies_dir,
-    )
-
-
 __all__ = [
     "load_main_api",
-    "load_login_bot",
 ]

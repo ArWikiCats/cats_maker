@@ -8,10 +8,25 @@ import json
 import logging
 from typing import Any
 
-from ...shared.api_page import load_login_bot
+from ...config import main_settings
+from ...shared.newapi import WikiLoginClient
 from .wd_bots_main import WdAPI
 
 logger = logging.getLogger(__name__)
+
+
+@functools.lru_cache(maxsize=1024)
+def load_login_bot(lang: str = "ar", family: str = "wikipedia") -> WikiLoginClient:
+    username = main_settings.wikipedia.credentials.username or ""
+    password = main_settings.wikipedia.credentials.password or ""
+
+    return WikiLoginClient(
+        lang=lang,
+        family=family,
+        username=username,
+        password=password,
+        cookies_dir=main_settings.paths.cookies_dir,
+    )
 
 
 @functools.lru_cache(maxsize=1024)
@@ -152,30 +167,26 @@ def log_to_wikidata(artitle, entitle) -> None | str:
     enwiki = "enwiki"
     arwiki = "arwiki"
 
-    data = {
-        "sitelinks": {enwiki: {"site": enwiki, "title": entitle}, arwiki: {"site": arwiki, "title": artitle}},
-        "labels": {"ar": {"language": "ar", "value": artitle}, "en": {"language": "en", "value": entitle}},
-        "claims": {
-            "P31": [
-                {
-                    "mainsnak": {
-                        "snaktype": "value",
-                        "property": "P31",
-                        "datavalue": {
-                            "value": {
-                                "entity-type": "item",
-                                "numeric-id": 4167836,
-                                "id": "Q4167836",
-                            },
-                            "type": "wikibase-entityid",
-                        },
-                        "datatype": "wikibase-item",
-                    },
-                    "type": "statement",
-                    "rank": "normal",
-                }
-            ]
+    p31_mainsnak = {
+        "snaktype": "value",
+        "property": "P31",
+        "datavalue": {
+            "value": {"entity-type": "item", "numeric-id": 4167836, "id": "Q4167836"},
+            "type": "wikibase-entityid",
         },
+        "datatype": "wikibase-item",
+    }
+
+    data = {
+        "sitelinks": {
+            enwiki: {"site": enwiki, "title": entitle},
+            arwiki: {"site": arwiki, "title": artitle},
+        },
+        "labels": {
+            "ar": {"language": "ar", "value": artitle},
+            "en": {"language": "en", "value": entitle},
+        },
+        "claims": {"P31": [{"mainsnak": p31_mainsnak, "type": "statement", "rank": "normal"}]},
     }
 
     summary = f"Bot: New item from [[w:en:{entitle}|{enwiki}]]/[[w:ar:{artitle}|{arwiki}]]."
