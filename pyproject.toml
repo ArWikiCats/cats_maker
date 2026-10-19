@@ -1,10 +1,40 @@
+[build-system]
+requires = ["hatchling>=1.17"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cats_maker"
+version = "0.1.0"
+description = "Arabic Wikipedia Category Creation Tool"
+authors = [{ name = "Mr. Ibrahem", email = "ibrahem.al-radaei@outlook.com" }]
+license = { text = "GPL-3.0-or-later" }
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["mediawiki", "parser", "wikitext", "wikipedia"]
+classifiers = []
+dependencies = ["requests>=2.31.0", "wikitextparser>=2.0.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cats_maker"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"requirements.txt" = "requirements.txt"
+
+[tool.hatch.build.targets.wheel.force-include]
+"requirements.txt" = "cats_maker/requirements.txt"
+
+[tool.hatch.build.targets.sdist]
+include = ["src/cats_maker", "requirements.txt"]
 
 # ============================================
 #                 BLACK
 # ============================================
 [tool.black]
 line-length = 120
-target-version = ["py312"]
+target-version = ["py313"]
 # include = '\.pyi?$'
 exclude = '''
     /(
@@ -39,6 +69,9 @@ include_trailing_comma = true
 ensure_newline_before_comments = true
 
 # Project paths
+src_paths = "src"
+known_first_party = "src/cats_maker"
+
 skip = [
     ".env",
     "env",
@@ -107,7 +140,7 @@ exclude = [
     "C:/**",
 ]
 line-length = 120
-target-version = "py312"
+target-version = "py313"
 fix = true
 
 [tool.ruff.format]
@@ -135,7 +168,7 @@ ignore = [
     # "UP006",  # Use `list` instead of `List` for type annotations
     # "UP035",  # Use `X | Y` for type unions instead of `Union[X, Y]`
     "I001", # Import block is un-sorted or un-formatted
-    # "N999",   # Invalid module name
+    # "N999",  # Invalid module name
     "UP015", # Unnecessary open mode parameters
 ]
 select = [
@@ -172,7 +205,7 @@ select = [
 line_length = 120
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false
@@ -186,11 +219,13 @@ disable = [
     "R0913", # too-many-arguments
 ]
 
+[tool.pylint.format]
+max-line-length = 120
 
 [tool.pyright]
 reportIncompatibleMethodOverride = "none"
 # Target Python version for type analysis
-pythonVersion = "3.12"
+pythonVersion = "3.13"
 stubPath = "typings"
 # Paths to include and exclude from checking
 include = ["src"]
@@ -247,7 +282,7 @@ exclude = [
 ]
 
 # Diagnostic modes: "basic" or "standard" or "strict"
-typeCheckingMode = "standard"
+typeCheckingMode = "strict"
 
 # Automatically find virtual environments
 venvPath = "."

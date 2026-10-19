@@ -4,7 +4,7 @@ Tests for category_resolver.py SQL-related methods.
 This module tests SQL-based category functions.
 """
 
-from src.core.new_c18.core.category_resolver import CategoryResolver
+from src.cats_maker.core.new_c18.core.category_resolver import CategoryResolver
 
 
 class TestFetchArTitlesBasedOnEnCategory:
@@ -14,11 +14,11 @@ class TestFetchArTitlesBasedOnEnCategory:
         """
         Test that _en_category_members is called"""
         mock_en_cat = mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver._en_category_members",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver._en_category_members",
             return_value=["Page1", "Page2"],
         )
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver._translate_titles_to_ar",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver._translate_titles_to_ar",
             return_value=["صفحة1", "صفحة2"],
         )
 
@@ -31,11 +31,11 @@ class TestFetchArTitlesBasedOnEnCategory:
         """
         Test that _translate_titles_to_ar is called"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver._en_category_members",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver._en_category_members",
             return_value=["Page1", "Page2"],
         )
         mock_get_ar = mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver._translate_titles_to_ar",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver._translate_titles_to_ar",
             return_value=["صفحة1", "صفحة2"],
         )
 
@@ -48,11 +48,11 @@ class TestFetchArTitlesBasedOnEnCategory:
         """
         Test that Arabic titles are returned"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver._en_category_members",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver._en_category_members",
             return_value=["Science"],
         )
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver._translate_titles_to_ar",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver._translate_titles_to_ar",
             return_value=["علوم"],
         )
 
@@ -69,7 +69,7 @@ class TestListArPagesInCat:
         """
         Test that method returns a list"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.fetch_ar_category_members",
+            "src.cats_maker.core.new_c18.core.category_resolver.fetch_ar_category_members",
             return_value=[{"page_title": "test", "page_namespace": 0}],
         )
 
@@ -83,7 +83,7 @@ class TestListArPagesInCat:
         """
         Test that SQL is used when enabled"""
         mock_sql = mocker.patch(
-            "src.core.new_c18.core.category_resolver.fetch_ar_category_members",
+            "src.cats_maker.core.new_c18.core.category_resolver.fetch_ar_category_members",
             return_value=[{"page_title": "صفحة1", "page_namespace": 0}],
         )
 
@@ -96,7 +96,7 @@ class TestListArPagesInCat:
         """
         Test that spaces are handled correctly"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.fetch_ar_category_members",
+            "src.cats_maker.core.new_c18.core.category_resolver.fetch_ar_category_members",
             return_value=[{"page_title": "test", "page_namespace": 0}],
         )
 
@@ -112,14 +112,14 @@ class TestListEnPagesWithArLinks:
         """
         Test that method returns a list"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
+            "src.cats_maker.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
             side_effect=Exception("SQL Error"),
         )
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver._fetch_ar_titles_based_on_en_category",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver._fetch_ar_titles_based_on_en_category",
             return_value=[],
         )
-        mocker.patch("src.core.new_c18.core.category_resolver.main_settings.database.use_sql", False)
+        mocker.patch("src.cats_maker.core.new_c18.core.category_resolver.main_settings.database.use_sql", False)
 
         resolver = CategoryResolver()
         result = resolver.list_en_pages_with_ar_links("Science")
@@ -130,7 +130,7 @@ class TestListEnPagesWithArLinks:
         """
         Test that SQL is used when enabled"""
         mock_sql = mocker.patch(
-            "src.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
+            "src.cats_maker.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
             return_value=[{"ll_title": "صفحة1"}, {"ll_title": "صفحة2"}],
         )
 
@@ -143,14 +143,14 @@ class TestListEnPagesWithArLinks:
         """
         Test fallback to API when SQL fails"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
+            "src.cats_maker.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
             side_effect=Exception("SQL Error"),
         )
         mock_api = mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver._fetch_ar_titles_based_on_en_category",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver._fetch_ar_titles_based_on_en_category",
             return_value=["صفحة1"],
         )
-        mocker.patch("src.core.new_c18.core.category_resolver.main_settings.database.use_sql", False)
+        mocker.patch("src.cats_maker.core.new_c18.core.category_resolver.main_settings.database.use_sql", False)
 
         resolver = CategoryResolver()
         resolver.list_en_pages_with_ar_links("Science")
@@ -161,7 +161,7 @@ class TestListEnPagesWithArLinks:
         """
         Test that underscores are replaced with spaces in results"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
+            "src.cats_maker.core.new_c18.core.category_resolver.fetch_en_category_langlinks",
             return_value=[{"ll_title": "صفحة_اختبار"}],
         )
 
@@ -178,11 +178,11 @@ class TestDiffMissingArPages:
         """
         Test that method returns a list"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.list_ar_pages_in_cat",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.list_ar_pages_in_cat",
             return_value=[],
         )
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.list_en_pages_with_ar_links",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.list_en_pages_with_ar_links",
             return_value=[],
         )
 
@@ -195,11 +195,11 @@ class TestDiffMissingArPages:
         """
         Test that result is pages in en but not in ar"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.list_ar_pages_in_cat",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.list_ar_pages_in_cat",
             return_value=["صفحة1", "صفحة2"],
         )
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.list_en_pages_with_ar_links",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.list_en_pages_with_ar_links",
             return_value=["صفحة1", "صفحة2", "صفحة3"],
         )
 
@@ -218,7 +218,7 @@ class TestResolveMembers:
         """
         Test that method returns a list"""
         mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
             return_value=[],
         )
 
@@ -231,7 +231,7 @@ class TestResolveMembers:
         """
         Test that Category: prefix is cleaned"""
         mock_diff = mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
             return_value=[],
         )
 
@@ -246,7 +246,7 @@ class TestResolveMembers:
         """
         Test that underscores are replaced with spaces"""
         mock_diff = mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
             return_value=[],
         )
 
@@ -261,7 +261,7 @@ class TestResolveMembers:
         """
         Test that wiki parameter is passed"""
         mock_diff = mocker.patch(
-            "src.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
+            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.diff_missing_ar_pages",
             return_value=[],
         )
 

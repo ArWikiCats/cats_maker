@@ -4,23 +4,23 @@
 
 ## جدول المحتويات
 
--   [نظرة عامة](#نظرة-عامة)
--   [المميزات](#المميزات)
--   [البنية المعمارية](#البنية-المعمارية)
--   [التثبيت](#التثبيت)
--   [الاستخدام](#الاستخدام)
--   [الإعدادات](#الإعدادات)
--   [هيكل المشروع](#هيكل-المشروع)
--   [الاختبار](#الاختبار)
--   [المساهمة](#المساهمة)
--   [الوثائق ذات الصلة](#الوثائق-ذات-الصلة)
+- [نظرة عامة](#نظرة-عامة)
+- [المميزات](#المميزات)
+- [البنية المعمارية](#البنية-المعمارية)
+- [التثبيت](#التثبيت)
+- [الاستخدام](#الاستخدام)
+- [الإعدادات](#الإعدادات)
+- [هيكل المشروع](#هيكل-المشروع)
+- [الاختبار](#الاختبار)
+- [المساهمة](#المساهمة)
+- [الوثائق ذات الصلة](#الوثائق-ذات-الصلة)
 
 ## نظرة عامة
 
 Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة إنشاء تصنيفات ويكيبيديا العربية بناءً على نظيراتها الإنجليزية. تقوم الأداة بـ:
 
 1. أخذ قائمة من أسماء تصنيفات ويكيبيديا الإنجليزية
-2. تحليل الترجمات العربية باستخدام ويكي بيانات و [ArWikiCats](https://github.com/MrIbrahem/ArWikiCats)
+2. تحليل الترجمات العربية باستخدام ويكي بيانات و [ArWikiCats](https://github.com/ArWikiCats/ArWikiCats)
 3. إنشاء صفحات التصنيف العربي بالهيكل المناسب
 4. إضافة القوالب المناسبة وروابط البوابات
 5. ربط التصنيفات الجديدة بويكي بيانات
@@ -32,28 +32,28 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
 
 ### الوظائف الأساسية
 
--   **ترجمة التصنيفات**: تحليل تلقائي لتسميات التصنيفات العربية من التصنيفات الإنجليزية باستخدام روابط موقع ويكي بيانات ومكتبة [ArWikiCats](https://github.com/MrIbrahem/ArWikiCats)
--   **إنشاء التصنيفات**: إنشاء صفحات تصنيف ويكيبيديا العربية الجديدة بتنسيق مناسب
--   **توليد القوالب**: توليد قوالب التنقل للتصنيفات (القرون، العقود، السنوات، الألفيات)
--   **تكامل البوابات**: إضافة تلقائية لروابط البوابات ذات الصلة إلى التصنيفات بناءً على اكتشاف الموضوع
--   **تكامل ويكي بيانات**: إنشاء وتحديث روابط موقع ويكي بيانات للتصنيفات المنشأة حديثاً
+- **ترجمة التصنيفات**: تحليل تلقائي لتسميات التصنيفات العربية من التصنيفات الإنجليزية باستخدام روابط موقع ويكي بيانات ومكتبة [ArWikiCats](https://github.com/ArWikiCats/ArWikiCats)
+- **إنشاء التصنيفات**: إنشاء صفحات تصنيف ويكيبيديا العربية الجديدة بتنسيق مناسب
+- **توليد القوالب**: توليد قوالب التنقل للتصنيفات (القرون، العقود، السنوات، الألفيات)
+- **تكامل البوابات**: إضافة تلقائية لروابط البوابات ذات الصلة إلى التصنيفات بناءً على اكتشاف الموضوع
+- **تكامل ويكي بيانات**: إنشاء وتحديث روابط موقع ويكي بيانات للتصنيفات المنشأة حديثاً
 
 ### مصادر البيانات
 
--   **Wikidata API**: استرجاع روابط المواقع، التسميات، الأوصاف، والخصائص
--   **Wikipedia API**: الاستعلام عن معلومات الصفحة، التصنيفات، وروابط اللغات
--   **قاعدة بيانات SQL**: يدعم قواعد بيانات SQL الخاصة بـ Wikimedia Tool Labs للاستعلامات الفعالة
--   **تكامل Quarry**: جلب قوائم التصنيفات من استعلامات Quarry
+- **Wikidata API**: استرجاع روابط المواقع، التسميات، الأوصاف، والخصائص
+- **Wikipedia API**: الاستعلام عن معلومات الصفحة، التصنيفات، وروابط اللغات
+- **قاعدة بيانات SQL**: يدعم قواعد بيانات SQL الخاصة بـ Wikimedia Tool Labs للاستعلامات الفعالة
+- **تكامل Quarry**: جلب قوائم التصنيفات من استعلامات Quarry
 
 ### ميزات المعالجة
 
--   **المعالجة الدفعية**: معالجة تصنيفات متعددة في تشغيل واحد
--   **المعالجة التكرارية**: اكتشاف ومعالجة التصنيفات الفرعية
--   **كشف التكرارات**: تتبع التصنيفات المعالجة لتجنب التكرار
--   **معالجة الأخطاء**: معالجة قوية للأخطاء مع التسجيل
--   **التخزين المؤقت**: تخزين مؤقت في الذاكرة لاستجابات API
--   **تصفية التحويلات**: تصفية تلقائية لصفحات التحويل من قوائم الأعضاء
--   **حد الأعضاء الأدنى**: حد أدنى قابل للتكوين لعدد الأعضاء قبل إنشاء التصنيفات
+- **المعالجة الدفعية**: معالجة تصنيفات متعددة في تشغيل واحد
+- **المعالجة التكرارية**: اكتشاف ومعالجة التصنيفات الفرعية
+- **كشف التكرارات**: تتبع التصنيفات المعالجة لتجنب التكرار
+- **معالجة الأخطاء**: معالجة قوية للأخطاء مع التسجيل
+- **التخزين المؤقت**: تخزين مؤقت في الذاكرة لاستجابات API
+- **تصفية التحويلات**: تصفية تلقائية لصفحات التحويل من قوائم الأعضاء
+- **حد الأعضاء الأدنى**: حد أدنى قابل للتكوين لعدد الأعضاء قبل إنشاء التصنيفات
 
 ## البنية المعمارية
 
@@ -119,7 +119,7 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
               ↓
 ┌─────────────────────────────────────────┐
 │      طبقة الأدوات المساعدة             │
-│      helps/, utils/, temp/              │
+│      helps/, utils/, cats_maker/              │
 └─────────────────────────────────────────┘
 ```
 
@@ -155,24 +155,24 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
 
 ### المتطلبات الأساسية
 
--   Python 3.10 أو أعلى
--   pip (مدير حزم Python)
--   الوصول إلى Wikipedia API (للعمليات الفعلية)
--   (اختياري) الوصول إلى Wikimedia Tool Labs لاستعلامات SQL
+- Python 3.10 أو أعلى
+- pip (مدير حزم Python)
+- الوصول إلى Wikipedia API (للعمليات الفعلية)
+- (اختياري) الوصول إلى Wikimedia Tool Labs لاستعلامات SQL
 
 ### الإعداد
 
 1. **استنساخ المستودع:**
 
     ```bash
-    git clone https://github.com/MrIbrahem/cats_maker_new.git
-    cd cats_maker_new
+    git clone https://github.com/ArWikiCats/cats_maker.git
+    cd cats_maker
     ```
 
 2. **تثبيت التبعيات:**
 
     ```bash
-    pip install -r requirements.in
+    pip install -r requirements.txt
     ```
 
 3. **إعداد متغيرات البيئة:**
@@ -194,29 +194,28 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
 
 ### متغيرات البيئة
 
-| المتغير                    | الوصف                                           | القيمة الافتراضية                |
-| -------------------------- | ----------------------------------------------- | -------------------------------- |
-| `APP_ENV`                  | بيئة التطبيق (production, development, testing) | `development`                    |
-| `WIKIPEDIA_BOT_USERNAME`   | اسم مستخدم البوت لـ Wikipedia API               | فارغ                             |
-| `WIKIPEDIA_BOT_PASSWORD`   | كلمة مرور البوت لـ Wikipedia API                | فارغ                             |
-| `PROJECT_PATH`             | مسار المشروع (اختياري)                          | فارغ                             |
-| `ARWIKICATS_PATH`          | مسار تثبيت ArWikiCats (اختياري)                 | فارغ                             |
-| `CATS_MAKER_EXTERNAL_PATH` | مسار خارجي للتكاملات الاختيارية                 | فارغ                             |
-| `CATS_MAKER_LOG_FILE`      | مسار ملف السجل                                  | `~/BOTS_LOGS/cats_maker_new.log` |
+| المتغير                    | الوصف                                           | القيمة الافتراضية            |
+| -------------------------- | ----------------------------------------------- | ---------------------------- |
+| `APP_ENV`                  | بيئة التطبيق (production, development, testing) | `development`                |
+| `WIKIPEDIA_BOT_USERNAME`   | اسم مستخدم البوت لـ Wikipedia API               | فارغ                         |
+| `WIKIPEDIA_BOT_PASSWORD`   | كلمة مرور البوت لـ Wikipedia API                | فارغ                         |
+| `PROJECT_PATH`             | مسار المشروع (اختياري)                          | فارغ                         |
+| `CATS_MAKER_EXTERNAL_PATH` | مسار خارجي للتكاملات الاختيارية                 | فارغ                         |
+| `CATS_MAKER_LOG_FILE`      | مسار ملف السجل                                  | `~/BOTS_LOGS/cats_maker.log` |
 
 > **ملاحظة:** لا تشارك ملف `.env` أبداً - فهو مُضاف إلى `.gitignore` لحمايه.
 > **تلميح:** اضبط `APP_ENV=production` لتمكين استعلامات SQL في بيئة الإنتاج.
 
 ### التبعيات
 
--   `wikitextparser>=0.55.7` - تحليل نص الويكي
--   `tqdm>=4.67.1` - أشرطة التقدم
--   `SPARQLWrapper>=2.0.0` - استعلامات SPARQL
--   `pymysql` - اتصالات قاعدة بيانات MySQL
--   `jsonlines` - معالجة ملفات JSONL
--   `sqlite_utils` - أدوات SQLite
--   `pytest` - إطار الاختبار
--   `pytest-mock` - محاكاة الاختبار
+- `wikitextparser>=0.55.7` - تحليل نص الويكي
+- `tqdm>=4.67.1` - أشرطة التقدم
+- `SPARQLWrapper>=2.0.0` - استعلامات SPARQL
+- `pymysql` - اتصالات قاعدة بيانات MySQL
+- `jsonlines` - معالجة ملفات JSONL
+- `sqlite_utils` - أدوات SQLite
+- `pytest` - إطار الاختبار
+- `pytest-mock` - محاكاة الاختبار
 
 ## الاستخدام
 
@@ -307,18 +306,16 @@ python run.py DEBUG -encat:Mathematics
 ### الاستخدام البرمجي
 
 ```python
-from src.mk_cats import create_categories_from_list
+from src.cats_maker.mk_cats import create_categories_from_list
 
 # معالجة قائمة من التصنيفات
-categories = [
-    "Category:Science",
-    "Category:Mathematics",
-    "Category:Physics"
-]
+categories = ["Category:Science", "Category:Mathematics", "Category:Physics"]
+
 
 # callback اختياري لمعالجة النتائج
 def my_callback(title, **kwargs):
     print(f"Processed: {title}")
+
 
 create_categories_from_list(categories, callback=my_callback)
 ```
@@ -326,7 +323,7 @@ create_categories_from_list(categories, callback=my_callback)
 ### الدوال الفردية
 
 ```python
-from src.mk_cats import ar_make_lab, process_catagories
+from src.cats_maker.mk_cats import ar_make_lab, process_catagories
 
 # الحصول على التسمية العربية لتصنيف إنجليزي
 ar_label = ar_make_lab("Category:Science")
@@ -338,25 +335,25 @@ process_catagories("Category:Science", ar_label, num=1, lenth=1)
 
 ## الإعدادات
 
-تتم إدارة الإعدادات من خلال وحدة `src/config/settings.py`، التي توفر إعدادات تعتمد على dataclass يمكن تكوينها عبر متغيرات البيئة أو معاملات سطر الأوامر. جميع الإعدادات مركزية وآمنة من حيث النوع.
+تتم إدارة الإعدادات من خلال وحدة `src/cats_maker/config/settings.py`، التي توفر إعدادات تعتمد على dataclass يمكن تكوينها عبر متغيرات البيئة أو معاملات سطر الأوامر. جميع الإعدادات مركزية وآمنة من حيث النوع.
 
 ### فئات الإعدادات
 
 يستخدم نظام الإعدادات فئات dataclass التالية:
 
--   **WikipediaConfig**: إعدادات Wikipedia API (رموز اللغة، وكيل المستخدم، المهلة)
--   **WikidataConfig**: إعدادات Wikidata API (نقاط النهاية، المهلة، maxlag)
--   **DatabaseConfig**: إعدادات اتصال قاعدة البيانات (المضيف، المنفذ، use_sql)
--   **DebugConfig**: خيارات التصحيح والتسجيل (print_url, print_data, raise_errors)
--   **BotConfig**: إعدادات سلوك البوت (ask, no_diff, force_edit)
--   **CategoryConfig**: إعدادات معالجة التصنيف (min_members, we_try)
--   **QueryConfig**: معاملات الاستعلام (offset, depth, to_limit)
--   **SiteConfig**: إعدادات الموقع البديل (use_commons, custom_family)
+- **WikipediaConfig**: إعدادات Wikipedia API (رموز اللغة، وكيل المستخدم، المهلة)
+- **WikidataConfig**: إعدادات Wikidata API (نقاط النهاية، المهلة، maxlag)
+- **DatabaseConfig**: إعدادات اتصال قاعدة البيانات (المضيف، المنفذ، use_sql)
+- **DebugConfig**: خيارات التصحيح والتسجيل (print_url, print_data, raise_errors)
+- **BotConfig**: إعدادات سلوك البوت (ask, no_diff, force_edit)
+- **CategoryConfig**: إعدادات معالجة التصنيف (min_members, we_try)
+- **QueryConfig**: معاملات الاستعلام (offset, depth, to_limit)
+- **SiteConfig**: إعدادات الموقع البديل (use_commons, custom_family)
 
 ### الاستخدام
 
 ```python
-from src.config import settings
+from src.cats_maker.config import settings
 
 # الوصول إلى إعدادات ويكيبيديا
 print(settings.wikipedia.ar_code)  # 'ar'
@@ -433,16 +430,16 @@ print(settings.debug)  # False
 
 يحتفظ المشروع بعدة قوائم سوداء لتخطي تصنيفات معينة:
 
--   **القائمة السوداء للتصنيفات الإنجليزية**: التصنيفات التي يجب تخطيها بالكامل
--   **القائمة السوداء للقوالب**: القوالب التي يجب استبعادها من المعالجة
--   **القائمة السوداء للأسماء**: أسماء محددة يجب تجنبها
+- **القائمة السوداء للتصنيفات الإنجليزية**: التصنيفات التي يجب تخطيها بالكامل
+- **القائمة السوداء للقوالب**: القوالب التي يجب استبعادها من المعالجة
+- **القائمة السوداء للأسماء**: أسماء محددة يجب تجنبها
 
 ## هيكل المشروع
 
 ```
-cats_maker_new/
+cats_maker/
 ├── run.py                    # نقطة الدخول الرئيسية
-├── requirements.in           # تبعيات Python
+├── requirements.txt           # تبعيات Python
 ├── pyproject.toml           # إعدادات المشروع (Black, isort, ruff)
 ├── pytest.ini               # إعدادات Pytest
 ├── refactoring_plan.md      # وثائق إعادة الهيكلة الفنية
@@ -492,7 +489,7 @@ cats_maker_new/
 │   │   ├── log.py          # غلاف التسجيل
 │   │   └── printe_helper.py # تنسيق الطباعة
 │   │
-│   ├── temp/               # توليد القالب
+│   ├── cats_maker/               # توليد القالب
 │   │   └── *_temp.py       # قوالب القرن، العقد، السنة
 │   │
 │   └── utils/              # أدوات مساعدة عامة
@@ -507,7 +504,7 @@ cats_maker_new/
 │   ├── wiki_api/          # اختبارات wiki_api
 │   ├── api_sql/           # اختبارات api_sql
 │   ├── integration/       # اختبارات التكامل
-│   └── temp/              # اختبارات القالب
+│   └── cats_maker/              # اختبارات القالب
 │
 └── .github/
     ├── workflows/
@@ -546,9 +543,9 @@ pytest -m "not network"
 
 تغطي مجموعة الاختبار:
 
--   **اختبارات الوحدة**: اختبار الدالة الفردية مع التبعيات المحاكاة
--   **اختبارات التكامل**: اختبار سير العمل من البداية إلى النهاية
--   **اختبارات التركيبات**: بيانات الاختبار القابلة لإعادة الاستخدام وإعدادات المحاكاة
+- **اختبارات الوحدة**: اختبار الدالة الفردية مع التبعيات المحاكاة
+- **اختبارات التكامل**: اختبار سير العمل من البداية إلى النهاية
+- **اختبارات التركيبات**: بيانات الاختبار القابلة لإعادة الاستخدام وإعدادات المحاكاة
 
 ### تغطية الاختبار
 
@@ -564,18 +561,18 @@ pytest -m "not network"
 | utils       | قوائم التخطي والقوائم السوداء                    | ✅     |
 | wd_bots     | تكامل ويكي بيانات                                | ✅     |
 | wiki_api    | استدعاءات Wikipedia API                          | ✅     |
-| temp        | توليد القالب                                     | ✅     |
+| cats_maker  | توليد القالب                                     | ✅     |
 | integration | اختبارات من البداية إلى النهاية                  | ✅     |
 
 ### علامات الاختبار
 
 تستخدم مجموعة الاختبار علامات pytest التالية:
 
--   `unit`: اختبارات الوحدة (سريعة، معزولة)
--   `integration`: اختبارات التكامل (قد تتطلب المحاكاة)
--   `network`: الاختبارات التي تتطلب الوصول إلى الشبكة (يتم تخطيها افتراضياً في CI)
--   `slow`: الاختبارات البطيئة
--   `skip2`: الاختبارات التي يجب تخطيها مؤقتاً
+- `unit`: اختبارات الوحدة (سريعة، معزولة)
+- `integration`: اختبارات التكامل (قد تتطلب المحاكاة)
+- `network`: الاختبارات التي تتطلب الوصول إلى الشبكة (يتم تخطيها افتراضياً في CI)
+- `slow`: الاختبارات البطيئة
+- `skip2`: الاختبارات التي يجب تخطيها مؤقتاً
 
 ### كتابة الاختبارات
 
@@ -583,23 +580,23 @@ pytest -m "not network"
 
 ```python
 import pytest
-from src.mk_cats.mknew import ar_make_lab
+from src.cats_maker.mk_cats.mknew import ar_make_lab
+
 
 class TestArMakeLab:
     """اختبارات لدالة ar_make_lab"""
 
     def test_returns_label_for_valid_category(self, mocker):
         """اختبار أن التصنيفات الصالحة تُرجع التسميات العربية"""
-        mocker.patch('src.mk_cats.mknew.filter_en.filter_cat', return_value=True)
-        mocker.patch('src.mk_cats.mknew.resolve_arabic_category_label',
-                     return_value='علوم')
+        mocker.patch("src.cats_maker.mk_cats.mknew.filter_en.filter_cat", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.mknew.resolve_arabic_category_label", return_value="علوم")
 
         result = ar_make_lab("Category:Science")
         assert result == "علوم"
 
     def test_returns_empty_for_filtered_category(self, mocker):
         """اختبار أن التصنيفات المصفاة تُرجع سلسلة فارغة"""
-        mocker.patch('src.mk_cats.mknew.filter_en.filter_cat', return_value=False)
+        mocker.patch("src.cats_maker.mk_cats.mknew.filter_en.filter_cat", return_value=False)
 
         result = ar_make_lab("Category:Stubs")
         assert result == ""
@@ -611,7 +608,7 @@ class TestArMakeLab:
 
 1. تفريع المستودع
 2. إنشاء فرع ميزة: `git checkout -b feature/my-feature`
-3. تثبيت تبعيات التطوير: `pip install -r requirements.in`
+3. تثبيت تبعيات التطوير: `pip install -r requirements.txt`
 4. إجراء التغييرات
 5. تشغيل الاختبارات: `pytest`
 6. تشغيل linters: `ruff check src/`
@@ -621,9 +618,9 @@ class TestArMakeLab:
 
 يستخدم هذا المشروع:
 
--   **Black** لتنسيق الكود (طول السطر: 120)
--   **isort** لفرز الاستيرادات
--   **ruff** للتدقيق
+- **Black** لتنسيق الكود (طول السطر: 120)
+- **isort** لفرز الاستيرادات
+- **ruff** للتدقيق
 
 ```bash
 # تنسيق الكود
@@ -638,16 +635,16 @@ ruff check src/
 
 ### إرشادات الالتزام
 
--   كتابة رسائل التزام واضحة وموصوفة
--   الإشارة إلى المشكلات عند الاقتضاء
--   الحفاظ على الالتزامات مركزة وذرية
+- كتابة رسائل التزام واضحة وموصوفة
+- الإشارة إلى المشكلات عند الاقتضاء
+- الحفاظ على الالتزامات مركزة وذرية
 
 ## الوثائق ذات الصلة
 
--   **[refactoring_plan.md](docs/refactoring_plan.md)**: وثائق تقنية مفصلة حول بنية الكود، تدفق التنفيذ، والتحسينات المخططة
--   **[testing_plan.md](docs/testing_plan.md)**: استراتيجية الاختبار الشاملة، أهداف تغطية الاختبار، وأمثلة الاختبار
--   **[Wikidata API](https://www.wikidata.org/wiki/Wikidata:Data_access)**: وثائق الوصول إلى بيانات ويكي بيانات
--   **[MediaWiki API](https://www.mediawiki.org/wiki/API:Main_page)**: مرجع Wikipedia API
+- **[refactoring_plan.md](docs/refactoring_plan.md)**: وثائق تقنية مفصلة حول بنية الكود، تدفق التنفيذ، والتحسينات المخططة
+- **[testing_plan.md](docs/testing_plan.md)**: استراتيجية الاختبار الشاملة، أهداف تغطية الاختبار، وأمثلة الاختبار
+- **[Wikidata API](https://www.wikidata.org/wiki/Wikidata:Data_access)**: وثائق الوصول إلى بيانات ويكي بيانات
+- **[MediaWiki API](https://www.mediawiki.org/wiki/API:Main_page)**: مرجع Wikipedia API
 
 ## الترخيص
 
@@ -655,6 +652,6 @@ ruff check src/
 
 ## شكر وتقدير
 
--   مجتمع ويكيبيديا العربية
--   مشروع ويكي بيانات
--   مشروع [ArWikiCats](https://github.com/MrIbrahem/ArWikiCats)
+- مجتمع ويكيبيديا العربية
+- مشروع ويكي بيانات
+- مشروع [ArWikiCats](https://github.com/ArWikiCats/ArWikiCats)

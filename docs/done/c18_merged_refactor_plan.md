@@ -1,6 +1,6 @@
 # c18 — Merged Refactoring Plan (b18 + c18)
 
-> **Status:** `src/core/b18` has been merged into `src/core/c18`.
+> **Status:** `src/cats_maker/core/b18` has been merged into `src/cats_maker/core/c18`.
 > This plan supersedes `b18_new_refactor_plan.md` and `c18_new_refactor_plan.md`.
 > _Synthesized 2026-04-27_
 
@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-The unified `src/core/c18` module now drives Arabic Wikipedia category generation, cross-wiki page linking (EN→AR, FR→AR), template handling, filtering/sorting, **and** the former `b18` responsibilities:
+The unified `src/cats_maker/core/c18` module now drives Arabic Wikipedia category generation, cross-wiki page linking (EN→AR, FR→AR), template handling, filtering/sorting, **and** the former `b18` responsibilities:
 
 -   Resolving English/French category members into Arabic page titles (via SQL or API)
 -   Validating Arabic/English category pairs before creation
@@ -43,7 +43,7 @@ These are explicitly out of scope to protect business logic stability:
 ## 3. Proposed Directory Structure
 
 ```
-src/core/c18/
+src/cats_maker/core/c18/
 ├── __init__.py                  # Export only the public interface; add __all__
 ├── constants.py                 # All magic strings, namespace IDs, template names (merged b18 + c18)
 ├── models.py                    # Lightweight dataclasses: WikiPage, Category, Sitelink, ValidationResult
@@ -74,6 +74,7 @@ src/core/c18/
 ```python
 # bots/filter_cat.py (legacy shim)
 import warnings
+
 warnings.warn("bots.filter_cat is deprecated; import from core.category_filter", DeprecationWarning)
 from ..core.category_filter import filter_category_text as filter_cats_text  # noqa: F401
 ```
@@ -111,11 +112,13 @@ Centralise everything that is currently scattered across the former b18 and c18 
 ```python
 from enum import IntEnum
 
+
 class Namespace(IntEnum):
-    MAIN     = 0
+    MAIN = 0
     TEMPLATE = 10
     CATEGORY = 14
-    PORTAL   = 100
+    PORTAL = 100
+
 
 # Prefixes
 CAT_PREFIX_AR = "تصنيف:"
@@ -123,15 +126,15 @@ CAT_PREFIX_EN = "Category:"
 CAT_PREFIX_FR = "Catégorie:"
 
 # Blacklists (immutable)
-SKIPPED_CATEGORIES: frozenset[str] = frozenset({...})   # was Skippe_Cat
-FALSE_TEMPLATES:    frozenset[str] = frozenset({...})   # was page_false_templates
-NO_TEMPLATES_AR:    frozenset[str] = frozenset({...})   # was NO_Templates_ar
-SKIP_CATEGORIES:    frozenset[str] = frozenset({...})   # was temp_bot.SKIP_CATEGORIES
+SKIPPED_CATEGORIES: frozenset[str] = frozenset({...})  # was Skippe_Cat
+FALSE_TEMPLATES: frozenset[str] = frozenset({...})  # was page_false_templates
+NO_TEMPLATES_AR: frozenset[str] = frozenset({...})  # was NO_Templates_ar
+SKIP_CATEGORIES: frozenset[str] = frozenset({...})  # was temp_bot.SKIP_CATEGORIES
 
 # Template replacement maps
-TOSEARCH_AND_REPLACE: dict[str, str] = {...}            # was tosearch_and_replace
-TO_SEARCH: list[str]                  = [...]           # was to_search
-PRE_TEXT: str                         = "..."           # was pre_text
+TOSEARCH_AND_REPLACE: dict[str, str] = {...}  # was tosearch_and_replace
+TO_SEARCH: list[str] = [...]  # was to_search
+PRE_TEXT: str = "..."  # was pre_text
 ```
 
 Sources to consolidate:
@@ -161,7 +164,7 @@ Sources to consolidate:
 -   Replace every `return False` where a list or string is expected with `return []` or `return None`.
 -   Standardize `english_page_link` family and b18 resolver family to return `list[str]` or `str | None` consistently.
 
-**Success criteria:** `ruff check src/core/c18` and `mypy src/core/c18 --ignore-missing-imports` pass with zero errors.
+**Success criteria:** `ruff check src/cats_maker/core/c18` and `mypy src/cats_maker/core/c18 --ignore-missing-imports` pass with zero errors.
 
 ---
 
@@ -181,6 +184,7 @@ def fetch_category_members(
 ) -> list[str]:
     """Fetch category members from any source wiki."""
     ...
+
 
 def translate_titles_to_ar(
     titles: list[str],
@@ -233,8 +237,10 @@ def get_templates(
         return result.get(titles, {}).get("templates")
     return _query_multi("|".join(titles), sitecode)
 
+
 class TemplateCache:
     """Encapsulates the module-level defaultdict. Key: f'{sitecode}:{title}'."""
+
     ...
 ```
 
@@ -276,10 +282,7 @@ def filter_category_text(
     false_temps = FALSE_TEMPLATES
     templates_map = get_templates(cats, "ar") or {}
 
-    return [
-        cat for cat in cats
-        if not _should_exclude(cat, ns, text, deleted, false_temps, templates_map)
-    ]
+    return [cat for cat in cats if not _should_exclude(cat, ns, text, deleted, false_temps, templates_map)]
 ```
 
 **5.3.2 Break down `english_page_title.py` → `core/cross_wiki_linker.py`**
@@ -309,9 +312,14 @@ Move `extract_wikidata_qid` into `utils/text.py`.
 Replace the character-substitution trick with a named key function:
 
 ```python
-_ARABIC_COLLATION = str.maketrans({
-    'آ': '02', 'ا': '03', 'أ': '04',  # ... full mapping
-})
+_ARABIC_COLLATION = str.maketrans(
+    {
+        "آ": "02",
+        "ا": "03",
+        "أ": "04",  # ... full mapping
+    }
+)
+
 
 def arabic_sort_key(text: str) -> str:
     """
@@ -320,6 +328,7 @@ def arabic_sort_key(text: str) -> str:
     alphabetical order. Upgrade to pyicu if available.
     """
     return text.translate(_ARABIC_COLLATION)
+
 
 def sort_categories(categories: list[str]) -> list[str]:
     return sorted(categories, key=arabic_sort_key)
@@ -331,10 +340,11 @@ Replace the long `elif` chain in `add_direct` with a dispatch map:
 
 ```python
 INSERTION_MARKERS = [
-    ("{{توثيق",        _insert_before_tag),
+    ("{{توثيق", _insert_before_tag),
     ("{{توثيق شريط}}", _insert_before_tag),
     # ...
 ]
+
 
 def add_direct(text: str, content: str) -> str:
     for marker, handler in INSERTION_MARKERS:
@@ -373,7 +383,7 @@ Move `pre_text` into a separate `.txt` asset or clearly named constant. Use `wik
 -   Move the orchestration logic (SQL → API → cache) into a thin `MemberLister` class.
 -   Remove the direct dependency on `settings.database.use_sql` by delegating to `CategoryResolver`.
 
-**Success criteria:** `radon cc src/core/c18 -s` shows the top 5 functions have dropped from grade C/D to grade A/B (cyclomatic complexity ≤ 10).
+**Success criteria:** `radon cc src/cats_maker/core/c18 -s` shows the top 5 functions have dropped from grade C/D to grade A/B (cyclomatic complexity ≤ 10).
 
 ---
 
@@ -406,6 +416,7 @@ class JsonStore:
     def save(self, data: dict) -> None: ...
     def is_stale(self, days: int = 1) -> bool: ...
 
+
 # io/sql_queries.py
 def fetch_dont_add_pages() -> list[str]:
     """Pure SQL — no file logic, no caching."""
@@ -419,10 +430,12 @@ Replace broad `except Exception` with specific exceptions (`PermissionError`, `j
 ```python
 from dataclasses import dataclass, field
 
+
 @dataclass(frozen=True)
 class CategoryRef:
-    title: str          # normalized, no prefix
-    lang: str           # "ar", "en", "fr"
+    title: str  # normalized, no prefix
+    lang: str  # "ar", "en", "fr"
+
 
 @dataclass
 class PageRef:
@@ -430,16 +443,19 @@ class PageRef:
     namespace: int
     langlinks: dict[str, str]
 
+
 @dataclass
 class WikiPage:
     title: str
     namespace: int
     langlinks: dict[str, str] = field(default_factory=dict)
 
+
 @dataclass
 class Category:
     title: str
     templates: list[str] = field(default_factory=list)
+
 
 @dataclass
 class ValidationResult:
@@ -481,6 +497,7 @@ diff before_phase_N.txt after_phase_N.txt   # must be empty
 
 ```python
 import timeit
+
 timeit.timeit(lambda: filter_category_text(big_list, ns=14, text=""), number=100)
 ```
 
@@ -488,7 +505,7 @@ Expected: ≥ 30% speedup from O(n²) → O(n).
 
 **Test migration note:** Existing tests in `tests/b18_new/` should be moved into `tests/c18/` (or merged into the relevant `test_*.py` files) as part of this phase.
 
-**CI/CD:** `pytest tests/c18/ --cov=src/core/c18 --cov-report=term-missing` must show ≥ 80% coverage in GitHub Actions.
+**CI/CD:** `pytest tests/c18/ --cov=src/cats_maker/core/c18 --cov-report=term-missing` must show ≥ 80% coverage in GitHub Actions.
 
 ---
 
@@ -519,8 +536,8 @@ Expected: ≥ 30% speedup from O(n²) → O(n).
 -   [ ] All category-title normalization uses `utils/text.py` — no inline `.replace(...)` chains
 -   [ ] `sql_cat_checker.py` duplication is eliminated; a single generic checker handles both EN and AR pages
 -   [ ] `pytest tests/c18/` passes with ≥ 80% coverage
--   [ ] `ruff check src/core/c18` reports zero errors
--   [ ] `radon cc src/core/c18 -s` shows no function above grade B (complexity ≤ 10)
+-   [ ] `ruff check src/cats_maker/core/c18` reports zero errors
+-   [ ] `radon cc src/cats_maker/core/c18 -s` shows no function above grade B (complexity ≤ 10)
 -   [ ] Integration diff on `Science` category is empty before → after
 
 ---

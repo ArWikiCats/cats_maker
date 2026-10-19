@@ -4,7 +4,7 @@ Tests for lcn_new.py
 This module tests the WikiApiHandler class and language link functions.
 """
 
-from src.shared.lcn_new import (
+from src.cats_maker.shared.lcn_new import (
     LC_bot,
     WikiApiHandler,
     find_non_hidden_categories,

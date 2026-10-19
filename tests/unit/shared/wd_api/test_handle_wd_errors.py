@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.shared.wd_api.wd_bots_main import WdAPI
+from src.cats_maker.shared.wd_api.wd_bots_main import WdAPI
 
 
 @pytest.fixture

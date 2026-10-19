@@ -1,13 +1,13 @@
 """
-Unit tests for src/core/client_wiki/categories/category_db.py module.
+Unit tests for src/cats_maker/core/client_wiki/categories/category_db.py module.
 """
 
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.shared.newapi.client_wiki.categories import category_db
-from src.shared.newapi.client_wiki.categories.category_db import CategoryDepth
+from src.cats_maker.shared.newapi.client_wiki.categories import category_db
+from src.cats_maker.shared.newapi.client_wiki.categories.category_db import CategoryDepth
 
 
 @pytest.fixture

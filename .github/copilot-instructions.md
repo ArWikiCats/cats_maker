@@ -88,7 +88,7 @@ Data Processing (c18/)
     ↓
 External Services (wiki_api/, wd_bots/, api_sql/)
     ↓
-Utilities (helps/, utils/, temp/)
+Utilities (helps/, utils/, cats_maker/)
 ```
 
 ### Key Modules
@@ -112,7 +112,7 @@ Utilities (helps/, utils/, temp/)
 4. **wiki_api/**: Wikipedia API calls
    - `himoBOT2.py`: General Wikipedia API functions
 
-5. **temp/**: Template generation for centuries, decades, years
+5. **cats_maker/**: Template generation for centuries, decades, years
 
 ## Important Conventions
 
@@ -143,7 +143,7 @@ Utilities (helps/, utils/, temp/)
 
 ### Installation
 ```bash
-pip install -r requirements.in
+pip install -r requirements.txt
 ```
 
 ### Running the Application
@@ -170,7 +170,7 @@ python run.py DEBUG -encat:Mathematics
 ### Arabic Label Resolution
 ```python
 # ar_make_lab is re-exported from mk_cats/__init__.py
-from src.mk_cats import ar_make_lab
+from src.cats_maker.mk_cats import ar_make_lab
 
 # Get Arabic label for English category
 ar_label = ar_make_lab("Category:Science")
@@ -179,7 +179,7 @@ ar_label = ar_make_lab("Category:Science")
 ### Category Processing
 ```python
 # create_categories_from_list is re-exported from mk_cats/__init__.py
-from src.mk_cats import create_categories_from_list
+from src.cats_maker.mk_cats import create_categories_from_list
 
 categories = ["Category:Science", "Category:Mathematics"]
 create_categories_from_list(categories, callback=my_callback)
@@ -188,7 +188,7 @@ create_categories_from_list(categories, callback=my_callback)
 ### Mocking in Tests
 ```python
 def test_example(mocker):
-    mocker.patch('src.module.function', return_value='expected')
+    mocker.patch("src.module.function", return_value="expected")
     # Test code
 ```
 

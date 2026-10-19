@@ -4,7 +4,13 @@ Tests for constants.py
 This module tests category filtering functions.
 """
 
-from src.core.new_c18.constants import FALSE_TEMPLATES, PRE_TEXT, SKIPPED_CATEGORIES, TO_SEARCH, TOSEARCH_AND_REPLACE
+from src.cats_maker.core.new_c18.constants import (
+    FALSE_TEMPLATES,
+    PRE_TEXT,
+    SKIPPED_CATEGORIES,
+    TO_SEARCH,
+    TOSEARCH_AND_REPLACE,
+)
 
 
 class TestSkippedCategories:

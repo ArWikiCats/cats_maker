@@ -1,0 +1,116 @@
+#!/usr/bin/python3
+"""
+
+# (main_make_temp|make_decades_template|make_millennium_template|make_century_template|make_years_template)
+
+بوت لإضافة قالب السنوات للتصنيفات
+
+from .templates import main_make_temp, make_years_template
+
+"""
+
+import logging
+import re
+
+from .load_data import cacaca
+from .temp_cent import make_century_template
+from .temp_decades import make_decades_template
+from .temp_elff import make_millennium_template
+from .temp_years import make_years_template
+
+logger = logging.getLogger(__name__)
+
+
+def main_make_temp(title) -> tuple[str, str]:
+    title = re.sub(r"_", " ", title)
+    logger.info("=====================")
+    logger.info(f'main: title:"{title}"')
+
+    if title.find("فيروس كورونا") != -1:
+        return "", ""
+
+    if re.match(r"^تصنيف\:\d+$", title):
+        return "{{تصنيف موسم}}", "تصنيف موسم"
+
+    if re.match(r"^تصنيف\:\d+ ق م$", title):
+        return "{{تصنيف موسم}}", "تصنيف موسم"
+
+    mat = re.match(r"^تصنيف\:(\d\d\d\d\–\d\d\d\d|\d\d\d\d\-\d\d\d\d|\d\d\d\d\–\d\d|\d\d\d\d\-\d\d).*", title)
+    if mat:
+        text = "{{تصنيف موسم}}\n"
+        return text, "تصنيف موسم"
+
+    for month in [
+        "يناير",
+        "فبراير",
+        "مارس",
+        "أبريل",
+        "مايو",
+        "يونيو",
+        "يوليو",
+        "أغسطس",
+        "سبتمبر",
+        "أكتوبر",
+        "نوفمبر",
+        "ديسمبر",
+    ]:
+        tt = f"تصنيف:{month}"
+        tt2 = f"تصنيف:أحداث {month}"
+        if title.startswith((tt, tt2)):
+            text = f"{{{{تصنيف شهر|{month}}}}}\n"
+            return text, "تصنيف شهر"
+
+    if title.startswith("تصنيف:صناديق تصفح"):
+        text = "{{تصنيف قوالب|النوع=تصفح}}\n"
+        return text, "تصنيف قوالب"
+
+    for tex in ["تأسيسات ", "انحلالات "]:
+        for numb in range(10):
+            t_2 = f"تصنيف:{tex}{numb}"
+            t_33 = f"تصنيف:{tex}سنة {numb}"
+            t_44 = f"تصنيف:{tex}عام {numb}"
+            if title.startswith((t_2, t_33, t_44)):
+                return make_years_template(title, tex)
+
+    for texd in ["تصنيف:تأسيسات عقد", "تصنيف:انحلالات عقد", "تصنيف:عقد"]:
+        if title.startswith(texd):
+            logger.info(f'title.startswith("{texd}" ):')
+            return make_decades_template(title)
+
+    for tex in cacaca:
+        if title.startswith(f"تصنيف:{tex}القرن"):
+            return make_century_template(title)
+
+        if title.startswith(f"تصنيف:{tex}الألفية"):
+            return make_millennium_template(title)
+
+    if re.match(r"^تصنيف\:(.*) في القرن (.*)$", title):
+        return "{{تصنيف موسم}}", "تصنيف موسم"
+
+    if re.match(r".*\d\d\d\d[\-\–]\d\d$", title):
+        return "{{تصنيف موسم}}", "Navseasoncats"
+
+    if not title.startswith("عقد") and not title.startswith("تصنيف:القرن"):
+        if re.match(r"^تصنيف\:\d+.*", title) or re.match(r"^تصنيف\:.*\d+$", title):
+            return "{{تصنيف موسم}}", "تصنيف موسم"
+
+    if re.match(r"\d\d\d\d[\-\–]\d\d$", title):
+        return "{{تصنيف موسم}}", "تصنيف موسم"
+
+    return "", ""
+
+
+def main_make_temp_no_title(title) -> str:
+    result, _ = main_make_temp(title)
+
+    return result.strip()
+
+
+__all__ = [
+    "make_decades_template",
+    "make_years_template",
+    "make_century_template",
+    "make_millennium_template",
+    "main_make_temp",
+    "main_make_temp_no_title",
+]

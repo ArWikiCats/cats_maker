@@ -16,7 +16,7 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v6
 
-            - name: Deploy to server
+            - name: Deploy on Toolforge
               uses: appleboy/ssh-action@v1.2.4
               with:
                   host: ${{ secrets.HOST }}
@@ -26,4 +26,10 @@ jobs:
                   script_stop: true
                   key: ${{ secrets.KEY }}
                   script: |
-                      become ${{ secrets.TOOL1 }} bash -lc "shs/update_cats_maker_new.sh"
+                      # Define script
+                      SCRIPT_COMMAND="shs/update_cats_maker_new.sh"
+
+                      # Define pip script
+                      SCRIPT_COMMAND_PIP="pip install git+https://github.com/ArWikiCats/cats_maker.git -U"
+
+                      become ${{ secrets.TOOL1 }} bash -lc "$SCRIPT_COMMAND"

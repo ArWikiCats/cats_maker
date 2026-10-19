@@ -6,7 +6,7 @@ This module tests functions for adding text/categories to template pages.
 
 import pytest
 
-from src.core.new_c18.tools.doc_handler import (
+from src.cats_maker.core.new_c18.tools.doc_handler import (
     add_direct,
     add_text_to_template,
     add_to_doc_page,
@@ -245,7 +245,7 @@ class TestFindDocAndAdd:
         mock_page.get_text.return_value = ""
         mock_page.exists.return_value = False
 
-        mocker.patch("src.core.new_c18.tools.doc_handler.load_main_api.MainPage", return_value=mock_page)
+        mocker.patch("src.cats_maker.core.new_c18.tools.doc_handler.load_main_api.MainPage", return_value=mock_page)
 
         result = find_doc_and_add("[[تصنيف:علوم]]", "قالب:اختبار", create=False)
         assert result is False
@@ -257,7 +257,7 @@ class TestAddTextToTemplate:
     def test_handles_doc_page(self, mocker):
         """
         Test handling of /شرح pages"""
-        mocker.patch("src.core.new_c18.tools.doc_handler.add_to_doc_page", return_value="نتيجة التوثيق")
+        mocker.patch("src.cats_maker.core.new_c18.tools.doc_handler.add_to_doc_page", return_value="نتيجة التوثيق")
 
         result = add_text_to_template("نص", "[[تصنيف:علوم]]", "قالب:اختبار/شرح")
         assert result == "نتيجة التوثيق"
@@ -274,7 +274,7 @@ class TestAddTextToTemplate:
     def test_handles_regular_template(self, mocker):
         """
         Test handling of regular templates"""
-        mocker.patch("src.core.new_c18.tools.doc_handler.find_doc_and_add", return_value=False)
+        mocker.patch("src.cats_maker.core.new_c18.tools.doc_handler.find_doc_and_add", return_value=False)
 
         text = "محتوى القالب"
         result = add_text_to_template(text, "[[تصنيف:علوم]]", "قالب:اختبار")

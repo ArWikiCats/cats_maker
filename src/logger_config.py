@@ -10,7 +10,10 @@ import sys
 from logging.handlers import WatchedFileHandler
 from pathlib import Path
 
-import colorlog
+try:
+    import colorlog
+except ImportError:
+    colorlog = None
 
 
 def prepare_log_file(log_file: str | None, project_logger: logging.Logger) -> Path | None:
@@ -49,8 +52,8 @@ def setup_file_handler(
 
 
 def setup_logging(
-    level: str = "INFO",
-    name: str = "cats_maker_new",
+    level: str | int = "INFO",
+    name: str = "cats_maker",
     log_file: str | None = None,
     error_log_file: str | None = None,
     use_colorlog: bool = False,
@@ -67,7 +70,7 @@ def setup_logging(
     project_logger.setLevel(numeric_level)
     project_logger.propagate = False
 
-    if use_colorlog:
+    if use_colorlog and colorlog is not None:
         console_formatter = colorlog.ColoredFormatter(
             # Standard format: Time - Name - Level - [File:Line] - Message
             fmt="%(asctime)s - %(name)s - %(log_color)s%(levelname)-s %(reset)s- [%(filename)s:%(lineno)d] - %(message)s",

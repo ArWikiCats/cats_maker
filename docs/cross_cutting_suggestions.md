@@ -12,7 +12,7 @@
 
 **Suggestion:** Consolidate namespace constants into a single shared location:
 
--   Option A: Move to `src/core/constants.py` imported by both `api_sql` and `new_api`
+-   Option A: Move to `src/cats_maker/core/constants.py` imported by both `api_sql` and `new_api`
 -   Option B: `new_api/constants.py` imports from `api_sql/constants.py`
 -   The `new_api` plan explicitly says: _"Use the same constants from api_sql/constants.py if possible (deduplicate with api_sql)"_
 
@@ -30,7 +30,7 @@ Each module repeatedly strips `Category:`/`تصنيف:` prefixes, `[[`, `]]`, an
 -   `c18` proposes `utils/text.py` with `clean_category_input()` and `extract_wikidata_qid()`
 -   `mk_cats` has `_normalize_en_page_title()` inline in `mknew.py`
 
-**Suggestion:** Create a single `src/core/utils/text.py` with:
+**Suggestion:** Create a single `src/cats_maker/core/utils/text.py` with:
 
 -   `normalize_category_title(title, lang) -> str`
 -   `clean_wiki_brackets(title) -> str`
@@ -57,7 +57,7 @@ Each module repeatedly strips `Category:`/`تصنيف:` prefixes, `[[`, `]]`, an
 -   `c18/dontadd.py` embeds SQL for fetching "don't add" pages
 -   `api_sql/queries.py` will hold `fetch_arcat_titles`, `fetch_encat_titles`, etc.
 
-**Suggestion:** Move all SQL query strings from `c18` into `api_sql/queries.py` (or a shared `src/core/db/queries.py`). Business logic modules should not embed raw SQL.
+**Suggestion:** Move all SQL query strings from `c18` into `api_sql/queries.py` (or a shared `src/cats_maker/core/db/queries.py`). Business logic modules should not embed raw SQL.
 
 ---
 

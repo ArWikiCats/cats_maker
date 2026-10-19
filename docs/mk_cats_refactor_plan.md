@@ -1,13 +1,13 @@
 # mk_cats — Refactoring Plan
 
 > Companion plan to `c18_master_refactoring_plan.md`.
-> Applies the same principles — clean structure, phased execution, backward-compatible shims — to the `src/mk_cats` module.
+> Applies the same principles — clean structure, phased execution, backward-compatible shims — to the `src/cats_maker/mk_cats` module.
 
 ---
 
 ## 1. Executive Summary
 
-`src/mk_cats` drives Arabic Wikipedia category creation: given an English category, it resolves an Arabic label, collects members, creates the page, adds templates/portals/categories, then cross-links onto member pages. It works but carries technical debt:
+`src/cats_maker/mk_cats` drives Arabic Wikipedia category creation: given an English category, it resolves an Arabic label, collects members, creates the page, adds templates/portals/categories, then cross-links onto member pages. It works but carries technical debt:
 
 | Issue                                                  | Location                         | Impact                                                     |
 | ------------------------------------------------------ | -------------------------------- | ---------------------------------------------------------- |
@@ -38,7 +38,7 @@
 ## 3. Proposed Directory Structure
 
 ```
-src/mk_cats/
+src/cats_maker/mk_cats/
 ├── __init__.py                  # Public API; deprecation shims for renames
 ├── constants.py                 # All hardcoded strings, blacklists, config values
 ├── models.py                    # Dataclasses: CategoryResult (moved from create_category_page.py)
@@ -65,8 +65,9 @@ src/mk_cats/
 **Migration shim pattern** — old files become thin re-exporters with a deprecation warning:
 
 ```python
-# src/mk_cats/mknew.py (legacy shim)
+# src/cats_maker/mk_cats/mknew.py (legacy shim)
 import warnings
+
 warnings.warn("mk_cats.mknew is deprecated; use mk_cats.core.category_pipeline", DeprecationWarning, stacklevel=2)
 from .core.category_pipeline import create_categories_from_list, process_categories, _make_ar  # noqa: F401
 from .tools.label_resolver import ar_make_lab  # noqa: F401
@@ -97,11 +98,13 @@ Centralise everything scattered across the module:
 ```python
 from enum import IntEnum
 
+
 class Namespace(IntEnum):
     MAIN = 0
     TEMPLATE = 10
     CATEGORY = 14
     PORTAL = 100
+
 
 # Wiki site config
 WIKI_SITE_AR = {"family": "wikipedia", "code": "ar"}
@@ -113,23 +116,43 @@ CAT_PREFIX_EN = "Category:"
 PORTAL_PREFIX_EN = "Portal:"
 
 # Filter blacklists (immutable)
-BLACKLIST_SUBSTRINGS: tuple[str, ...] = (     # was BBlcak
-    "Disambiguation", "wikiproject", "sockpuppets",
-    "without a source", "images for deletion",
+BLACKLIST_SUBSTRINGS: tuple[str, ...] = (  # was BBlcak
+    "Disambiguation",
+    "wikiproject",
+    "sockpuppets",
+    "without a source",
+    "images for deletion",
 )
-BLACKLIST_PREFIXES: tuple[str, ...] = (        # was blcak_starts
-    "Clean-up", "Cleanup", "Uncategorized", "Unreferenced",
-    "Unverifiable", "Unverified", "Wikipedia", "Wikipedia articles",
-    "Articles about", "Articles containing", "Articles covered",
-    "Articles lacking", "Articles needing", "Articles prone",
-    "Articles requiring", "Articles slanted", "Articles sourced",
-    "Articles tagged", "Articles that", "Articles to", "Articles with",
-    "use ", "User pages", "Userspace",
+BLACKLIST_PREFIXES: tuple[str, ...] = (  # was blcak_starts
+    "Clean-up",
+    "Cleanup",
+    "Uncategorized",
+    "Unreferenced",
+    "Unverifiable",
+    "Unverified",
+    "Wikipedia",
+    "Wikipedia articles",
+    "Articles about",
+    "Articles containing",
+    "Articles covered",
+    "Articles lacking",
+    "Articles needing",
+    "Articles prone",
+    "Articles requiring",
+    "Articles slanted",
+    "Articles sourced",
+    "Articles tagged",
+    "Articles that",
+    "Articles to",
+    "Articles with",
+    "use ",
+    "User pages",
+    "Userspace",
 )
 MONTH_NAMES: tuple[str, ...] = ("January", "February", ...)
 
 # Label filters
-BAD_WORDS: tuple[str, ...] = ("ذكور",)        # was bad_words in mknew.py
+BAD_WORDS: tuple[str, ...] = ("ذكور",)  # was bad_words in mknew.py
 
 # Minimum members for category creation default
 DEFAULT_MIN_MEMBERS: int = 5
@@ -203,17 +226,20 @@ class ProcessingState:
         self.new_cat_attempts.clear()
         self.already_created.clear()
 
+
 # Thread-safe version uses threading.local if needed
 _state = ProcessingState()
 
+
 def get_state() -> ProcessingState:
     return _state
+
 
 def clear_state() -> None:
     _state.clear()
 ```
 
-**Success criteria:** All module-level variables (`_done_d`, `_new_cat_done`, `_already_created`) are encapsulated. `ruff check` and `mypy` pass on `src/mk_cats`.
+**Success criteria:** All module-level variables (`_done_d`, `_new_cat_done`, `_already_created`) are encapsulated. `ruff check` and `mypy` pass on `src/cats_maker/mk_cats`.
 
 ---
 
@@ -316,6 +342,7 @@ _OPERATIONS: list[Callable] = [
     _add_nav_template,
 ]
 
+
 def add_text_to_cat(text, categories, en_title, title, qid, family=""):
     if family != "wikipedia" and family:
         return text
@@ -370,6 +397,7 @@ Move code into the new directory layout from Section 3. Order:
 from dataclasses import dataclass
 from typing import Optional
 
+
 @dataclass
 class CategoryResult:
     success: bool
@@ -387,7 +415,7 @@ class CategoryResult:
 
 Tests need updating to match the refactored structure:
 
-- Replace `from src.mk_cats.mknew import process_catagories` → `from src.mk_cats.core.category_pipeline import process_categories`
+- Replace `from src.cats_maker.mk_cats.mknew import process_catagories` → `from src.cats_maker.mk_cats.core.category_pipeline import process_categories`
 - Remove module-level state manipulation (`_done_d.clear()` etc.) — use `clear_state()` instead
 - Fix assertions to use new function names
 
@@ -413,7 +441,7 @@ python run.py -encat:Science 2>&1 | tee after_phase_N.txt
 diff before_phase_N.txt after_phase_N.txt   # must be empty
 ```
 
-**Success criteria:** All existing tests pass with updated imports. `pytest tests/mk_cats/ --cov=src/mk_cats --cov-report=term-missing` shows ≥ 80% coverage.
+**Success criteria:** All existing tests pass with updated imports. `pytest tests/mk_cats/ --cov=src/cats_maker/mk_cats --cov-report=term-missing` shows ≥ 80% coverage.
 
 ---
 
@@ -440,8 +468,8 @@ diff before_phase_N.txt after_phase_N.txt   # must be empty
 - [ ] `_make_ar` broken into < 50 lines with extracted helper functions
 - [ ] `add_text_to_cat` uses an operation dispatch list
 - [ ] All old file paths remain importable with `DeprecationWarning`
-- [ ] `ruff check src/mk_cats` reports zero errors
-- [ ] `mypy src/mk_cats --ignore-missing-imports` passes
+- [ ] `ruff check src/cats_maker/mk_cats` reports zero errors
+- [ ] `mypy src/cats_maker/mk_cats --ignore-missing-imports` passes
 - [ ] `pytest tests/mk_cats/` passes with ≥ 80% coverage
 - [ ] Integration diff on `Science` category is empty before → after
 
@@ -463,7 +491,7 @@ diff before_phase_N.txt after_phase_N.txt   # must be empty
 
 ```
 Current:                              Target:
-src/mk_cats/                          src/mk_cats/
+src/cats_maker/mk_cats/                          src/cats_maker/mk_cats/
 ├── __init__.py                       ├── __init__.py          (shim)
 ├── mknew.py (421 lines)              ├── constants.py         (new)
 ├── members_helper.py                 ├── models.py            (new)

@@ -113,7 +113,7 @@ tests/
     │       ├── test_wd_api_bot.py
     │       └── test_wd_bots_main.py
     │
-    └── temp/
+    └── templates/
         ├── _test_temp_more.py
         │
         ├── bots/
@@ -124,7 +124,7 @@ tests/
         │   ├── test_temp_elff.py
         │   └── test_temp_years.py
         │
-        ├── test_temp.py
+        ├── test_main_temps.py
         └── test_temp_more_data.py
 
 ```
