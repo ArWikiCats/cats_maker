@@ -11,20 +11,23 @@ license = { text = "GPL-3.0-or-later" }
 readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["mediawiki", "parser", "wikitext", "wikipedia"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-]
-dependencies = ["requests>=2.31.0", "wikitextparser>=0.55.0"]
+classifiers = []
+dependencies = ["requests>=2.31.0", "wikitextparser>=2.0.0"]
 
 [project.optional-dependencies]
 dev = ["pytest>=7.4.0"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cats_maker"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"requirements.txt" = "requirements.txt"
+
+[tool.hatch.build.targets.wheel.force-include]
+"requirements.txt" = "cats_maker/requirements.txt"
+
+[tool.hatch.build.targets.sdist]
+include = ["src/cats_maker", "requirements.txt"]
 
 # ============================================
 #                 BLACK
@@ -164,7 +167,7 @@ ignore = [
     # "UP045", # Use `X | None` instead of `Optional[X]`
     # "UP006",  # Use `list` instead of `List` for type annotations
     # "UP035",  # Use `X | Y` for type unions instead of `Union[X, Y]`
-    "I001",  # Import block is un-sorted or un-formatted
+    "I001", # Import block is un-sorted or un-formatted
     # "N999",  # Invalid module name
     "UP015", # Unnecessary open mode parameters
 ]

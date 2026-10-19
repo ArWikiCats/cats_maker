@@ -18,7 +18,7 @@
 Install the package directly from the Git repository:
 
 ```bash
-pip install git+https://github.com/ArWikiCats/cats_maker.git
+pip install git+https://github.com/ArWikiCats/cats_maker.git -U
 ```
 
 ### Local Development Installation
