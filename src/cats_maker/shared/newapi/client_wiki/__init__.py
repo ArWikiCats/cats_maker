@@ -1,5 +1,7 @@
 """ """
 
+from __future__ import annotations
+
 from .all_apis import AllAPIS
 from .api_utils import bot_edit
 

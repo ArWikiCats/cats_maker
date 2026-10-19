@@ -8,7 +8,7 @@ import re
 
 import wikitextparser as wtp
 
-from ....shared.api_page import load_main_api
+from ....shared.newapi import AllAPIS
 from ..constants import PRE_TEXT, TO_SEARCH, TOSEARCH_AND_REPLACE
 
 logger = logging.getLogger(__name__)
@@ -116,7 +116,7 @@ def find_doc_and_add(final_categories: str, title: str, create: bool = False) ->
 
     doc_title = f"{title}/شرح"
 
-    api = load_main_api("ar")
+    api = AllAPIS.load("ar")
     page = api.mainpage(doc_title)
     text = page.get_text()
 
@@ -144,7 +144,7 @@ def find_doc_and_add(final_categories: str, title: str, create: bool = False) ->
     summary = f"بوت [[مستخدم:Mr.Ibrahembot/التصانیف المعادلة|التصانيف المعادلة]]: +({fi})"
 
     if new_text != text:
-        save = page.save(new_text, summary=summary, nocreate=not create)
+        save = page.edit(new_text, summary=summary, nocreate=not create)
         if save:
             return True
 

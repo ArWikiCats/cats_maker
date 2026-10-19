@@ -22,8 +22,9 @@ class AskBot:
 
     def ask_user(
         self,
-        newtext: str = "",
-        text: str | None = "",
+        *,
+        newtext: str | None = None,
+        text: str | None = None,
         message: str = "",
         job: str = "General",
         username: str = "",
@@ -39,8 +40,9 @@ class AskBot:
         if not self.ask:
             return True
 
-        text = text or ""
         if text or newtext:
+            text = text or ""
+            newtext = newtext or ""
             if not self.nodiff:
                 pywikibot.showDiff(text, newtext)
 

@@ -252,7 +252,11 @@ class RequestsHandler:
         return data, params
 
     @staticmethod
-    def _inject_token(token: str, data: dict[str, Any], params: dict[str, Any]) -> tuple[dict, dict]:
+    def _inject_token(
+        token: str,
+        data: dict[str, Any],
+        params: dict[str, Any],
+    ) -> tuple[dict, dict]:
         """
         Return (data, params) copies with ``token`` updated to *token*.
         Only one dict should ever carry the key; we update the first match.

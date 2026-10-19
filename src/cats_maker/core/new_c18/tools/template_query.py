@@ -19,50 +19,50 @@ class TemplateCache:
     def __init__(self) -> None:
         self._store: dict[str, dict[str, Any]] = defaultdict(dict)
 
-    def get(self, enlink: str, sitecode: str) -> Any | None:
-        site_cache = self._store[sitecode]
+    def get(self, enlink: str, site_code: str) -> Any | None:
+        site_cache = self._store[site_code]
 
         if enlink in site_cache:
             return site_cache[enlink]
 
         return None
 
-    def set(self, enlink: str, sitecode: str, value: Any) -> None:
-        self._store[sitecode][enlink] = value
+    def set(self, enlink: str, site_code: str, value: Any) -> None:
+        self._store[site_code][enlink] = value
 
 
 _cache = TemplateCache()
 
 
-def get_templates(titles: str | list[str], sitecode: str = "ar") -> dict[str, list[str]] | list[str] | None:
+def get_templates(titles: str | list[str], site_code: str = "ar") -> dict[str, list[str]] | list[str] | None:
     """Single entry point for template queries.
 
     Pass a string for one title, a list for batch.
     """
     if isinstance(titles, str):
-        result = _query_multi(titles, sitecode)
+        result = _query_multi(titles, site_code)
         if not result:
             return None
         return result.get(titles, {}).get("templates")
 
     joined = "|".join(titles)
-    return _query_multi(joined, sitecode)
+    return _query_multi(joined, site_code)
 
 
-def _query_multi(enlink: str, sitecode: str):
+def _query_multi(enlink: str, site_code: str):
     if enlink in SKIP_CATEGORIES:
         return None
 
-    cached = _cache.get(enlink, sitecode)
+    cached = _cache.get(enlink, site_code)
     if cached is not None:
         return cached
 
-    logger.info(f"templatequery {sitecode}:{enlink} . ")
+    logger.info(f"templatequery {site_code}:{enlink} . ")
 
-    sasa = find_page_data(enlink, prop="templates", first_site_code=sitecode)
+    sasa = find_page_data(enlink, prop="templates", first_site_code=site_code)
     result = sasa if sasa else None
 
-    _cache.set(enlink, sitecode, result)
+    _cache.set(enlink, site_code, result)
     return result
 
 

@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from .api_page import load_main_api
+from .newapi import AllAPIS
 
 logger = logging.getLogger(__name__)
 
@@ -91,9 +91,9 @@ class WikiApiHandler:
 
         logger.debug(f" for page {site_code}:{page_title}")
 
-        new_api = load_main_api(site_code, "wikipedia")
+        new_api = AllAPIS.load(site_code, "wikipedia")
         new_api = new_api.newapi()
-        api_response = new_api.post_params(params)
+        api_response = new_api.client_request_safe(params)
 
         if not (api_response and "query" in api_response and "pages" in api_response["query"]):
             logger.debug("API call failed or returned no query/pages.")
@@ -225,9 +225,9 @@ class WikiApiHandler:
         logger.info(f"find_non_hidden_categories for {site_code}:{page_title}")
 
         # Submit the API request
-        new_api = load_main_api(site_code, "wikipedia")
+        new_api = AllAPIS.load(site_code, "wikipedia")
         new_api = new_api.newapi()
-        api_response = new_api.post_params(params)
+        api_response = new_api.client_request_safe(params)
 
         if not (api_response and "query" in api_response and "pages" in api_response["query"]):
             return {}

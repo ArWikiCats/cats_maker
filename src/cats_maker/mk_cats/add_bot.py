@@ -5,8 +5,7 @@ import functools
 import logging
 
 from ..core.new_c18 import add_text_to_template, get_dont_add_pages, sort_categories
-from ..shared.api_page import load_main_api
-from ..shared.newapi import MainPage, function_timer
+from ..shared.newapi import AllAPIS, MainPage, function_timer
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +22,7 @@ def add_text_to_articles(final_categories, newtext) -> str:
 
 @functools.lru_cache(maxsize=1024)
 def _get_page(page_title) -> MainPage | None:
-    api = load_main_api("ar")
+    api = AllAPIS.load("ar")
     page = api.mainpage(page_title)
 
     text = page.get_text()
@@ -91,10 +90,10 @@ def add_to_page(page_title, arcat) -> bool:
 
     newtext = sort_categories(newtext, page_title)
 
-    save = page.save(newtext=newtext, summary=susu)
+    save = page.edit(newtext=newtext, summary=susu)
 
     if not save:
-        logger.error(f"page.save() failed for {page_title=}, {arcat=}")
+        logger.error(f"page.edit() failed for {page_title=}, {arcat=}")
         return False
 
     return True

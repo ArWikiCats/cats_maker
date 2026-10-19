@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from ....config import main_settings
-from ....shared.api_page import load_main_api
+from ....shared.newapi import AllAPIS
 from ..constants import GLOBAL_FALSE_ENTEMPS_LOWER, NO_TEMPLATES_AR
 from ..models import ValidationResult
 
@@ -29,7 +29,7 @@ def _check_page_status(
         template_blacklist: Set of template names that invalidate the page.
         is_ar: Whether this is an Arabic page (affects template prefix).
     """
-    sitr_api = load_main_api(site, "wikipedia")
+    sitr_api = AllAPIS.load(site, "wikipedia")
     info = sitr_api.newapi().get_page_info_from_wikipedia(title)
 
     if not info:
@@ -40,8 +40,8 @@ def _check_page_status(
         logger.info(f"({title}) not exists")
         return ValidationResult(valid=False, reason=f"Page does not exist: {title}")
 
-    if info.get("is_redirectPage"):
-        logger.info(f"({title}) is_redirectPage")
+    if info.get("is_redirect_page"):
+        logger.info(f"({title}) is_redirect_page")
         return ValidationResult(valid=False, reason=f"Page is a redirect: {title}")
 
     if expected_langlink:

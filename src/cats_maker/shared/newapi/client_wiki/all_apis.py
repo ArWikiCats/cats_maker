@@ -5,8 +5,9 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from ....config import main_settings
 from ..api_client import WikiLoginClient
-from . import bot_api
+from .bot_api import NewApi
 from .categories import catdepth_new
 from .pages import super_page
 
@@ -22,29 +23,36 @@ class AllAPIS:
         self,
         lang: str,
         family: str,
-        username: str,
-        password: str,
+        login_bot: WikiLoginClient,
         use_cookies: bool = True,
         cookies_dir: None | str = None,
     ) -> None:
         self.lang = lang
         self.family = family
-        self.username = username
-        self.password = password
         self.use_cookies = use_cookies
         self.cookies_dir = cookies_dir
-        self.login_bot = self._login()
+        self.login_bot = login_bot
 
     def mainpage(self, title: str, *args, **kwargs) -> super_page.MainPage:
         return super_page.MainPage(self.login_bot, title, self.lang, family=self.family)
 
-    def main_page_solve_redirect(self, title: str, *args, **kwargs) -> super_page.MainPage:
+    def main_page_solve_redirect(
+        self,
+        title: str,
+        *args,
+        **kwargs,
+    ) -> super_page.MainPage:
         page = super_page.MainPage(self.login_bot, title, self.lang, family=self.family)
 
         if page.is_redirect():
             target = page.get_redirect_target()
             if target:
-                return super_page.MainPage(self.login_bot, target, self.lang, family=self.family)
+                return super_page.MainPage(
+                    self.login_bot,
+                    target,
+                    self.lang,
+                    family=self.family,
+                )
 
         return page
 
@@ -56,25 +64,48 @@ class AllAPIS:
         return catdepth_new.subcatquery(
             self.login_bot,
             title,
-            sitecode=self.lang,
+            site_code=self.lang,
             family=self.family,
             **kwargs,
         )
 
-    def newapi(self, *args, **kwargs) -> bot_api.NewApi:
-        # ---
-        return bot_api.NewApi(self.login_bot, lang=self.lang, family=self.family)
+    def newapi(self, *args, **kwargs) -> NewApi:
+        return NewApi(self.login_bot, lang=self.lang, family=self.family)
 
-    def _login(self) -> WikiLoginClient:
-        client = WikiLoginClient(
-            lang=self.lang,
-            family=self.family,
-            username=self.username,
-            password=self.password,
-            use_cookies=self.use_cookies,
-            cookies_dir=self.cookies_dir,
+    def client_request_safe(
+        self,
+        params: dict[str, Any],
+        method: str = "get",
+        files=None,
+        **kwargs,
+    ) -> dict[str, Any]:
+
+        return self.login_bot.client_request_safe(
+            params,
+            method=method,
+            files=files,
+            **kwargs,
         )
-        return client
+
+    @classmethod
+    def load(cls, lang: str, family: str = "wikipedia") -> AllAPIS:
+        username = main_settings.wikipedia.credentials.username or ""
+        password = main_settings.wikipedia.credentials.password or ""
+        login_bot = WikiLoginClient.load(
+            username=username,
+            password=password,
+            lang=lang,
+            family=family,
+        )
+        return cls(
+            lang=lang,
+            family=family,
+            login_bot=login_bot,
+        )
+
+    @classmethod
+    def load_arwiki(cls) -> AllAPIS:
+        return cls.load(lang="ar", family="wikipedia")
 
 
 __all__ = [

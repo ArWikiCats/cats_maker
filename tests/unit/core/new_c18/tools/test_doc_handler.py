@@ -245,7 +245,7 @@ class TestFindDocAndAdd:
         mock_page.get_text.return_value = ""
         mock_page.exists.return_value = False
 
-        mocker.patch("src.cats_maker.core.new_c18.tools.doc_handler.load_main_api.MainPage", return_value=mock_page)
+        mocker.patch("src.cats_maker.core.new_c18.tools.doc_handler.AllAPIS.MainPage", return_value=mock_page)
 
         result = find_doc_and_add("[[تصنيف:علوم]]", "قالب:اختبار", create=False)
         assert result is False

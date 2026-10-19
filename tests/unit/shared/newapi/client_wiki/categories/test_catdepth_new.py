@@ -60,7 +60,7 @@ class TestSubcatquery:
         mock_cd_class.return_value = mock_bot
 
         login_bot = MagicMock()
-        result = subcatquery(login_bot, "Test", sitecode="en", print_s=False)
+        result = subcatquery(login_bot, "Test", site_code="en", print_s=False)
 
         mock_cd_class.assert_called_once()
         mock_bot.subcatquery_.assert_called_once()
@@ -78,6 +78,6 @@ class TestSubcatquery:
         mock_cd_class.return_value = mock_bot
 
         login_bot = MagicMock()
-        result = subcatquery(login_bot, "Test", sitecode="en", print_s=False, get_revids=True)
+        result = subcatquery(login_bot, "Test", site_code="en", print_s=False, get_revids=True)
 
         assert result == {"Page1": 123}

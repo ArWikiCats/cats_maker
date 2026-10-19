@@ -5,7 +5,7 @@ import logging
 from typing import Any
 
 from ..config import main_settings
-from ..shared.api_page import load_main_api
+from ..shared import AllAPIS
 
 logger = logging.getLogger(__name__)
 
@@ -13,16 +13,16 @@ API_n_CALLS = {1: 0}
 
 
 def submit_params(params, site_code: str) -> dict[str, Any]:
-    site_api = load_main_api(site_code, "wikipedia")
+    site_api = AllAPIS.load(site_code, "wikipedia")
     return site_api.login_bot.client_request_safe(params)
 
 
-def sub_cats_query(enlink, sitecode, ctype: str = "") -> dict[str, Any]:
+def sub_cats_query(enlink, site_code, ctype: str = "") -> dict[str, Any]:
     if not enlink:
         return {}
 
     langcode = main_settings.en_site.code  # 'en'
-    if sitecode == "en":
+    if site_code == "en":
         langcode = "ar"
 
     params: dict[str, Any] = {
@@ -48,18 +48,18 @@ def sub_cats_query(enlink, sitecode, ctype: str = "") -> dict[str, Any]:
 
     API_n_CALLS[1] += 1
 
-    logger.info(f"API_n_CALLS {API_n_CALLS[1]} for {sitecode}:{enlink}")
+    logger.info(f"API_n_CALLS {API_n_CALLS[1]} for {site_code}:{enlink}")
 
     try:
-        data = submit_params(params, sitecode)
+        data = submit_params(params, site_code)
     except Exception:
         logger.exception(
-            "sub_cats_query failed: sitecode=%s enlink=%s ctype=%s",
-            sitecode,
+            "sub_cats_query failed: site_code=%s enlink=%s ctype=%s",
+            site_code,
             enlink,
             ctype,
         )
-        return {"error": f"Failed to query Wikipedia API for '{enlink}' on '{sitecode}'", "categorymembers": {}}
+        return {"error": f"Failed to query Wikipedia API for '{enlink}' on '{site_code}'", "categorymembers": {}}
 
     tablemember = {}
 

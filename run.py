@@ -3,6 +3,7 @@
 import json
 import logging
 import sys
+
 import requests
 
 from src.cats_maker.config import main_settings

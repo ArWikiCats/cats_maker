@@ -607,6 +607,25 @@ class WikiLoginClient:
     def __repr__(self) -> str:
         return f"WikiLoginClient(lang={self.lang!r}, family={self.family!r}, username={self.username!r})"
 
+    @classmethod
+    def load(
+        cls,
+        username: str,
+        password: str,
+        lang: str,
+        family: str,
+        use_cookies: bool = True,
+        cookies_dir: None | str = None,
+    ) -> WikiLoginClient:
+        return cls(
+            lang=lang,
+            family=family,
+            username=username,
+            password=password,
+            use_cookies=use_cookies,
+            cookies_dir=cookies_dir,
+        )
+
 
 __all__ = [
     "WikiLoginClient",

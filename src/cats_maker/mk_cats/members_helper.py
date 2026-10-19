@@ -16,7 +16,7 @@ import logging
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, MemberLister
 from ..core.sub_cats_bot import sub_cats_query
-from ..shared.api_page import load_main_api
+from ..shared.newapi import AllAPIS
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ def load_non_redirects(lang: str, page_titles: list) -> dict:
     if not page_titles:
         return {}
 
-    _bot = load_main_api(lang, "wikipedia")
+    _bot = AllAPIS.load(lang, "wikipedia")
 
     result = _bot.newapi().find_pages_exists_or_not(page_titles, get_redirect=True)
     return result
