@@ -1204,9 +1204,7 @@ class NewApi(NewApiHelpers):
                 table[_title]["exists"] = False
 
             # langlinks has differ format in both formatversion 1 and 2
-            table[_title]["langlinks"] = {
-                x["lang"]: x.get("*") or x["title"] for x in kk.get("langlinks", [])
-            }
+            table[_title]["langlinks"] = {x["lang"]: x.get("*") or x["title"] for x in kk.get("langlinks", [])}
 
             table[_title]["flagged"] = kk.get("flagged", False) is not False
 
@@ -1215,9 +1213,7 @@ class NewApi(NewApiHelpers):
             q_q = kk.get("pageprops", {}).get("wikibase_item", "")
             table[_title]["wikibase_item"] = q_q
             table[_title]["q"] = q_q
-            linkshere = {
-                x["title"]: x for x in kk.get("linkshere", []) if x["ns"] in [0, 10]
-            }
+            linkshere = {x["title"]: x for x in kk.get("linkshere", []) if x["ns"] in [0, 10]}
             table[_title]["linkshere"] = linkshere
             table[_title]["countlinkshere"] = len(linkshere.keys())
 
@@ -1225,9 +1221,7 @@ class NewApi(NewApiHelpers):
 
             table[_title]["templates"] = [x["title"] for x in kk.get("templates", [])]
 
-            table[_title]["iwlinks"] = {
-                x["prefix"]: x["*"] for x in kk.get("iwlinks", [])
-            }
+            table[_title]["iwlinks"] = {x["prefix"]: x["*"] for x in kk.get("iwlinks", [])}
 
         result = table
 
@@ -1252,7 +1246,6 @@ class NewApi(NewApiHelpers):
             files=files,
             **kwargs,
         )
-
 
     def __repr__(self) -> str:
         return f"NewApi(lang={self.lang!r}, username={self.username!r})"

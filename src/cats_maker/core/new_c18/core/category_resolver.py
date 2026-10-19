@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from ....config import main_settings
-from ....shared import find_page_data, get_arpage_inside_encat, AllAPIS
+from ....shared import AllAPIS, find_page_data, get_arpage_inside_encat
 from ....shared.api_sql import add_namespace_prefix
 from ..constants import DEFAULT_MEMBER_NAMESPACES
 from ..core.category_generator import fetch_category_members

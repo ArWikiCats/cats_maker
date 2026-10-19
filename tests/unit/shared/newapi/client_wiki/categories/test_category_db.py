@@ -230,13 +230,13 @@ class TestPagesTableWork:
     def test_skips_filtered_namespace(self, bot):
         bot.ns = "14"
         table = {}
-        pages = {
-            "Page1": {
+        pages = [
+            {
                 "title": "Page1",
                 "ns": 0,
                 "revisions": [{"timestamp": "2024-01-01T00:00:00Z", "revid": 100}],
             }
-        }
+        ]
         result = bot.pages_table_work(table, pages)
         assert "Page1" not in result
 
