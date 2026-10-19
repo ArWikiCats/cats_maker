@@ -21,3 +21,8 @@ def add_namespace_prefix(title: str, ns: int | str, lang: str = "ar") -> str:
         return title
 
     return f"{prefix}:{title}"
+
+
+__all__ = [
+    "add_namespace_prefix",
+]

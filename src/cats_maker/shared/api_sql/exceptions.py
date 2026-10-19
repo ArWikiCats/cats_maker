@@ -25,3 +25,12 @@ class DatabaseFetchError(DatabaseError):
 
 class ConfigurationError(DatabaseError):
     """Raised when required configuration is missing or invalid."""
+
+
+__all__ = [
+    "DatabaseError",
+    "DatabaseConnectionError",
+    "QueryExecutionError",
+    "DatabaseFetchError",
+    "ConfigurationError",
+]

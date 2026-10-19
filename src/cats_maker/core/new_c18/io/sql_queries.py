@@ -94,3 +94,10 @@ def fetch_dont_add_pages() -> list[str]:
     except Exception as e:
         logger.error(f"SQL error in fetch_dont_add_pages: {e}")
         return []
+
+
+__all__ = [
+    "fetch_ar_category_members",
+    "fetch_en_category_langlinks",
+    "fetch_dont_add_pages",
+]

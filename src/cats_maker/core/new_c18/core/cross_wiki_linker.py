@@ -183,3 +183,12 @@ def get_english_page_title(
                 return "", ""
 
     return en, new_site
+
+
+__all__ = [
+    "resolve_via_wikidata",
+    "resolve_via_api",
+    "get_page_link",
+    "get_en_link_from_ar_text",
+    "get_english_page_title",
+]

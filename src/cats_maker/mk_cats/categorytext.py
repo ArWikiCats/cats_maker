@@ -80,3 +80,11 @@ def generate_category_text(enca, title, qid):
         text += f"\n{ff}"
 
     return text
+
+
+__all__ = [
+    "get_page_link_data",
+    "fetch_commons_category",
+    "generate_portal_content",
+    "generate_category_text",
+]

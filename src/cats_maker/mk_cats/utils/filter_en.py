@@ -79,3 +79,8 @@ def filter_category(cat) -> bool:
             return False
 
     return True
+
+
+__all__ = [
+    "filter_category",
+]

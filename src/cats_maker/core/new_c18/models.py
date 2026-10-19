@@ -44,3 +44,12 @@ class ValidationResult:
 
     valid: bool
     reason: str | None = None
+
+
+__all__ = [
+    "CategoryRef",
+    "PageRef",
+    "WikiPage",
+    "Category",
+    "ValidationResult",
+]

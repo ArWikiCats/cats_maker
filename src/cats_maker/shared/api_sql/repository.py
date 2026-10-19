@@ -81,3 +81,8 @@ class CategoryRepository:
         except Exception as e:
             logger.error("Failed to fetch English titles for category '%s': %s", category_title, e)
             return []
+
+
+__all__ = [
+    "CategoryRepository",
+]

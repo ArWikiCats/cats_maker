@@ -31,3 +31,8 @@ def check_en_temps(en_title: str) -> bool:
             return False
 
     return True
+
+
+__all__ = [
+    "check_en_temps",
+]

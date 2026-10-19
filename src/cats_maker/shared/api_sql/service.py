@@ -74,3 +74,8 @@ class CategoryComparator:
 
         logger.info("Comparison complete. Found %d exclusive titles.", len(exclusive))
         return exclusive
+
+
+__all__ = [
+    "CategoryComparator",
+]

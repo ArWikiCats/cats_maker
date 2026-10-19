@@ -64,3 +64,9 @@ def _query_multi(enlink: str, sitecode: str):
 
     _cache.set(enlink, sitecode, result)
     return result
+
+
+__all__ = [
+    "TemplateCache",
+    "get_templates",
+]

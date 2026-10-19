@@ -571,3 +571,21 @@ class Settings:
 
 # Global settings instance
 main_settings = Settings.load()
+
+
+__all__ = [
+    "Paths",
+    "WikipediaCedentials",
+    "WikipediaConfig",
+    "WikidataConfig",
+    "ApiClientConfig",
+    "DatabaseConfig",
+    "DebugConfig",
+    "BotConfig",
+    "CategoryConfig",
+    "QueryConfig",
+    "SiteConfig",
+    "WikiSiteInfo",
+    "Settings",
+    "default_user_agent",
+]

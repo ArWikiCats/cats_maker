@@ -54,3 +54,8 @@ def make_years_template(title, tex) -> tuple[str, str]:
         return text, template
 
     return "{{تصنيف موسم}}", "تصنيف موسم"
+
+
+__all__ = [
+    "make_years_template",
+]

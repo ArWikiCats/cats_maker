@@ -162,3 +162,15 @@ def collect_category_members(ar_title: str, en_page_title: str) -> list:
     members = remove_redirect_pages("ar", members)
 
     return members
+
+
+__all__ = [
+    "load_non_redirects",
+    "remove_redirect_pages",
+    "gather_members_from_sql",
+    "gather_members_from_api",
+    "merge_member_lists",
+    "filter_invalid_members",
+    "deduplicate_members",
+    "collect_category_members",
+]

@@ -99,3 +99,8 @@ def make_millennium_template(title):
         text = f"{{{{{templatename}|{bld}}}}}\n"
 
     return text, templatename
+
+
+__all__ = [
+    "make_millennium_template",
+]

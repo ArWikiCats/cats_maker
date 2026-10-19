@@ -69,3 +69,10 @@ def sort_categories(text: str, title: str) -> str:
         new_text = new_text.replace("\r", "").replace("\n\n\n\n", "\n").replace("\n\n\n", "\n")
 
     return new_text
+
+
+__all__ = [
+    "arabic_sort_key",
+    "sort_text",
+    "sort_categories",
+]

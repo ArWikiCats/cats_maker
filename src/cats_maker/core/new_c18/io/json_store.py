@@ -122,3 +122,9 @@ def get_dont_add_pages() -> list[str]:
         logger.info("dont_list is empty")
 
     return data if isinstance(data, list) else []
+
+
+__all__ = [
+    "JsonStore",
+    "get_dont_add_pages",
+]

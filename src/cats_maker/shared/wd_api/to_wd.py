@@ -181,3 +181,14 @@ def log_to_wikidata(artitle, entitle) -> None | str:
     summary = f"Bot: New item from [[w:en:{entitle}|{enwiki}]]/[[w:ar:{artitle}|{arwiki}]]."
 
     create_new_item(data, summary)
+
+
+__all__ = [
+    "get_session_post",
+    "post_wd_params",
+    "add_labels",
+    "add_sitelinks_to_wikidata",
+    "create_new_item",
+    "log_to_wikidata_qid",
+    "log_to_wikidata",
+]

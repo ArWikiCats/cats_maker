@@ -75,3 +75,10 @@ def extract_wikidata_qid(text: str) -> str | None:
             return match.group(1)
 
     return None
+
+
+__all__ = [
+    "clean_category_input",
+    "normalize_category_title",
+    "extract_wikidata_qid",
+]

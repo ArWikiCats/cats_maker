@@ -68,3 +68,9 @@ def translate_titles_to_ar(titles: list[str], source_wiki: str = "en", batch_siz
 
     logger.info(f"length of new_ar_list:{len(new_ar_list)}")
     return new_ar_list
+
+
+__all__ = [
+    "fetch_category_members",
+    "translate_titles_to_ar",
+]

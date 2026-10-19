@@ -104,3 +104,8 @@ def validate_categories_for_new_cat(arcat: str, encat: str, wiki: str = "en") ->
         return ar_result
 
     return ValidationResult(valid=True)
+
+
+__all__ = [
+    "validate_categories_for_new_cat",
+]

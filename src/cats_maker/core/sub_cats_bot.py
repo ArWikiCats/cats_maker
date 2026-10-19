@@ -81,3 +81,9 @@ def sub_cats_query(enlink, sitecode, ctype: str = "") -> dict[str, Any]:
     table = {"categorymembers": tablemember}
 
     return table
+
+
+__all__ = [
+    "submit_params",
+    "sub_cats_query",
+]

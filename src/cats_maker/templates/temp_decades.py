@@ -129,3 +129,8 @@ def make_decades_template(title):
         else:
             logger.info(f"decade_ {decade_} not in Baco_decades")
     return "{{تصنيف موسم}}", "تصنيف موسم"
+
+
+__all__ = [
+    "make_decades_template",
+]

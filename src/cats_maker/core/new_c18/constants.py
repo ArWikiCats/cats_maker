@@ -143,3 +143,8 @@ GLOBAL_FALSE_ENTEMPS = [
 ]
 
 GLOBAL_FALSE_ENTEMPS_LOWER = [x.lower() for x in GLOBAL_FALSE_ENTEMPS]
+
+
+__all__ = [
+    "Namespace",
+]

@@ -213,3 +213,13 @@ def new_category(enca, title, categories, qid, family: str = "") -> CategoryResu
         return result
 
     return result
+
+
+__all__ = [
+    "CategoryResult",
+    "page_put",
+    "create_page",
+    "add_text_to_cat",
+    "make_category",
+    "new_category",
+]

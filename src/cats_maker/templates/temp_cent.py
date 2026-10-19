@@ -112,3 +112,8 @@ def make_century_template(title):
             return text, template
 
     return "{{تصنيف موسم}}", "تصنيف موسم"
+
+
+__all__ = [
+    "make_century_template",
+]

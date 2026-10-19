@@ -98,3 +98,9 @@ def add_to_page(page_title, arcat) -> bool:
         return False
 
     return True
+
+
+__all__ = [
+    "add_text_to_articles",
+    "add_to_page",
+]

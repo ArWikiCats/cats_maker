@@ -178,3 +178,12 @@ def add_text_to_template(text: str, final_categories: str, title: str) -> str:
         return text
 
     return add_direct(text, final_categories)
+
+
+__all__ = [
+    "add_to_text_temps",
+    "add_to_doc_page",
+    "add_direct",
+    "find_doc_and_add",
+    "add_text_to_template",
+]

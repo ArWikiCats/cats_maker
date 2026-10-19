@@ -159,3 +159,8 @@ class CategoryResolver:
                     listen_page_title.append(arpagetitle)
 
         return listen_page_title
+
+
+__all__ = [
+    "CategoryResolver",
+]
