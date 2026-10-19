@@ -8,7 +8,7 @@ from collections.abc import Callable
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
 from ..shared import find_non_hidden_categories
-from ..shared.api_page import load_main_api
+from ..shared.newapi import AllAPIS
 from ..shared.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
 from .add_bot import add_to_page
 from .create_category_page import new_category
@@ -136,7 +136,7 @@ def _check_if_artitle_exists(test_title) -> bool:
     if not test_title.startswith("تصنيف:"):
         test_title = f"تصنيف:{test_title}"
 
-    api = load_main_api(WIKI_SITE_AR["code"])
+    api = AllAPIS.load(WIKI_SITE_AR["code"])
     page = api.mainpage(test_title)
 
     if page.exists():

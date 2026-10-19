@@ -5,7 +5,7 @@ import functools
 import logging
 
 from ..core.new_c18 import add_text_to_template, get_dont_add_pages, sort_categories
-from ..shared.api_page import load_main_api
+from ..shared.newapi import AllAPIS
 from ..shared.newapi import MainPage, function_timer
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def add_text_to_articles(final_categories, newtext) -> str:
 
 @functools.lru_cache(maxsize=1024)
 def _get_page(page_title) -> MainPage | None:
-    api = load_main_api("ar")
+    api = AllAPIS.load("ar")
     page = api.mainpage(page_title)
 
     text = page.get_text()

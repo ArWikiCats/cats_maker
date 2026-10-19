@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from ....config import main_settings
-from ....shared import find_page_data, load_main_api
+from ....shared import find_page_data, AllAPIS
 from ..constants import DEFAULT_MEMBER_NAMESPACES
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def fetch_category_members(title: str, wiki: str = "en", namespaces: list[int] |
     if namespaces == [14]:
         ns_str = "14"
 
-    api = load_main_api(wiki)
+    api = AllAPIS.load(wiki)
     cat_member = api.catdepth(title, depth=0, ns=ns_str, with_lang="ar")
 
     return [title.replace("_", " ") for title, info in cat_member.items() if int(info["ns"]) in namespaces]

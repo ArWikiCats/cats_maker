@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from ....config import main_settings
-from ....shared import find_page_data, get_arpage_inside_encat, load_main_api
+from ....shared import find_page_data, get_arpage_inside_encat, AllAPIS
 from ....shared.api_sql import add_namespace_prefix
 from ..constants import DEFAULT_MEMBER_NAMESPACES
 from ..core.category_generator import fetch_category_members
@@ -41,7 +41,7 @@ class CategoryResolver:
             ar_list = [add_namespace_prefix(r["page_title"], r["page_namespace"], lang="ar") for r in rows]
 
         if not ar_list:
-            api = load_main_api("ar")
+            api = AllAPIS.load("ar")
             cat_members = api.catdepth("Category:" + ar_title, depth=0, ns="all")
             ar_list = list(cat_members.keys())
 
@@ -90,7 +90,7 @@ class CategoryResolver:
     def _en_category_members(self, enpage_title: str, wiki: str = "en") -> list[str]:
         logger.info(f"from category: {enpage_title}")
         namespace_ids = list(DEFAULT_MEMBER_NAMESPACES)
-        api = load_main_api(wiki)
+        api = AllAPIS.load(wiki)
         cat_members = api.catdepth(enpage_title, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
         return [title for title, info in cat_members.items() if int(info["ns"]) in namespace_ids]
 

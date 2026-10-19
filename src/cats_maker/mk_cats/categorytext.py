@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 """ """
 
-from ..shared.api_page import load_main_api
+from ..shared.newapi import AllAPIS
 from ..shared.wd_api import get_p373_api
 from ..templates import main_make_temp_no_title
 from .categorytext_data import LocalLanguageLinks, category_mapping
 from .utils import portal_en_to_ar_lower
 
 
-def get_page_link_data(title: str, sitecode: str, ns: int = 100) -> list[str]:
-    api = load_main_api(sitecode)
+def get_page_link_data(title: str, site_code: str, ns: int = 100) -> list[str]:
+    api = AllAPIS.load(site_code)
     page = api.mainpage(title)
 
     json1 = page.page_links()

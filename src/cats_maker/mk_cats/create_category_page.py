@@ -5,7 +5,7 @@ import logging
 from typing import NamedTuple
 
 from ..core.new_c18.constants import SKIP_ENCATS
-from ..shared.api_page import load_main_api
+from ..shared.newapi import AllAPIS
 from ..templates import main_make_temp_no_title
 from . import categorytext
 
@@ -30,7 +30,7 @@ def page_put(title, new_text, msg):
     """
     used in tests
     """
-    api = load_main_api("ar")
+    api = AllAPIS.load("ar")
     page = api.mainpage(title)
 
     text = page.get_text()
@@ -168,7 +168,7 @@ def make_category(categories, enca, title, qid, family: str = "") -> CategoryRes
     text = text + caia
     text += f"\n\n[[en:{enca}]]"
 
-    api = load_main_api("ar")
+    api = AllAPIS.load("ar")
     page = api.mainpage(title)
 
     if page.get_text() or page.exists():

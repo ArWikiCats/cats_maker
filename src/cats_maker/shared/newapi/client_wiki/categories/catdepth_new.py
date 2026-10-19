@@ -16,9 +16,9 @@ FAMILY = "wikipedia"
 
 
 @functools.lru_cache(maxsize=256)
-def title_process(title: str, sitecode: str) -> str:
+def title_process(title: str, site_code: str) -> str:
     prefixes = CATEGORY_PREFIXES
-    start_prefixes = prefixes.get(sitecode)
+    start_prefixes = prefixes.get(site_code)
 
     if start_prefixes and not title.startswith(start_prefixes):
         title = start_prefixes + title
@@ -51,21 +51,21 @@ def args_group(title: str, kwargs: dict) -> dict:
 def subcatquery(
     login_bot,
     title: str,
-    sitecode: str = SITECODE,
+    site_code: str = SITECODE,
     **kwargs,
 ) -> dict:
     print_s = kwargs.get("print_s", True)
     get_revids = kwargs.get("get_revids", False)
 
-    title = title_process(title, sitecode)
+    title = title_process(title, site_code)
     args2 = args_group(title, kwargs)
 
     if print_s:
         logger.debug(
-            f"sub cat query for {sitecode}:{title}, depth:{args2['depth']}, ns:{args2['ns']}, onlyns:{args2['onlyns']}"
+            f"sub cat query for {site_code}:{title}, depth:{args2['depth']}, ns:{args2['ns']}, onlyns:{args2['onlyns']}"
         )
 
-    # logger.debug(f"starting subcategory query: {sitecode}:{title}")
+    # logger.debug(f"starting subcategory query: {site_code}:{title}")
     bot = CategoryDepth(login_bot, title, **kwargs)
     result: dict[str, dict] = bot.subcatquery_()  # type: ignore
 
@@ -75,7 +75,7 @@ def subcatquery(
     if print_s:
         lenpages = bot.get_len_pages()
         logger.debug(
-            f"find {len(result)} pages({args2['ns']}) in {sitecode}:{title}, depth:{args2['depth']} | {lenpages=}"
+            f"find {len(result)} pages({args2['ns']}) in {site_code}:{title}, depth:{args2['depth']} | {lenpages=}"
         )
 
     return result

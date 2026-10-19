@@ -11,7 +11,7 @@ from src.cats_maker.core.new_c18.core.category_generator import (
 
 
 class TestFetchCategoryMembers:
-    @patch("src.cats_maker.core.new_c18.core.category_generator.load_main_api")
+    @patch("src.cats_maker.core.new_c18.core.category_generator.AllAPIS.load")
     def test_returns_titles(self, mock_load_api):
         mock_api = MagicMock()
         mock_api.catdepth.return_value = {
@@ -23,7 +23,7 @@ class TestFetchCategoryMembers:
         assert "Page1" in result
         assert "Page2" in result
 
-    @patch("src.cats_maker.core.new_c18.core.category_generator.load_main_api")
+    @patch("src.cats_maker.core.new_c18.core.category_generator.AllAPIS.load")
     def test_filters_by_namespace(self, mock_load_api):
         mock_api = MagicMock()
         mock_api.catdepth.return_value = {
