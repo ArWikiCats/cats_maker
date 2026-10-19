@@ -15,7 +15,7 @@ def mock_login_bot():
 
 
 class TestALLAPIS:
-    @patch("src.cats_maker.shared.newapi.client_wiki.all_apisWikiLoginClient.load")
+    @patch("src.cats_maker.shared.newapi.client_wiki.all_apis.WikiLoginClient.load")
     def test_init_sets_attributes(self, mock_wlc, mock_login_bot):
         mock_wlc.return_value = mock_login_bot
         api = AllAPIS("ar", "wikipedia", mock_login_bot)
@@ -26,7 +26,7 @@ class TestALLAPIS:
         assert api.login_bot == mock_login_bot
 
     @patch("src.cats_maker.shared.newapi.client_wiki.all_apis.super_page")
-    @patch("src.cats_maker.shared.newapi.client_wiki.all_apisWikiLoginClient.load")
+    @patch("src.cats_maker.shared.newapi.client_wiki.all_apis.WikiLoginClient.load")
     def test_main_page_returns_main_page(self, mock_wlc, mock_super_page, mock_login_bot):
         mock_wlc.return_value = mock_login_bot
         api = AllAPIS("ar", "wikipedia", mock_login_bot)
