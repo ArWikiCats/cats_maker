@@ -87,7 +87,7 @@ def make_decades_template(title):
         if bld == title:
             bld = ""
         logger.info(f" decade_:'{decade_}' , bld:'{bld}' ")
-        Y, YY = "", ""
+        first_param, second_param = "", ""
 
         template = f"{cacaca[tex]}بلد عقد"
 
@@ -99,18 +99,18 @@ def make_decades_template(title):
             dex = ""
 
             if len(decade2) == 4:
-                Y = decade2[0] + decade2[1]  # + decade2[2]
-                YY = decade2[2]
+                first_param = decade2[0] + decade2[1]  # + decade2[2]
+                second_param = decade2[2]
             elif len(decade2) == 3:
-                Y = decade2[0]
-                YY = decade2[1]  # + decade2[1]
+                first_param = decade2[0]
+                second_param = decade2[1]  # + decade2[1]
             elif len(decade2) == 2:
-                Y, YY = "", ""
+                first_param, second_param = "", ""
                 dex = decade2
             else:
                 logger.info(f' len(decade2) :"{len(decade2)}".')
 
-            logger.info(f" Y:{Y} , YY:{YY} ,len(decade2): {len(decade2)}.")
+            logger.info(f" Y:{first_param} , YY:{second_param} ,len(decade2): {len(decade2)}.")
 
             sus = ""
             if not In:
@@ -119,11 +119,11 @@ def make_decades_template(title):
                 dex = "|عقد=" + dex
 
             template = f"{cacaca[tex]}بلد عقد"
-            text = f"{{{{{template}|{Y}|{YY}|{dex}|قرن={qrn}|بلد={bld}{sus}}}}}\n"
+            text = f"{{{{{template}|{first_param}|{second_param}|{dex}|قرن={qrn}|بلد={bld}{sus}}}}}\n"
 
             if not bld:
                 template = f"{tex}عقد"
-                text = f"{{{{{template}|{Y}|{YY}|قرن={qrn}{sus}}}}}\n"
+                text = f"{{{{{template}|{first_param}|{second_param}|قرن={qrn}{sus}}}}}\n"
 
             return text, template
         else:

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 
 from ....config import main_settings
 from ....shared.api_sql import CategoryComparator
@@ -38,7 +39,7 @@ class MemberLister:
         """
         Resolve the list of Arabic pages to add to a new category."""
         enpage_title = enpage_title.strip()
-        listen_page_title: list[str] = []
+        listen_page_title: list[str | Any] = []
 
         validation = validate_categories_for_new_cat(ar_title, enpage_title, wiki="en")
         if validation.valid:

@@ -8,7 +8,6 @@ from .client_wiki.api_utils import (
     AskBot,
     HandleErrors,
     change_codes,
-    extract_templates_and_params,
     is_page_editable,
 )
 from .client_wiki.pages import MainPage
@@ -18,7 +17,6 @@ __all__ = [
     "HandleErrors",
     "MainPage",
     "AllAPIS",
-    "extract_templates_and_params",
     "is_page_editable",
     "WikiLoginClient",
     "change_codes",

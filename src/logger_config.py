@@ -52,7 +52,7 @@ def setup_file_handler(
 
 
 def setup_logging(
-    level: str = "INFO",
+    level: str | int = "INFO",
     name: str = "cats_maker",
     log_file: str | None = None,
     error_log_file: str | None = None,

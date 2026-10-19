@@ -135,7 +135,7 @@ class CategoryDepth:
 
         if self.ns in ["0", "10"]:
             params["gcmtype"] = "page"
-        elif self.ns in [14]:
+        elif self.ns in ["14"]:
             params["gcmtype"] = "subcat"
 
         if self.nslist == [14]:
@@ -199,7 +199,7 @@ class CategoryDepth:
             else:
                 tablese["categories"] = categories
 
-    def pages_table_work(self, table: dict, pages: dict) -> dict:
+    def pages_table_work(self, table: dict, pages: dict | Any) -> dict:
         self.len_pages += len(pages)
 
         for category in pages:

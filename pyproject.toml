@@ -31,7 +31,7 @@ packages = ["src/cats_maker"]
 # ============================================
 [tool.black]
 line-length = 120
-target-version = ["py312"]
+target-version = ["py313"]
 # include = '\.pyi?$'
 exclude = '''
     /(
@@ -137,7 +137,7 @@ exclude = [
     "C:/**",
 ]
 line-length = 120
-target-version = "py312"
+target-version = "py313"
 fix = true
 
 [tool.ruff.format]
@@ -164,8 +164,8 @@ ignore = [
     # "UP045", # Use `X | None` instead of `Optional[X]`
     # "UP006",  # Use `list` instead of `List` for type annotations
     # "UP035",  # Use `X | Y` for type unions instead of `Union[X, Y]`
-    "I001", # Import block is un-sorted or un-formatted
-    # "N999",   # Invalid module name
+    "I001",  # Import block is un-sorted or un-formatted
+    # "N999",  # Invalid module name
     "UP015", # Unnecessary open mode parameters
 ]
 select = [
@@ -202,7 +202,7 @@ select = [
 line_length = 120
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false
@@ -222,7 +222,7 @@ max-line-length = 120
 [tool.pyright]
 reportIncompatibleMethodOverride = "none"
 # Target Python version for type analysis
-pythonVersion = "3.12"
+pythonVersion = "3.13"
 stubPath = "typings"
 # Paths to include and exclude from checking
 include = ["src"]
@@ -279,7 +279,7 @@ exclude = [
 ]
 
 # Diagnostic modes: "basic" or "standard" or "strict"
-typeCheckingMode = "standard"
+typeCheckingMode = "strict"
 
 # Automatically find virtual environments
 venvPath = "."

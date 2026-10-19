@@ -16,7 +16,7 @@ def is_page_editable(
     title_page: str = "",
     bot_script: str = "all",
     page_data: dict[str, Any] | None = None,
-    delay: int = 0,
+    delay: int | Any = 0,
     use_cache: bool = True,
 ) -> bool:
     """

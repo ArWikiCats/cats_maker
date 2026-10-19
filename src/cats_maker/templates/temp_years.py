@@ -23,32 +23,37 @@ def make_years_template(title, tex) -> tuple[str, str]:
     bld = re.sub(ttt, r"\g<4>", title)
     if ye == title:
         ye = ""
-    Y, YY = "", ""
+
     template = f"{cacaca[tex]}بلد"
     logger.info(f" :{title} , ye:{ye}, tex:{tex}")
+
+    second_param, first_param = "", ""
 
     if ye in years_baco:
         logger.info(f"ye in years_baco {years_baco[ye]}")
         if len(ye) == 4:
-            Y = ye[3]
-            YY = ye[0] + ye[1] + ye[2]
+            second_param = ye[3]
+            first_param = ye[0] + ye[1] + ye[2]
         elif len(ye) == 3:
-            Y = ye[2]
-            YY = ye[0] + ye[1]
+            second_param = ye[2]
+            first_param = ye[0] + ye[1]
         elif len(ye) == 2:
-            Y = ye[1]
-            YY = ye[0]
+            second_param = ye[1]
+            first_param = ye[0]
         elif len(ye) == 1:
-            Y = ye
-            YY = ""
+            second_param = ye
+            first_param = ""
         if bld.startswith("حسب"):
             bld = f"{bld}|في="
 
-        text = f"{{{{{template}|{YY}|{Y}|{bld}}}}}"
-        logger.info(f' Y:"{YY}" ,YY:"{Y}", bld:"{bld}" ')
+        text = f"{{{{{template}|{first_param}|{second_param}|{bld}}}}}"
+
+        logger.info(f" {first_param=}, {second_param=}, {bld=} ")
+
         if not bld:
             template = f"{cacaca[tex]}سنة"
-            text = f"{{{{{template}|{YY}|{Y}}}}}"
+            text = f"{{{{{template}|{first_param}|{second_param}}}}}"
+
         logger.info(text)
 
         return text, template

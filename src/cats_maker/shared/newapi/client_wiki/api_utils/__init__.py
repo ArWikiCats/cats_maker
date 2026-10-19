@@ -3,7 +3,6 @@ from __future__ import annotations
 from .ask_bot import AskBot
 from .bot_edit import is_page_editable
 from .handel_errors import HandleErrors
-from .txtlib import extract_templates_and_params
 
 change_codes = {
     "bat_smg": "bat-smg",
@@ -24,6 +23,5 @@ __all__ = [
     "AskBot",
     "change_codes",
     "is_page_editable",
-    "extract_templates_and_params",
     "HandleErrors",
 ]
