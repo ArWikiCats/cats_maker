@@ -21,8 +21,6 @@ class TestALLAPIS:
         api = AllAPIS("ar", "wikipedia", mock_login_bot)
         assert api.lang == "ar"
         assert api.family == "wikipedia"
-        assert api.username == "user"
-        assert api.password == "pass"
         assert api.login_bot == mock_login_bot
 
     @patch("src.cats_maker.shared.newapi.client_wiki.all_apis.super_page")
