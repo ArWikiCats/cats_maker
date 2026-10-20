@@ -168,7 +168,7 @@ class TestFetchCommonsCategory:
 
         fetch_commons_category("Category:Test", "Q999")
 
-        mock_p373.assert_called_once_with(q="Q999", titles="Category:Test", sites="enwiki")
+        mock_p373.assert_called_once_with(qid="Q999", title="Category:Test", sites="enwiki")
 
 
 # ===== Tests for generate_portal_content =====

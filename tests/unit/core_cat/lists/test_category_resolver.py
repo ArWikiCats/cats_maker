@@ -70,7 +70,7 @@ class TestListArPagesInCat:
         Test that method returns a list"""
         mocker.patch(
             "src.cats_maker.core_cat.lists.category_resolver.ArCategorySQL.sql_retrieve_category_members_list",
-            return_value=[{"page_title": "test", "page_namespace": 0}],
+            return_value=["test"],
         )
 
         resolver = CategoryResolver()
@@ -84,7 +84,7 @@ class TestListArPagesInCat:
         Test that SQL is used when enabled"""
         mock_sql = mocker.patch(
             "src.cats_maker.core_cat.lists.category_resolver.ArCategorySQL.sql_retrieve_category_members_list",
-            return_value=[{"page_title": "صفحة1", "page_namespace": 0}],
+            return_value=["صفحة1"],
         )
 
         resolver = CategoryResolver(backend="sql")
@@ -97,7 +97,7 @@ class TestListArPagesInCat:
         Test that spaces are handled correctly"""
         mocker.patch(
             "src.cats_maker.core_cat.lists.category_resolver.ArCategorySQL.sql_retrieve_category_members_list",
-            return_value=[{"page_title": "test", "page_namespace": 0}],
+            return_value=["test"],
         )
 
         resolver = CategoryResolver(backend="sql")

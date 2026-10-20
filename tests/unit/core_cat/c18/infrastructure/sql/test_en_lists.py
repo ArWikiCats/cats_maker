@@ -1,7 +1,3 @@
-"""
-Unit tests for src/cats_maker/core_cat/infrastructure/sql/en_lists.py module.
-"""
-
 from types import SimpleNamespace
 
 import pytest
@@ -23,6 +19,10 @@ class FakeDB:
         self.calls = 0
         self.loaded = {}
 
+    @staticmethod
+    def can_use_sql():
+        return True
+
     def select(self, query, params=None):
         self.calls += 1
         self.last_query = query
@@ -40,9 +40,12 @@ class FakeDB:
 
 
 class FakeWrapper:
-    def __init__(self, can_use=True, ns_filter="0, 10, 14"):
+    def __init__(self, config=None, can_use=True) -> None:
         self._can_use = can_use
-        self.config = SimpleNamespace(sql_ns_filter=ns_filter)
+        self.config = config or SimpleNamespace(
+            sql_ns_filter="14",
+            use_sql=can_use,
+        )
 
     def can_use_sql(self):
         return self._can_use
@@ -57,13 +60,15 @@ def make_sql(
     en_false_templates: list[str] | None = None,
 ) -> tuple[EnCategorySQL, FakeDB]:
     db = FakeDB(rows=rows, should_fail=should_fail)
-    wrapper = FakeWrapper(can_use=can_use, ns_filter=ns_filter)
+    config = SimpleNamespace(sql_ns_filter=ns_filter, use_sql=can_use)
+    wrapper = FakeWrapper(config, can_use=can_use)
 
     en_false_templates = en_false_templates if en_false_templates is not None else ["Some template", "Other_template"]
 
     client = EnCategorySQL(
         client=db,  # pyright: ignore[reportArgumentType]
         wrapper=wrapper,  # pyright: ignore[reportArgumentType]
+        config=config,  # pyright: ignore[reportArgumentType]
         en_false_templates=en_false_templates,
     )
     return client, db
@@ -81,7 +86,7 @@ class TestInit:
         assert sql.can_use_sql is False
 
     def test_explicit_config_overrides_wrapper_config(self):
-        config = SimpleNamespace(sql_ns_filter="14")
+        config = SimpleNamespace(sql_ns_filter="14", use_sql=False)
         sql = EnCategorySQL(client=FakeDB(), wrapper=FakeWrapper(), config=config)
         assert sql.config is config
         assert sql.sql_ns_filter == "14"
@@ -168,9 +173,18 @@ class TestFetchArabicTitlesFromEnCategory:
         assert sql.fetch_arabic_titles_from_en_category("Category:Foo") == ["أ"]
 
     def test_duplicates_removed_preserving_order(self):
-        rows = [{"ll_title": "ب"}, {"ll_title": "أ"}, {"ll_title": "ب"}, {"ll_title": "ج"}]
+        rows = [
+            {"ll_title": "ب"},
+            {"ll_title": "أ"},
+            {"ll_title": "ب"},
+            {"ll_title": "ج"},
+        ]
         sql, _ = make_sql(rows=rows)
-        assert sql.fetch_arabic_titles_from_en_category("Category:Foo") == ["ب", "أ", "ج"]
+        assert sql.fetch_arabic_titles_from_en_category("Category:Foo") == [
+            "ب",
+            "أ",
+            "ج",
+        ]
 
     def test_no_rows_returns_empty_list(self):
         sql, _ = make_sql(rows=[])

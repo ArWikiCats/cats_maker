@@ -1,7 +1,3 @@
-"""
-Unit tests for src/cats_maker/core_cat/infrastructure/sql/ar_lists.py module.
-"""
-
 from types import SimpleNamespace
 
 import pytest
@@ -9,6 +5,19 @@ import pytest
 from src.cats_maker.core_cat.c18.infrastructure.sql.ar_lists import (
     ArCategorySQL,
 )
+
+
+class FakeNamespaceHandler:
+    """Prefixes titles by namespace id, like the real handler would."""
+
+    PREFIXES = {"0": "", "10": "قالب:", "14": "تصنيف:"}
+
+    def __init__(self):
+        self.calls = []
+
+    def get_full_title(self, title, ns):
+        self.calls.append((title, ns))
+        return f"{self.PREFIXES.get(ns, '')}{title}"
 
 
 class FakeDB:
@@ -22,6 +31,10 @@ class FakeDB:
         self.last_params = {}
         self.calls = 0
         self.loaded = {}
+
+    @staticmethod
+    def can_use_sql():
+        return True
 
     def select(self, query, params=None):
         self.calls += 1
@@ -40,25 +53,15 @@ class FakeDB:
 
 
 class FakeWrapper:
-    def __init__(self, can_use=True, ns_filter="0, 10, 14"):
+    def __init__(self, config=None, can_use=True) -> None:
         self._can_use = can_use
-        self.config = SimpleNamespace(sql_ns_filter=ns_filter)
+        self.config = config or SimpleNamespace(
+            sql_ns_filter="0, 10, 14",
+            use_sql=can_use,
+        )
 
     def can_use_sql(self):
         return self._can_use
-
-
-class FakeNamespaceHandler:
-    """Prefixes titles by namespace id, like the real handler would."""
-
-    PREFIXES = {"0": "", "10": "قالب:", "14": "تصنيف:"}
-
-    def __init__(self):
-        self.calls = []
-
-    def get_full_title(self, title, ns):
-        self.calls.append((title, ns))
-        return f"{self.PREFIXES.get(ns, '')}{title}"
 
 
 def make_sql(
@@ -69,7 +72,8 @@ def make_sql(
 ) -> tuple[ArCategorySQL, FakeDB, FakeNamespaceHandler]:
     db = FakeDB(rows=rows, should_fail=should_fail)
     handler = FakeNamespaceHandler()
-    wrapper = FakeWrapper(can_use=can_use)
+    config = SimpleNamespace(use_sql=can_use)
+    wrapper = FakeWrapper(config, can_use=can_use)
 
     client = ArCategorySQL(
         client=db,  # pyright: ignore[reportArgumentType]
@@ -157,7 +161,7 @@ class TestFetchArCategoryMembers:
         rows = [{"page_title": "فيزياء_نظرية", "page_namespace": 0}]
         sql, _, handler = make_sql(rows=rows)
         sql.sql_retrieve_category_members_list("تصنيف:علوم")
-        assert handler.calls == [("فيزياء نظرية", "0")]
+        assert handler.calls == [("فيزياء_نظرية", "0")]
 
     def test_result_order_is_preserved(self):
         rows = [

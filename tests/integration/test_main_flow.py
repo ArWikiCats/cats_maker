@@ -34,7 +34,7 @@ class TestMainFlowIntegration:
         mock_wikidata.return_value = {"q": "Q12345", "sitelinks": {}}
 
         # Mock LCN (Language Code Navigator)
-        mock_lcn = mocker.patch("src.cats_maker.shared.langlink.LangLinksClient.find_page_categories_informations")
+        mock_lcn = mocker.patch("src.cats_maker.mk_cats.mknew.LangLinksClient.find_page_categories_informations")
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in mknew)
@@ -48,10 +48,10 @@ class TestMainFlowIntegration:
         mock_new_cat.return_value = True
 
         # Mock MemberLister.get_listen_page_title (used in members_helper)
-        mock_listen = mocker.patch(
-            "src.cats_maker.core_cat.c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title"
-        )
-        mock_listen.return_value = ["Article1", "Article2"]
+        # mock_listen = mocker.patch(
+        #     "src.cats_maker.core_cat.c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title"
+        # )
+        # mock_listen.return_value = ["Article1", "Article2"]
 
         # Mock CategoryResolver.make_lit_api_way (used in members_helper)
         mock_lit_api = mocker.patch("src.cats_maker.core_cat.lists.category_resolver.CategoryResolver.make_lit_api_way")
@@ -75,7 +75,7 @@ class TestMainFlowIntegration:
             "lcn": mock_lcn,
             "sql": mock_sql,
             "new_cat": mock_new_cat,
-            "listen": mock_listen,
+            # "listen": mock_listen,
             "lit_api": mock_lit_api,
             "log_wd": mock_log_wd,
             "make_ar_list": mock_make_ar_list,

@@ -190,7 +190,7 @@ class TestGetDontAddPages:
     ) -> None:
         """Test that empty list is returned when fetch returns dict instead of list."""
         monkeypatch.setattr(
-            "src.cats_maker.core_cat.c18.io.json_store.EnCategorySQL.fetch_dont_add_pages",
+            "src.cats_maker.core_cat.c18.io.json_store.ArCategorySQL.fetch_dont_add_pages",
             lambda self: {"key": "value"},
         )
 

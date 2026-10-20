@@ -45,13 +45,13 @@ def mock_category_deps(mocker) -> MockCategoryDependencies:
     return MockCategoryDependencies(
         page_put=mocker.patch("src.cats_maker.mk_cats.create_category_page.page_put", return_value=False),
         fetch_commons_category=mocker.patch(
-            "src.cats_maker.mk_cats.create_category_page.categorytext.fetch_commons_category", return_value=""
+            "src.cats_maker.mk_cats.create_category_page.fetch_commons_category", return_value=""
         ),
         generate_portal_content=mocker.patch(
-            "src.cats_maker.mk_cats.create_category_page.categorytext.generate_portal_content", return_value=[]
+            "src.cats_maker.mk_cats.create_category_page.generate_portal_content", return_value=[]
         ),
         main_make_temp_no_title=mocker.patch(
-            "src.cats_maker.mk_cats.create_category_page.categorytext.main_make_temp_no_title", return_value=""
+            "src.cats_maker.mk_cats.create_category_page.main_make_temp_no_title", return_value=""
         ),
     )
 
