@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from .....shared import AllAPIS
+from ..wrapper import SharedWrapper
 from .api_formatter import ApiFormatData
 
 logger = logging.getLogger(__name__)
@@ -16,20 +16,12 @@ class CategoryMembersClient(ApiFormatData):
 
     def __init__(
         self,
+        wrapper: SharedWrapper | None = None,
         valid_namespace_ids: list[int] | None = None,
     ) -> None:
+        self.wrapper = wrapper or SharedWrapper()
         self._call_count = 0
         self.valid_namespace_ids = valid_namespace_ids or [0, 14, 10, 100]
-
-    def client_request_safe_main_api(
-        self,
-        params: dict[str, Any],
-        code: str,
-        family: str = "wikipedia",
-    ) -> dict[str, Any]:
-        api = AllAPIS.load(code, family)
-        data = api.client_request_safe(params) or {}
-        return data
 
     def retrieve_category_members_list(
         self,
@@ -70,7 +62,7 @@ class CategoryMembersClient(ApiFormatData):
         if ctype in {"subcat", "page"}:
             params["gcmtype"] = ctype
 
-        data = self.client_request_safe_main_api(params, site_code, "wikipedia")
+        data = self.wrapper.client_request_safe_main_api(params, site_code, "wikipedia")
 
         pages = data.get("query", {}).get("pages", [])
 
@@ -128,7 +120,7 @@ class CategoryMembersClient(ApiFormatData):
         if ctype in {"subcat", "page"}:
             params["gcmtype"] = ctype
 
-        data = self.client_request_safe_main_api(params, site_code, "wikipedia")
+        data = self.wrapper.client_request_safe_main_api(params, site_code, "wikipedia")
 
         tablemember: dict[str, dict[str, Any]] = {}
 
