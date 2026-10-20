@@ -9,8 +9,7 @@ from .langlinks import LangLinksClient
 
 from .....config import main_settings
 from .....shared import AllAPIS
-from .....shared.api_sql import add_namespace_prefix
-from ...config.constants import DEFAULT_MEMBER_NAMESPACES
+from .....config.constants import DEFAULT_MEMBER_NAMESPACES
 from .category_generator import fetch_category_members
 from ..sql.ar_lists import ArCategorySQL
 from ..sql.en_lists import EnCategorySQL
@@ -48,9 +47,8 @@ class CategoryResolver:
         ar_list: list[str] = []
 
         if self._use_sql():
-            rows = self.wiki_query_service.sql_retrieve_category_members_list(ar_title)
+            ar_list = self.wiki_query_service.sql_retrieve_category_members_list(ar_title)
 
-            ar_list = [add_namespace_prefix(r["page_title"], r["page_namespace"], lang="ar") for r in rows]
 
         if not ar_list:
             api = AllAPIS.load("ar")
