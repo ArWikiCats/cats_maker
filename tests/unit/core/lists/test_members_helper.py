@@ -2,7 +2,6 @@
 Tests for members_helper.py
 
 This module tests the helper functions for category member processing:
-- gather_members_from_sql() - Gather members from SQL sources
 - gather_members_from_api() - Gather members from API
 - merge_member_lists() - Merge multiple member lists
 - filter_invalid_members() - Filter out invalid members
@@ -15,26 +14,19 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.cats_maker.core.new_c18.lists.members_helper import (
+from src.cats_maker.core.lists.members_helper import (
     collect_category_members,
     deduplicate_members,
     filter_invalid_members,
     gather_members_from_api,
-    gather_members_from_sql,
     merge_member_lists,
 )
 
 
 @pytest.fixture
-def mock_gather_sql(mocker):
-    """Fixture to mock gather_members_from_sql."""
-    return mocker.patch("src.cats_maker.core.new_c18.lists.members_helper.gather_members_from_sql")
-
-
-@pytest.fixture
 def mock_gather_api(mocker):
     """Fixture to mock gather_members_from_api."""
-    return mocker.patch("src.cats_maker.core.new_c18.lists.members_helper.gather_members_from_api")
+    return mocker.patch("src.cats_maker.core.lists.members_helper.gather_members_from_api")
 
 
 @dataclass
@@ -52,44 +44,17 @@ def collect_members_deps(mocker) -> CollectMembersDeps:
     """Fixture providing a complete set of mocked dependencies for collect_category_members."""
     return CollectMembersDeps(
         gather_sql=mocker.patch(
-            "src.cats_maker.core.new_c18.lists.members_helper.gather_members_from_sql", return_value=[]
+            "src.cats_maker.core.lists.members_helper.gather_members_from_sql", return_value=[]
         ),
         gather_api=mocker.patch(
-            "src.cats_maker.core.new_c18.lists.members_helper.gather_members_from_api", return_value=[]
+            "src.cats_maker.core.lists.members_helper.gather_members_from_api", return_value=[]
         ),
         remove_redirects=mocker.patch(
-            "src.cats_maker.core.new_c18.lists.members_helper.remove_redirect_pages",
+            "src.cats_maker.core.lists.members_helper.remove_redirect_pages",
             side_effect=lambda lang, members: members,
         ),
-        settings=mocker.patch("src.cats_maker.core.new_c18.lists.members_helper.main_settings"),
+        settings=mocker.patch("src.cats_maker.core.lists.members_helper.main_settings"),
     )
-
-
-class TestGatherMembersFromSql:
-    """Tests for gather_members_from_sql function."""
-
-    def test_calls_get_listen_page_title(self, mocker):
-        """Test that gather_members_from_sql calls MemberLister.get_listen_page_title."""
-        mock_get_listen = mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title",
-            return_value=["Article1", "Article2"],
-        )
-
-        result = gather_members_from_sql("تصنيف:علوم", "Category:Science")
-
-        mock_get_listen.assert_called_once_with("تصنيف:علوم", "Category:Science")
-        assert result == ["Article1", "Article2"]
-
-    def test_returns_empty_list_when_no_members(self, mocker):
-        """Test that gather_members_from_sql returns empty list when no members found."""
-        mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title",
-            return_value=[],
-        )
-
-        result = gather_members_from_sql("تصنيف:علوم", "Category:Science")
-
-        assert result == []
 
 
 class TestGatherMembersFromApi:
@@ -98,7 +63,7 @@ class TestGatherMembersFromApi:
     def test_calls_make_lit_api_way(self, mocker):
         """Test that gather_members_from_api calls CategoryResolver.make_lit_api_way."""
         mock_api = mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.make_lit_api_way",
+            "src.cats_maker.core.lists.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=["Article1", "Article2"],
         )
 
@@ -110,11 +75,11 @@ class TestGatherMembersFromApi:
     def test_returns_empty_list_when_api_returns_none(self, mocker):
         """Test that gather_members_from_api returns empty list when API returns None."""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.make_lit_api_way",
+            "src.cats_maker.core.lists.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=None,
         )
         mocker.patch(
-            "src.cats_maker.core.new_c18.lists.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks",
+            "src.cats_maker.core.lists.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks",
             return_value=None,
         )
 
@@ -125,11 +90,11 @@ class TestGatherMembersFromApi:
     def test_returns_empty_list_when_api_returns_false(self, mocker):
         """Test that gather_members_from_api returns empty list when API returns False."""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.make_lit_api_way",
+            "src.cats_maker.core.lists.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=False,
         )
         mocker.patch(
-            "src.cats_maker.core.new_c18.lists.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks",
+            "src.cats_maker.core.lists.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks",
             return_value=False,
         )
 

@@ -4,7 +4,7 @@ Tests for member_lister.py
 This module tests category page listing functions.
 """
 
-from src.cats_maker.core.new_c18.infrastructure.network.member_lister import MemberLister
+from src.cats_maker.core.lists.member_lister import MemberLister
 
 
 class TestExtractFanPageTitles:
@@ -14,7 +14,7 @@ class TestExtractFanPageTitles:
         """
         Test that method returns a list"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.main_settings.database.use_sql", False
+            "src.cats_maker.core.lists.member_lister.main_settings.database.use_sql", False
         )
 
         lister = MemberLister()
@@ -26,7 +26,7 @@ class TestExtractFanPageTitles:
         """
         Test that empty list is returned when SQL is disabled"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.main_settings.database.use_sql", False
+            "src.cats_maker.core.lists.member_lister.main_settings.database.use_sql", False
         )
 
         lister = MemberLister()
@@ -38,10 +38,10 @@ class TestExtractFanPageTitles:
         """
         Test that get_exclusive_category_titles is called when SQL enabled"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.main_settings.database.use_sql", True
+            "src.cats_maker.core.lists.member_lister.main_settings.database.use_sql", True
         )
         mock_comparator = mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.CategoryComparator"
+            "src.cats_maker.core.lists.member_lister.CategoryComparator"
         )
         mock_comparator.return_value.get_exclusive_category_titles.return_value = ["Page1", "Page2"]
 
@@ -55,10 +55,10 @@ class TestExtractFanPageTitles:
         """
         Test that Category: prefix is stripped"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.main_settings.database.use_sql", True
+            "src.cats_maker.core.lists.member_lister.main_settings.database.use_sql", True
         )
         mock_comparator = mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.CategoryComparator"
+            "src.cats_maker.core.lists.member_lister.CategoryComparator"
         )
         mock_get_exclusive = mock_comparator.return_value.get_exclusive_category_titles
         mock_get_exclusive.return_value = []
@@ -77,11 +77,11 @@ class TestGetListenPageTitle:
         """
         Test that method returns a list"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core.lists.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.extract_fan_page_titles",
+            "src.cats_maker.core.lists.member_lister.MemberLister.extract_fan_page_titles",
             return_value=[],
         )
 
@@ -94,11 +94,11 @@ class TestGetListenPageTitle:
         """
         Test that whitespace is stripped from title"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core.lists.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.extract_fan_page_titles",
+            "src.cats_maker.core.lists.member_lister.MemberLister.extract_fan_page_titles",
             return_value=[],
         )
 
@@ -112,7 +112,7 @@ class TestGetListenPageTitle:
         """
         Test that resolver is called when validation passes"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core.lists.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=True),
         )
         mock_resolver = mocker.Mock()
@@ -128,11 +128,11 @@ class TestGetListenPageTitle:
         """
         Test fallback to extract_fan_page_titles"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core.lists.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mock_extract = mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.extract_fan_page_titles",
+            "src.cats_maker.core.lists.member_lister.MemberLister.extract_fan_page_titles",
             return_value=["Page1", "Page2"],
         )
 
@@ -146,11 +146,11 @@ class TestGetListenPageTitle:
         """
         Test that duplicates are removed"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core.lists.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.extract_fan_page_titles",
+            "src.cats_maker.core.lists.member_lister.MemberLister.extract_fan_page_titles",
             return_value=["Page1", "Page1", "Page2"],
         )
 
@@ -163,11 +163,11 @@ class TestGetListenPageTitle:
         """
         Test that empty strings are filtered"""
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core.lists.member_lister.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.extract_fan_page_titles",
+            "src.cats_maker.core.lists.member_lister.MemberLister.extract_fan_page_titles",
             return_value=["Page1", "", "Page2", None],
         )
 

@@ -1,5 +1,3 @@
-from .network.categories import CategoryMembersClient
-
 # from .network.langlinks import LangLinksClient
 from .network.templates import TemplateClient
 from .sql.ar_lists import ArCategorySQL
@@ -14,7 +12,5 @@ __all__ = [
     "ReplicaClient",
     "ArCategorySQL",
     "EnCategorySQL",
-    # "LangLinksClient",
-    "CategoryMembersClient",
     "TemplateClient",
 ]

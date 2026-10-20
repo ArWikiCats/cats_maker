@@ -3,8 +3,8 @@
 import logging
 import re
 
-from ....config import main_settings
-from ..infrastructure.sql.category_repository import CategoryRepository
+from ...config import main_settings
+from ..new_c18.infrastructure.sql.category_repository import CategoryRepository
 
 logger = logging.getLogger(__name__)
 

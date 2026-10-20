@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.cats_maker.core.new_c18.infrastructure.network.category_generator import (
+from src.cats_maker.core.lists.category_generator import (
     fetch_category_members,
 )
 
@@ -14,7 +14,7 @@ from src.cats_maker.core.new_c18.infrastructure.network.category_generator impor
 @pytest.fixture
 def mock_load_api(mocker):
     """Fixture to mock AllAPIS.load."""
-    return mocker.patch("src.cats_maker.core.new_c18.infrastructure.network.category_generator.AllAPIS.load")
+    return mocker.patch("src.cats_maker.core.lists.category_generator.AllAPIS.load")
 
 
 class TestFetchCategoryMembers:

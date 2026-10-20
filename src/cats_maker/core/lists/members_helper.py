@@ -13,13 +13,12 @@ Responsibilities:
 
 import logging
 
-from ..infrastructure.network.category_resolver import CategoryResolver
+from .category_resolver import CategoryResolver
+from .member_lister import MemberLister
+from ..new_c18.infrastructure.network.categories import CategoryMembersClient
 
-from ..infrastructure.network.member_lister import MemberLister
-
-from ....config import main_settings
-from ....shared.newapi import AllAPIS
-from ..infrastructure.network.categories import CategoryMembersClient
+from ...config import main_settings
+from ...shared.newapi import AllAPIS
 
 logger = logging.getLogger(__name__)
 

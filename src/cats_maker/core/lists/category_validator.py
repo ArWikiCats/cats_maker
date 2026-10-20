@@ -5,10 +5,10 @@ from __future__ import annotations
 
 import logging
 
-from .....config import main_settings
-from .....config.constants import AR_FALSE_TEMPLATES, EN_FALSE_TEMPLATES_LOWERS
-from .....shared.newapi import AllAPIS
-from ...models import ValidationResult
+from ...config import main_settings
+from ...config.constants import AR_FALSE_TEMPLATES, EN_FALSE_TEMPLATES_LOWERS
+from ...shared.newapi import AllAPIS
+from ..new_c18.models import ValidationResult
 
 logger = logging.getLogger(__name__)
 

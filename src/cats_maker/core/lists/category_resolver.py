@@ -5,14 +5,14 @@ from __future__ import annotations
 
 import logging
 
-from .....config import main_settings
-from .....config.constants import DEFAULT_MEMBER_NAMESPACES
-from .....shared import AllAPIS
-from ...utils.text import normalize_category_title
-from ..sql.ar_lists import ArCategorySQL
-from ..sql.en_lists import EnCategorySQL
+from ...config import main_settings
+from ...config.constants import DEFAULT_MEMBER_NAMESPACES
+from ...shared import AllAPIS
+from ..new_c18.utils.text import normalize_category_title
+from ..new_c18.infrastructure.sql.ar_lists import ArCategorySQL
+from ..new_c18.infrastructure.sql.en_lists import EnCategorySQL
 from .category_generator import fetch_category_members
-from .langlinks import LangLinksClient, get_arpage_inside_encat
+from ..new_c18.infrastructure.network.langlinks import LangLinksClient, get_arpage_inside_encat
 
 logger = logging.getLogger(__name__)
 
