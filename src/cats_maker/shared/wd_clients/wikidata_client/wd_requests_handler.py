@@ -8,7 +8,6 @@ from typing import Any
 
 from ...newapi import WikiLoginClient, parse_api_error
 from ..utils import LagHandler, LagHandlerMaxAttemptError
-from .groups_bots.edit_groups import build_editgroups_summary
 
 logger = logging.getLogger(__name__)
 
@@ -43,12 +42,6 @@ class WikidataRequestHandler:
         if "summary" in data:
             if self.username.find("bot") == -1:
                 del data["summary"]
-
-        deav_new = build_editgroups_summary(self.username, data, editgroups, tage)
-
-        if deav_new:
-            data["summary"] = f"{data.get('summary', '')} {deav_new}"
-            logger.info(data["summary"])
 
         # TODO: formatversion should upgrade to 2
         data.setdefault("formatversion", 1)
