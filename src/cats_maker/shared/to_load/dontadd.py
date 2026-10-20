@@ -7,7 +7,7 @@ import logging
 import sys
 from typing import Any
 
-from ...database import WikiReplicaDB, get_sql
+from ...database import WikiReplicaDB
 from ..petscan import PetScanService
 from .loader import FilesBaseWorker
 
@@ -28,7 +28,7 @@ def from_sql() -> list[str]:
 
     cats: list = []
 
-    if get_sql():
+    if WikiReplicaDB.can_use_sql():
         db = WikiReplicaDB.load("arwiki")
         result = db.select_safe(queries)
         for row in result:

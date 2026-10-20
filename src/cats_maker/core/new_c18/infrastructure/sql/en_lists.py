@@ -29,7 +29,7 @@ class EnCategorySQL:
         self.wrapper = wrapper or SharedWrapper()
         self.config = config or self.wrapper.config
         self.client = client or ReplicaClient("enwiki", wrapper=self.wrapper)
-        self.use_sql = self.config.use_sql and self.wrapper.get_sql()
+        self.use_sql = self.config.use_sql and self.wrapper.can_use_sql()
 
         self.sql_ns_filter = self.config.sql_ns_filter
 

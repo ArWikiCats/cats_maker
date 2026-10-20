@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import logging
 
-from ....shared.namespace_handler import ar_ns_handler
-from ...c18.new_config import C18Config
-from ..wrapper import SharedWrapper
+from .....shared.namespace_handler import ar_ns_handler
+from ..wrapper import C18Config, SharedWrapper
 from .base import ReplicaClient
 
 logger = logging.getLogger(__name__)
@@ -26,7 +25,7 @@ class ArCategorySQL:
         self.wrapper = wrapper or SharedWrapper()
         self.config = config or self.wrapper.config
         self.client = client or ReplicaClient("arwiki", wrapper=self.wrapper)
-        self.use_sql = self.config.use_sql and self.wrapper.get_sql()
+        self.use_sql = self.config.use_sql and self.wrapper.can_use_sql()
 
     def fetch_dont_add_pages(self) -> list[str]:
         """Return pages tagged with 'لا_للتصنيف_المعادل'."""

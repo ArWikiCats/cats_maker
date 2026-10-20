@@ -10,7 +10,7 @@ class ReplicaClient:
         self.wrapper = wrapper or SharedWrapper()
 
     def select(self, query: str, params: list | None = None) -> list[dict]:
-        if not self.wrapper.get_sql():
+        if not self.wrapper.can_use_sql():
             return []
 
         db = self.wrapper.get_replica(self.dbname)

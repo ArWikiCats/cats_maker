@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ....database import WikiReplicaDB, get_sql
+from ....database import WikiReplicaDB
 from ....shared.newapi import MainPage
 from ....shared.newapi.client_wiki.all_apis import AllAPIS
 from ..new_config import C18Config
@@ -28,11 +28,12 @@ class SharedWrapper:
         data = api.client_request_safe(params) or {}
         return data
 
-    def get_sql(self) -> bool:
-        return get_sql()
-
     def get_replica(self, dbname: str) -> WikiReplicaDB:
         return WikiReplicaDB.load(dbname)
+
+    @staticmethod
+    def can_use_sql() -> bool:
+        return WikiReplicaDB.can_use_sql()
 
 
 # Convenience singleton (optional)
