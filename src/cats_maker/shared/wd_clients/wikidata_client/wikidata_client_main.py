@@ -6,7 +6,8 @@ from __future__ import annotations
 import logging
 import sys
 
-from ...api_page import load_credentials
+from ....mk_cats.mknew import main_settings
+
 from ...newapi import ApiResult, AskBot, WikiLoginClient
 from ...newapi.core.result_error import ApiResultError
 from .bot_wd import WDFunctions
@@ -119,16 +120,16 @@ class WikidataClient(WPFunctions, WDFunctions):
     def load(
         cls,
         www="www",
-        mr_or_bot: str | None = None,
         dont_do_lag_wait: bool = False,
     ) -> WikidataClient:
-        username, password = load_credentials(mr_or_bot=mr_or_bot)
+        username = main_settings.wikipedia.credentials.username
+        password = main_settings.wikipedia.credentials.password
 
         login_bot = WikiLoginClient.load(
             lang=www,
             family="wikidata",
-            username=username,
-            password=password,
+            username=str(username),
+            password=str(password),
         )
 
         return cls(
