@@ -24,7 +24,7 @@ class ArCategorySQL:
     ) -> None:
         self.wrapper = wrapper or SharedWrapper()
         self.client = client or ReplicaClient(dbname="arwiki", wrapper=self.wrapper)
-        self.can_use_sql = self.wrapper.can_use_sql() and self.config.use_sql
+        self.can_use_sql = self.wrapper.can_use_sql()
         self.ar_ns_handler = ar_ns_handler or NamespaceHandler.load("ar")
 
     def fetch_dont_add_pages(self) -> list[str]:
