@@ -89,7 +89,6 @@ class TestFetchDontAddPages:
 
     def test_returns_empty_on_error(self):
         fake_db = FakeDB(should_fail=True)
-
         service = ArCategorySQL(
             client=fake_db,  # pyright: ignore[reportArgumentType]
             config=C18Config(use_sql=True),
@@ -99,12 +98,10 @@ class TestFetchDontAddPages:
 
     def test_fetch_dont_add_pages_success(self):
         fake_db = FakeDB(rows=[{"page_title": "Page1", "page_namespace": 10}])
-
         service = ArCategorySQL(
             client=fake_db,  # pyright: ignore[reportArgumentType]
             config=C18Config(use_sql=True),
         )
 
         result = service.fetch_dont_add_pages()
-
         assert result == ["قالب:Page1"]

@@ -367,8 +367,13 @@ AR_NAMESPACES: dict[int, str] = {x.id: x.name for x in AR_NAMESPACES_DATA}
 
 EN_NAMESPACES: dict[int, str] = {x.id: x.name for x in EN_NAMESPACES_DATA}
 
+LANGCODE_TO_NAMESPACES = {
+    "ar": AR_NAMESPACES_DATA,
+    "en": EN_NAMESPACES_DATA,
+}
 
 __all__ = [
+    "LANGCODE_TO_NAMESPACES",
     "AR_NAMESPACES_DATA",
     "EN_NAMESPACES_DATA",
     "AR_NAMESPACES",

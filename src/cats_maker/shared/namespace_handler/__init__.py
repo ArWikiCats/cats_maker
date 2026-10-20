@@ -1,7 +1,4 @@
-from .handler import (
-    NamespaceHandler,
-    ar_ns_handler,
-)
+from .handler import NamespaceHandler
 from .mapping import (
     Namespace,
     TitleInfo,
@@ -15,7 +12,6 @@ from .ns_list import (
 
 __all__ = [
     "NamespaceHandler",
-    "ar_ns_handler",
     "TitleInfo",
     "Namespace",
     "AR_NAMESPACES_DATA",

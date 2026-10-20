@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from .....shared.namespace_handler import ar_ns_handler
+from .....shared.namespace_handler import NamespaceHandler
 from ..wrapper import C18Config, SharedWrapper
 from .base import ReplicaClient
 
@@ -26,6 +26,7 @@ class ArCategorySQL:
         self.config = config or self.wrapper.config
         self.client = client or ReplicaClient("arwiki", wrapper=self.wrapper)
         self.use_sql = self.config.use_sql and self.wrapper.can_use_sql()
+        self.ar_ns_handler = NamespaceHandler.load("ar")
 
     def fetch_dont_add_pages(self) -> list[str]:
         """Return pages tagged with 'لا_للتصنيف_المعادل'."""
@@ -48,7 +49,7 @@ class ArCategorySQL:
         for row in rows:
             title = row["page_title"]
             ns = str(row["page_namespace"])
-            title = ar_ns_handler.get_full_title(title, ns)
+            title = self.ar_ns_handler.get_full_title(title, ns)
             result.append(title.replace("_", " "))
 
         logger.info(f"<<lightgreen>> length ar_list: {len(result)}")
@@ -82,7 +83,7 @@ class ArCategorySQL:
         for row in rows:
             title = row["page_title"]
             ns = str(row["page_namespace"])
-            title = ar_ns_handler.get_full_title(title, ns)
+            title = self.ar_ns_handler.get_full_title(title, ns)
             result.append(title.replace("_", " "))
 
         logger.info(f"<<lightgreen>> length ar_list: {len(result)}")

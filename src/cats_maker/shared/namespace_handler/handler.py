@@ -9,7 +9,7 @@ https://ar.wikipedia.org/w/api.php?action=query&meta=siteinfo&siprop=namespaces|
 from __future__ import annotations
 
 from .mapping import Namespace, TitleInfo
-from .ns_list import AR_NAMESPACES_DATA, EN_NAMESPACES_DATA
+from .ns_list import LANGCODE_TO_NAMESPACES
 
 
 class NamespaceHandler:
@@ -175,12 +175,18 @@ class NamespaceHandler:
 
         return TitleInfo(title=base_title, ns=resolved_ns, is_talk=is_talk)
 
+    @classmethod
+    def load(cls, langcode: str) -> NamespaceHandler:
+        """
+        5. Loads the namespace handler for a given language code.
+        """
+        if langcode not in LANGCODE_TO_NAMESPACES:
+            raise ValueError(f"Invalid language code: {langcode}")
 
-ar_ns_handler = NamespaceHandler("ar", AR_NAMESPACES_DATA)
-en_ns_handler = NamespaceHandler("en", EN_NAMESPACES_DATA)
+        namespaces_data = LANGCODE_TO_NAMESPACES[langcode]
+        return NamespaceHandler(langcode, namespaces_data)
+
 
 __all__ = [
     "NamespaceHandler",
-    "ar_ns_handler",
-    "en_ns_handler",
 ]
