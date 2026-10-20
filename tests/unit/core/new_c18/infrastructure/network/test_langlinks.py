@@ -1,0 +1,195 @@
+"""
+Tests for langlink.py
+
+This module tests the LangLinksClient class and language link functions.
+"""
+
+from src.cats_maker.core.new_c18.infrastructure.network.langlinks import LangLinksClient
+
+LC_bot = LangLinksClient()
+
+
+class TestWikiApiHandler:
+    """Tests for LangLinksClient class"""
+
+    def test_init_default_config(self):
+        """
+        Test LangLinksClient default configuration"""
+        handler = LangLinksClient()
+        assert handler.family == "wikipedia"
+        assert handler.en_site_config["code"] == "en"
+        assert handler.en_site_config["family"] == "wikipedia"
+
+    def test_init_custom_site(self):
+        """
+        Test LangLinksClient with custom site configuration"""
+        handler = LangLinksClient(default_en_site_code="de", family="wikisource")
+        assert handler.en_site_config["code"] == "de"
+        assert handler.family == "wikisource"
+
+    def test_init_empty_cache(self):
+        """
+        Test that handler initializes with empty cache"""
+        handler = LangLinksClient()
+        assert handler.cache == {}
+
+
+class TestFindPageData:
+    """Tests for find_page_data method"""
+
+    def test_find_page_data_empty_title(self):
+        """
+        Test find_page_data with empty title returns None"""
+        handler = LangLinksClient()
+        result = handler.find_page_data("")
+        assert result == {}
+
+    def test_find_page_data_title_with_hash(self):
+        """
+        Test find_page_data with hash in title returns None"""
+        handler = LangLinksClient()
+        result = handler.find_page_data("Page#Section")
+        assert result == {}
+
+    def test_find_page_data_uses_cache(self, mocker):
+        """
+        Test find_page_data uses cache for repeated calls"""
+        handler = LangLinksClient()
+        cache_key = ("Test Page", "en", "langlinks")
+        handler.cache[cache_key] = {"cached": True}
+        result = handler.find_page_data("Test Page", site_code="en")
+        assert result == {"cached": True}
+
+
+class TestFindNonHiddenCategories:
+    """Tests for find_page_categories_informations method"""
+
+    def test_empty_title_returns_none(self):
+        """
+        Test that empty title returns None"""
+        handler = LangLinksClient()
+        result = handler.find_page_categories_informations("")
+        assert result == {}
+
+    def test_title_with_hash_returns_none(self):
+        """
+        Test that title with hash returns None"""
+        handler = LangLinksClient()
+        result = handler.find_page_categories_informations("Page#Section")
+        assert result == {}
+
+    def test_uses_cache_for_repeated_calls(self):
+        """
+        Test that cached results are returned"""
+        handler = LangLinksClient()
+        cache_key = ("Test Page", "ar", "Cat_without_hidden", "")
+        handler.cache[cache_key] = {"cached_categories": True}
+        result = handler.find_page_categories_informations("Test Page", site_code="ar")
+        assert result == {"cached_categories": True}
+
+
+class TestGlobalLCBot:
+    """Tests for the global LC_bot instance"""
+
+    def test_lc_bot_is_instance(self):
+        """
+        Test that LC_bot is a LangLinksClient instance"""
+        assert isinstance(LC_bot, LangLinksClient)
+
+    def test_lc_bot_has_default_config(self):
+        """
+        Test that LC_bot has default configuration"""
+        assert LC_bot.family == "wikipedia"
+        assert LC_bot.en_site_config["code"] == "en"
+
+
+class TestParseApiResponse:
+    """Tests for _parse_api_response method"""
+
+    def test_parses_langlinks_correctly(self, mocker):
+        """
+        Test that langlinks are parsed correctly from API response"""
+        handler = LangLinksClient()
+        query = {
+            "pages": {
+                "123": {
+                    "title": "Test Page",
+                    "langlinks": [
+                        {"lang": "ar", "*": "صفحة اختبار"},
+                        {"lang": "fr", "*": "Page de test"},
+                    ],
+                }
+            },
+            "redirects": [],
+        }
+        result = handler._parse_api_response(query, "en", "langlinks")
+        assert "Test Page" in result
+        assert result["Test Page"]["langlinks"]["ar"] == "صفحة اختبار"
+        assert result["Test Page"]["langlinks"]["fr"] == "Page de test"
+
+    def test_parses_categories_correctly(self, mocker):
+        """
+        Test that categories are parsed correctly from API response"""
+        handler = LangLinksClient()
+        query = {
+            "pages": {
+                "123": {
+                    "title": "Test Page",
+                    "categories": [
+                        {"title": "Category:Test", "hidden": ""},
+                        {"title": "Category:Test2"},
+                    ],
+                }
+            },
+            "redirects": [],
+        }
+        result = handler._parse_api_response(query, "en", "categories")
+        assert "Test Page" in result
+        assert "Category:Test" in result["Test Page"]["categories"]
+        assert "Category:Test2" in result["Test Page"]["categories"]
+        assert "Category:Test2" in result["Test Page"]["cat_with_out_hidden"]
+
+    def test_handles_redirects(self, mocker):
+        """
+        Test that redirects are handled correctly"""
+        handler = LangLinksClient()
+        query = {
+            "pages": {
+                "456": {"title": "Redirect Target", "langlinks": []},
+            },
+            "redirects": [{"from": "Original Page", "to": "Redirect Target"}],
+        }
+        result = handler._parse_api_response(query, "en", "langlinks")
+        assert "Original Page" in result
+        assert result["Original Page"]["redirect"] == "Redirect Target"
+
+    def test_parses_templates(self, mocker):
+        """
+        Test that templates are parsed correctly"""
+        handler = LangLinksClient()
+        query = {
+            "pages": {
+                "123": {
+                    "title": "Test Page",
+                    "templates": [
+                        {"title": "Template:Test1"},
+                        {"title": "Template:Test2"},
+                    ],
+                }
+            },
+            "redirects": [],
+        }
+        result = handler._parse_api_response(query, "en", "templates")
+        assert "Test Page" in result
+        assert "Template:Test1" in result["Test Page"]["templates"]
+        assert "Template:Test2" in result["Test Page"]["templates"]
+
+
+class TestFindNonHiddenCategoriesIntegration:
+    """Integration tests for find_working categories with API responses"""
+
+    def test_lc_bot_has_default_config(self):
+        """
+        Test that LC_bot has default configuration"""
+        assert LC_bot.family == "wikipedia"
+        assert LC_bot.en_site_config["code"] == "en"

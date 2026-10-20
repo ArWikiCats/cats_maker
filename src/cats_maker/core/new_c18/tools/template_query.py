@@ -7,8 +7,9 @@ import logging
 from collections import defaultdict
 from typing import Any
 
-from ....shared import find_page_data
-from ....config.constants import SKIP_CATEGORIES
+from ..infrastructure.network.langlinks import LangLinksClient
+
+from ....config.constants import AR_CATEGORIES_SHOULD_SKIPPED_WITH_NS
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ def get_templates(titles: str | list[str], site_code: str = "ar") -> dict[str, l
 
 
 def _query_multi(enlink: str, site_code: str):
-    if enlink in SKIP_CATEGORIES:
+    if enlink in AR_CATEGORIES_SHOULD_SKIPPED_WITH_NS:
         return None
 
     cached = _cache.get(enlink, site_code)
@@ -59,7 +60,7 @@ def _query_multi(enlink: str, site_code: str):
 
     logger.info(f"templatequery {site_code}:{enlink} . ")
 
-    sasa = find_page_data(enlink, prop="templates", first_site_code=site_code)
+    sasa = LangLinksClient().find_page_data(enlink, prop="templates", site_code=site_code)
     result = sasa if sasa else None
 
     _cache.set(enlink, site_code, result)

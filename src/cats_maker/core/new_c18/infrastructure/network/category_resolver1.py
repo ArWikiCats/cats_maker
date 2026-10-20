@@ -5,13 +5,14 @@ from __future__ import annotations
 
 import logging
 
-from ....config import main_settings
-from ....shared import AllAPIS, find_page_data, get_arpage_inside_encat
-from ....shared.api_sql import add_namespace_prefix
-from ....config.constants import DEFAULT_MEMBER_NAMESPACES
-from ..core.category_generator import fetch_category_members
-from ..io.sql_queries import fetch_ar_category_members, fetch_en_category_langlinks
-from ..utils.text import normalize_category_title
+from .langlinks import LangLinksClient, get_arpage_inside_encat
+from .....config import main_settings
+from .....shared import AllAPIS
+from .....shared.api_sql import add_namespace_prefix
+from .....config.constants import DEFAULT_MEMBER_NAMESPACES
+from .category_generator import fetch_category_members
+from ...io.sql_queries import fetch_ar_category_members, fetch_en_category_langlinks
+from ...utils.text import normalize_category_title
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +109,12 @@ class CategoryResolver:
             part_list = "|".join(batch)
             part_list = part_list.removeprefix("|")
 
-            result = find_page_data(part_list, prop="langlinks", lllang="ar", first_site_code=sito_code)
+            result = LangLinksClient().find_page_data(
+                part_list,
+                prop="langlinks",
+                language_link_target="ar",
+                site_code=sito_code,
+            )
             if not result:
                 continue
 
@@ -148,7 +154,7 @@ class CategoryResolver:
             batch = titles[i : i + 50]
             joined = "|".join(batch)
 
-            gent_sasa = find_page_data(joined, prop="langlinks", first_site_code=main_settings.en_site.code)
+            gent_sasa = LangLinksClient().find_page_data(joined, prop="langlinks", site_code=main_settings.en_site.code)
             if not gent_sasa:
                 continue
 

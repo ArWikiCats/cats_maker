@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from .....shared import AllAPIS
-from ...config.constants import DEFAULT_MEMBER_NAMESPACES
+from .....config.constants import DEFAULT_MEMBER_NAMESPACES
 
 logger = logging.getLogger(__name__)
 

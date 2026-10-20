@@ -20,7 +20,7 @@ class TestGatherMembersFromSql:
         """
         Test that gather_members_from_sql calls MemberLister.get_listen_page_title."""
         mock_get_listen = mocker.patch(
-            "src.cats_maker.core.new_c18.core.member_lister.MemberLister.get_listen_page_title",
+            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title",
             return_value=["Article1", "Article2"],
         )
 
@@ -33,7 +33,7 @@ class TestGatherMembersFromSql:
         """
         Test that gather_members_from_sql returns empty list when no members found."""
         mocker.patch(
-            "src.cats_maker.core.new_c18.core.member_lister.MemberLister.get_listen_page_title",
+            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title",
             return_value=[],
         )
 
@@ -49,7 +49,7 @@ class TestGatherMembersFromApi:
         """
         Test that gather_members_from_api calls CategoryResolver.make_lit_api_way."""
         mock_api = mocker.patch(
-            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way",
+            "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=["Article1", "Article2"],
         )
 
@@ -62,7 +62,7 @@ class TestGatherMembersFromApi:
         """
         Test that gather_members_from_api returns empty list when API returns None."""
         mocker.patch(
-            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way",
+            "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=None,
         )
         mocker.patch("src.cats_maker.mk_cats.members_helper.sub_cats_query", return_value=None)
@@ -75,7 +75,7 @@ class TestGatherMembersFromApi:
         """
         Test that gather_members_from_api returns empty list when API returns False."""
         mocker.patch(
-            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way",
+            "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=False,
         )
         mocker.patch("src.cats_maker.mk_cats.members_helper.sub_cats_query", return_value=False)

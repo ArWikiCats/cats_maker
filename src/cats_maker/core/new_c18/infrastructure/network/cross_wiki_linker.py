@@ -6,10 +6,11 @@ from __future__ import annotations
 import logging
 import re
 
-from ....config import main_settings
-from ....shared import find_page_data
-from ....shared.wd_clients.wd_api import get_sitelinks_from_qid, get_sitelinks_from_wikidata
-from ..utils.text import extract_wikidata_qid
+from .....config import main_settings
+
+from .langlinks import LangLinksClient
+from .....shared.wd_clients.wd_api import get_sitelinks_from_qid, get_sitelinks_from_wikidata
+from ...utils.text import extract_wikidata_qid
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +57,7 @@ def resolve_via_api(link: str, firstsite_code: str, second_site_code: str, text:
     link = link.replace("[[", "").replace("]]", "").replace("en:", "").replace("ar:", "")
     link1 = link.replace("_", " ")
 
-    sasa = find_page_data(link, prop="categories|langlinks", first_site_code=firstsite_code) or {}
+    sasa = LangLinksClient().find_page_data(link, prop="categories|langlinks", site_code=firstsite_code) or {}
     logger.debug(f">> sasa: {len(sasa)=}")
 
     results = ""
