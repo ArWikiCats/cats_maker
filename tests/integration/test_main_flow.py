@@ -39,7 +39,7 @@ class TestMainFlowIntegration:
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in mknew)
         mock_sql = mocker.patch(
-            "src.cats_maker.core.lists.category_resolver.CategoryResolver.list_en_pages_with_ar_links"
+            "src.cats_maker.core_cat.lists.category_resolver.CategoryResolver.list_en_pages_with_ar_links"
         )
         mock_sql.return_value = ["Test Article 1", "Test Article 2"]
 
@@ -49,14 +49,12 @@ class TestMainFlowIntegration:
 
         # Mock MemberLister.get_listen_page_title (used in members_helper)
         mock_listen = mocker.patch(
-            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title"
+            "src.cats_maker.core_cat.infrastructure.network.member_lister.MemberLister.get_listen_page_title"
         )
         mock_listen.return_value = ["Article1", "Article2"]
 
         # Mock CategoryResolver.make_lit_api_way (used in members_helper)
-        mock_lit_api = mocker.patch(
-            "src.cats_maker.core.lists.category_resolver.CategoryResolver.make_lit_api_way"
-        )
+        mock_lit_api = mocker.patch("src.cats_maker.core_cat.lists.category_resolver.CategoryResolver.make_lit_api_way")
         mock_lit_api.return_value = []
 
         # Mock to_wd.log_to_wikidata
@@ -68,7 +66,7 @@ class TestMainFlowIntegration:
 
         # Mock CategoryResolver.resolve_members (used in mknew)
         mock_make_ar_list = mocker.patch(
-            "src.cats_maker.core.lists.category_resolver.CategoryResolver.resolve_members"
+            "src.cats_maker.core_cat.lists.category_resolver.CategoryResolver.resolve_members"
         )
         mock_make_ar_list.return_value = []
 

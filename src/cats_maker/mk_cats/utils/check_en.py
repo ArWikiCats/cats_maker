@@ -4,7 +4,7 @@
 import logging
 
 from ...config.constants import EN_FALSE_TEMPLATES_LOWERS, SKIP_ENCATS
-from ...core.new_c18.infrastructure.network.langlinks import LangLinksClient
+from ...core_cat.infrastructure.network.langlinks import LangLinksClient
 
 logger = logging.getLogger(__name__)
 
