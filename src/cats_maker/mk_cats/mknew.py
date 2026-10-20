@@ -5,8 +5,11 @@ python3 core8/pwb.py mk_cats/mknew
 import logging
 from collections.abc import Callable
 
+from ..core.new_c18.infrastructure.network.category_resolver import CategoryResolver
+
+from ..core.new_c18.infrastructure.network.category_validator import validate_categories_for_new_cat
+
 from ..config import main_settings
-from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
 from ..core.new_c18.infrastructure.network.langlinks import LangLinksClient
 from ..core.new_c18.lists.members_helper import collect_category_members
 from ..shared.newapi import AllAPIS
