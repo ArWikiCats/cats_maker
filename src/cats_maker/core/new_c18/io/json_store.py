@@ -8,11 +8,11 @@ import logging
 import os
 import stat
 from datetime import datetime
-from functools import lru_cache
+from functools import cached_property
 from pathlib import Path
 
 from ....config import main_settings
-from .sql_queries import fetch_dont_add_pages
+from ..infrastructure.sql.ar_lists import ArCategorySQL
 
 logger = logging.getLogger(__name__)
 
@@ -85,46 +85,69 @@ class JsonStore:
         return (datetime.now() - last_modified).days >= days
 
 
-@lru_cache(maxsize=1)
-def get_dont_add_pages() -> list[str]:
-    """Return the list of pages that should not be categorised.
+class DontAddStore:
+    """JSON file store for the list of pages that should not be categorised."""
 
-    Uses a local JSON cache; refreshes from SQL once per day.
-    """
-    if main_settings.category.no_dontadd or main_settings.category.test_mode:
-        return []
+    def __init__(
+        self,
+        wiki_query_service: ArCategorySQL | None = None,
+        store: JsonStore | None = None,
+    ) -> None:
+        self.wiki_query_service = wiki_query_service or ArCategorySQL()
 
-    if not main_settings.category.test_add:
-        if main_settings.is_production():
-            logger.info("dont get dontadd list in local server")
+        self.store: JsonStore | None = store
+
+        if _FILENAME_JSON and self.store is None:
+            _filename_json = Path(_FILENAME_JSON)
+            self.store = JsonStore(_filename_json)
+
+    def should_skip(self) -> bool:
+        if main_settings.category.no_dontadd or main_settings.category.test_mode:
+            return True
+
+        if not main_settings.category.test_add:
+            if main_settings.is_production():
+                logger.info("dont get dontadd list in local server")
+                return True
+
+        return False
+
+    @cached_property
+    def _load(self) -> list[str]:
+        """Return the list of pages that should not be categorised.
+
+        Uses a local JSON cache; refreshes from SQL once per day.
+        """
+        if self.should_skip():
             return []
 
-    if not _FILENAME_JSON:
-        return []
+        if self.store is None:
+            return []
 
-    _filename_json = Path(_FILENAME_JSON)
+        data = self.store.load()
 
-    store = JsonStore(_filename_json)
-    data = store.load()
+        last_modified = ""
+        if self.store.path.exists():
+            modified_time = os.path.getmtime(self.store.path)
+            last_modified = datetime.fromtimestamp(modified_time).strftime("%Y-%m-%d")
 
-    last_modified = ""
-    if _filename_json.exists():
-        last_modified = datetime.fromtimestamp(os.path.getmtime(_filename_json)).strftime("%Y-%m-%d")
+        today = datetime.today().strftime("%Y-%m-%d")
 
-    today = datetime.today().strftime("%Y-%m-%d")
+        if last_modified != today or not data:
+            logger.info(f"last modified: {last_modified}, today: {today}, len: {len(data)}")
+            data = self.wiki_query_service.fetch_dont_add_pages()
+            self.store.save(data)
 
-    if last_modified != today or not data:
-        logger.info(f"last modified: {last_modified}, today: {today}, len: {len(data)}")
-        data = fetch_dont_add_pages()
-        store.save(data)
+        if not data:
+            logger.info("dont_list is empty")
 
-    if not data:
-        logger.info("dont_list is empty")
+        return data if isinstance(data, list) else []
 
-    return data if isinstance(data, list) else []
+    def get_dont_add_pages(self) -> list[str]:
+        return self._load
 
 
 __all__ = [
     "JsonStore",
-    "get_dont_add_pages",
+    "DontAddStore",
 ]
