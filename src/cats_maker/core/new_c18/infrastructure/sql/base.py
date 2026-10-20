@@ -49,6 +49,10 @@ class ReplicaClient:
         db = self.wrapper.get_replica(self.dbname)
         return db.select_safe(query, params or [])
 
+    @classmethod
+    def load(cls, dbname: str, wrapper: SharedWrapper | None = None) -> ReplicaClient:
+        return cls(dbname, wrapper=wrapper)
+
 
 __all__ = [
     "ReplicaClient",

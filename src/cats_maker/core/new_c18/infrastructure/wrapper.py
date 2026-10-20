@@ -31,9 +31,8 @@ class SharedWrapper:
     def get_replica(self, dbname: str) -> WikiReplicaDB:
         return WikiReplicaDB.load(dbname)
 
-    @staticmethod
-    def can_use_sql() -> bool:
-        return WikiReplicaDB.can_use_sql()
+    def can_use_sql(self) -> bool:
+        return WikiReplicaDB.can_use_sql() and self.config.use_sql
 
 
 # Convenience singleton (optional)

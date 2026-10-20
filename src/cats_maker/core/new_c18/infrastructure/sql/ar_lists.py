@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 
 from .....shared.namespace_handler import NamespaceHandler
-from ..wrapper import C18Config, SharedWrapper
+from ..wrapper import SharedWrapper
 from .base import ReplicaClient
 
 logger = logging.getLogger(__name__)
@@ -20,13 +20,12 @@ class ArCategorySQL:
         client: ReplicaClient | None = None,
         wrapper: SharedWrapper | None = None,
         *,
-        config: C18Config | None = None,
+        ar_ns_handler: NamespaceHandler | None = None,
     ) -> None:
         self.wrapper = wrapper or SharedWrapper()
-        self.config = config or self.wrapper.config
-        self.client = client or ReplicaClient("arwiki", wrapper=self.wrapper)
-        self.use_sql = self.config.use_sql and self.wrapper.can_use_sql()
-        self.ar_ns_handler = NamespaceHandler.load("ar")
+        self.client = client or ReplicaClient(dbname="arwiki", wrapper=self.wrapper)
+        self.can_use_sql = self.wrapper.can_use_sql()
+        self.ar_ns_handler = ar_ns_handler or NamespaceHandler.load("ar")
 
     def fetch_dont_add_pages(self) -> list[str]:
         """Return pages tagged with 'لا_للتصنيف_المعادل'."""
@@ -40,7 +39,7 @@ class ArCategorySQL:
             AND lt_title = "لا_للتصنيف_المعادل"
         """
 
-        if not self.use_sql:
+        if not self.can_use_sql:
             return []
 
         rows = self.client.select(query)
@@ -49,8 +48,8 @@ class ArCategorySQL:
         for row in rows:
             title = row["page_title"]
             ns = str(row["page_namespace"])
-            title = self.ar_ns_handler.get_full_title(title, ns)
-            result.append(title.replace("_", " "))
+            title = self.ar_ns_handler.get_full_title(title.replace("_", " "), ns)
+            result.append(title)
 
         logger.info(f"<<lightgreen>> length ar_list: {len(result)}")
         return result
@@ -59,7 +58,7 @@ class ArCategorySQL:
         """
         Return all pages that belong to the given Arabic category.
         """
-        if not self.use_sql:
+        if not self.can_use_sql:
             return []
 
         ar_cat2 = self.remove_category_prefix(ar_cat.replace(" ", "_"))
@@ -83,8 +82,8 @@ class ArCategorySQL:
         for row in rows:
             title = row["page_title"]
             ns = str(row["page_namespace"])
-            title = self.ar_ns_handler.get_full_title(title, ns)
-            result.append(title.replace("_", " "))
+            title = self.ar_ns_handler.get_full_title(title.replace("_", " "), ns)
+            result.append(title)
 
         logger.info(f"<<lightgreen>> length ar_list: {len(result)}")
         return result

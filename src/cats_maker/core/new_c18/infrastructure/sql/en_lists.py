@@ -25,12 +25,11 @@ class EnCategorySQL:
         *,
         config: C18Config | None = None,
     ) -> None:
-        self.wrapper = wrapper or SharedWrapper()
+        self.wrapper = wrapper or SharedWrapper(config=config)
         self.config = config or self.wrapper.config
-        self.client = client or ReplicaClient("enwiki", wrapper=self.wrapper)
-        self.use_sql = self.config.use_sql and self.wrapper.can_use_sql()
-
-        self.sql_ns_filter = self.config.sql_ns_filter
+        self.client = client or ReplicaClient(dbname="enwiki", wrapper=self.wrapper)
+        self.can_use_sql = self.wrapper.can_use_sql()
+        self.sql_ns_filter = self.config.sql_ns_filter  # "0, 10, 14"
 
     def fetch_arabic_titles_from_en_category(
         self,
@@ -41,7 +40,7 @@ class EnCategorySQL:
         Return Arabic titles of pages that are in the given English category
         and have an Arabic language link.
         """
-        if not self.use_sql:
+        if not self.can_use_sql:
             return []
 
         encat2 = self.remove_category_prefix(encat_title.replace(" ", "_"))
@@ -69,7 +68,7 @@ class EnCategorySQL:
         """
         client = self.client
         if site_code != self.client.dbname:
-            client = ReplicaClient(f"{site_code}wiki", wrapper=self.wrapper)
+            client = self.client.load(f"{site_code}wiki", wrapper=self.wrapper)
 
         rows = client.select(query, [encat2])
         result = [row["ll_title"].replace("_", " ") for row in rows if row.get("ll_title")]
@@ -90,7 +89,7 @@ class EnCategorySQL:
         Equivalent to the old `get_en_categories_like`.
         """
         logger.info(f"<<lightred>> sql . get_en_categories_like {pattern}")
-        if not self.use_sql or not pattern.strip():
+        if not self.can_use_sql or not pattern.strip():
             return []
 
         pattern = pattern.replace(" ", "_")
@@ -157,7 +156,7 @@ class EnCategorySQL:
         return false_params, false_placeholders
 
     def make_24_cat(self, sql_limit: int = 500) -> list[str]:
-        if not self.use_sql:
+        if not self.can_use_sql:
             return []
 
         false_params, false_placeholders = self.get_false_template_params()
