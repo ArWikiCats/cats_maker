@@ -61,7 +61,7 @@ class ArCategorySQL:
         if not self.can_use_sql:
             return []
 
-        ar_cat2 = self.remove_category_prefix(ar_cat.replace(" ", "_"))
+        ar_cat2 = self.remove_category_prefix(ar_cat)
 
         query = """
             SELECT
@@ -76,7 +76,7 @@ class ArCategorySQL:
                 AND lt_namespace = 14
         """
 
-        rows = self.client.select(query, [ar_cat2])
+        rows = self.client.select(query, [ar_cat2.replace(" ", "_")])
         result = []
 
         for row in rows:
@@ -89,7 +89,15 @@ class ArCategorySQL:
         return result
 
     def remove_category_prefix(self, title: str) -> str:
-        return title.removeprefix("تصنيف:")
+        title = (
+            title.strip()
+            .replace("[[", "")
+            .replace("]]", "")
+            .removeprefix("تصنيف:")
+            .removeprefix("نقاش التصنيف:")
+            .strip()
+        )
+        return title
 
 
 __all__ = [

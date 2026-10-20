@@ -24,12 +24,14 @@ class EnCategorySQL:
         wrapper: SharedWrapper | None = None,
         *,
         config: C18Config | None = None,
+        en_false_templates: list[str] | None = None,
     ) -> None:
         self.wrapper = wrapper or SharedWrapper(config=config)
         self.config = config or self.wrapper.config
         self.client = client or ReplicaClient(dbname="enwiki", wrapper=self.wrapper)
         self.can_use_sql = self.wrapper.can_use_sql()
         self.sql_ns_filter = self.config.sql_ns_filter  # "0, 10, 14"
+        self.en_false_templates = en_false_templates if en_false_templates is not None else EN_FALSE_TEMPLATES
 
     def fetch_arabic_titles_from_en_category(
         self,
@@ -43,7 +45,7 @@ class EnCategorySQL:
         if not self.can_use_sql:
             return []
 
-        encat2 = self.remove_category_prefix(encat_title.replace(" ", "_"))
+        encat2 = self.remove_category_prefix(encat_title)
 
         if not encat2:
             logger.info(f"sql → ({encat_title}) is not a valid category")
@@ -70,7 +72,7 @@ class EnCategorySQL:
         if site_code != self.client.dbname:
             client = self.client.load(f"{site_code}wiki", wrapper=self.wrapper)
 
-        rows = client.select(query, [encat2])
+        rows = client.select(query, [encat2.replace(" ", "_")])
         result = [row["ll_title"].replace("_", " ") for row in rows if row.get("ll_title")]
 
         logger.info(f"sql → ({encat_title}) returned {len(result)} titles")
@@ -151,7 +153,7 @@ class EnCategorySQL:
         return result
 
     def get_false_template_params(self) -> tuple[list[str], str]:
-        false_params = [x.replace(" ", "_") for x in EN_FALSE_TEMPLATES]
+        false_params = [x.replace(" ", "_") for x in self.en_false_templates]
         false_placeholders = ", ".join(["%s"] * len(false_params)) if false_params else "''"
         return false_params, false_placeholders
 
@@ -193,15 +195,15 @@ class EnCategorySQL:
 
     def remove_category_prefix(self, title: str) -> str:
         title = (
-            title.replace("[[", "")
+            title.strip()
+            .replace("[[", "")
             .replace("]]", "")
             .removeprefix("Category:")
             .removeprefix("category:")
             .removeprefix("Category talk:")
             .removeprefix("category talk:")
-            .strip()
         )
-        return title
+        return title.strip()
 
 
 __all__ = [
