@@ -133,7 +133,7 @@ class EnCategorySQL:
                   JOIN categorylinks cla ON cla.cl_from = p1.page_id
                   JOIN linktarget ON cla.cl_target_id = linktarget.lt_id
                   JOIN langlinks ON p1.page_id = ll_from
-                  WHERE p1.page_namespace IN ({self.config.sql_ns_filter})
+                  WHERE p1.page_namespace IN ({self.sql_ns_filter})
                     AND ll_lang = 'ar'
                     AND linktarget.lt_title = p.page_title
                     AND linktarget.lt_namespace = 14

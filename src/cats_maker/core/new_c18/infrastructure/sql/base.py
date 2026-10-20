@@ -5,7 +5,40 @@ from ..wrapper import SharedWrapper
 
 
 class ReplicaClient:
-    def __init__(self, dbname: str = "arwiki", wrapper: SharedWrapper | None = None):
+    """
+    A client for interacting with a database replica.
+
+    This class provides a simplified interface to execute read-only queries
+    against a specific database replica using a shared wrapper.
+
+    Core Functionality:
+        - Initializes a connection context for a specific database replica.
+        - Executes safe, parameterized SQL SELECT queries via the replica.
+
+    Constructor Args:
+        dbname (str): The name of the database to connect to.
+            Defaults to "arwiki".
+        wrapper (SharedWrapper | None): An instance of SharedWrapper used to
+            manage replica connections and permissions. If None, a new
+            SharedWrapper instance is created automatically. Defaults to None.
+
+    Usage Limitations:
+        - This client is strictly for read operations (SELECT). Attempting
+        other SQL operations may fail or be blocked by the underlying wrapper.
+        - If the shared wrapper's `can_use_sql()` method returns False, the
+        `select` method will silently return an empty list instead of
+        executing the query.
+
+    Example:
+        >>> client = ReplicaClient(dbname="enwiki", wrapper=SharedWrapper())
+        >>> results = client.select("SELECT page_id FROM page LIMIT 1")
+    """
+
+    def __init__(
+        self,
+        dbname: str = "arwiki",
+        wrapper: SharedWrapper | None = None,
+    ) -> None:
         self.dbname = dbname
         self.wrapper = wrapper or SharedWrapper()
 
