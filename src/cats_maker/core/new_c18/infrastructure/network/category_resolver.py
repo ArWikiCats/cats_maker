@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 
-from .langlinks import LangLinksClient
+from .langlinks import LangLinksClient, get_arpage_inside_encat
 
 from .....config import main_settings
 from .....shared import AllAPIS

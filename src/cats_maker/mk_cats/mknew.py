@@ -5,10 +5,11 @@ python3 core8/pwb.py mk_cats/mknew
 import logging
 from collections.abc import Callable
 
+from ..core.new_c18.infrastructure.network.langlinks import LangLinksClient
+
 from ..core.new_c18.infrastructure.network.members_helper import collect_category_members
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
-from ..shared import LangLinksClient
 from ..shared.newapi import AllAPIS
 from ..shared.wd_clients.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
 from .add_bot import add_to_page

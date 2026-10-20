@@ -7,8 +7,9 @@ import logging
 from collections import defaultdict
 from typing import Any
 
-from .....shared import LangLinksClient
-from ...config.constants import AR_CATEGORIES_SHOULD_SKIPPED_WITH_NS
+from .langlinks import LangLinksClient
+
+from .....config.constants import AR_CATEGORIES_SHOULD_SKIPPED_WITH_NS
 
 logger = logging.getLogger(__name__)
 
