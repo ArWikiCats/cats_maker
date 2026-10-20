@@ -19,7 +19,7 @@ from src.cats_maker.mk_cats.mknew import (
     clear_processing_state,
     process_catagories,
 )
-from src.cats_maker.shared.wd_api import wd_api_bot
+from src.cats_maker.shared.wd_clients.wd_api import wd_api_bot
 
 
 class TestMainFlowIntegration:
@@ -30,16 +30,16 @@ class TestMainFlowIntegration:
         """
         Mock all external API calls for integration testing."""
         # Mock Wikidata API
-        mock_wikidata = mocker.patch("src.cats_maker.shared.wd_api.wd_api_bot.get_sitelinks_from_wikidata")
+        mock_wikidata = mocker.patch("src.cats_maker.shared.wd_clients.wd_api.wd_api_bot.get_sitelinks_from_wikidata")
         mock_wikidata.return_value = {"q": "Q12345", "sitelinks": {}}
 
         # Mock LCN (Language Code Navigator)
-        mock_lcn = mocker.patch("src.cats_maker.shared.lcn_new.find_non_hidden_categories")
+        mock_lcn = mocker.patch("src.cats_maker.shared.langlink.LangLinksClient.find_page_categories_informations")
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in mknew)
         mock_sql = mocker.patch(
-            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.list_en_pages_with_ar_links"
+            "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.list_en_pages_with_ar_links"
         )
         mock_sql.return_value = ["Test Article 1", "Test Article 2"]
 
@@ -48,17 +48,17 @@ class TestMainFlowIntegration:
         mock_new_cat.return_value = True
 
         # Mock MemberLister.get_listen_page_title (used in members_helper)
-        mock_listen = mocker.patch("src.cats_maker.core.new_c18.core.member_lister.MemberLister.get_listen_page_title")
+        mock_listen = mocker.patch("src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title")
         mock_listen.return_value = ["Article1", "Article2"]
 
         # Mock CategoryResolver.make_lit_api_way (used in members_helper)
         mock_lit_api = mocker.patch(
-            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.make_lit_api_way"
+            "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.make_lit_api_way"
         )
         mock_lit_api.return_value = []
 
         # Mock to_wd.log_to_wikidata
-        mock_log_wd = mocker.patch("src.cats_maker.shared.wd_api.to_wd.log_to_wikidata")
+        mock_log_wd = mocker.patch("src.cats_maker.shared.wd_clients.wd_api.to_wd.log_to_wikidata")
 
         # Mock validate_categories_for_new_cat
         mock_validate = mocker.patch("src.cats_maker.mk_cats.mknew.validate_categories_for_new_cat")
@@ -66,7 +66,7 @@ class TestMainFlowIntegration:
 
         # Mock CategoryResolver.resolve_members (used in mknew)
         mock_make_ar_list = mocker.patch(
-            "src.cats_maker.core.new_c18.core.category_resolver.CategoryResolver.resolve_members"
+            "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.resolve_members"
         )
         mock_make_ar_list.return_value = []
 
@@ -207,7 +207,7 @@ class TestModuleInteraction:
         Test that wd_api module functions integrate properly."""
 
         # Mock the underlying API call
-        mock_api = mocker.patch("src.cats_maker.shared.wd_api.wd_api_bot.get_infos_wikidata")
+        mock_api = mocker.patch("src.cats_maker.shared.wd_clients.wd_api.wd_api_bot.get_infos_wikidata")
         mock_api.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",
@@ -220,7 +220,7 @@ class TestModuleInteraction:
         }
 
         # Test get_sitelinks function (mocking at the right level)
-        mock_sitelinks = mocker.patch("src.cats_maker.shared.wd_api.wd_api_bot.get_sitelinks_from_wikidata")
+        mock_sitelinks = mocker.patch("src.cats_maker.shared.wd_clients.wd_api.wd_api_bot.get_sitelinks_from_wikidata")
         mock_sitelinks.return_value = {
             "sitelinks": {
                 "arwiki": "علوم",

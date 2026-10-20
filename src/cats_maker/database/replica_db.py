@@ -25,7 +25,7 @@ def decode_value(value) -> str:
 
 def resolve_bytes(rows) -> list[Any]:
     decoded_rows: list = []
-    # ---
+
     for row in rows:
         decoded_row = {}
         for key, value in row.items():
@@ -33,7 +33,7 @@ def resolve_bytes(rows) -> list[Any]:
                 value = decode_value(value)
             decoded_row[key] = value
         decoded_rows.append(decoded_row)
-    # ---
+
     logger.debug("resolve_bytes: decoded %d row(s)", len(decoded_rows))
     return decoded_rows
 
@@ -69,7 +69,7 @@ class WikiReplicaBaseDB:
             "password": self.password,
         }
         if self.connection is None or not self.connection.open:
-            logger.info("Opening connection to %s/%s", self.host, self.dbname)
+            logger.debug("Opening connection to %s/%s", self.host, self.dbname)
             try:
                 self.connection = pymysql.connect(
                     host=self.host,

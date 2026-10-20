@@ -5,14 +5,14 @@ python3 core8/pwb.py mk_cats/mknew
 import logging
 from collections.abc import Callable
 
+from ..core.new_c18.infrastructure.network.members_helper import collect_category_members
 from ..config import main_settings
 from ..core.new_c18 import CategoryResolver, validate_categories_for_new_cat
-from ..shared import find_non_hidden_categories
+from ..shared import LangLinksClient
 from ..shared.newapi import AllAPIS
-from ..shared.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
+from ..shared.wd_clients.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
 from .add_bot import add_to_page
 from .create_category_page import new_category
-from .members_helper import collect_category_members
 from .utils import check_en_temps, filter_category
 
 try:
@@ -191,11 +191,12 @@ def _extract_parent_categories(en_page_title: str):
             - en_cats_of_new_cat: English categories without Arabic equivalents
             - cats_of_new_cat: Arabic category titles
     """
-    cates = find_non_hidden_categories(
+    cates = LangLinksClient(
+        family=WIKI_SITE_EN["family"],
+    ).find_page_categories_informations(
         en_page_title,
         prop="langlinks",
         site_code=WIKI_SITE_EN["code"],
-        family=WIKI_SITE_EN["family"],
     )
 
     en_cats_of_new_cat = []

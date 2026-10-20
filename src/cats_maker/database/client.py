@@ -46,6 +46,12 @@ class WikiReplicaDB(WikiReplicaBaseDB):
     def can_use_sql() -> bool:
         return main_settings.database.can_use_sql()
 
+    @classmethod
+    def load(cls, wiki_identifier: str) -> WikiReplicaDB:
+        return cls(
+            wiki_identifier=wiki_identifier,
+        )
+
 
 __all__ = [
     "WikiReplicaDB",

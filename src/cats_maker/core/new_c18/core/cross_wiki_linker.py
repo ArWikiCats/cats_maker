@@ -8,7 +8,7 @@ import re
 
 from ....config import main_settings
 from ....shared import find_page_data
-from ....shared.wd_api import get_sitelinks_from_qid, get_sitelinks_from_wikidata
+from ....shared.wd_clients.wd_api import get_sitelinks_from_qid, get_sitelinks_from_wikidata
 from ..utils.text import extract_wikidata_qid
 
 logger = logging.getLogger(__name__)

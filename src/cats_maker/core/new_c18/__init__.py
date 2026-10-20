@@ -1,15 +1,13 @@
 #!/usr/bin/python3
 """new_c18 — Refactored Arabic Wikipedia category generation module."""
 
-from .core.category_generator import fetch_category_members, translate_titles_to_ar
-from .core.category_resolver import CategoryResolver
-from .core.category_validator import validate_categories_for_new_cat
-from .core.cross_wiki_linker import get_english_page_title, get_page_link
-from .core.member_lister import MemberLister
-from .io.json_store import JsonStore, get_dont_add_pages
+from .infrastructure.network.category_generator import fetch_category_members
+from .infrastructure.network.category_resolver import CategoryResolver
+from .infrastructure.network.category_validator import validate_categories_for_new_cat
+from .infrastructure.network.member_lister import MemberLister
+from .io.json_store import JsonStore, DontAddStore
 from .tools.doc_handler import add_text_to_template
-from .tools.sort import sort_categories
-from .tools.template_query import get_templates
+from .domain.sorting import CategorySorter
 from .utils.text import clean_category_input, extract_wikidata_qid, normalize_category_title
 
 __all__ = [
@@ -18,14 +16,10 @@ __all__ = [
     "clean_category_input",
     "extract_wikidata_qid",
     "fetch_category_members",
-    "get_dont_add_pages",
-    "get_english_page_title",
-    "get_page_link",
-    "get_templates",
+    "DontAddStore",
     "JsonStore",
     "MemberLister",
     "normalize_category_title",
-    "sort_categories",
-    "translate_titles_to_ar",
+    "CategorySorter",
     "validate_categories_for_new_cat",
 ]

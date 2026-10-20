@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import logging
-import os
 from typing import Any
 
 import wikitextparser as wtp
+
+from ......config import main_settings
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ STOP_EDIT_TEMPLATES: dict[str, list[str]] = {
     "portal": ["لا لربط البوابات المعادل", "لا لصيانة البوابات"],
 }
 
-BOT_USERNAME = os.getenv("WIKIPEDIA_BOT_USERNAME", "Mr.Ibrahembot")
+BOT_USERNAME = main_settings.wikipedia.credentials.username or "Mr.Ibrahembot"
 bot_edit_cache = {}
 
 

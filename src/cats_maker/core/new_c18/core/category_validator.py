@@ -7,7 +7,7 @@ import logging
 
 from ....config import main_settings
 from ....shared.newapi import AllAPIS
-from ....config.constants import GLOBAL_FALSE_ENTEMPS_LOWER, NO_TEMPLATES_AR
+from ....config.constants import EN_FALSE_TEMPLATES_LOWERS, NO_TEMPLATES_AR
 from ..models import ValidationResult
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ def _check_page_status(
                     reason=f"Blacklisted template: {target_temp2}",
                 )
         else:
-            if target_temp2.lower() in GLOBAL_FALSE_ENTEMPS_LOWER and not main_settings.category.keep:
+            if target_temp2.lower() in EN_FALSE_TEMPLATES_LOWERS and not main_settings.category.keep:
                 logger.info(f"{title} has template:{target_temp2}")
                 return ValidationResult(
                     valid=False,
