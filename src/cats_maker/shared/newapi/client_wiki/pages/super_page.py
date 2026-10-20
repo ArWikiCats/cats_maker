@@ -6,10 +6,10 @@ import logging
 import sys
 from typing import Any
 
+from .....config import main_settings
 import wikitextparser as wtp
 
 from ...api_client import WikiLoginClient
-from ...config import main_settings
 from ...core.exceptions import parse_api_error
 from ...core.result import ApiResult
 from ..api_formatter import ApiFormatData
@@ -96,9 +96,9 @@ class MainPage(ApiFormatData):
             **kwargs,
         )
 
-    # --------------------
+    # -----------------
     # checkers
-    # --------------------
+    # -----------------
     def is_bot_edit_invalid(self, summary: str | None = None) -> bool:
         """
         Ensures that MediaWiki page edits are blocked and aborted with error code empty_summary
@@ -169,9 +169,9 @@ class MainPage(ApiFormatData):
 
         return self.meta.can_be_edit
 
-    # --------------------
+    # -----------------
     # loaders
-    # --------------------
+    # -----------------
     def find_create_data(self):
         """
         Retrieves and stores the creation metadata of the page's first revision.
@@ -337,7 +337,9 @@ class MainPage(ApiFormatData):
 
             self.categories_data.all_categories_with_hidden[category_title] = cat
 
-            if cat.get("hidden") not in ("", True):
+            if cat.get("hidden") in ("", True):
+                self.categories_data.hidden_categories[category_title] = cat
+            else:
                 del cat["hidden"]
                 self.categories_data.categories[category_title] = cat
 
@@ -702,7 +704,7 @@ class MainPage(ApiFormatData):
 
         return self.meta.is_redirect
 
-    def isdisambiguation(self):
+    def is_disambiguation(self):
         # if the title ends with '(توضيح)' or '(disambiguation)'
         self.meta.is_disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
 
@@ -720,6 +722,12 @@ class MainPage(ApiFormatData):
             return self.categories_data.all_categories_with_hidden
 
         return self.categories_data.categories
+
+    def get_hidden_categories(self):
+        if self.categories_data.categories == {} and self.categories_data.hidden_categories == {}:
+            self.get_infos()
+
+        return self.categories_data.hidden_categories
 
     def get_langlinks(self) -> dict[str, str]:
         if not self.meta.info["done"]:
