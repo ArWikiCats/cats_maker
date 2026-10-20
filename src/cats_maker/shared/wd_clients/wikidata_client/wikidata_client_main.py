@@ -6,7 +6,8 @@ from __future__ import annotations
 import logging
 import sys
 
-from ....mk_cats.mknew import main_settings
+from ....config import main_settings
+
 from ...newapi import ApiResult, AskBot, WikiLoginClient
 from ...newapi.core.result_error import ApiResultError
 from .bot_wd import WDFunctions
