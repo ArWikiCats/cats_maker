@@ -12,7 +12,7 @@ from functools import cached_property
 from pathlib import Path
 
 from ....config import main_settings
-from ...infrastructure.sql.ar_lists import ArCategorySQL
+from ...c18.infrastructure.sql.ar_lists import ArCategorySQL
 
 logger = logging.getLogger(__name__)
 

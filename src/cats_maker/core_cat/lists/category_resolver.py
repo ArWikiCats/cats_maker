@@ -8,11 +8,11 @@ import logging
 from ...config import main_settings
 from ...config.constants import DEFAULT_MEMBER_NAMESPACES
 from ...shared import AllAPIS
-from ..new_c18.utils.text import normalize_category_title
-from ..infrastructure.sql.ar_lists import ArCategorySQL
-from ..infrastructure.sql.en_lists import EnCategorySQL
+from ..c18.utils.text import normalize_category_title
+from ..c18.infrastructure.sql.ar_lists import ArCategorySQL
+from ..c18.infrastructure.sql.en_lists import EnCategorySQL
 from .category_generator import fetch_category_members
-from ..infrastructure.network.langlinks import LangLinksClient, get_arpage_inside_encat
+from ..c18.infrastructure.network.langlinks import LangLinksClient, get_arpage_inside_encat
 
 logger = logging.getLogger(__name__)
 

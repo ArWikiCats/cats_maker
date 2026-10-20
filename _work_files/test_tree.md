@@ -16,7 +16,7 @@ tests/
     │   │
     │   ├── cats_helpers/
     │   │
-    │   ├── new_c18/
+    │   ├── c18/
     │   │   ├── __init__.py
     │   │   │
     │   │   ├── core/

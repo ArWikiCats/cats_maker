@@ -4,7 +4,7 @@ import logging
 import re
 
 from ...config import main_settings
-from ..infrastructure.sql.category_repository import CategoryRepository
+from ..c18.infrastructure.sql.category_repository import CategoryRepository
 
 logger = logging.getLogger(__name__)
 

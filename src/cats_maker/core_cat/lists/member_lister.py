@@ -7,7 +7,7 @@ import logging
 from typing import Any
 
 from ...config import main_settings
-from ..new_c18.utils.text import normalize_category_title
+from ..c18.utils.text import normalize_category_title
 from .category_comparator import CategoryComparator
 from .category_resolver import CategoryResolver
 from .category_validator import validate_categories_for_new_cat

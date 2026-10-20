@@ -1,5 +1,5 @@
 """
-Unit tests for src/cats_maker/core_cat/new_c18/core/category_generator.py module.
+Unit tests for src/cats_maker/core_cat/c18/core/category_generator.py module.
 """
 
 from unittest.mock import MagicMock

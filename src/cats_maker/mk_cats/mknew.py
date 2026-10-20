@@ -10,7 +10,7 @@ from ..core_cat.lists.category_resolver import CategoryResolver
 from ..core_cat.lists.category_validator import validate_categories_for_new_cat
 
 from ..config import main_settings
-from ..core_cat.infrastructure.network.langlinks import LangLinksClient
+from ..core_cat.c18.infrastructure.network.langlinks import LangLinksClient
 from ..core_cat.lists.members_helper import collect_category_members
 from ..shared.newapi import AllAPIS
 from ..shared.wd_clients.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid

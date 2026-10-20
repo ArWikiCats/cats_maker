@@ -15,7 +15,7 @@ import logging
 
 from .category_resolver import CategoryResolver
 from .member_lister import MemberLister
-from ..infrastructure.network.categories import CategoryMembersClient
+from ..c18.infrastructure.network.categories import CategoryMembersClient
 
 from ...config import main_settings
 from ...shared.newapi import AllAPIS

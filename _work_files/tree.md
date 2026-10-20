@@ -12,7 +12,7 @@ src/
 │   ├── core/
 │   │   ├── __init__.py
 │   │   │
-│   │   ├── new_c18/
+│   │   ├── c18/
 │   │   │   ├── __init__.py
 │   │   │   ├── constants.py
 │   │   │   │

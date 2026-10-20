@@ -1,5 +1,5 @@
 """
-Unit tests for src/cats_maker/core_cat/new_c18/core/category_validator.py module.
+Unit tests for src/cats_maker/core_cat/c18/core/category_validator.py module.
 """
 
 from unittest.mock import patch
@@ -7,7 +7,7 @@ from unittest.mock import patch
 from src.cats_maker.core_cat.lists.category_validator import (
     validate_categories_for_new_cat,
 )
-from src.cats_maker.core_cat.new_c18.models import ValidationResult
+from src.cats_maker.core_cat.c18.models import ValidationResult
 
 
 class TestValidateCategoriesForNewCat:

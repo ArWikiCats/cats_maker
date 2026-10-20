@@ -49,7 +49,7 @@ class TestMainFlowIntegration:
 
         # Mock MemberLister.get_listen_page_title (used in members_helper)
         mock_listen = mocker.patch(
-            "src.cats_maker.core_cat.infrastructure.network.member_lister.MemberLister.get_listen_page_title"
+            "src.cats_maker.core_cat.c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title"
         )
         mock_listen.return_value = ["Article1", "Article2"]
 
