@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.cats_maker.core.new_c18.io.json_store import JsonStore, _load_json, _save_json, DontAddStore
+from src.cats_maker.core.new_c18.io.json_store import DontAddStore, JsonStore, _load_json, _save_json
 
 
 class TestLoadJson:
@@ -190,7 +190,8 @@ class TestGetDontAddPages:
     ) -> None:
         """Test that empty list is returned when fetch returns dict instead of list."""
         monkeypatch.setattr(
-            "src.cats_maker.core.new_c18.io.json_store.EnCategorySQL.fetch_dont_add_pages", lambda self: {"key": "value"}
+            "src.cats_maker.core.new_c18.io.json_store.EnCategorySQL.fetch_dont_add_pages",
+            lambda self: {"key": "value"},
         )
 
         result = DontAddStore().get_dont_add_pages()

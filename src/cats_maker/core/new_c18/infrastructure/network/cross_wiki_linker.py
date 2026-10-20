@@ -7,10 +7,9 @@ import logging
 import re
 
 from .....config import main_settings
-
-from .langlinks import LangLinksClient
 from .....shared.wd_clients.wd_api import get_sitelinks_from_qid, get_sitelinks_from_wikidata
 from ...utils.text import extract_wikidata_qid
+from .langlinks import LangLinksClient
 
 logger = logging.getLogger(__name__)
 

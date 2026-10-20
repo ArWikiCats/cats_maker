@@ -5,15 +5,14 @@ from __future__ import annotations
 
 import logging
 
-from .langlinks import LangLinksClient, get_arpage_inside_encat
-
 from .....config import main_settings
-from .....shared import AllAPIS
 from .....config.constants import DEFAULT_MEMBER_NAMESPACES
-from .category_generator import fetch_category_members
+from .....shared import AllAPIS
+from ...utils.text import normalize_category_title
 from ..sql.ar_lists import ArCategorySQL
 from ..sql.en_lists import EnCategorySQL
-from ...utils.text import normalize_category_title
+from .category_generator import fetch_category_members
+from .langlinks import LangLinksClient, get_arpage_inside_encat
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +47,6 @@ class CategoryResolver:
 
         if self._use_sql():
             ar_list = self.wiki_query_service.sql_retrieve_category_members_list(ar_title)
-
 
         if not ar_list:
             api = AllAPIS.load("ar")

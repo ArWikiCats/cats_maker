@@ -65,7 +65,10 @@ class TestGatherMembersFromApi:
             "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=None,
         )
-        mocker.patch("src.cats_maker.mk_cats.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks", return_value=None)
+        mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks",
+            return_value=None,
+        )
 
         result = gather_members_from_api("Category:Science")
 
@@ -78,7 +81,10 @@ class TestGatherMembersFromApi:
             "src.cats_maker.core.new_c18.infrastructure.network.category_resolver.CategoryResolver.make_lit_api_way",
             return_value=False,
         )
-        mocker.patch("src.cats_maker.mk_cats.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks", return_value=False)
+        mocker.patch(
+            "src.cats_maker.mk_cats.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks",
+            return_value=False,
+        )
 
         result = gather_members_from_api("Category:Science")
 

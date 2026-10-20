@@ -6,8 +6,8 @@ from __future__ import annotations
 import logging
 
 from .....config import main_settings
+from .....config.constants import AR_FALSE_TEMPLATES, EN_FALSE_TEMPLATES_LOWERS
 from .....shared.newapi import AllAPIS
-from .....config.constants import EN_FALSE_TEMPLATES_LOWERS, AR_FALSE_TEMPLATES
 from ...models import ValidationResult
 
 logger = logging.getLogger(__name__)

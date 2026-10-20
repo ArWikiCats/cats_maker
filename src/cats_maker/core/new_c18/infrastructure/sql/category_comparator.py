@@ -3,8 +3,8 @@
 import logging
 import re
 
-from ...config import main_settings
-from .repository import CategoryRepository
+from .....config import main_settings
+from .category_repository import CategoryRepository
 
 logger = logging.getLogger(__name__)
 

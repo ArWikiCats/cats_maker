@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 """ """
 
-from ..shared.wd_clients import WikidataClient
-
 from ..shared.newapi import AllAPIS
+from ..shared.wd_clients import WikidataClient
 from ..templates import main_make_temp_no_title
 from .categorytext_data import LocalLanguageLinks, category_mapping
 from .utils import portal_en_to_ar_lower

@@ -4,7 +4,6 @@ import logging
 from typing import Any
 
 from .....shared import AllAPIS
-
 from .api_formatter import ApiFormatData
 
 logger = logging.getLogger(__name__)

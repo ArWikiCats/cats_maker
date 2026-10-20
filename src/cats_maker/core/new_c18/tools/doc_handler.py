@@ -8,8 +8,8 @@ import re
 
 import wikitextparser as wtp
 
-from ....shared.newapi import AllAPIS
 from ....config.constants import PRE_TEXT, TO_SEARCH, TOSEARCH_AND_REPLACE
+from ....shared.newapi import AllAPIS
 
 logger = logging.getLogger(__name__)
 

@@ -48,7 +48,9 @@ class TestMainFlowIntegration:
         mock_new_cat.return_value = True
 
         # Mock MemberLister.get_listen_page_title (used in members_helper)
-        mock_listen = mocker.patch("src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title")
+        mock_listen = mocker.patch(
+            "src.cats_maker.core.new_c18.infrastructure.network.member_lister.MemberLister.get_listen_page_title"
+        )
         mock_listen.return_value = ["Article1", "Article2"]
 
         # Mock CategoryResolver.make_lit_api_way (used in members_helper)

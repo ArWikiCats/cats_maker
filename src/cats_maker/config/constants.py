@@ -2,6 +2,7 @@
 """Centralised constants for the module."""
 
 from __future__ import annotations
+
 from enum import IntEnum
 
 

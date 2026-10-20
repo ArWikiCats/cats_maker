@@ -7,8 +7,8 @@ import logging
 from typing import Any
 
 from .....config import main_settings
-from .....shared.api_sql import CategoryComparator
 from ...utils.text import normalize_category_title
+from ..sql.category_comparator import CategoryComparator
 from .category_resolver import CategoryResolver
 from .category_validator import validate_categories_for_new_cat
 

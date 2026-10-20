@@ -6,9 +6,9 @@ import logging
 import sys
 from typing import Any
 
-from .....config import main_settings
 import wikitextparser as wtp
 
+from .....config import main_settings
 from ...api_client import WikiLoginClient
 from ...core.exceptions import parse_api_error
 from ...core.result import ApiResult

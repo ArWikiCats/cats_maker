@@ -5,6 +5,7 @@ This module tests template query functions for Wikipedia categories.
 """
 
 from unittest.mock import MagicMock
+
 from src.cats_maker.core.new_c18.infrastructure.network.templates import TemplateCache, TemplateClient
 
 

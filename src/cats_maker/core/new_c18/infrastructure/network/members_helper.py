@@ -14,8 +14,8 @@ Responsibilities:
 import logging
 
 from .....config import main_settings
-from ... import CategoryResolver, MemberLister
 from .....shared.newapi import AllAPIS
+from ... import CategoryResolver, MemberLister
 from .categories import CategoryMembersClient
 
 logger = logging.getLogger(__name__)
