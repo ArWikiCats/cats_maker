@@ -3,7 +3,7 @@
 
 import logging
 
-from ...core.new_c18.constants import GLOBAL_FALSE_ENTEMPS_LOWER, SKIP_ENCATS
+from ...config.constants import GLOBAL_FALSE_ENTEMPS_LOWER, SKIP_ENCATS
 from ...shared import find_page_data
 
 logger = logging.getLogger(__name__)

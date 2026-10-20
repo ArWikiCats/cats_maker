@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from ....config import main_settings
 from .bot_edit_by_templates import is_bot_edit_allowed
 from .bot_edit_by_time import check_create_time, check_last_edit_time
 
@@ -23,6 +24,9 @@ def is_page_editable(
     Determines whether a bot is permitted to edit a page based on templates, last edit time, and creation time.
     """
     page_data = page_data or {}
+
+    if (main_settings.bot.force_edit) or main_settings.bot.workibrahem:
+        return True
 
     check_it = is_bot_edit_allowed(
         text=text,
@@ -54,6 +58,7 @@ def is_page_editable(
         check_create = check_create_time(page_data, title_page)
 
         if not check_create:
+            logger.info(f"Page {title_page} is too new to be edited.")
             return False
 
     return check_it

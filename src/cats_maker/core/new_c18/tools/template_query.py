@@ -8,7 +8,7 @@ from collections import defaultdict
 from typing import Any
 
 from ....shared import find_page_data
-from ..constants import SKIP_CATEGORIES
+from ....config.constants import SKIP_CATEGORIES
 
 logger = logging.getLogger(__name__)
 

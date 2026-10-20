@@ -4,7 +4,7 @@
 import logging
 from typing import NamedTuple
 
-from ..core.new_c18.constants import SKIP_ENCATS
+from ..config.constants import SKIP_ENCATS
 from ..shared.newapi import AllAPIS
 from ..templates import main_make_temp_no_title
 from . import categorytext

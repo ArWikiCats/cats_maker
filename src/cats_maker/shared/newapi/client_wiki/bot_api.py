@@ -10,9 +10,9 @@ from datetime import timedelta
 from typing import Any
 
 from ..api_client import WikiLoginClient
+from ..core.result import ApiResult
 from .api_utils import change_codes
 from .api_utils.ask_bot import AskBot
-from .api_utils.handel_errors import HandleErrors
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,6 @@ class NewApi(NewApiHelpers):
         family: str = "wikipedia",
     ) -> None:
 
-        self.error_handler = HandleErrors()
         self.login_bot = login_bot
 
         self.username = getattr(self, "username", "")
@@ -401,7 +400,7 @@ class NewApi(NewApiHelpers):
 
         return Main_table
 
-    def search_api(
+    def api_search(
         self,
         value: str = "",
         ns: str = "*",
@@ -592,7 +591,7 @@ class NewApi(NewApiHelpers):
             # "normalize": 1,
             "lllimit": "max",
             "utf8": 1,
-            "formatversion": 1,
+            "formatversion": 2,
         }
 
         if targtsitecode:
@@ -1047,7 +1046,7 @@ class NewApi(NewApiHelpers):
         file_path,
         comment: str = "",
         ignorewarnings: bool = False,
-    ) -> dict[str, Any]:
+    ) -> ApiResult:
 
         logger.info(f"<<lightyellow>> def . {file_name=}")
 
@@ -1082,12 +1081,12 @@ class NewApi(NewApiHelpers):
 
         if success:
             logger.info(f"<<lightgreen>> ** upload true .. [[File:{file_name}]] ")
-            return {"success": True, **upload_result}
+            return ApiResult.ok(data=upload_result)
 
         if duplicate:
             logger.info(f"<<lightred>> ** duplicate file: {duplicate}.")
 
-        return {"success": False, **upload_result}
+        return ApiResult.fail(code="upload_failed", error=upload_result)
 
     def _get_title_redirect_normalize(
         self,
@@ -1246,6 +1245,23 @@ class NewApi(NewApiHelpers):
             files=files,
             **kwargs,
         )
+
+    def users_infos(self, ususers: list[str] | str):
+        users_str = "|".join(ususers) if isinstance(ususers, list) else ususers
+        params: dict[str, Any] = {
+            "action": "query",
+            "format": "json",
+            "list": "users",
+            "formatversion": 2,
+            "usprop": "groups",
+            "ususers": users_str,
+        }
+
+        data = self.login_bot.client_request_safe(params, method="get")
+
+        data = data.get("query", {}).get("users", [{}])
+
+        return data
 
     def __repr__(self) -> str:
         return f"NewApi(lang={self.lang!r}, username={self.username!r})"

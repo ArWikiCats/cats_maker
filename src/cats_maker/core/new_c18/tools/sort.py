@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 
-from ..constants import ARABIC_ALPHABET
+from ....config.constants import ARABIC_ALPHABET
 
 _ARABIC_COLLATION = str.maketrans({ch: f"{i:02d}" for i, ch in enumerate(ARABIC_ALPHABET)})
 

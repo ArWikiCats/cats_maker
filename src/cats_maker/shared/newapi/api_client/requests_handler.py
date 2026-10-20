@@ -10,7 +10,7 @@ from typing import Any
 import mwclient
 import requests
 
-from .exceptions import (
+from ..core.exceptions import (
     CSRFError,
     MaxlagError,
     WikiClientError,

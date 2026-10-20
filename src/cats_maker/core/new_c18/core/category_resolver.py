@@ -8,7 +8,7 @@ import logging
 from ....config import main_settings
 from ....shared import AllAPIS, find_page_data, get_arpage_inside_encat
 from ....shared.api_sql import add_namespace_prefix
-from ..constants import DEFAULT_MEMBER_NAMESPACES
+from ....config.constants import DEFAULT_MEMBER_NAMESPACES
 from ..core.category_generator import fetch_category_members
 from ..io.sql_queries import fetch_ar_category_members, fetch_en_category_langlinks
 from ..utils.text import normalize_category_title

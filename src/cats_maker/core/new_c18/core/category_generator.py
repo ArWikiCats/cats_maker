@@ -7,7 +7,7 @@ import logging
 
 from ....config import main_settings
 from ....shared import AllAPIS, find_page_data
-from ..constants import DEFAULT_MEMBER_NAMESPACES
+from ....config.constants import DEFAULT_MEMBER_NAMESPACES
 
 logger = logging.getLogger(__name__)
 

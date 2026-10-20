@@ -39,8 +39,8 @@ from typing import Any
 import mwclient
 import mwclient.errors
 
+from ..core.exceptions import LoginError, WikiClientError
 from .cookies_client import CookiesClient
-from .exceptions import LoginError, WikiClientError
 from .requests_handler import RequestsHandler
 
 logger = logging.getLogger(__name__)

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from .ask_bot import AskBot
 from .bot_edit import is_page_editable
-from .handel_errors import HandleErrors
 
 change_codes = {
     "bat_smg": "bat-smg",
@@ -23,5 +22,4 @@ __all__ = [
     "AskBot",
     "change_codes",
     "is_page_editable",
-    "HandleErrors",
 ]

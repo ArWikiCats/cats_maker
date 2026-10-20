@@ -7,7 +7,7 @@ import logging
 
 from ....config import main_settings
 from ....shared.newapi import AllAPIS
-from ..constants import GLOBAL_FALSE_ENTEMPS_LOWER, NO_TEMPLATES_AR
+from ....config.constants import GLOBAL_FALSE_ENTEMPS_LOWER, NO_TEMPLATES_AR
 from ..models import ValidationResult
 
 logger = logging.getLogger(__name__)

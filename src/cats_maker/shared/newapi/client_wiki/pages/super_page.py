@@ -6,9 +6,12 @@ import logging
 import sys
 from typing import Any
 
-from .....config import main_settings
+import wikitextparser as wtp
+
 from ...api_client import WikiLoginClient
-from ...client_wiki.api_utils.handel_errors import HandleErrors
+from ...config import main_settings
+from ...core.exceptions import parse_api_error
+from ...core.result import ApiResult
 from ..api_formatter import ApiFormatData
 from ..api_utils import change_codes
 from ..api_utils.ask_bot import AskBot
@@ -51,7 +54,6 @@ class MainPage(ApiFormatData):
         Sets up page attributes including title, language, family, API endpoint, and metadata fields. Normalizes the language code, loads user tables if available, and logs into the wiki if required.
         """
 
-        self.error_handler = HandleErrors()
         self.login_bot = login_bot
 
         self.title: str = title
@@ -94,9 +96,9 @@ class MainPage(ApiFormatData):
             **kwargs,
         )
 
-    # -----------------
+    # --------------------
     # checkers
-    # -----------------
+    # --------------------
     def is_bot_edit_invalid(self, summary: str | None = None) -> bool:
         """
         Ensures that MediaWiki page edits are blocked and aborted with error code empty_summary
@@ -167,9 +169,9 @@ class MainPage(ApiFormatData):
 
         return self.meta.can_be_edit
 
-    # -----------------
+    # --------------------
     # loaders
-    # -----------------
+    # --------------------
     def find_create_data(self):
         """
         Retrieves and stores the creation metadata of the page's first revision.
@@ -335,9 +337,7 @@ class MainPage(ApiFormatData):
 
             self.categories_data.all_categories_with_hidden[category_title] = cat
 
-            if cat.get("hidden") in ("", True):
-                self.categories_data.hidden_categories[category_title] = cat
-            else:
+            if cat.get("hidden") not in ("", True):
                 del cat["hidden"]
                 self.categories_data.categories[category_title] = cat
 
@@ -556,13 +556,153 @@ class MainPage(ApiFormatData):
 
         return revisions
 
+    def get_text_html(self):
+        params: dict[str, Any] = {
+            "action": "parse",
+            "page": self.title,
+            "formatversion": 2,
+            "prop": "text",
+        }
+
+        data = self.login_bot.client_request_safe(params)
+
+        # _data_ = { 'warnings': { 'main': { 'warnings': 'Unrecognized parameter: bot.' } }, 'parse': { 'title': 'ويكيبيديا:ملعب', 'pageid': 361534, 'text': '' } }
+
+        self.content.text_html = data.get("parse", {}).get("text", "")
+
+        return self.content.text_html
+
+    def get_words(self) -> int:
+        srlimit = "30"
+        params: dict[str, Any] = {
+            "action": "query",
+            "list": "search",
+            "srsearch": self.title,
+            "srlimit": srlimit,
+        }
+        data = self.login_bot.client_request_safe(params)
+
+        if not data:
+            return 0
+
+        search = data.get("query", {}).get("search", [])
+
+        for pag in search:
+            tit = pag["title"]
+            if tit == self.title:
+                count = pag["wordcount"]
+                self.content.words = count
+                break
+
+        return self.content.words
+
+    def page_backlinks(self, ns: int = 0):
+        params: dict[str, Any] = {
+            "action": "query",
+            "maxlag": "3",
+            # "prop": "info",
+            "generator": "backlinks",
+            # "redirects": 1,
+            # 'gblfilterredir': 'redirects',
+            "gbltitle": self.title,
+            "gblnamespace": ns,
+            "gbllimit": "max",
+            "formatversion": 2,
+            "gblredirect": 1,
+        }
+
+        # x = { 'batchcomplete': True, 'limits': { 'backlinks': 2500 }, 'query': { 'redirects': [{ 'from': 'فريدريش زيمرمان', 'to': 'فريدريش تسيمرمان' }], 'pages': [{ 'pageid': 2941285, 'ns': 0, 'title': 'فولفغانغ شويبله' }, { 'pageid': 4783977, 'ns': 0, 'title': 'وزارة الشؤون الرقمية والنقل' }, { 'pageid': 5218323, 'ns': 0, 'title': 'فريدريش تسيمرمان' }, { 'pageid': 6662649, 'ns': 0, 'title': 'غونتر كراوزه' }] } }
+
+        # data = self.client_request_safe(params)
+        # pages = data.get("query", {}).get("pages", [])
+
+        def _load_data(body):
+            return body.get("query", {}).get("pages") or []
+
+        pages = self.login_bot.post_continue_list(
+            params=params,
+            action="query",
+            _load_data=_load_data,
+        )
+
+        back_links = [x for x in pages if x["title"] != self.title]
+
+        self.links_data.back_links = back_links
+
+        return self.links_data.back_links
+
+    def get_templates_api(self):
+        if not self.meta.info["done"]:
+            self.get_infos()
+
+        return self.template_data.templates_api
+
+    def get_links_here(self):
+        if not self.meta.info["done"]:
+            self.get_infos()
+
+        return self.links_data.links_here
+
+    def get_tags(self, tag: str = "") -> list:
+        if not self.text:
+            self.text = self.get_text()
+
+        self.text = self.text.replace("<ref>", '<ref name="ss">', 1)
+
+        parsed = wtp.parse(self.text)
+        tags = parsed.get_tags()
+
+        if not tag:
+            return tags
+
+        new_tags: list = []
+
+        for x in tags:
+            if x.name == tag:
+                new_tags.append(x)
+
+        return new_tags
+
+    def is_flagged(self) -> bool:
+        """
+        Returns whether the page is flagged for review or quality control.
+
+        If the page text has not been loaded, it is retrieved before checking the flagged status.
+
+        Returns:
+            bool: True if the page is flagged, False otherwise.
+        """
+        if not self.text:
+            self.text = self.get_text()
+
+        return self.meta.flagged
+
+    def get_newrevid(self):
+        # newrevid is only populated on successful edit/create responses.
+        if not self.revisions_data.newrevid:
+            # Ensure we at least have the current revid loaded.
+            if not self.revisions_data.revid:
+                self.get_text()
+        # Fallback to current revid if no newrevid exists.
+        return self.revisions_data.newrevid or self.revisions_data.revid
+
+    def get_revid(self):
+        if not self.revisions_data.revid:
+            self.get_text()
+        return self.revisions_data.revid
+
+    def get_user(self) -> str:
+        if not self.user:
+            self.get_text()
+        return self.user
+
     def is_redirect(self):
         if not self.meta.is_redirect:
             self.get_infos()
 
         return self.meta.is_redirect
 
-    def is_disambiguation(self):
+    def isdisambiguation(self):
         # if the title ends with '(توضيح)' or '(disambiguation)'
         self.meta.is_disambig = self.title.endswith("(توضيح)") or self.title.endswith("(disambiguation)")
 
@@ -580,12 +720,6 @@ class MainPage(ApiFormatData):
             return self.categories_data.all_categories_with_hidden
 
         return self.categories_data.categories
-
-    def get_hidden_categories(self):
-        if self.categories_data.categories == {} and self.categories_data.hidden_categories == {}:
-            self.get_infos()
-
-        return self.categories_data.hidden_categories
 
     def get_langlinks(self) -> dict[str, str]:
         if not self.meta.info["done"]:
@@ -629,9 +763,71 @@ class MainPage(ApiFormatData):
         # assert self.ns is not None
         return int(self.ns)  # pyright: ignore[reportArgumentType]
 
-    # ------------
+    # ---------------
     # actions
-    # ------------
+    # ---------------
+
+    def purge(self) -> bool | str:
+        params: dict[str, Any] = {
+            "action": "purge",
+            "forcelinkupdate": 1,
+            "forcerecursivelinkupdate": 1,
+            "titles": self.title,
+        }
+
+        data = self.login_bot.client_request_safe(params)
+
+        if not data:
+            logger.info("** purge error. ")
+            return False
+
+        title2 = self.title
+
+        #  'normalized': [{'from': 'وب:ملعب', 'to': 'ويكيبيديا:ملعب'}]}
+
+        for x in data.get("normalized", []):
+            # logger.info(f"normalized from {x['from']} to {x['to']}")
+            if x["from"] == self.title:
+                title2 = x["to"]
+                break
+
+        for t in data.get("purge", []):
+            # t = [{'ns': 4, 'title': 'ويكيبيديا:ملعب', 'purged': '', 'linkupdate': ''}]
+            ti = t["title"]
+            if title2 == ti and "purged" in t:
+                return True
+
+            if "missing" in t:
+                logger.info(f'page "{ti}" missing')
+                return "missing"
+        return False
+
+    def import_page(self, family: str = "wikipedia"):
+        """
+        Imports the page from another wiki family using the MediaWiki API.
+
+        Args:
+            family: The source wiki family from which to import the page (default is "wikipedia").
+
+        Returns:
+            The API response data from the import operation.
+        """
+        params: dict[str, Any] = {
+            "action": "import",
+            "format": "json",
+            "interwikisource": family,
+            "interwikipage": self.title,
+            "fullhistory": 1,
+            "assignknownusers": 1,
+        }
+
+        data = self.login_bot.client_request_safe(params)
+
+        done = data.get("import", [{}])[0].get("revisions", 0)
+
+        logger.info(f"imported {done} revisions")
+
+        return data
 
     def edit(
         self,
@@ -640,7 +836,7 @@ class MainPage(ApiFormatData):
         nocreate: int = 1,
         minor: str = "0",
         tags: str = "",
-    ) -> dict[str, Any]:
+    ) -> ApiResult:
         """
         Saves new text to the page, updating its content and metadata.
         """
@@ -649,8 +845,11 @@ class MainPage(ApiFormatData):
         if summary:
             self.content.summary = summary
 
+        if self.is_bot_edit_invalid(summary):
+            return ApiResult.fail(code="empty_summary")
+
         if self.is_false_edit():
-            return {"success": False, "error_code": "false_edit"}
+            return ApiResult.fail(code="false_edit")
 
         message = f"Do you want to save this page? ({self.lang}:{self.title})"
 
@@ -667,7 +866,7 @@ class MainPage(ApiFormatData):
             )
             is False
         ):
-            return {"success": False, "error_code": "user_abort"}
+            return ApiResult.fail(code="user_abort")
 
         params: dict[str, Any] = {
             "action": "edit",
@@ -692,7 +891,7 @@ class MainPage(ApiFormatData):
         api_response = self.login_bot.client_request_safe(params, method="post")
 
         if not api_response:
-            return {"success": False, "error_code": "no_response"}
+            return ApiResult.fail(code="no_response")
 
         error_dict = api_response.get("error", {})
         edit = api_response.get("edit", {})
@@ -708,23 +907,21 @@ class MainPage(ApiFormatData):
 
             self.revisions_data.update_from_edit(edit)
 
-            return {"success": True}
+            return ApiResult.ok(data=edit)
 
         if error_dict:
             logger.debug(api_response)
-            return self.error_handler.handle_err(
-                error_dict,
-                function="Save",
-                params=params,
-            )
+            # NOTE: parse_api_error return ApiError while fail.error except ApiResultError
+            error = parse_api_error(error_dict=error_dict)
+            return ApiResult.fail(code=error.code, error=error.message)
 
-        return {"success": False, "error_code": "unknown"}
+        return ApiResult.fail(code="unknown")
 
     def create(
         self,
         text: str = "",
         summary: str = "",
-    ) -> dict:
+    ) -> ApiResult:
         """
         Creates a new page with the specified text and summary.
 
@@ -735,13 +932,16 @@ class MainPage(ApiFormatData):
             summary: Edit summary for the page creation.
 
         Returns:
-            True if the page was created successfully, False otherwise or if the user aborts.
+            ApiResult.ok() on success, otherwise an ApiResult describing the failure.
         """
         self.newtext = text
 
         message = f"Do you want to create this page? ({self.lang}:{self.title})"
 
         user = self.meta.username
+
+        if self.is_bot_edit_invalid(summary):
+            return ApiResult.fail(code="empty_summary")
 
         if (
             self.ask_bot.ask_user(
@@ -753,7 +953,7 @@ class MainPage(ApiFormatData):
             )
             is False
         ):
-            return {"success": False, "error_code": "user_abort"}
+            return ApiResult.fail(code="user_abort")
 
         params: dict[str, Any] = {
             "action": "edit",
@@ -767,9 +967,9 @@ class MainPage(ApiFormatData):
         api_response = self.login_bot.client_request_safe(params)
 
         if not api_response:
-            return {"success": False, "error_code": "no_response"}
+            return ApiResult.fail(code="no_response")
 
-        error = api_response.get("error", {})
+        error_dict = api_response.get("error", {})
         edit = api_response.get("edit", {})
         result = edit.get("result", "")
 
@@ -782,21 +982,19 @@ class MainPage(ApiFormatData):
 
             self.revisions_data.update_from_edit(edit)
 
-            return {"success": True}
+            return ApiResult.ok(data=edit)
 
-        if error:
+        if error_dict:
             logger.debug(api_response)
-            return self.error_handler.handle_err(
-                error,
-                function="Create",
-                params=params,
-            )
+            # NOTE: parse_api_error return ApiError while fail.error except ApiResultError
+            error = parse_api_error(error_dict=error_dict)
+            return ApiResult.fail(code=error.code, error=error.message)
 
-        return {"success": False, "error_code": "unknown"}
+        return ApiResult.fail(code="unknown")
 
-    # ------------
+    # ---------------
     # helpers
-    # ------------
+    # ---------------
     def __getitem__(self, key):
         if key == "q":
             return self.get_qid()
