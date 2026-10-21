@@ -33,7 +33,9 @@ class TestMainFlowIntegration:
         mock_wikidata.return_value = {"q": "Q12345", "sitelinks": {}}
 
         # Mock LCN (Language Code Navigator)
-        mock_lcn = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.LangLinksClient.find_page_categories_informations")
+        mock_lcn = mocker.patch(
+            "src.cats_maker.mk_cats.mknew.category_manager.LangLinksClient.find_page_categories_informations"
+        )
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in CategoryManager)
