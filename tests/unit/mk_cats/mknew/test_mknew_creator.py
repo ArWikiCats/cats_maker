@@ -229,7 +229,7 @@ class TestFinalizeCategoryCreation:
         creator = category_manager.creator
         mock_add = mocker.patch.object(creator.members_adder, "add")
         mock_log = mocker.patch.object(creator.wikidata, "log_creation")
-        mocker.patch(f"{MODULE}.mknew_creator.validate_categories_for_new_cat", return_value=False)
+        mocker.patch(f"{MODULE}.mknew_creator.CategoryValidator.validate_categories_for_new_cat", return_value=False)
 
         result = creator._finalize_category_creation(
             "تصنيف:علوم", "Category:Science", "Q1", ["A"], ["Category:X"], None
@@ -244,7 +244,7 @@ class TestFinalizeCategoryCreation:
         creator = category_manager.creator
         mock_add = mocker.patch.object(creator.members_adder, "add")
         mocker.patch.object(creator.wikidata, "log_creation")
-        mocker.patch(f"{MODULE}.mknew_creator.validate_categories_for_new_cat", return_value=True)
+        mocker.patch(f"{MODULE}.mknew_creator.CategoryValidator.validate_categories_for_new_cat", return_value=True)
         mocker.patch.object(creator.category_resolver, "resolve_members", return_value=["B"])
 
         creator._finalize_category_creation("تصنيف:علوم", "Category:Science", "Q1", ["A"], [], None)
