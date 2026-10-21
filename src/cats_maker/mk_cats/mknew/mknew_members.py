@@ -12,7 +12,12 @@ class CategoryMembersAdder:
     def __init__(self, add_to_page_func: Callable | None = None) -> None:
         self.add_to_page = add_to_page_func or add_to_page
 
-    def add(self, final_list: list, title: str, callback: Callable | None = None) -> None:
+    def add(
+        self,
+        final_list: list,
+        title: str,
+        callback: Callable | None = None,
+    ) -> None:
         """Add the category `title` to every page in `final_list`."""
         title = title.replace("_", " ")
 
@@ -38,3 +43,8 @@ class CategoryMembersAdder:
         if members and len(members) < 30:
             formatted_member_list = ",".join(members)
         logger.debug(f"Add to {len(members)} pages: {formatted_member_list}")
+
+
+__all__ = [
+    "CategoryMembersAdder",
+]

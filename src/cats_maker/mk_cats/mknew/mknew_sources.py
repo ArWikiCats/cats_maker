@@ -74,3 +74,9 @@ class ArabicCategoryChecker:
             return False
 
         return True
+
+
+__all__ = [
+    "EnglishCategorySource",
+    "ArabicCategoryChecker",
+]

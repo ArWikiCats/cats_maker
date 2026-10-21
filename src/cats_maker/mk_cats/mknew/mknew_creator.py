@@ -142,3 +142,8 @@ class CategoryCreator:
             en_cats_of_new_cat,
             callback,
         )
+
+
+__all__ = [
+    "CategoryCreator",
+]

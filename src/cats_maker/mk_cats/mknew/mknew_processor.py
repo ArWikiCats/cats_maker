@@ -24,7 +24,14 @@ class CategoryBatchProcessor:
         self.creator = creator
         self.category_resolver = category_resolver or CategoryResolver()
 
-    def one_cat(self, en_title: str, num: int, lenth: int, sugust: str = "", callback: Callable | None = None) -> bool:
+    def one_cat(
+        self,
+        en_title: str,
+        num: int,
+        lenth: int,
+        sugust: str = "",
+        callback: Callable | None = None,
+    ) -> bool:
         logger.debug("_________________________________________________________")
         logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")
 
@@ -57,10 +64,18 @@ class CategoryBatchProcessor:
             logger.warning("en_list is empty. return")
             return False
 
-        # NOTE: the original code falls through here and returns None; kept unchanged on purpose.
         self.process_categories(en_title, labb, num, lenth, callback=callback)
 
-    def process_categories(self, cat: str, arlab: str, num: int, lenth: int, callback: Callable | None = None) -> None:
+        return True
+
+    def process_categories(
+        self,
+        cat: str,
+        arlab: str,
+        num: int,
+        lenth: int,
+        callback: Callable | None = None,
+    ) -> None:
         logger.debug(f"*:{num}/{lenth} cat: {cat}, arlab: {arlab}")
 
         ma_table = self.creator.make_ar(cat, arlab, callback=callback)
@@ -108,3 +123,8 @@ class CategoryBatchProcessor:
 
         for num, en_title in enumerate(titles, 1):
             self.one_cat(en_title, num, lenth, callback=callback)
+
+
+__all__ = [
+    "CategoryBatchProcessor",
+]

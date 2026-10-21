@@ -10,7 +10,7 @@ This module tests:
 - CategoryManager.make_ar() - Create Arabic category
 - ar_make_lab() - Generate Arabic label
 - CategoryManager._scan_ar_title() - Scan Arabic titles
-- CategoryManager._check_if_artitle_exists() - Check if Arabic title exists
+- CategoryManager.can_create() - Check if Arabic title exists
 """
 
 from dataclasses import dataclass
@@ -71,7 +71,7 @@ def mock_make_ar_base_deps(mocker, category_manager: CategoryManager):
 
     deps = MakeArBaseDeps(
         scan_ar_title=mocker.patch.object(category_manager.stats, "_scan_ar_title", return_value=True),
-        check_if_artitle_exists=mocker.patch.object(category_manager, "_check_if_artitle_exists", return_value=True),
+        check_if_artitle_exists=mocker.patch.object(category_manager, "can_create", return_value=True),
         get_sitelinks_from_wikidata=mocker.patch(
             "src.cats_maker.mk_cats.mknew.category_manager.get_sitelinks_from_wikidata", return_value={"q": "Q12345"}
         ),
@@ -114,7 +114,7 @@ def mock_make_ar_proceed_deps(mocker, mock_make_ar_base_deps, category_manager) 
             "src.cats_maker.mk_cats.mknew.category_manager.new_category",
             return_value=CategoryResult(True, "تصنيف:علوم", None),
         ),
-        add_to_final_list=mocker.patch.object(category_manager, "_add_to_final_list"),
+        add_to_final_list=mocker.patch.object(category_manager, ".creator.members_adder.add"),
         validate_categories_for_new_cat=mocker.patch(
             "src.cats_maker.mk_cats.mknew.category_manager.validate_categories_for_new_cat", return_value=False
         ),
@@ -123,7 +123,7 @@ def mock_make_ar_proceed_deps(mocker, mock_make_ar_base_deps, category_manager) 
 
 
 class TestCheckIfArtitleExists:
-    """Tests for CategoryManager._check_if_artitle_exists method."""
+    """Tests for CategoryManager.can_create method."""
 
 
 class TestArMakeLab:
@@ -212,7 +212,7 @@ class TestMakeAr:
         """Test that make_ar returns empty list when Arabic link exists in Wikidata."""
 
         mocker.patch.object(category_manager.stats, "_scan_ar_title", return_value=True)
-        mocker.patch.object(category_manager, "_check_if_artitle_exists", return_value=True)
+        mocker.patch.object(category_manager, "can_create", return_value=True)
         mocker.patch(
             "src.cats_maker.mk_cats.mknew.category_manager.get_sitelinks_from_wikidata",
             return_value={"sitelinks": {"arwiki": "علوم"}, "q": "Q12345"},
@@ -447,27 +447,27 @@ class TestMakeArMinMembers:
 
 
 class TestAddToFinalList:
-    """Tests for CategoryManager._add_to_final_list method."""
+    """Tests for CategoryManager.creator.members_adder.add method."""
 
-    def test_handles_empty_list(self, category_manager):
+    def test_handles_empty_list(self, category_manager: CategoryManager):
         """Test that empty list is handled gracefully."""
-        category_manager._add_to_final_list([], "تصنيف:علوم")
+        category_manager.creator.members_adder.add([], "تصنيف:علوم")
 
     def test_handles_none_list(self, category_manager):
         """Test that None list is handled gracefully."""
-        category_manager._add_to_final_list(None, "تصنيف:علوم")
+        category_manager.creator.members_adder.add(None, "تصنيف:علوم")
 
     def test_adds_tasneef_prefix_if_missing(self, mocker, category_manager):
         """Test that تصنيف: prefix is added if missing."""
         mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
 
-        category_manager._add_to_final_list(["صفحة1"], "علوم")
+        category_manager.creator.members_adder.add(["صفحة1"], "علوم")
 
     def test_replaces_underscores_in_title(self, mocker, category_manager):
         """Test that underscores are replaced with spaces in title."""
         mock_add = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
 
-        category_manager._add_to_final_list(["صفحة1"], "تصنيف:علوم_الحاسوب")
+        category_manager.creator.members_adder.add(["صفحة1"], "تصنيف:علوم_الحاسوب")
 
         call_args = mock_add.call_args[0]
         assert "_" not in call_args[1] or "تصنيف:علوم الحاسوب" in str(call_args)
@@ -476,7 +476,7 @@ class TestAddToFinalList:
         """Test that add_to_page is called for each item in list."""
         mock_add = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
 
-        category_manager._add_to_final_list(["صفحة1", "صفحة2", "صفحة3"], "تصنيف:علوم")
+        category_manager.creator.members_adder.add(["صفحة1", "صفحة2", "صفحة3"], "تصنيف:علوم")
 
         assert mock_add.call_count == 3
 
@@ -485,7 +485,7 @@ class TestAddToFinalList:
         mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
         mock_callback = mocker.MagicMock()
 
-        category_manager._add_to_final_list(["صفحة1"], "تصنيف:علوم", callback=mock_callback)
+        category_manager.creator.members_adder.add(["صفحة1"], "تصنيف:علوم", callback=mock_callback)
 
         mock_callback.assert_called_once()
 
@@ -494,4 +494,4 @@ class TestAddToFinalList:
         mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
         mock_callback = mocker.MagicMock(side_effect=Exception("Test error"))
 
-        category_manager._add_to_final_list(["صفحة1"], "تصنيف:علوم", callback=mock_callback)
+        category_manager.creator.members_adder.add(["صفحة1"], "تصنيف:علوم", callback=mock_callback)

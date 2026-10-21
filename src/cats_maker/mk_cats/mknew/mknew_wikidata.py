@@ -22,10 +22,7 @@ class CategoryWikidataService:
         ar_site_wiki = "arwiki"
         en_site_lang = self.wiki_site_en["code"]  # "en"
 
-        if (
-            self.wiki_site_en["family"] != "wikipedia"
-            and self.wiki_site_en["code"] != "commons"
-        ):
+        if self.wiki_site_en["family"] != "wikipedia" and self.wiki_site_en["code"] != "commons":
             ar_site_wiki = f"ar{self.wiki_site_ar['family']}"
             en_site_lang = self.wiki_site_en["code"] + self.wiki_site_en["family"]
 
@@ -37,11 +34,7 @@ class CategoryWikidataService:
 
         ar_info = get_sitelinks_from_wikidata(en_site_lang, en_page_title) or {}
 
-        if (
-            ar_info
-            and ("sitelinks" in ar_info)
-            and (ar_site_wiki in ar_info["sitelinks"])
-        ):
+        if ar_info and ("sitelinks" in ar_info) and (ar_site_wiki in ar_info["sitelinks"]):
             ar_page = ar_info["sitelinks"][ar_site_wiki]
             logger.debug(f'found "{ar_site_wiki}" link "{ar_page}" for en cat.')
             return True, ar_info
@@ -59,3 +52,8 @@ class CategoryWikidataService:
             log_to_wikidata_qid(ar_title, qid)
         else:
             log_to_wikidata(ar_title, en_page_title)
+
+
+__all__ = [
+    "CategoryWikidataService",
+]

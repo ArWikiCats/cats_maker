@@ -1,12 +1,9 @@
-"""Simple tests for the classes split out of CategoryManager.
+"""Simple tests for the classes split out of CategoryManager."""
 
-Adjust the `PKG` import path below to the real package that contains mknew_state.py.
-"""
-
-from PKG import mknew_creator, mknew_processor, mknew_wikidata
-from PKG.mknew_members import CategoryMembersAdder
-from PKG.mknew_sources import EnglishCategorySource
-from PKG.mknew_state import CategoryManagerStats
+from src.cats_maker.mk_cats.mknew import mknew_creator, mknew_processor, mknew_wikidata
+from src.cats_maker.mk_cats.mknew.mknew_members import CategoryMembersAdder
+from src.cats_maker.mk_cats.mknew.mknew_sources import EnglishCategorySource
+from src.cats_maker.mk_cats.mknew.mknew_state import CategoryManagerStats
 
 SITE_AR = {"family": "wikipedia", "code": "ar"}
 SITE_EN = {"family": "wikipedia", "code": "en"}
