@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from ....config import main_settings
+from ....newapi_config import newapi_settings
 from .bot_edit_by_templates import is_bot_edit_allowed
 from .bot_edit_by_time import check_create_time, check_last_edit_time
 
@@ -25,7 +25,7 @@ def is_page_editable(
     """
     page_data = page_data or {}
 
-    if (main_settings.bot.force_edit) or main_settings.bot.workibrahem:
+    if (newapi_settings.bot.force_edit) or newapi_settings.bot.workibrahem:
         return True
 
     check_it = is_bot_edit_allowed(

@@ -6,9 +6,9 @@ import logging
 import sys
 from typing import Any
 
+from ...newapi_config import newapi_settings
 import wikitextparser as wtp
 
-from .....config import main_settings
 from ...api_client import WikiLoginClient
 from ...core.exceptions import parse_api_error
 from ...core.result import ApiResult
@@ -124,7 +124,7 @@ class MainPage(ApiFormatData):
         if self.ns is None or self.ns != 0:
             return False
 
-        if main_settings.bot.no_false_edit:
+        if newapi_settings.bot.no_false_edit:
             return False
 
         if not self.text:
@@ -150,7 +150,7 @@ class MainPage(ApiFormatData):
         if not self.text:
             self.text = self.get_text()
 
-        if main_settings.bot.force_edit:
+        if newapi_settings.bot.force_edit:
             return True
 
         self.meta.can_be_edit = is_page_editable(

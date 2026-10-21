@@ -70,9 +70,9 @@ class Settings:
                 self.bot.force_edit = True
 
 
-main_settings = Settings()
+newapi_settings = Settings()
 
 __all__ = [
     "Settings",
-    "main_settings",
+    "newapi_settings",
 ]
