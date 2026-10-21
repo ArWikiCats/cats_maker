@@ -79,7 +79,7 @@ class TestGetListenPageTitle:
         """
         Test that method returns a list"""
         mocker.patch(
-            "src.cats_maker.core_cat.lists.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core_cat.lists.member_lister.CategoryValidator.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mocker.patch(
@@ -96,7 +96,7 @@ class TestGetListenPageTitle:
         """
         Test that whitespace is stripped from title"""
         mocker.patch(
-            "src.cats_maker.core_cat.lists.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core_cat.lists.member_lister.CategoryValidator.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mocker.patch(
@@ -114,7 +114,7 @@ class TestGetListenPageTitle:
         """
         Test that resolver is called when validation passes"""
         mocker.patch(
-            "src.cats_maker.core_cat.lists.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core_cat.lists.member_lister.CategoryValidator.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=True),
         )
         mock_resolver = mocker.Mock()
@@ -130,7 +130,7 @@ class TestGetListenPageTitle:
         """
         Test fallback to extract_fan_page_titles"""
         mocker.patch(
-            "src.cats_maker.core_cat.lists.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core_cat.lists.member_lister.CategoryValidator.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mock_extract = mocker.patch(
@@ -148,7 +148,7 @@ class TestGetListenPageTitle:
         """
         Test that duplicates are removed"""
         mocker.patch(
-            "src.cats_maker.core_cat.lists.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core_cat.lists.member_lister.CategoryValidator.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mocker.patch(
@@ -165,7 +165,7 @@ class TestGetListenPageTitle:
         """
         Test that empty strings are filtered"""
         mocker.patch(
-            "src.cats_maker.core_cat.lists.member_lister.validate_categories_for_new_cat",
+            "src.cats_maker.core_cat.lists.member_lister.CategoryValidator.validate_categories_for_new_cat",
             return_value=mocker.Mock(valid=False),
         )
         mocker.patch(

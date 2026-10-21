@@ -71,7 +71,7 @@ def mock_make_ar_proceed_deps(mocker, mock_make_ar_base_deps, category_manager) 
         ),
         add_members=mocker.patch.object(category_manager.creator.members_adder, "add"),
         validate_categories_for_new_cat=mocker.patch(
-            f"{MODULE}.mknew_creator.validate_categories_for_new_cat", return_value=False
+            f"{MODULE}.mknew_creator.CategoryValidator.validate_categories_for_new_cat", return_value=False
         ),
         log_to_wikidata_qid=mocker.patch(f"{MODULE}.mknew_wikidata.log_to_wikidata_qid"),
         log_to_wikidata=mocker.patch(f"{MODULE}.mknew_wikidata.log_to_wikidata"),

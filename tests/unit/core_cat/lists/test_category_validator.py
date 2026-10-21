@@ -2,33 +2,60 @@
 Unit tests for src/cats_maker/core_cat/c18/core/category_validator.py module.
 """
 
-from unittest.mock import patch
-
 from src.cats_maker.core_cat.lists.category_validator import (
-    validate_categories_for_new_cat,
+    CategoryValidator,
 )
-from src.cats_maker.core_cat.c18.models import ValidationResult
 
 
-class TestValidateCategoriesForNewCat:
-    @patch("src.cats_maker.core_cat.lists.category_validator._check_page_status")
-    def test_valid_pair(self, mock_check):
-        mock_check.return_value = ValidationResult(valid=True)
-        result = validate_categories_for_new_cat("اختبار", "Test")
+class FakeNewAPI:
+    def __init__(self, page_info):
+        self.page_info = page_info
+
+    def get_page_info_from_wikipedia(self, title):
+        return self.page_info.get(title)
+
+
+class FakeSiteAPI:
+    def __init__(self, page_info):
+        self._newapi = FakeNewAPI(page_info)
+
+    def newapi(self):
+        return self._newapi
+
+
+class FakeApiLoader:
+    def __init__(self, page_info):
+        self.page_info = page_info
+
+    def load(self, site, wiki_type):
+        return FakeSiteAPI(self.page_info)
+
+
+class TestCategoryValidator:
+    """Tests for CategoryValidator behavior."""
+
+    def test_validate_categories_success(self):
+        page_info = {
+            "Category:Test": {
+                "exists": True,
+                "is_redirect_page": False,
+                "langlinks": {"ar": "تصنيف:تجربة"},
+                "templates": {},
+            },
+            "تصنيف:تجربة": {
+                "exists": True,
+                "is_redirect_page": False,
+                "langlinks": {"en": "Category:Test"},
+                "templates": {},
+            },
+        }
+        validator = CategoryValidator(api_loader=FakeApiLoader(page_info))
+        result = validator.validate_categories_for_new_cat("تجربة", "Test")
         assert result.valid is True
 
-    @patch("src.cats_maker.core_cat.lists.category_validator._check_page_status")
-    def test_en_page_invalid(self, mock_check):
-        mock_check.return_value = ValidationResult(valid=False, reason="not found")
-        result = validate_categories_for_new_cat("اختبار", "Test")
+    def test_validate_categories_page_not_found(self):
+        validator = CategoryValidator(api_loader=FakeApiLoader({}))
+        result = validator.validate_categories_for_new_cat("تجربة", "Test")
         assert result.valid is False
-
-    @patch("src.cats_maker.core_cat.lists.category_validator._check_page_status")
-    def test_ar_page_invalid(self, mock_check):
-        # First call (EN) passes, second call (AR) fails
-        mock_check.side_effect = [
-            ValidationResult(valid=True),
-            ValidationResult(valid=False, reason="redirect"),
-        ]
-        result = validate_categories_for_new_cat("اختبار", "Test")
-        assert result.valid is False
+        assert result.reason is not None
+        assert "Page not found" in result.reason

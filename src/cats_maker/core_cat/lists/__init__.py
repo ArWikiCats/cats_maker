@@ -2,7 +2,7 @@
 """c18 — Refactored Arabic Wikipedia category generation module."""
 
 from .category_comparator import CategoryComparator
-from .members_helper import CategoryMemberCollector
+from .category_collector import CategoryMemberCollector
 
 __all__ = [
     "CategoryComparator",

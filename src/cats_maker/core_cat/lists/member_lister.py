@@ -10,7 +10,7 @@ from ...config import Settings
 from ..c18.utils.text import normalize_category_title
 from .category_comparator import CategoryComparator
 from .category_resolver import CategoryResolver
-from .category_validator import validate_categories_for_new_cat
+from .category_validator import CategoryValidator
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,9 @@ class MemberLister:
         cache: dict[str, list[str]] | None = None,
         resolver: CategoryResolver | None = None,
         settings: Settings | None = None,
+        validator: CategoryValidator | None = None,
     ) -> None:
+        self.validator = validator or CategoryValidator()
         self.cache = cache if cache is not None else {}
         self.resolver = resolver if resolver is not None else CategoryResolver()
         self.settings = settings or Settings.get_instance()
@@ -47,7 +49,7 @@ class MemberLister:
         enpage_title = enpage_title.strip()
         listen_page_title: list[str | Any] = []
 
-        validation = validate_categories_for_new_cat(ar_title, enpage_title, wiki="en")
+        validation = self.validator.validate_categories_for_new_cat(ar_title, enpage_title, wiki="en")
         if validation.valid:
             listen_page_title = self.resolver.resolve_members(enpage_title, ar_title, wiki="en")
 

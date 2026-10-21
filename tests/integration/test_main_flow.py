@@ -48,7 +48,7 @@ class TestMainFlowIntegration:
         mock_new_cat = mocker.patch(f"{MODULE}.mknew_creator.new_category")
         mock_new_cat.return_value = create_category_page.CategoryResult(True, "تصنيف:علوم", None)
 
-        # Mock CategoryResolver.make_lit_api_way (used in members_helper)
+        # Mock CategoryResolver.make_lit_api_way (used in category_collector)
         mock_lit_api = mocker.patch("src.cats_maker.core_cat.lists.category_resolver.CategoryResolver.make_lit_api_way")
         mock_lit_api.return_value = []
 
@@ -56,7 +56,7 @@ class TestMainFlowIntegration:
         mock_log_wd = mocker.patch(f"{MODULE}.mknew_wikidata.log_to_wikidata")
 
         # Mock validate_categories_for_new_cat (used in CategoryCreator)
-        mock_validate = mocker.patch(f"{MODULE}.mknew_creator.validate_categories_for_new_cat")
+        mock_validate = mocker.patch(f"{MODULE}.mknew_creator.CategoryValidator.validate_categories_for_new_cat")
         mock_validate.return_value = MagicMock(valid=True)
 
         # Mock CategoryResolver.resolve_members (used in CategoryCreator)

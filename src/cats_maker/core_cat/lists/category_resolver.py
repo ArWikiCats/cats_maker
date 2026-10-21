@@ -11,7 +11,6 @@ from ...shared import AllAPIS
 from ..c18.utils.text import normalize_category_title
 from ..c18.infrastructure.sql.ar_lists import ArCategorySQL
 from ..c18.infrastructure.sql.en_lists import EnCategorySQL
-from .category_generator import fetch_category_members
 from ..c18.infrastructure.network.langlinks import LangLinksClient, get_arpage_inside_encat
 
 logger = logging.getLogger(__name__)
@@ -58,19 +57,6 @@ class CategoryResolver:
         logger.info(f"length ar_list:{len(ar_list)}")
         return ar_list
 
-    def list_en_pages_with_ar_links(self, encat: str, wiki: str = "en") -> list[str]:
-        """
-        Return Arabic page titles linked from pages in an EN/FR category."""
-        en_list: list[str] = []
-
-        if self._use_sql():
-            en_list = self.en_wiki_query_service.fetch_arabic_titles_from_en_category(encat, site_code=wiki)
-
-        if not en_list:
-            en_list = self._fetch_ar_titles_based_on_en_category(encat, wiki=wiki)
-
-        return [x.replace("_", " ") for x in en_list]
-
     def diff_missing_ar_pages(self, en_title: str, ar_title: str, wiki: str = "en") -> list[str]:
         """
         Return Arabic pages present in EN category but missing from AR category."""
@@ -99,8 +85,22 @@ class CategoryResolver:
         logger.info(f"from category: {enpage_title}")
         namespace_ids = list(DEFAULT_MEMBER_NAMESPACES)
         api = AllAPIS.load(wiki)
-        cat_members = api.catdepth(enpage_title, depth=0, ns="all", without_lang="", with_lang="ar", tempyes=[])
+        cat_members = api.catdepth(
+            enpage_title,
+            depth=0,
+            ns="all",
+            without_lang="",
+            with_lang="ar",
+            tempyes=[],
+        )
         return [title for title, info in cat_members.items() if int(info["ns"]) in namespace_ids]
+
+    def fetch_category_members(self, title: str, wiki: str, namespaces: list[int]) -> list[str]:
+        """Fetch category members from any source wiki."""
+        api = AllAPIS.load(wiki)
+        cat_member = api.catdepth(title, depth=0, ns="all", with_lang="ar")
+
+        return [title.replace("_", " ") for title, info in cat_member.items() if int(info["ns"]) in namespaces]
 
     def _translate_titles_to_ar(self, titles: list[str], wiki: str = "en", batch_size: int = 50) -> list[str]:
         """
@@ -147,7 +147,7 @@ class CategoryResolver:
         logger.info("* MakeLit ApiWay: ")
         encat_clean = normalize_category_title(encat, lang="en")
 
-        titles = fetch_category_members(title=encat_clean, wiki="en", namespaces=[0, 14, 10, 100])
+        titles = self.fetch_category_members(title=encat_clean, wiki="en", namespaces=[0, 14, 10, 100])
 
         cached_titles = get_arpage_inside_encat("Category:" + encat_clean)
         if cached_titles:
@@ -176,6 +176,19 @@ class CategoryResolver:
                     listen_page_title.append(arpagetitle)
 
         return listen_page_title
+
+    def list_en_pages_with_ar_links(self, encat: str, wiki: str = "en") -> list[str]:
+        """
+        Return Arabic page titles linked from pages in an EN/FR category."""
+        en_list: list[str] = []
+
+        if self._use_sql():
+            en_list = self.en_wiki_query_service.fetch_arabic_titles_from_en_category(encat, site_code=wiki)
+
+        if not en_list:
+            en_list = self._fetch_ar_titles_based_on_en_category(encat, wiki=wiki)
+
+        return [x.replace("_", " ") for x in en_list]
 
 
 __all__ = [

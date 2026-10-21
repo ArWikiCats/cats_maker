@@ -3,8 +3,8 @@ from collections.abc import Callable
 
 from ...config import Settings
 from ...core_cat.lists.category_resolver import CategoryResolver
-from ...core_cat.lists.category_validator import validate_categories_for_new_cat
-from ...core_cat.lists.members_helper import CategoryMemberCollector
+from ...core_cat.lists.category_validator import CategoryValidator
+from ...core_cat.lists.category_collector import CategoryMemberCollector
 from ..create_category_page import new_category
 from .mknew_members import CategoryMembersAdder
 from .mknew_sources import ArabicCategoryChecker, EnglishCategorySource
@@ -26,7 +26,9 @@ class CategoryCreator:
         arabic_checker: ArabicCategoryChecker,
         members_adder: CategoryMembersAdder | None = None,
         category_resolver: CategoryResolver | None = None,
+        validator: CategoryValidator | None = None,
     ) -> None:
+        self.validator = validator or CategoryValidator()
         self.wiki_site_ar = wiki_site_ar
         self.stats = stats
         self.wikidata = wikidata
@@ -47,7 +49,7 @@ class CategoryCreator:
         """Finalize category creation: add members, and log to Wikidata."""
         self.members_adder.add(members, ar_title, callback=callback)
 
-        if validate_categories_for_new_cat(ar_title, en_page_title, wiki="en"):
+        if self.validator.validate_categories_for_new_cat(ar_title, en_page_title, wiki="en"):
             listen = self.category_resolver.resolve_members(en_page_title, ar_title, wiki="en") or []
             if listen:
                 self.members_adder.add(listen, ar_title, callback=callback)
@@ -63,7 +65,7 @@ class CategoryCreator:
         This function:
         1. Validates inputs and performs early exits
         2. Checks Wikidata sitelinks
-        3. Collects category members (delegated to members_helper)
+        3. Collects category members (delegated to category_collector)
         4. Creates the category
         5. Logs and updates Wikidata
 

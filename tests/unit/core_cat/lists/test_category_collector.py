@@ -1,5 +1,5 @@
 """
-Tests for members_helper.py
+Tests for category_collector.py
 
 This module tests the helper functions for category member processing:
 - CategoryMemberCollector().gather_members_from_api() - Gather members from API
@@ -14,7 +14,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.cats_maker.core_cat.lists.members_helper import (
+from src.cats_maker.core_cat.lists.category_collector import (
     CategoryMemberCollector,
 )
 
@@ -22,7 +22,7 @@ from src.cats_maker.core_cat.lists.members_helper import (
 @pytest.fixture
 def mock_gather_api(mocker):
     """Fixture to mock gather_members_from_api."""
-    return mocker.patch("src.cats_maker.core_cat.lists.members_helper.gather_members_from_api")
+    return mocker.patch("src.cats_maker.core_cat.lists.category_collector.gather_members_from_api")
 
 
 @dataclass
@@ -40,18 +40,18 @@ def collect_members_deps(mocker) -> CollectMembersDeps:
     """Fixture providing a complete set of mocked dependencies for CategoryMemberCollector.collect."""
     return CollectMembersDeps(
         gather_sql=mocker.patch(
-            "src.cats_maker.core_cat.lists.members_helper.CategoryMemberCollector.gather_members_from_sql",
+            "src.cats_maker.core_cat.lists.category_collector.CategoryMemberCollector.gather_members_from_sql",
             return_value=[],
         ),
         gather_api=mocker.patch(
-            "src.cats_maker.core_cat.lists.members_helper.CategoryMemberCollector.gather_members_from_api",
+            "src.cats_maker.core_cat.lists.category_collector.CategoryMemberCollector.gather_members_from_api",
             return_value=[],
         ),
         remove_redirects=mocker.patch(
-            "src.cats_maker.core_cat.lists.members_helper.CategoryMemberCollector.remove_redirect_pages",
+            "src.cats_maker.core_cat.lists.category_collector.CategoryMemberCollector.remove_redirect_pages",
             side_effect=lambda lang, members: members,
         ),
-        settings=mocker.patch("src.cats_maker.core_cat.lists.members_helper.Settings"),
+        settings=mocker.patch("src.cats_maker.core_cat.lists.category_collector.Settings"),
     )
 
 
@@ -77,7 +77,7 @@ class TestGatherMembersFromApi:
             return_value=None,
         )
         mocker.patch(
-            "src.cats_maker.core_cat.lists.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks",
+            "src.cats_maker.core_cat.lists.category_collector.CategoryMembersClient.retrieve_category_members_with_langlinks",
             return_value=None,
         )
 
@@ -92,7 +92,7 @@ class TestGatherMembersFromApi:
             return_value=False,
         )
         mocker.patch(
-            "src.cats_maker.core_cat.lists.members_helper.CategoryMembersClient.retrieve_category_members_with_langlinks",
+            "src.cats_maker.core_cat.lists.category_collector.CategoryMembersClient.retrieve_category_members_with_langlinks",
             return_value=False,
         )
 
