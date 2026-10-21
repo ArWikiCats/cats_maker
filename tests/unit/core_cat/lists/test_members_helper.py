@@ -199,7 +199,7 @@ class TestCollectCategoryMembers:
         """Test that collect_category_members skips API when SQL has results and SQL is enabled."""
         collect_members_deps.gather_sql.return_value = ["SqlArticle1", "SqlArticle2"]
         collect_members_deps.gather_api.return_value = ["ApiArticle"]
-        collect_members_deps.settings.database.use_sql = True
+        collect_members_deps.settings.analytics_database.use_sql = True
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
@@ -212,7 +212,7 @@ class TestCollectCategoryMembers:
         """Test that collect_category_members uses API when SQL is disabled."""
         collect_members_deps.gather_sql.return_value = ["SqlArticle"]
         collect_members_deps.gather_api.return_value = ["ApiArticle"]
-        collect_members_deps.settings.database.use_sql = False
+        collect_members_deps.settings.analytics_database.use_sql = False
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
@@ -224,7 +224,7 @@ class TestCollectCategoryMembers:
         collect_members_deps.gather_sql.return_value = []
         collect_members_deps.gather_api.return_value = []
         collect_members_deps.remove_redirects.return_value = []
-        collect_members_deps.settings.database.use_sql = False
+        collect_members_deps.settings.analytics_database.use_sql = False
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
@@ -234,7 +234,7 @@ class TestCollectCategoryMembers:
         """Test that collect_category_members removes invalid entries from the result."""
         collect_members_deps.gather_sql.return_value = ["Valid", "", None, 123]
         collect_members_deps.gather_api.return_value = []
-        collect_members_deps.settings.database.use_sql = True
+        collect_members_deps.settings.analytics_database.use_sql = True
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
@@ -244,7 +244,7 @@ class TestCollectCategoryMembers:
         """Test that collect_category_members removes duplicate entries from the result."""
         collect_members_deps.gather_sql.return_value = ["Article", "Article"]
         collect_members_deps.gather_api.return_value = []
-        collect_members_deps.settings.database.use_sql = True
+        collect_members_deps.settings.analytics_database.use_sql = True
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 

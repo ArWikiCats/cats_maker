@@ -155,7 +155,7 @@ def collect_category_members(ar_title: str, en_page_title: str) -> list:
     members = gather_members_from_sql(ar_title, en_page_title)
 
     # Step 2: Gather from API if SQL is disabled or returned empty
-    if main_settings.database.use_sql is False or members == []:
+    if main_settings.analytics_database.use_sql is False or members == []:
         api_members = gather_members_from_api(en_page_title)
         members = merge_member_lists(members, api_members)
 

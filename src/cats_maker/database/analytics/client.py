@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from ..config import main_settings
+from ...config import main_settings
 from .maps import WikiReplicaMaps
 from .replica_db import WikiReplicaBaseDB
 
@@ -38,13 +38,13 @@ class WikiReplicaDB(WikiReplicaBaseDB):
         super().__init__(
             dbname=f"{dbname}_p",
             host=host,
-            user=main_settings.database.user,
-            password=main_settings.database.password,
+            user=main_settings.analytics_database.user,
+            password=main_settings.analytics_database.password,
         )
 
     @staticmethod
     def can_use_sql() -> bool:
-        return main_settings.database.can_use_sql()
+        return main_settings.analytics_database.can_use_sql()
 
     @classmethod
     def load(cls, wiki_identifier: str) -> WikiReplicaDB:

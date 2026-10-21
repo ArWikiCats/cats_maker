@@ -17,7 +17,7 @@ class CategoryComparator:
     def __init__(self, can_use_sql: bool | None = None) -> None:
         self.repo = CategoryRepository()
         if can_use_sql is None:
-            can_use_sql = main_settings.database.can_use_sql()
+            can_use_sql = main_settings.analytics_database.can_use_sql()
 
         self.can_use_sql = can_use_sql
 

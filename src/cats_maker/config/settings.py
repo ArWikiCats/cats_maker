@@ -3,13 +3,6 @@ Centralized settings configuration for the project.
 
 This module provides dataclass-based configuration for all project settings,
 including Wikipedia, Wikidata, and database configurations.
-
-Example:
-    >>> from src.cats_maker.config import main_settings
-    >>> print(main_settings.wikipedia.ar_code)
-    'ar'
-    >>> print(main_settings.wikidata.endpoint)
-    'https://www.wikidata.org/w/api.php'
 """
 
 from __future__ import annotations
@@ -380,10 +373,12 @@ class Settings:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR)
     """
 
+    _instance = None
+
     wikipedia: WikipediaConfig
     wikidata: WikidataConfig
     api_client: ApiClientConfig
-    database: DatabaseConfig
+    analytics_database: DatabaseConfig
     debug_config: DebugConfig
     bot: BotConfig
     category: CategoryConfig
@@ -455,9 +450,9 @@ class Settings:
 
             # SQL usage
             if arg_name == "-nosql":
-                self.database.use_sql = False
+                self.analytics_database.use_sql = False
             if arg_name == "usesql":
-                self.database.use_sql = True
+                self.analytics_database.use_sql = True
 
             # Wikidata test environment
             if arg_name in ("testwikidata", "-testwikidata", "wikidata_test"):
@@ -554,7 +549,7 @@ class Settings:
             wikipedia=WikipediaConfig.load(),
             wikidata=WikidataConfig.load(),
             api_client=ApiClientConfig.load(),
-            database=DatabaseConfig.load(),
+            analytics_database=DatabaseConfig.load(),
             debug_config=DebugConfig.load(),
             bot=BotConfig.load(),
             category=CategoryConfig.load(),
@@ -567,6 +562,12 @@ class Settings:
         )
         settings._process_argv()
         return settings
+
+    @classmethod
+    def get_instance(cls) -> Settings:
+        if cls._instance is None:
+            cls._instance = cls.load()
+        return cls._instance
 
 
 # Global settings instance

@@ -38,7 +38,7 @@ class CategoryResolver:
 
         if self.backend == "api":
             return False
-        return main_settings.database.use_sql
+        return main_settings.analytics_database.use_sql
 
     def list_ar_pages_in_cat(self, ar_title: str) -> list[str]:
         """

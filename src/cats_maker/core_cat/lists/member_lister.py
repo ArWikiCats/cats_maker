@@ -27,7 +27,7 @@ class MemberLister:
         Fetch exclusive category titles from EN wiki via SQL comparator."""
         fapages: list[str] = []
 
-        if main_settings.database.use_sql:
+        if main_settings.analytics_database.use_sql:
             comparator = CategoryComparator()
             cat2 = normalize_category_title(enpage_title, lang="en")
             fapages = comparator.get_exclusive_category_titles(cat2, "") or []
