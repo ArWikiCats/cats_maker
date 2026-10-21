@@ -12,7 +12,7 @@ from ..add_bot import add_to_page
 from ..create_category_page import new_category
 from ..utils import check_en_temps
 from .labels_creator import ar_make_lab
-from ..mknew_state import CategoryManagerStats
+from .mknew_state import CategoryManagerStats
 
 # TODO: move it to the settings file!
 WIKI_SITE_AR = {"family": "wikipedia", "code": "ar"}
