@@ -4,10 +4,10 @@
 import logging
 from typing import NamedTuple
 
-from ..core.new_c18.constants import SKIP_ENCATS
+from ..config.constants import SKIP_ENCATS
 from ..shared.newapi import AllAPIS
 from ..templates import main_make_temp_no_title
-from . import categorytext
+from .categorytext import fetch_commons_category, generate_portal_content
 
 logger = logging.getLogger(__name__)
 
@@ -89,7 +89,7 @@ def add_text_to_cat(text: str, categories, enca, title, qid, family: str = ""):
         if save:
             text = new_text
 
-    p373 = categorytext.fetch_commons_category(enca, qid)
+    p373 = fetch_commons_category(enca, qid)
 
     if p373:
         # اضافة قالب كومنز
@@ -102,7 +102,7 @@ def add_text_to_cat(text: str, categories, enca, title, qid, family: str = ""):
         if save:
             text = new_text
 
-    portals_list = categorytext.generate_portal_content(title, enca)
+    portals_list = generate_portal_content(title, enca)
 
     portalse = ""
     if portals_list:

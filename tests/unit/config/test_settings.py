@@ -13,7 +13,6 @@ from src.cats_maker.config import (
     WikidataConfig,
     WikipediaConfig,
     WikiSiteInfo,
-    main_settings,
 )
 from src.cats_maker.config.settings import _safe_int
 
@@ -178,7 +177,7 @@ class TestSettings:
         """Test Settings has database config."""
 
         s = Settings.load()
-        assert isinstance(s.database, DatabaseConfig)
+        assert isinstance(s.analytics_database, DatabaseConfig)
 
     def test_default_range_limit(self):
         """Test default range_limit is 5."""
@@ -215,14 +214,14 @@ class TestSettingsEnvVars:
         monkeypatch.setenv("DATABASE_USE_SQL", "true")
 
         s = Settings.load()
-        assert s.database.use_sql is True
+        assert s.analytics_database.use_sql is True
 
     def test_env_database_use_sql_false(self, monkeypatch):
         """Test DATABASE_USE_SQL environment variable with false."""
         monkeypatch.setenv("DATABASE_USE_SQL", "false")
 
         s = Settings.load()
-        assert s.database.use_sql is False
+        assert s.analytics_database.use_sql is False
 
     def test_env_range_limit(self, monkeypatch):
         """Test RANGE_LIMIT environment variable."""
@@ -237,6 +236,9 @@ class TestSettingsEnvVars:
 
         s = Settings.load()
         assert s.debug is True
+
+
+main_settings = Settings.get_instance()
 
 
 class TestGlobalSettings:
@@ -266,7 +268,7 @@ class TestGlobalSettings:
     def test_settings_has_default_database(self):
         """Test main_settings has default Database config."""
 
-        assert main_settings.database.port == 3306
+        assert main_settings.analytics_database.port == 3306
 
 
 class TestModuleExports:
@@ -559,13 +561,13 @@ class TestProcessArgv:
         """Test -nosql sets use_sql=False."""
         monkeypatch.setattr(sys, "argv", ["test", "-nosql"])
         s = Settings.load()
-        assert s.database.use_sql is False
+        assert s.analytics_database.use_sql is False
 
     def test_usesql(self, monkeypatch):
         """Test usesql sets use_sql=True."""
         monkeypatch.setattr(sys, "argv", ["test", "usesql"])
         s = Settings.load()
-        assert s.database.use_sql is True
+        assert s.analytics_database.use_sql is True
 
     def test_testwikidata(self, monkeypatch):
         """Test testwikidata sets test_mode and endpoint."""
@@ -774,7 +776,7 @@ class TestProcessArgv:
         monkeypatch.setattr(sys, "argv", ["test", "DEBUG", "-nosql", "-range:20", "ask"])
         s = Settings.load()
         assert s.debug is True
-        assert s.database.use_sql is False
+        assert s.analytics_database.use_sql is False
         assert s.range_limit == 20
         assert s.bot.ask is True
 

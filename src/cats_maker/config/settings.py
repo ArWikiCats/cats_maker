@@ -3,13 +3,6 @@ Centralized settings configuration for the project.
 
 This module provides dataclass-based configuration for all project settings,
 including Wikipedia, Wikidata, and database configurations.
-
-Example:
-    >>> from src.cats_maker.config import main_settings
-    >>> print(main_settings.wikipedia.ar_code)
-    'ar'
-    >>> print(main_settings.wikidata.endpoint)
-    'https://www.wikidata.org/w/api.php'
 """
 
 from __future__ import annotations
@@ -65,6 +58,21 @@ class Paths:
 
 
 @dataclass
+class WikipediaHimeCedentials:
+    """Configuration for Wikipedia API connections."""
+
+    username: str
+    password: str
+
+    @classmethod
+    def load(cls) -> WikipediaHimeCedentials:
+        return cls(
+            username=os.getenv("WIKIPEDIA_HIMO_USERNAME") or "",
+            password=os.getenv("WIKIPEDIA_HIMO_PASSWORD") or "",
+        )
+
+
+@dataclass
 class WikipediaCedentials:
     """
     Configuration for Wikipedia API connections.
@@ -73,16 +81,16 @@ class WikipediaCedentials:
     password = os.getenv("WIKIPEDIA_BOT_PASSWORD", "")
     """
 
-    username: str | None = None
-    password: str | None = None
+    username: str
+    password: str
 
     @classmethod
     def load(cls) -> WikipediaCedentials:
         """
         Load Wikipedia configuration from environment variables."""
         return cls(
-            username=os.getenv("WIKIPEDIA_BOT_USERNAME"),
-            password=os.getenv("WIKIPEDIA_BOT_PASSWORD"),
+            username=os.getenv("WIKIPEDIA_BOT_USERNAME") or "",
+            password=os.getenv("WIKIPEDIA_BOT_PASSWORD") or "",
         )
 
 
@@ -90,13 +98,15 @@ class WikipediaCedentials:
 class WikipediaConfig:
     """Configuration for Wikipedia API connections."""
 
+    credentials: WikipediaCedentials | None = None
+    himo_credentials: WikipediaHimeCedentials | None = None
+
     ar_family: str = "wikipedia"
     ar_code: str = "ar"
     en_family: str = "wikipedia"
     en_code: str = "en"
     user_agent: str = field(default_factory=default_user_agent)
     default_timeout: int = 10
-    credentials: WikipediaCedentials = field(default_factory=WikipediaCedentials)
 
     @classmethod
     def load(cls) -> WikipediaConfig:
@@ -110,7 +120,18 @@ class WikipediaConfig:
             user_agent=os.getenv("WIKIPEDIA_USER_AGENT") or default_user_agent(),
             default_timeout=_safe_int(os.getenv("WIKIPEDIA_TIMEOUT"), 10),
             credentials=WikipediaCedentials.load(),
+            himo_credentials=WikipediaHimeCedentials.load(),
         )
+
+    def load_credentials(self, mr_or_bot: str | None = None) -> tuple[str, str]:
+        if mr_or_bot is None:
+            mr_or_bot = "mr" if "workibrahem" in sys.argv else "bot"
+
+        credentials = self.credentials if mr_or_bot == "bot" else self.himo_credentials
+        if not credentials:
+            return "", ""
+
+        return credentials.username, credentials.password
 
 
 @dataclass
@@ -380,10 +401,12 @@ class Settings:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR)
     """
 
+    _instance = None
+
     wikipedia: WikipediaConfig
     wikidata: WikidataConfig
     api_client: ApiClientConfig
-    database: DatabaseConfig
+    analytics_database: DatabaseConfig
     debug_config: DebugConfig
     bot: BotConfig
     category: CategoryConfig
@@ -455,9 +478,9 @@ class Settings:
 
             # SQL usage
             if arg_name == "-nosql":
-                self.database.use_sql = False
+                self.analytics_database.use_sql = False
             if arg_name == "usesql":
-                self.database.use_sql = True
+                self.analytics_database.use_sql = True
 
             # Wikidata test environment
             if arg_name in ("testwikidata", "-testwikidata", "wikidata_test"):
@@ -554,7 +577,7 @@ class Settings:
             wikipedia=WikipediaConfig.load(),
             wikidata=WikidataConfig.load(),
             api_client=ApiClientConfig.load(),
-            database=DatabaseConfig.load(),
+            analytics_database=DatabaseConfig.load(),
             debug_config=DebugConfig.load(),
             bot=BotConfig.load(),
             category=CategoryConfig.load(),
@@ -568,9 +591,11 @@ class Settings:
         settings._process_argv()
         return settings
 
-
-# Global settings instance
-main_settings = Settings.load()
+    @classmethod
+    def get_instance(cls) -> Settings:
+        if cls._instance is None:
+            cls._instance = cls.load()
+        return cls._instance
 
 
 __all__ = [

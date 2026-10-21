@@ -4,7 +4,9 @@
 import functools
 import logging
 
-from ..core.new_c18 import add_text_to_template, get_dont_add_pages, sort_categories
+from ..core_cat.c18.domain.sorting import CategorySorter
+from ..core_cat.c18.io.dont_add_store import DontAddStore
+from ..core_cat.c18.tools.doc_handler import add_text_to_template
 from ..shared.newapi import AllAPIS, MainPage, function_timer
 
 logger = logging.getLogger(__name__)
@@ -50,7 +52,7 @@ def _get_page(page_title) -> MainPage | None:
 
 @function_timer
 def add_to_page(page_title, arcat) -> bool:
-    dont_list = get_dont_add_pages()
+    dont_list = DontAddStore().get_dont_add_pages()
 
     logger.info(f" page_title:{page_title} , cat:{arcat}")
 
@@ -88,7 +90,7 @@ def add_to_page(page_title, arcat) -> bool:
     if newtext == text:
         return False
 
-    newtext = sort_categories(newtext, page_title)
+    newtext = CategorySorter().sort_in_text(newtext, page_title)
 
     save = page.edit(newtext=newtext, summary=susu)
 

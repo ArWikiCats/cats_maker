@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from ....config import main_settings
+from ....config import Settings
 from ..api_client import WikiLoginClient
 from .bot_api import NewApi
 from .categories import catdepth_new
@@ -89,8 +89,10 @@ class AllAPIS:
 
     @classmethod
     def load(cls, lang: str, family: str = "wikipedia") -> AllAPIS:
-        username = main_settings.wikipedia.credentials.username or ""
-        password = main_settings.wikipedia.credentials.password or ""
+        main_settings = Settings.get_instance()
+
+        username, password = main_settings.wikipedia.load_credentials("bot")
+
         login_bot = WikiLoginClient.load(
             username=username,
             password=password,

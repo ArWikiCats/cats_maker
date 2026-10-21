@@ -3,8 +3,8 @@
 
 import logging
 
-from ...core.new_c18.constants import GLOBAL_FALSE_ENTEMPS_LOWER, SKIP_ENCATS
-from ...shared import find_page_data
+from ...config.constants import EN_FALSE_TEMPLATES_LOWERS, SKIP_ENCATS
+from ...core_cat.c18.infrastructure.network.langlinks import LangLinksClient
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ def check_en_temps(en_title: str) -> bool:
         logger.debug(f"category: {en_title} in SKIP_ENCATS")
         return False
 
-    category_data = find_page_data(en_title, prop="templates|categories", first_site_code="en")
+    category_data = LangLinksClient().find_page_data(en_title, prop="templates|categories", site_code="en")
 
     if not category_data:
         return True
@@ -26,8 +26,8 @@ def check_en_temps(en_title: str) -> bool:
 
     for target_temp in templates:
         target_temp2 = target_temp.lower().replace("template:", "")
-        if target_temp2 in GLOBAL_FALSE_ENTEMPS_LOWER:
-            logger.warning(f'Category has:"{target_temp2}" in GLOBAL_FALSE_ENTEMPS_LOWER ')
+        if target_temp2 in EN_FALSE_TEMPLATES_LOWERS:
+            logger.warning(f'Category has:"{target_temp2}" in EN_FALSE_TEMPLATES_LOWERS ')
             return False
 
     return True

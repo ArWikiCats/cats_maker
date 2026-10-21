@@ -2,7 +2,7 @@
 """ """
 
 from ..shared.newapi import AllAPIS
-from ..shared.wd_api import get_p373_api
+from ..shared.wd_clients import WikidataClient
 from ..templates import main_make_temp_no_title
 from .categorytext_data import LocalLanguageLinks, category_mapping
 from .utils import portal_en_to_ar_lower
@@ -33,7 +33,8 @@ def get_page_link_data(title: str, site_code: str, ns: int = 100) -> list[str]:
 
 def fetch_commons_category(entitle, qid) -> str:
     template = ""
-    P373 = get_p373_api(q=qid, titles=entitle, sites="enwiki")
+    wd_api = WikidataClient.load()
+    P373 = wd_api.get_p373_api(qid=qid, title=entitle, sites="enwiki")
 
     if P373:
         template = f"{{{{تصنيف كومنز|{P373}}}}}"

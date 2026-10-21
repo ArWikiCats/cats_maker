@@ -137,7 +137,7 @@ class TestFetchCommonsCategory:
     def test_returns_template_when_p373_exists(self, mocker):
         """
         Test that fetch_commons_category returns a template when P373 value exists"""
-        mocker.patch("src.cats_maker.mk_cats.categorytext.get_p373_api", return_value="Yemen")
+        mocker.patch("src.cats_maker.mk_cats.categorytext.WikidataClient.get_p373_api", return_value="Yemen")
 
         result = fetch_commons_category("Category:Yemen", "Q805")
 
@@ -146,7 +146,7 @@ class TestFetchCommonsCategory:
     def test_returns_empty_when_p373_is_empty(self, mocker):
         """
         Test that fetch_commons_category returns empty string when P373 is empty"""
-        mocker.patch("src.cats_maker.mk_cats.categorytext.get_p373_api", return_value="")
+        mocker.patch("src.cats_maker.mk_cats.categorytext.WikidataClient.get_p373_api", return_value="")
 
         result = fetch_commons_category("Category:Science", "Q123")
 
@@ -155,7 +155,7 @@ class TestFetchCommonsCategory:
     def test_returns_empty_when_p373_is_none(self, mocker):
         """
         Test that fetch_commons_category returns empty string when P373 is None"""
-        mocker.patch("src.cats_maker.mk_cats.categorytext.get_p373_api", return_value=None)
+        mocker.patch("src.cats_maker.mk_cats.categorytext.WikidataClient.get_p373_api", return_value=None)
 
         result = fetch_commons_category("Category:Science", "Q123")
 
@@ -164,11 +164,11 @@ class TestFetchCommonsCategory:
     def test_calls_get_p373_api_with_correct_args(self, mocker):
         """
         Test that get_p373_api is called with correct arguments"""
-        mock_p373 = mocker.patch("src.cats_maker.mk_cats.categorytext.get_p373_api", return_value="Test")
+        mock_p373 = mocker.patch("src.cats_maker.mk_cats.categorytext.WikidataClient.get_p373_api", return_value="Test")
 
         fetch_commons_category("Category:Test", "Q999")
 
-        mock_p373.assert_called_once_with(q="Q999", titles="Category:Test", sites="enwiki")
+        mock_p373.assert_called_once_with(qid="Q999", title="Category:Test", sites="enwiki")
 
 
 # ===== Tests for generate_portal_content =====

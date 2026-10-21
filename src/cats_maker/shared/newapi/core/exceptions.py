@@ -1,13 +1,36 @@
 """
-Exception hierarchy for mw_api.
+Unified exception hierarchy for ``newapi``.
 
-Provides typed exceptions for consistent error handling across the codebase,
-replacing the inconsistent return types (str, bool, None) in error handling.
+Single source of truth for **all** newapi exceptions. There used to be two
+parallel modules (``core/exceptions.py`` and ``api_client/exceptions.py``); they
+are now unified under one root, ``NewApiExceptionError``:
+
+* ``ApiError`` (+ subclasses such as ``ArticleExistsError``) describe **business**
+  outcomes returned by the MediaWiki API.
+* ``WikiClientError`` (+ subclasses such as ``CSRFError``) describe **transport**
+  failures at the HTTP / client layer.
+
+Error-handling policy (see also ``result.to_api_result``):
+
+* Transport / network / auth failures  -> **stay raised** (``WikiClientError``
+  tree). A ``requests.Timeout`` or a persistent ``CSRFError`` is a real,
+  retryable failure that the caller must handle explicitly.
+* Expected business outcomes         -> **become** ``ApiResult.fail``
+  (``ApiError`` tree). ``page_not_found``, ``invalid_summary``,
+  ``permission_denied`` etc. are normal results, not exceptions.
+
+``api_client/exceptions.py`` remains only as a backwards-compatible re-export.
 """
 
 from __future__ import annotations
 
-from typing import Any
+import logging
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from .result import ApiResult
+
+logger = logging.getLogger(__name__)
 
 
 class NewApiExceptionError(Exception):
@@ -50,6 +73,14 @@ class ApiError(NewApiExceptionError):
         super().__init__(f"{code}: {message}", code=code)
 
 
+ABUSEFILTER_ERRORS_FOR_DELAY = [
+    "تأخير البوتات 3 ساعات",
+    "تأخير البوتات 3 ساعات- 3 من 3",
+    "تأخير البوتات 3 ساعات- 1 من 3",
+    "تأخير البوتات 3 ساعات- 2 من 3",
+]
+
+
 class AbuseFilterError(ApiError):
     """
     Exception for abuse filter blocks.
@@ -76,6 +107,9 @@ class AbuseFilterError(ApiError):
             is_retryable=False,
             raw_error=raw_error,
         )
+
+    def is_delay(self) -> bool:
+        return any(delay in self.description for delay in ABUSEFILTER_ERRORS_FOR_DELAY)
 
 
 class MaxLagError(ApiError):
@@ -108,6 +142,15 @@ class MaxLagError(ApiError):
 class ArticleExistsError(ApiError):
     """
     Exception when trying to create an article that already exists.
+    API Result example:
+        {
+            "error": {
+                "code": "articleexists",
+                "info": "The article you tried to create has been created already.",
+                "*": "See ..."
+            },
+            "servedby": "mw1425"
+        }
     """
 
     def __init__(
@@ -193,47 +236,131 @@ class ValidationError(NewApiExceptionError):
         super().__init__(message, code="validation_error")
 
 
-def parse_api_error(error_dict: dict[str, Any]) -> ApiError | None:
+# ---------------------------------------------------------------------------
+# Transport / api_client exceptions (unified under the same root)
+# ---------------------------------------------------------------------------
+# These represent failures at the HTTP / transport layer (login, token refresh,
+# network retries, cookies). They intentionally STAY raised -- they are NOT
+# turned into an ApiResult. A ``requests.Timeout`` or a persistent ``CSRFError``
+# is a real, retryable failure the caller must handle, not a normal business
+# outcome.
+
+
+class WikiClientError(NewApiExceptionError):
+    """Base exception for all api_client / transport errors."""
+
+
+class LoginError(WikiClientError):
+    """Raised when credentials are rejected or the login flow fails."""
+
+
+class CSRFError(WikiClientError):
+    """Raised when a CSRF token remains invalid after all retries."""
+
+
+class MaxlagError(WikiClientError):
+    """Raised when server maxlag is not resolved after all attempts.
+
+    NOTE: this is the *transport* maxlag (retry exhaustion), distinct from the
+    business ``MaxLagError`` (an ``ApiError`` subclass) emitted by the MediaWiki
+    API.
+    """
+
+
+class MaxRetriesExceededError(WikiClientError):
+    """Raised when the generic retry cap is hit."""
+
+
+class CookieError(WikiClientError):
+    """Raised when the cookie file cannot be read or written."""
+
+
+def to_api_result(exc: Exception) -> ApiResult:
+    """
+    Map a NEWAPI **business** exception (the ``ApiError`` hierarchy) to an
+    ``ApiResult.fail``.
+
+    Transport / network / auth exceptions (the ``WikiClientError`` hierarchy)
+    are deliberately NOT mapped: they stay raised so the caller can retry or take
+    a different recovery path. This encodes the project's error policy:
+
+    * transport / network / auth  -> stay raised (``WikiClientError`` ...)
+    * expected business outcomes  -> ``ApiResult.fail`` (``ApiError`` ...)
+
+    Raises:
+        TypeError: if ``exc`` is a transport exception or otherwise unknown.
+    """
+    from .result import ApiResult
+
+    if isinstance(exc, ApiError):
+        return ApiResult.fail(code=exc.code, error=exc.message)
+    if isinstance(exc, WikiClientError):
+        # Transport failures must remain exceptions, not silently become results.
+        raise exc
+    raise TypeError(f"Cannot convert {type(exc).__name__} to ApiResult")
+
+
+_WIKIBASE_PREFIX = "wikibase"
+
+
+def parse_api_error(error_dict: dict[str, Any], backend: str = "mediawiki") -> ApiError:
     """
     Parse an API error dictionary and return the appropriate exception.
 
+    Single entry point for both MediaWiki and Wikibase/Wikidata errors. Wikibase
+    codes (the ``wikibase-*`` prefix, the explicit ``WIKIBASE_CODES`` set, or any
+    error produced by the Wikibase backend) are routed to
+    :func:`wikibase_errors.parse_wikibase_error`; everything else goes through
+    the MediaWiki branch ladder above.
+
     Args:
         error_dict: The error dictionary from the API response.
+        backend: ``"mediawiki"`` (default) or ``"wikibase"``. Used to disambiguate
+            generic codes (e.g. ``missingparam``) that are not Wikibase-exclusive
+            on their own.
 
     Returns:
-        An ApiError subclass instance, or None if the error cannot be parsed.
+        An ApiError subclass instance (MediaWiki or Wikibase).
     """
-    if not error_dict:
-        return None
+    # Imported lazily to avoid a circular import (wikibase_errors imports ApiError).
+    from .wikibase_errors import WIKIBASE_CODES, parse_wikibase_error
 
-    code = error_dict.get("code", "")
-    info = error_dict.get("info", "")
+    err_code = error_dict.get("code", "")
+    if err_code in WIKIBASE_CODES or err_code.startswith(_WIKIBASE_PREFIX) or backend == "wikibase":
+        return parse_wikibase_error(error_dict)
+
+    # ── MediaWiki branch ladder ─────────────────────────────────────────────
+    err_info = error_dict.get("info", "")
 
     # Map error codes to exception classes
-    if code == "abusefilter-disallowed":
+    if err_code == "abusefilter-disallowed":
         abusefilter = error_dict.get("abusefilter", {})
         description = abusefilter.get("description", "")
         filter_id = str(abusefilter.get("id", ""))
         return AbuseFilterError(description=description, filter_id=filter_id, raw_error=error_dict)
 
-    if code == "maxlag":
+    if err_code == "maxlag":
+        logger.error(" ** maxlag. ")
         lag = int(error_dict.get("lag", 0))
-        return MaxLagError(lag=lag, message=info, raw_error=error_dict)
+        return MaxLagError(lag=lag, message=err_info, raw_error=error_dict)
 
-    if code == "articleexists":
-        return ArticleExistsError(message=info, raw_error=error_dict)
+    if err_code == "articleexists":
+        logger.error(" ** article already created. ")
+        return ArticleExistsError(message=err_info, raw_error=error_dict)
 
-    if code == "no-such-entity":
-        return NoSuchEntityError(message=info, raw_error=error_dict)
+    if err_code == "no-such-entity":
+        logger.error(" ** no-such-entity. ")
+        return NoSuchEntityError(message=err_info, raw_error=error_dict)
 
-    if code == "protectedpage":
-        return ProtectedPageError(message=info, raw_error=error_dict)
+    if err_code == "protectedpage":
+        logger.error(" ** protectedpage. ")
+        return ProtectedPageError(message=err_info, raw_error=error_dict)
 
-    if code == "badtoken" or info == "Invalid CSRF token.":
-        return InvalidTokenError(message=info, raw_error=error_dict)
+    if err_code == "badtoken" or err_info == "Invalid CSRF token.":
+        return InvalidTokenError(message=err_info, raw_error=error_dict)
 
     # Generic API error for unknown codes
-    return ApiError(code=code, message=info, is_retryable=False, raw_error=error_dict)
+    return ApiError(code=err_code, message=err_info, is_retryable=False, raw_error=error_dict)
 
 
 __all__ = [
@@ -247,5 +374,12 @@ __all__ = [
     "InvalidTokenError",
     "AuthenticationError",
     "ValidationError",
+    "WikiClientError",
+    "LoginError",
+    "CSRFError",
+    "MaxlagError",
+    "MaxRetriesExceededError",
+    "CookieError",
+    "to_api_result",
     "parse_api_error",
 ]

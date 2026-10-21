@@ -10,7 +10,7 @@ from typing import Any
 import mwclient
 import requests
 
-from .exceptions import (
+from ..core.exceptions import (
     CSRFError,
     MaxlagError,
     WikiClientError,
@@ -87,7 +87,7 @@ class RequestsHandler:
         """
         Execute a request and automatically retry on transient API errors.
 
-        Retry conditions (each counted against ``main_settings.mediawiki.max_retries``):
+        Retry conditions (each counted against ``newapi_settings.mediawiki.max_retries``):
           - CSRF / bad token  → ``_handle_csrf``  → inject new token, retry
           - maxlag            → ``_handle_maxlag`` → sleep, retry
           - assertnameduserfailed → ``_on_assertnameduserfailed`` → retry once

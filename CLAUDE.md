@@ -46,7 +46,7 @@ run.py (CLI args) → config/settings.py (dataclass config) → mk_cats/mknew.py
 ## Key Modules
 
 - `src/cats_maker/config/settings.py`: Centralized dataclass-based configuration. All settings accessed via `from src.cats_maker.config import settings`
-- `src/cats_maker/mk_cats/mknew.py`: Core functions - `create_categories_from_list()`, `ar_make_lab()`, `process_catagories()`
+- `src/cats_maker/mk_cats/mknew.py`: Core functions - `create_categories_from_list()`, `ar_make_lab()`, `process_categories()`
 - `src/cats_maker/mk_cats/members_helper.py`: Member collection from SQL, API, and SubSub sources
 - `src/cats_maker/mk_cats/categorytext.py`: Generates wikitext content for category pages
 - `src/cats_maker/mk_cats/create_category_page.py`: Page creation and saving logic (`make_category()`)

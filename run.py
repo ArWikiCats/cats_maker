@@ -5,11 +5,12 @@ import logging
 import sys
 
 import requests
-
-from src.cats_maker.config import main_settings
+from src.cats_maker.config import Settings
 from src.cats_maker.mk_cats import create_categories_from_list
 
 logger = logging.getLogger(__name__)
+
+main_settings = Settings.get_instance()
 
 # Enable ask mode by default - now done via main_settings
 main_settings.bot.ask = True

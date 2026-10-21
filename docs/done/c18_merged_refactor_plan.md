@@ -10,22 +10,22 @@
 
 The unified `src/cats_maker/core/c18` module now drives Arabic Wikipedia category generation, cross-wiki page linking (EN→AR, FR→AR), template handling, filtering/sorting, **and** the former `b18` responsibilities:
 
--   Resolving English/French category members into Arabic page titles (via SQL or API)
--   Validating Arabic/English category pairs before creation
--   Gathering page lists for new category population
--   Member listing & cache management
+- Resolving English/French category members into Arabic page titles (via SQL or API)
+- Validating Arabic/English category pairs before creation
+- Gathering page lists for new category population
+- Member listing & cache management
 
 Technical debt inherited from both modules:
 
--   **Inconsistent naming** — `MakeLitApiWay`, `get_listenpageTitle`, `typee`, `lenth` typo (from b18); `categorized_page_generator`, `Dont_add_to_pages_def` (from c18)
--   **Massive string-cleaning duplication** — every file manually strips `Category:`, `تصنيف:`, `[[`, `]]`, and swaps `_` / ` `
--   **Mixed responsibilities** — SQL query strings, API fallback logic, and parameter sanitization live in the same file (`sql_cat.py`)
--   **Poor return types** — `MakeLitApiWay` returns `False` instead of `[]`; `get_ar_list_from_encat` returns a `dict` when callers expect a list; c18 functions return `False` vs `""` vs `None`
--   **Global mutable state** — `pages_in_arcat_toMake` in `cat_tools_enlist.py` (b18); mutable `tatone_ns` and `Skippe_Cat` (c18)
--   **Duplicated validation logic** — `check_category_status` and `check_arabic_category_status` in `sql_cat_checker.py` are mirror images
--   **Near-complete duplication** between `ar_from_en.py` and `ar_from_en2.py` (c18)
--   **`filter_cats_text`** — O(n²) list mutation, 140+ lines, high cyclomatic complexity (c18)
--   **Weak type hints** — most signatures are untyped or use bare `list` instead of `list[str]`
+- **Inconsistent naming** — `MakeLitApiWay`, `get_listenpageTitle`, `typee`, `lenth` typo (from b18); `categorized_page_generator`, `Dont_add_to_pages_def` (from c18)
+- **Massive string-cleaning duplication** — every file manually strips `Category:`, `تصنيف:`, `[[`, `]]`, and swaps `_` / ` `
+- **Mixed responsibilities** — SQL query strings, API fallback logic, and parameter sanitization live in the same file (`sql_cat.py`)
+- **Poor return types** — `MakeLitApiWay` returns `False` instead of `[]`; `get_ar_list_from_encat` returns a `dict` when callers expect a list; c18 functions return `False` vs `""` vs `None`
+- **Global mutable state** — `pages_in_arcat_toMake` in `cat_tools_enlist.py` (b18); mutable `tatone_ns` and `Skippe_Cat` (c18)
+- **Duplicated validation logic** — `check_category_status` and `check_arabic_category_status` in `sql_cat_checker.py` are mirror images
+- **Near-complete duplication** between `ar_from_en.py` and `ar_from_en2.py` (c18)
+- **`filter_cats_text`** — O(n²) list mutation, 140+ lines, high cyclomatic complexity (c18)
+- **Weak type hints** — most signatures are untyped or use bare `list` instead of `list[str]`
 
 ---
 
@@ -33,10 +33,10 @@ Technical debt inherited from both modules:
 
 These are explicitly out of scope to protect business logic stability:
 
--   Changing filtering or sorting **behavior** — output must be pixel-for-pixel identical
--   Rewriting external API wrappers (`find_lcn`, `load_main_api`, etc.)
--   Introducing new CLI arguments or UI changes
--   Switching databases or changing SQL schemas
+- Changing filtering or sorting **behavior** — output must be pixel-for-pixel identical
+- Rewriting external API wrappers (`find_lcn`, `load_main_api`, etc.)
+- Introducing new CLI arguments or UI changes
+- Switching databases or changing SQL schemas
 
 ---
 
@@ -85,15 +85,15 @@ from ..core.category_filter import filter_category_text as filter_cats_text  # n
 
 Zero-risk changes that can be done in a single PR right now across the merged codebase:
 
--   [ ] Replace mutable `tatone_ns` list with `frozenset`
--   [ ] Replace mutable `Skippe_Cat` list with `tuple`
--   [ ] Replace `page_false_templates.remove("بذرة")` (import-time mutation) with conditional logic inside the function body
--   [ ] Remove `__pycache__` from version control and add to `.gitignore`
--   [ ] Add `__all__` to every `__init__.py` that lacks it
--   [ ] Rename all camelCase symbols in former b18 code to `snake_case`:
-    -   `MakeLitApiWay` → `make_lit_api_way` (or merge into `resolve_via_api`)
-    -   `get_listenpageTitle` → `get_listen_page_title`
--   [ ] Fix typos: `lenth` → `length`, `typee` → `item_type` or `member_type`, `sito_code` → `site_code`
+- [ ] Replace mutable `tatone_ns` list with `frozenset`
+- [ ] Replace mutable `Skippe_Cat` list with `tuple`
+- [ ] Replace `page_false_templates.remove("بذرة")` (import-time mutation) with conditional logic inside the function body
+- [ ] Remove `__pycache__` from version control and add to `.gitignore`
+- [ ] Add `__all__` to every `__init__.py` that lacks it
+- [ ] Rename all camelCase symbols in former b18 code to `snake_case`:
+    - `MakeLitApiWay` → `make_lit_api_way` (or merge into `resolve_via_api`)
+    - `get_listenpageTitle` → `get_listen_page_title`
+- [ ] Fix typos: `lenth` → `length`, `typee` → `item_type` or `member_type`, `sito_code` → `site_code`
 
 ---
 
@@ -139,12 +139,12 @@ PRE_TEXT: str = "..."  # was pre_text
 
 Sources to consolidate:
 
--   `tatone_ns` from `cat_tools2.py`
--   `Skippe_Cat`, `page_false_templates` from `filter_cat.py`
--   `NO_Templates_ar` / `NO_Templates_lower` from `sql_cat_checker.py`
--   `SKIP_CATEGORIES` from `temp_bot.py`
--   `tosearch_and_replace`, `to_search`, `pre_text` from `text_to_temp_bot.py`
--   `namespace_ids` from `ar_from_en2.py`
+- `tatone_ns` from `cat_tools2.py`
+- `Skippe_Cat`, `page_false_templates` from `filter_cat.py`
+- `NO_Templates_ar` / `NO_Templates_lower` from `sql_cat_checker.py`
+- `SKIP_CATEGORIES` from `temp_bot.py`
+- `tosearch_and_replace`, `to_search`, `pre_text` from `text_to_temp_bot.py`
+- `namespace_ids` from `ar_from_en2.py`
 
 **5.1.2 Rename all symbols to snake_case (PEP 8)**
 
@@ -160,9 +160,9 @@ Sources to consolidate:
 
 **5.1.3 Add type hints and normalize return types**
 
--   Add `list[str]`, `str | None`, `dict[str, Any]` to all public signatures.
--   Replace every `return False` where a list or string is expected with `return []` or `return None`.
--   Standardize `english_page_link` family and b18 resolver family to return `list[str]` or `str | None` consistently.
+- Add `list[str]`, `str | None`, `dict[str, Any]` to all public signatures.
+- Replace every `return False` where a list or string is expected with `return []` or `return None`.
+- Standardize `english_page_link` family and b18 resolver family to return `list[str]` or `str | None` consistently.
 
 **Success criteria:** `ruff check src/cats_maker/core/c18` and `mypy src/cats_maker/core/c18 --ignore-missing-imports` pass with zero errors.
 
@@ -213,10 +213,10 @@ class CategoryResolver:
     def diff_missing_ar_pages(self, en_title: str, ar_title: str, wiki: str = "en") -> list[str]: ...
 ```
 
--   Move `get_ar_list`, `get_ar_list_from_en`, `do_sql`, `make_ar_list_newcat2` into this module.
--   Move `get_ar_list_from_encat`, `MakeLitApiWay` into the same resolver as API-based methods.
--   **Standardize return types** — always return `list[str]`, never `False` or `{}`.
--   Remove the `us_sql` boolean flag from public APIs; let the resolver decide based on availability.
+- Move `get_ar_list`, `get_ar_list_from_en`, `do_sql`, `make_ar_list_newcat2` into this module.
+- Move `get_ar_list_from_encat`, `MakeLitApiWay` into the same resolver as API-based methods.
+- **Standardize return types** — always return `list[str]`, never `False` or `{}`.
+- Remove the `us_sql` boolean flag from public APIs; let the resolver decide based on availability.
 
 Move all raw SQL strings into `io/sql_queries.py`. Keep API fallback wrappers in `io/api_fallback.py`.
 
@@ -290,10 +290,10 @@ def filter_category_text(
 Split the 80-line `english_page_link_from_api` into:
 
 ```python
-def resolve_via_wikidata(text: str) -> str | None: ...
+def _resolve_via_wikidata(text: str) -> str | None: ...
 def resolve_via_api(link: str, source: str, target: str) -> str | None: ...
 def get_page_link(link: str, ...) -> str | None:   # thin orchestrator
-    return resolve_via_wikidata(link) or resolve_via_api(link, ...)
+    return _resolve_via_wikidata(link) or resolve_via_api(link, ...)
 ```
 
 Extract all regex patterns into named constants at the top of the file:
@@ -360,13 +360,13 @@ Move `pre_text` into a separate `.txt` asset or clearly named constant. Use `wik
 
 `sql_cat_checker.py` has two nearly identical functions (`check_category_status`, `check_arabic_category_status`) with inverted logic.
 
--   Merge both into a single `CategoryValidator` class or a set of pure functions.
--   Extract a generic `_check_page_status(site: str, title: str, expected_langlink: str | None)` helper.
--   Convert template blacklisting into a predicate:
+- Merge both into a single `CategoryValidator` class or a set of pure functions.
+- Extract a generic `_check_page_status(site: str, title: str, expected_langlink: str | None)` helper.
+- Convert template blacklisting into a predicate:
     ```python
     def is_blacklisted_template(template: str, lang: str = "ar") -> bool: ...
     ```
--   **Standardize return type** to a `ValidationResult` dataclass instead of bare `bool`:
+- **Standardize return type** to a `ValidationResult` dataclass instead of bare `bool`:
     ```python
     @dataclass
     class ValidationResult:
@@ -378,10 +378,10 @@ Move `pre_text` into a separate `.txt` asset or clearly named constant. Use `wik
 
 `cat_tools_enlist.py` mixes SQL fallback logic, validation calls, and a global cache dict.
 
--   Replace the module-level `pages_in_arcat_toMake: dict` with an explicit `MemberCache` dataclass or pass it as a parameter.
--   Rename `get_listenpageTitle` → `get_listen_page_title` (or `resolve_listen_pages`) and `extract_fan_page_titles` → `extract_fan_page_titles`.
--   Move the orchestration logic (SQL → API → cache) into a thin `MemberLister` class.
--   Remove the direct dependency on `settings.database.use_sql` by delegating to `CategoryResolver`.
+- Replace the module-level `pages_in_arcat_toMake: dict` with an explicit `MemberCache` dataclass or pass it as a parameter.
+- Rename `get_listenpageTitle` → `get_listen_page_title` (or `resolve_listen_pages`) and `extract_fan_page_titles` → `extract_fan_page_titles`.
+- Move the orchestration logic (SQL → API → cache) into a thin `MemberLister` class.
+- Remove the direct dependency on `settings.database.use_sql` by delegating to `CategoryResolver`.
 
 **Success criteria:** `radon cc src/cats_maker/core/c18 -s` shows the top 5 functions have dropped from grade C/D to grade A/B (cyclomatic complexity ≤ 10).
 
@@ -525,20 +525,20 @@ Expected: ≥ 30% speedup from O(n²) → O(n).
 
 ## 7. Acceptance Criteria
 
--   [ ] No camelCase function names remain anywhere in `c18`
--   [ ] `ar_from_en2.py` deleted; its logic lives in `core/category_generator.py`
--   [ ] All hardcoded namespace IDs, template names, and category strings imported from `constants.py`
--   [ ] `filter_category_text` is a pure function — never mutates its input
--   [ ] `english_page_link` family returns `str | None` consistently — no `False`, no `""`
--   [ ] `dontadd.py` split into `io/json_store.py` and `io/sql_queries.py`
--   [ ] `CategoryResolver` and `CategoryValidator` return typed results consistently — no `False`, no `{}`
--   [ ] `pages_in_arcat_toMake` is no longer a module-level mutable dict
--   [ ] All category-title normalization uses `utils/text.py` — no inline `.replace(...)` chains
--   [ ] `sql_cat_checker.py` duplication is eliminated; a single generic checker handles both EN and AR pages
--   [ ] `pytest tests/c18/` passes with ≥ 80% coverage
--   [ ] `ruff check src/cats_maker/core/c18` reports zero errors
--   [ ] `radon cc src/cats_maker/core/c18 -s` shows no function above grade B (complexity ≤ 10)
--   [ ] Integration diff on `Science` category is empty before → after
+- [ ] No camelCase function names remain anywhere in `c18`
+- [ ] `ar_from_en2.py` deleted; its logic lives in `core/category_generator.py`
+- [ ] All hardcoded namespace IDs, template names, and category strings imported from `constants.py`
+- [ ] `filter_category_text` is a pure function — never mutates its input
+- [ ] `english_page_link` family returns `str | None` consistently — no `False`, no `""`
+- [ ] `dontadd.py` split into `io/json_store.py` and `io/sql_queries.py`
+- [ ] `CategoryResolver` and `CategoryValidator` return typed results consistently — no `False`, no `{}`
+- [ ] `pages_in_arcat_toMake` is no longer a module-level mutable dict
+- [ ] All category-title normalization uses `utils/text.py` — no inline `.replace(...)` chains
+- [ ] `sql_cat_checker.py` duplication is eliminated; a single generic checker handles both EN and AR pages
+- [ ] `pytest tests/c18/` passes with ≥ 80% coverage
+- [ ] `ruff check src/cats_maker/core/c18` reports zero errors
+- [ ] `radon cc src/cats_maker/core/c18 -s` shows no function above grade B (complexity ≤ 10)
+- [ ] Integration diff on `Science` category is empty before → after
 
 ---
 

@@ -9,8 +9,10 @@ use_colorlog = False
 from .cats_maker import (  # noqa: E402
     ar_make_lab,
     create_categories_from_list,
-    process_catagories,
+    process_categories,
 )
+
+process_catagories = process_categories
 
 name = Path(__file__).parent.name
 
