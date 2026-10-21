@@ -16,24 +16,8 @@ from ..shared.newapi import AllAPIS
 from ..shared.wd_clients.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
 from .add_bot import add_to_page
 from .create_category_page import new_category
-from .utils import check_en_temps, filter_category
-
-try:
-    from ArWikiCats import resolve_arabic_category_label  # type: ignore
-except ImportError:
-    resolve_arabic_category_label = None
-    logging.warning("ArWikiCats not available.")
-
-
-def set_project_log_level(name: str, level: int) -> None:
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-
-    for handler in logger.handlers:
-        handler.setLevel(level)
-
-
-set_project_log_level("ArWikiCats", logging.ERROR)
+from .utils import check_en_temps
+from .labels_creator import ar_make_lab
 
 # Category processing state - encapsulated in module-level variables
 # These are cleared between runs to prevent state leakage
@@ -48,10 +32,6 @@ WIKI_SITE_EN = {"family": "wikipedia", "code": "en"}
 _resolver = CategoryResolver()
 
 logger = logging.getLogger(__name__)
-
-bad_words = [
-    "ذكور",
-]
 
 
 def _add_to_final_list(final_list, title, callback=None) -> None:
@@ -87,33 +67,6 @@ def get_processing_state():
         "new_cat_done": dict(_new_cat_done),
         "already_created": list(_already_created),
     }
-
-
-def ar_make_lab(title: str, *args, **kwargs) -> str:
-    title = str(title)
-    okay = filter_category(title)
-
-    if not okay:
-        logger.debug(f"{title} is not okay.")
-        return ""
-
-    if not resolve_arabic_category_label:
-        logger.debug("ArWikiCats.resolve_arabic_category_label not available.")
-        return ""
-
-    label = resolve_arabic_category_label(title)
-    # logger.warning(f'Resolved label for "{title}": "{label}"')
-
-    if not label:
-        logger.debug(f'No label found for "{title}".')
-        return ""
-
-    for word in bad_words:
-        if word in label:
-            logger.error(f'label "{label}" has "{word}".')
-            return ""
-
-    return label
 
 
 def _scan_ar_title(title) -> bool:
@@ -348,6 +301,43 @@ def _make_ar(en_page_title: str, ar_title: str, callback=None):  # -> list:
     )
 
 
+def _one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
+    logger.debug("_________________________________________________________")
+
+    logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")
+
+    if not en_title.strip():
+        logger.warning("en_title is empty. return")
+        return False
+
+    if en_title in _done_d:
+        logger.warning(f'en_title:"{en_title}" in _done_d ')
+        return False
+
+    _done_d.append(en_title)
+    labb = ar_make_lab(en_title)
+
+    logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}, {labb=}")
+
+    labb = labb or sugust
+
+    if not labb:
+        logger.warning("%s ar label is empty.", en_title)
+        return False
+
+    if not check_en_temps(en_title):
+        logger.warning("check_en_temps for %s failed.", en_title)
+        return False
+
+    en_list = _resolver.list_en_pages_with_ar_links(en_title, wiki="en")
+
+    if not en_list:
+        logger.warning("en_list is empty. return")
+        return False
+
+    return process_catagories(en_title, labb, num, lenth, callback=callback)
+
+
 def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Callable | None = None) -> None:
     logger.debug(f"*:{num}/{lenth} cat: {cat}, arlab: {arlab}")
 
@@ -390,43 +380,6 @@ def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Cal
         ma_table = list(set(enriched_titles))
 
     logger.debug("tago done........... ")
-
-
-def _one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
-    logger.debug("_________________________________________________________")
-
-    logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")
-
-    if not en_title.strip():
-        logger.warning("en_title is empty. return")
-        return False
-
-    if en_title in _done_d:
-        logger.warning(f'en_title:"{en_title}" in _done_d ')
-        return False
-
-    _done_d.append(en_title)
-    labb = ar_make_lab(en_title)
-
-    logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}, {labb=}")
-
-    labb = labb or sugust
-
-    if not labb:
-        logger.warning("%s ar label is empty.", en_title)
-        return False
-
-    if not check_en_temps(en_title):
-        logger.warning("check_en_temps for %s failed.", en_title)
-        return False
-
-    en_list = _resolver.list_en_pages_with_ar_links(en_title, wiki="en")
-
-    if not en_list:
-        logger.warning("en_list is empty. return")
-        return False
-
-    return process_catagories(en_title, labb, num, lenth, callback=callback)
 
 
 def create_categories_from_list(titles: list[str], callback: Callable | None = None) -> None:

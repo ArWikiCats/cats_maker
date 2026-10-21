@@ -1,5 +1,6 @@
 from .create_category_page import make_category
-from .mknew import ar_make_lab, create_categories_from_list, process_catagories
+from .mknew import create_categories_from_list, process_catagories
+from .labels_creator import ar_make_lab
 
 __all__ = [
     "make_category",

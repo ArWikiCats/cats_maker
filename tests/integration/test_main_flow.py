@@ -314,7 +314,7 @@ class TestDataFlowIntegration:
         mock_label = mocker.patch("src.cats_maker.mk_cats.mknew.ar_make_lab")
         mock_label.return_value = "علوم الحاسوب"
 
-        from src.cats_maker.mk_cats.mknew import ar_make_lab
+        from src.cats_maker.mk_cats.labels_creator import ar_make_lab
 
         # Import after patching
 

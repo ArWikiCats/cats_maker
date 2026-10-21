@@ -51,7 +51,7 @@ class MakeArBaseDeps:
     get_sitelinks_from_wikidata: MagicMock
     find_page_categories_informations: MagicMock
     collect_category_members: MagicMock
-    main_settings: MagicMock
+    settings: MagicMock
 
 
 @pytest.fixture
@@ -71,7 +71,7 @@ def mock_make_ar_base_deps(mocker):
             "src.cats_maker.mk_cats.mknew.LangLinksClient.find_page_categories_informations", return_value={}
         ),
         collect_category_members=mocker.patch("src.cats_maker.mk_cats.mknew.collect_category_members", return_value=[]),
-        main_settings=mocker.patch("src.cats_maker.mk_cats.mknew.main_settings"),
+        settings=mocker.patch("src.cats_maker.mk_cats.mknew.Settings"),
     )
 
     yield deps  # pyright: ignore[reportReturnType]
@@ -94,8 +94,8 @@ class MakeArProceedDeps(MakeArBaseDeps):
 @pytest.fixture
 def mock_make_ar_proceed_deps(mocker, mock_make_ar_base_deps) -> MakeArProceedDeps:
     """Fixture adding page-creation mocks on top of mock_make_ar_base_deps."""
-    mock_make_ar_base_deps.main_settings.category.min_members = 5
-    mock_make_ar_base_deps.main_settings.range_limit = 5
+    mock_make_ar_base_deps.settings.category.min_members = 5
+    mock_make_ar_base_deps.settings.range_limit = 5
 
     return MakeArProceedDeps(
         **mock_make_ar_base_deps.__dict__,
@@ -402,7 +402,7 @@ class TestMakeArMinMembers:
     def test_returns_empty_when_below_min_members(self, mock_make_ar_base_deps: MakeArBaseDeps):
         """Test that _make_ar returns empty list when members count is below min_members."""
         mock_make_ar_base_deps.collect_category_members.return_value = ["Article1", "Article2", "Article3"]
-        mock_make_ar_base_deps.main_settings.category.min_members = 5
+        mock_make_ar_base_deps.settings.category.min_members = 5
 
         result = mknew._make_ar("Category:Science", "علوم")
 
@@ -447,8 +447,8 @@ class TestMakeArMinMembers:
     def test_custom_min_members_value(self, mock_make_ar_base_deps: MakeArBaseDeps):
         """Test that _make_ar respects custom min_members value."""
         mock_make_ar_base_deps.collect_category_members.return_value = ["A1", "A2", "A3", "A4", "A5", "A6", "A7"]
-        mock_make_ar_base_deps.main_settings.category.min_members = 10
-        mock_make_ar_base_deps.main_settings.range_limit = 5
+        mock_make_ar_base_deps.settings.category.min_members = 10
+        mock_make_ar_base_deps.settings.range_limit = 5
 
         result = mknew._make_ar("Category:Science", "علوم")
 
@@ -458,7 +458,7 @@ class TestMakeArMinMembers:
     def test_min_members_zero_allows_any(self, mock_make_ar_proceed_deps: MakeArProceedDeps):
         """Test that min_members of 0 allows any number of members."""
         mock_make_ar_proceed_deps.collect_category_members.return_value = ["Article1"]
-        mock_make_ar_proceed_deps.main_settings.category.min_members = 0
+        mock_make_ar_proceed_deps.settings.category.min_members = 0
 
         mknew._make_ar("Category:Science", "علوم")
 

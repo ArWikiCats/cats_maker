@@ -53,7 +53,7 @@ def collect_members_deps(mocker) -> CollectMembersDeps:
             "src.cats_maker.core_cat.lists.members_helper.remove_redirect_pages",
             side_effect=lambda lang, members: members,
         ),
-        settings=mocker.patch("src.cats_maker.core_cat.lists.members_helper.main_settings"),
+        settings=mocker.patch("src.cats_maker.core_cat.lists.members_helper.Settings"),
     )
 
 

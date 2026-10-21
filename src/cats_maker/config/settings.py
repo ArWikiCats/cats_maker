@@ -98,8 +98,8 @@ class WikipediaCedentials:
 class WikipediaConfig:
     """Configuration for Wikipedia API connections."""
 
-    credentials: WikipediaCedentials
-    himo_credentials: WikipediaHimeCedentials
+    credentials: WikipediaCedentials | None = None
+    himo_credentials: WikipediaHimeCedentials | None = None
 
     ar_family: str = "wikipedia"
     ar_code: str = "ar"
@@ -128,6 +128,8 @@ class WikipediaConfig:
             mr_or_bot = "mr" if "workibrahem" in sys.argv else "bot"
 
         credentials = self.credentials if mr_or_bot == "bot" else self.himo_credentials
+        if not credentials:
+            return "", ""
 
         return credentials.username, credentials.password
 
