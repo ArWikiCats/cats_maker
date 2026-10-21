@@ -19,8 +19,7 @@ logger = logging.getLogger(__name__)
 def load_login_bot(lang: str = "ar", family: str = "wikipedia") -> WikiLoginClient:
     main_settings = Settings.get_instance()
 
-    username = main_settings.wikipedia.credentials.username or ""
-    password = main_settings.wikipedia.credentials.password or ""
+    username, password = main_settings.wikipedia.load_credentials("bot")
 
     return WikiLoginClient(
         lang=lang,

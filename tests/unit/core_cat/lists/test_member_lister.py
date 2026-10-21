@@ -4,54 +4,68 @@ Tests for member_lister.py
 This module tests category page listing functions.
 """
 
+from unittest.mock import MagicMock
+
+import pytest
+
 from src.cats_maker.core_cat.lists.member_lister import MemberLister
+
+
+@pytest.fixture
+def mock_settings() -> MagicMock:
+    settings = MagicMock()
+
+    settings.analytics_database = MagicMock()
+    settings.analytics_database.use_sql = False
+
+    return settings
 
 
 class TestExtractFanPageTitles:
     """Tests for MemberLister.extract_fan_page_titles method"""
 
-    def test_returns_list(self, mocker):
+    def test_returns_list(self, mock_settings):
         """
         Test that method returns a list"""
-        mocker.patch("src.cats_maker.core_cat.lists.member_lister.Settings.analytics_database.use_sql", False)
 
-        lister = MemberLister()
+        lister = MemberLister(settings=mock_settings)
         result = lister.extract_fan_page_titles("Category:Science")
 
         assert isinstance(result, list)
 
-    def test_returns_empty_when_sql_disabled(self, mocker):
+    def test_returns_empty_when_sql_disabled(self, mock_settings):
         """
         Test that empty list is returned when SQL is disabled"""
-        mocker.patch("src.cats_maker.core_cat.lists.member_lister.Settings.analytics_database.use_sql", False)
 
-        lister = MemberLister()
+        lister = MemberLister(settings=mock_settings)
         result = lister.extract_fan_page_titles("Category:Science")
 
         assert result == []
 
-    def test_calls_get_exclusive_when_sql_enabled(self, mocker):
+    def test_calls_get_exclusive_when_sql_enabled(self, mocker, mock_settings):
         """
         Test that get_exclusive_category_titles is called when SQL enabled"""
-        mocker.patch("src.cats_maker.core_cat.lists.member_lister.Settings.analytics_database.use_sql", True)
+        mock_settings.analytics_database.use_sql = True
+
         mock_comparator = mocker.patch("src.cats_maker.core_cat.lists.member_lister.CategoryComparator")
         mock_comparator.return_value.get_exclusive_category_titles.return_value = ["Page1", "Page2"]
 
-        lister = MemberLister()
+        lister = MemberLister(settings=mock_settings)
         result = lister.extract_fan_page_titles("Category:Science")
 
         mock_comparator.return_value.get_exclusive_category_titles.assert_called_once()
         assert len(result) == 2
 
-    def test_strips_category_prefix(self, mocker):
+    def test_strips_category_prefix(self, mocker, mock_settings):
         """
         Test that Category: prefix is stripped"""
-        mocker.patch("src.cats_maker.core_cat.lists.member_lister.Settings.analytics_database.use_sql", True)
+        mock_settings.analytics_database.use_sql = True
+
         mock_comparator = mocker.patch("src.cats_maker.core_cat.lists.member_lister.CategoryComparator")
         mock_get_exclusive = mock_comparator.return_value.get_exclusive_category_titles
         mock_get_exclusive.return_value = []
 
-        lister = MemberLister()
+        lister = MemberLister(settings=mock_settings)
         lister.extract_fan_page_titles("Category:Science")
 
         call_args = mock_get_exclusive.call_args[0]

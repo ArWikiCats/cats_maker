@@ -61,6 +61,10 @@ def mock_make_ar_base_deps(mocker):
     mknew._already_created.clear()
     mknew._new_cat_done.clear()
 
+    settings = MagicMock()
+    settings.category = MagicMock()
+    settings.category.min_members = 5
+
     deps = MakeArBaseDeps(
         scan_ar_title=mocker.patch.object(mknew, "_scan_ar_title", return_value=True),
         check_if_artitle_exists=mocker.patch.object(mknew, "_check_if_artitle_exists", return_value=True),
@@ -71,7 +75,7 @@ def mock_make_ar_base_deps(mocker):
             "src.cats_maker.mk_cats.mknew.LangLinksClient.find_page_categories_informations", return_value={}
         ),
         collect_category_members=mocker.patch("src.cats_maker.mk_cats.mknew.collect_category_members", return_value=[]),
-        settings=mocker.patch("src.cats_maker.mk_cats.mknew.Settings"),
+        settings=mocker.patch("src.cats_maker.mk_cats.mknew.Settings.get_instance", return_value=settings),
     )
 
     yield deps  # pyright: ignore[reportReturnType]
@@ -119,7 +123,7 @@ class TestArMakeLab:
 
     def test_returns_empty_when_filter_fails(self, mocker):
         """Test that ar_make_lab returns empty string when filter_category fails."""
-        mocker.patch("src.cats_maker.mk_cats.mknew.filter_category", return_value=False)
+        mocker.patch("src.cats_maker.mk_cats.labels_creator.filter_category", return_value=False)
 
         result = ar_make_lab("Category:Test")
 
@@ -127,8 +131,8 @@ class TestArMakeLab:
 
     def test_returns_empty_when_no_resolver(self, mocker):
         """Test that ar_make_lab returns empty string when resolve_arabic_category_label is None."""
-        mocker.patch("src.cats_maker.mk_cats.mknew.filter_category", return_value=True)
-        mocker.patch("src.cats_maker.mk_cats.mknew.resolve_arabic_category_label", None)
+        mocker.patch("src.cats_maker.mk_cats.labels_creator.filter_category", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.labels_creator.resolve_arabic_category_label", None)
 
         result = ar_make_lab("Category:Science")
 
@@ -136,9 +140,9 @@ class TestArMakeLab:
 
     def test_returns_label_when_resolver_exists(self, mocker):
         """Test that ar_make_lab returns label when resolver exists."""
-        mocker.patch("src.cats_maker.mk_cats.mknew.filter_category", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.labels_creator.filter_category", return_value=True)
         mock_resolver = MagicMock(return_value="علوم")
-        mocker.patch("src.cats_maker.mk_cats.mknew.resolve_arabic_category_label", mock_resolver)
+        mocker.patch("src.cats_maker.mk_cats.labels_creator.resolve_arabic_category_label", mock_resolver)
 
         result = ar_make_lab("Category:Science")
 

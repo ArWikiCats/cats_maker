@@ -4,6 +4,8 @@ Tests for category_resolver.py SQL-related methods.
 This module tests SQL-based category functions.
 """
 
+from unittest.mock import MagicMock
+
 from src.cats_maker.core_cat.lists.category_resolver import CategoryResolver
 
 
@@ -119,9 +121,12 @@ class TestListEnPagesWithArLinks:
             "src.cats_maker.core_cat.lists.category_resolver.CategoryResolver._fetch_ar_titles_based_on_en_category",
             return_value=[],
         )
-        mocker.patch("src.cats_maker.core_cat.lists.category_resolver.Settings.analytics_database.use_sql", False)
 
-        resolver = CategoryResolver()
+        settings = MagicMock()
+        settings.analytics_database = MagicMock()
+        settings.analytics_database.use_sql = False
+
+        resolver = CategoryResolver(settings=settings)
         result = resolver.list_en_pages_with_ar_links("Science")
 
         assert isinstance(result, list)
@@ -150,9 +155,12 @@ class TestListEnPagesWithArLinks:
             "src.cats_maker.core_cat.lists.category_resolver.CategoryResolver._fetch_ar_titles_based_on_en_category",
             return_value=["صفحة1"],
         )
-        mocker.patch("src.cats_maker.core_cat.lists.category_resolver.Settings.analytics_database.use_sql", False)
 
-        resolver = CategoryResolver()
+        settings = MagicMock()
+        settings.analytics_database = MagicMock()
+        settings.analytics_database.use_sql = False
+
+        resolver = CategoryResolver(settings=settings)
         resolver.list_en_pages_with_ar_links("Science")
 
         mock_api.assert_called_once()

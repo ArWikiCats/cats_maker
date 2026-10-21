@@ -1,6 +1,4 @@
-"""
-python3 core8/pwb.py mk_cats/mknew
-"""
+""" """
 
 import logging
 from collections.abc import Callable
@@ -19,12 +17,6 @@ from .create_category_page import new_category
 from .utils import check_en_temps
 from .labels_creator import ar_make_lab
 
-# Category processing state - encapsulated in module-level variables
-# These are cleared between runs to prevent state leakage
-_done_d: list = []
-_new_cat_done: dict = {}
-_already_created: list = []
-
 # TODO: move it to the settings file!
 WIKI_SITE_AR = {"family": "wikipedia", "code": "ar"}
 WIKI_SITE_EN = {"family": "wikipedia", "code": "en"}
@@ -33,24 +25,15 @@ _resolver = CategoryResolver()
 
 logger = logging.getLogger(__name__)
 
+# ------------------------------------
+# state
+# ------------------------------------
 
-def _add_to_final_list(final_list, title, callback=None) -> None:
-    title = title.replace("_", " ")
-
-    if not title.startswith("تصنيف:"):
-        title = f"تصنيف:{title}"
-
-    if not final_list:
-        return
-
-    for n, page in enumerate(final_list, start=1):
-        logger.info(f"cat:{title} page:{page} n:{n}/{len(final_list)}")
-        save = add_to_page(page, title)
-        if save and callback:
-            try:
-                callback(title)
-            except Exception as e:
-                logger.info(f"Error in callback: {e}")
+# Category processing state - encapsulated in module-level variables
+# These are cleared between runs to prevent state leakage
+_done_d: list = []
+_new_cat_done: dict = {}
+_already_created: list = []
 
 
 def clear_processing_state() -> None:
@@ -86,6 +69,30 @@ def _scan_ar_title(title) -> bool:
         else:
             _new_cat_done[cat3] = 1
     return True
+
+
+# ------------------------------------
+#
+# ------------------------------------
+
+
+def _add_to_final_list(final_list, title, callback=None) -> None:
+    title = title.replace("_", " ")
+
+    if not title.startswith("تصنيف:"):
+        title = f"تصنيف:{title}"
+
+    if not final_list:
+        return
+
+    for n, page in enumerate(final_list, start=1):
+        logger.info(f"cat:{title} page:{page} n:{n}/{len(final_list)}")
+        save = add_to_page(page, title)
+        if save and callback:
+            try:
+                callback(title)
+            except Exception as e:
+                logger.info(f"Error in callback: {e}")
 
 
 def _check_if_artitle_exists(test_title) -> bool:
@@ -383,7 +390,6 @@ def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Cal
 
 
 def create_categories_from_list(titles: list[str], callback: Callable | None = None) -> None:
-    # clear_processing_state()
     lenth = len(titles)
 
     for num, en_title in enumerate(titles, 1):
@@ -393,5 +399,4 @@ def create_categories_from_list(titles: list[str], callback: Callable | None = N
 __all__ = [
     "create_categories_from_list",
     "process_catagories",
-    "ar_make_lab",
 ]

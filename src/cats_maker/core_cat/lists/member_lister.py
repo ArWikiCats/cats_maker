@@ -22,10 +22,11 @@ class MemberLister:
         self,
         cache: dict[str, list[str]] | None = None,
         resolver: CategoryResolver | None = None,
+        settings: Settings | None = None,
     ) -> None:
         self.cache = cache if cache is not None else {}
         self.resolver = resolver if resolver is not None else CategoryResolver()
-        self.settings = Settings.get_instance()
+        self.settings = settings or Settings.get_instance()
 
     def extract_fan_page_titles(self, enpage_title: str) -> list[str]:
         """

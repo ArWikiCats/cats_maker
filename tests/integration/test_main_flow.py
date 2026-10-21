@@ -83,14 +83,6 @@ class TestMainFlowIntegration:
         }
 
     @pytest.fixture
-    def mock_ar_make_lab(self, mocker):
-        """
-        Mock the ar_make_lab function that generates Arabic labels."""
-        mock = mocker.patch("src.cats_maker.mk_cats.mknew.ar_make_lab")
-        mock.return_value = "علوم"
-        return mock
-
-    @pytest.fixture
     def mock_check_en_temps(self, mocker):
         """
         Mock check_en_temps to always return True."""
@@ -113,11 +105,12 @@ class TestMainFlowIntegration:
         # Should not raise any exceptions
         create_categories_from_list([])
 
-    def test_create_categories_from_list_calls_one_cat_for_each_item(
-        self, mocker, mock_ar_make_lab, mock_check_en_temps, mock_filter_en
-    ):
+    def test_create_categories_from_list_calls_one_cat_for_each_item(self, mocker, mock_check_en_temps, mock_filter_en):
         """
         Test that create_categories_from_list iterates over all categories."""
+
+        mock = mocker.patch("src.cats_maker.mk_cats.mknew.ar_make_lab")
+        mock.return_value = "علوم"
 
         # Mock the entire _one_cat function to track calls
         mock_one_cat = mocker.patch("src.cats_maker.mk_cats.mknew._one_cat")
@@ -314,7 +307,7 @@ class TestDataFlowIntegration:
         mock_label = mocker.patch("src.cats_maker.mk_cats.mknew.ar_make_lab")
         mock_label.return_value = "علوم الحاسوب"
 
-        from src.cats_maker.mk_cats.labels_creator import ar_make_lab
+        from src.cats_maker.mk_cats.mknew import ar_make_lab
 
         # Import after patching
 

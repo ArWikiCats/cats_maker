@@ -91,8 +91,8 @@ class AllAPIS:
     def load(cls, lang: str, family: str = "wikipedia") -> AllAPIS:
         main_settings = Settings.get_instance()
 
-        username = main_settings.wikipedia.credentials.username or ""
-        password = main_settings.wikipedia.credentials.password or ""
+        username, password = main_settings.wikipedia.load_credentials("bot")
+
         login_bot = WikiLoginClient.load(
             username=username,
             password=password,

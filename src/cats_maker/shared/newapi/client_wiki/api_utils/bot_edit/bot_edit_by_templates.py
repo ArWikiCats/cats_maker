@@ -25,7 +25,8 @@ STOP_EDIT_TEMPLATES: dict[str, list[str]] = {
 
 main_settings = Settings.get_instance()
 
-BOT_USERNAME = main_settings.wikipedia.credentials.username or "Mr.Ibrahembot"
+username, _ = main_settings.wikipedia.load_credentials("bot")
+BOT_USERNAME = username or "Mr.Ibrahembot"
 bot_edit_cache = {}
 
 

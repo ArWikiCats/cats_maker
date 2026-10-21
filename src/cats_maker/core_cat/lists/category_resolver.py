@@ -26,12 +26,13 @@ class CategoryResolver:
         wiki_query_service: ArCategorySQL | None = None,
         wiki_api_handler: LangLinksClient | None = None,
         en_wiki_query_service: EnCategorySQL | None = None,
+        settings: Settings | None = None,
     ) -> None:
         self.wiki_api_handler = wiki_api_handler or LangLinksClient()
         self.en_wiki_query_service = en_wiki_query_service or EnCategorySQL()
         self.wiki_query_service = wiki_query_service or ArCategorySQL()
         self.backend = backend
-        self.settings = Settings.get_instance()
+        self.settings = settings or Settings.get_instance()
 
     def _use_sql(self) -> bool:
         if self.backend == "sql":
