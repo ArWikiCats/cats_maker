@@ -4,7 +4,7 @@ from collections.abc import Callable
 from ...config import Settings
 from ...core_cat.lists.category_resolver import CategoryResolver
 from ...core_cat.lists.category_validator import validate_categories_for_new_cat
-from ...core_cat.lists.members_helper import collect_category_members
+from ...core_cat.lists.members_helper import CategoryMemberCollector
 from ..create_category_page import new_category
 from .mknew_members import CategoryMembersAdder
 from .mknew_sources import ArabicCategoryChecker, EnglishCategorySource
@@ -107,10 +107,10 @@ class CategoryCreator:
         self.stats.insert_already_created(en_page_title)
 
         # Collect category members using the helper module
-        members = collect_category_members(ar_title, en_page_title)
+        members = CategoryMemberCollector().collect(ar_title, en_page_title)
 
         if not members:
-            logger.debug("collect_category_members returned empty list")
+            logger.debug("collect category members returned empty list")
             return []
 
         main_settings = Settings.get_instance()

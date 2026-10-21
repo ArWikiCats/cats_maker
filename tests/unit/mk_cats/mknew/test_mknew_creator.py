@@ -18,7 +18,7 @@ class MakeArBaseDeps:
     can_create: MagicMock
     get_sitelinks_from_wikidata: MagicMock
     find_page_categories_informations: MagicMock
-    collect_category_members: MagicMock
+    collect_members: MagicMock
     get_instance: MagicMock
     settings: MagicMock
 
@@ -40,7 +40,7 @@ def mock_make_ar_base_deps(mocker, category_manager) -> MakeArBaseDeps:
             f"{MODULE}.mknew_sources.LangLinksClient.find_page_categories_informations",
             return_value={},
         ),
-        collect_category_members=mocker.patch(f"{MODULE}.mknew_creator.collect_category_members", return_value=[]),
+        collect_members=mocker.patch(f"{MODULE}.mknew_creator.CategoryMemberCollector.collect", return_value=[]),
         get_instance=mocker.patch(f"{MODULE}.mknew_creator.Settings.get_instance", return_value=settings),
         settings=settings,
     )
@@ -129,7 +129,7 @@ class TestMakeArMinMembers:
 
     def test_returns_empty_when_below_min_members(self, mock_make_ar_base_deps: MakeArBaseDeps, category_manager):
         """Test that make_ar returns empty list when members count is below min_members."""
-        mock_make_ar_base_deps.collect_category_members.return_value = ["Article1", "Article2", "Article3"]
+        mock_make_ar_base_deps.collect_members.return_value = ["Article1", "Article2", "Article3"]
         mock_make_ar_base_deps.settings.category.min_members = 5
 
         result = category_manager.creator.make_ar("Category:Science", "علوم")
@@ -140,7 +140,7 @@ class TestMakeArMinMembers:
     @pytest.mark.network
     def test_proceeds_when_at_min_members(self, mock_make_ar_proceed_deps: MakeArProceedDeps, category_manager):
         """Test that make_ar proceeds when members count equals min_members."""
-        mock_make_ar_proceed_deps.collect_category_members.return_value = [
+        mock_make_ar_proceed_deps.collect_members.return_value = [
             "Article1",
             "Article2",
             "Article3",
@@ -155,7 +155,7 @@ class TestMakeArMinMembers:
     @pytest.mark.skip(reason="takes too long, missing expected mocks")
     def test_proceeds_when_above_min_members(self, mock_make_ar_proceed_deps: MakeArProceedDeps, category_manager):
         """Test that make_ar proceeds when members count is above min_members."""
-        mock_make_ar_proceed_deps.collect_category_members.return_value = [
+        mock_make_ar_proceed_deps.collect_members.return_value = [
             "A1",
             "A2",
             "A3",
@@ -174,7 +174,7 @@ class TestMakeArMinMembers:
 
     def test_custom_min_members_value(self, mock_make_ar_base_deps: MakeArBaseDeps, category_manager):
         """Test that make_ar respects custom min_members value."""
-        mock_make_ar_base_deps.collect_category_members.return_value = ["A1", "A2", "A3", "A4", "A5", "A6", "A7"]
+        mock_make_ar_base_deps.collect_members.return_value = ["A1", "A2", "A3", "A4", "A5", "A6", "A7"]
         mock_make_ar_base_deps.settings.category.min_members = 10
         mock_make_ar_base_deps.settings.range_limit = 5
 
@@ -185,7 +185,7 @@ class TestMakeArMinMembers:
     @pytest.mark.skip(reason="takes too long, missing expected mocks")
     def test_min_members_zero_allows_any(self, mock_make_ar_proceed_deps: MakeArProceedDeps, category_manager):
         """Test that min_members of 0 allows any number of members."""
-        mock_make_ar_proceed_deps.collect_category_members.return_value = ["Article1"]
+        mock_make_ar_proceed_deps.collect_members.return_value = ["Article1"]
         mock_make_ar_proceed_deps.settings.category.min_members = 0
 
         category_manager.creator.make_ar("Category:Science", "علوم")
@@ -200,7 +200,7 @@ class TestMakeArCreation:
 
     def test_adds_label_and_stops_when_creation_fails(self, mocker, mock_make_ar_proceed_deps, category_manager):
         """Test that a failed category creation only adds the Arabic label to Wikidata."""
-        mock_make_ar_proceed_deps.collect_category_members.return_value = self.MEMBERS
+        mock_make_ar_proceed_deps.collect_members.return_value = self.MEMBERS
         mock_make_ar_proceed_deps.new_category.return_value = CategoryResult(False, "تصنيف:علوم", None)
         mock_add_label = mocker.patch.object(category_manager.creator.wikidata, "add_arabic_label")
 
@@ -212,7 +212,7 @@ class TestMakeArCreation:
 
     def test_adds_members_and_logs_when_creation_succeeds(self, mock_make_ar_proceed_deps, category_manager):
         """Test that a created category gets its members added and is logged to Wikidata."""
-        mock_make_ar_proceed_deps.collect_category_members.return_value = self.MEMBERS
+        mock_make_ar_proceed_deps.collect_members.return_value = self.MEMBERS
 
         result = category_manager.creator.make_ar("Category:Science", "علوم")
 
