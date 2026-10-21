@@ -1,18 +1,18 @@
 import logging
 from collections.abc import Callable
 
-from ..core_cat.lists.category_resolver import CategoryResolver
-from ..core_cat.lists.category_validator import validate_categories_for_new_cat
-from ..config import Settings
-from ..core_cat.c18.infrastructure.network.langlinks import LangLinksClient
-from ..core_cat.lists.members_helper import collect_category_members
-from ..shared.newapi import AllAPIS
-from ..shared.wd_clients.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
-from .add_bot import add_to_page
-from .create_category_page import new_category
-from .utils import check_en_temps
+from ...core_cat.lists.category_resolver import CategoryResolver
+from ...core_cat.lists.category_validator import validate_categories_for_new_cat
+from ...config import Settings
+from ...core_cat.c18.infrastructure.network.langlinks import LangLinksClient
+from ...core_cat.lists.members_helper import collect_category_members
+from ...shared.newapi import AllAPIS
+from ...shared.wd_clients.wd_api import add_labels, get_sitelinks_from_wikidata, log_to_wikidata, log_to_wikidata_qid
+from ..add_bot import add_to_page
+from ..create_category_page import new_category
+from ..utils import check_en_temps
 from .labels_creator import ar_make_lab
-from .mknew_state import CategoryManagerStats
+from ..mknew_state import CategoryManagerStats
 
 # TODO: move it to the settings file!
 WIKI_SITE_AR = {"family": "wikipedia", "code": "ar"}
@@ -247,7 +247,14 @@ class CategoryManager:
             callback,
         )
 
-    def one_cat(self, en_title: str, num: int, lenth: int, sugust: str = "", callback: Callable | None = None) -> bool:
+    def one_cat(
+        self,
+        en_title: str,
+        num: int,
+        lenth: int,
+        sugust: str = "",
+        callback: Callable | None = None,
+    ) -> bool:
         logger.debug("_________________________________________________________")
         logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")
 
@@ -281,6 +288,8 @@ class CategoryManager:
             return False
 
         self.process_categories(en_title, labb, num, lenth, callback=callback)
+
+        return True
 
     def process_categories(self, cat: str, arlab: str, num: int, lenth: int, callback: Callable | None = None) -> None:
         logger.debug(f"*:{num}/{lenth} cat: {cat}, arlab: {arlab}")

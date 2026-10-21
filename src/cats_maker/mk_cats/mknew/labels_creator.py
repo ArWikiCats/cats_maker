@@ -1,7 +1,7 @@
 """ """
 
 import logging
-from .utils import filter_category
+from ..utils import filter_category
 
 logger = logging.getLogger(__name__)
 

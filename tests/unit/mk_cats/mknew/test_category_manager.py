@@ -18,7 +18,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.cats_maker.mk_cats import mknew
+from src.cats_maker.mk_cats.mknew import category_manager as mknew
 from src.cats_maker.mk_cats.create_category_page import CategoryResult
 from src.cats_maker.mk_cats.mknew import (
     CategoryManager,
@@ -73,13 +73,18 @@ def mock_make_ar_base_deps(mocker, category_manager: CategoryManager):
         scan_ar_title=mocker.patch.object(category_manager.stats, "_scan_ar_title", return_value=True),
         check_if_artitle_exists=mocker.patch.object(category_manager, "_check_if_artitle_exists", return_value=True),
         get_sitelinks_from_wikidata=mocker.patch(
-            "src.cats_maker.mk_cats.mknew.get_sitelinks_from_wikidata", return_value={"q": "Q12345"}
+            "src.cats_maker.mk_cats.mknew.category_manager.get_sitelinks_from_wikidata", return_value={"q": "Q12345"}
         ),
         find_page_categories_informations=mocker.patch(
-            "src.cats_maker.mk_cats.mknew.LangLinksClient.find_page_categories_informations", return_value={}
+            "src.cats_maker.mk_cats.mknew.category_manager.LangLinksClient.find_page_categories_informations",
+            return_value={},
         ),
-        collect_category_members=mocker.patch("src.cats_maker.mk_cats.mknew.collect_category_members", return_value=[]),
-        settings=mocker.patch("src.cats_maker.mk_cats.mknew.Settings.get_instance", return_value=settings),
+        collect_category_members=mocker.patch(
+            "src.cats_maker.mk_cats.mknew.category_manager.collect_category_members", return_value=[]
+        ),
+        settings=mocker.patch(
+            "src.cats_maker.mk_cats.mknew.category_manager.Settings.get_instance", return_value=settings
+        ),
     )
 
     yield deps
@@ -106,13 +111,14 @@ def mock_make_ar_proceed_deps(mocker, mock_make_ar_base_deps, category_manager) 
     return MakeArProceedDeps(
         **mock_make_ar_base_deps.__dict__,
         new_category=mocker.patch(
-            "src.cats_maker.mk_cats.mknew.new_category", return_value=CategoryResult(True, "تصنيف:علوم", None)
+            "src.cats_maker.mk_cats.mknew.category_manager.new_category",
+            return_value=CategoryResult(True, "تصنيف:علوم", None),
         ),
         add_to_final_list=mocker.patch.object(category_manager, "_add_to_final_list"),
         validate_categories_for_new_cat=mocker.patch(
-            "src.cats_maker.mk_cats.mknew.validate_categories_for_new_cat", return_value=False
+            "src.cats_maker.mk_cats.mknew.category_manager.validate_categories_for_new_cat", return_value=False
         ),
-        log_to_wikidata=mocker.patch("src.cats_maker.mk_cats.mknew.log_to_wikidata"),
+        log_to_wikidata=mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.log_to_wikidata"),
     )
 
 
@@ -125,7 +131,7 @@ class TestArMakeLab:
 
     def test_returns_empty_when_filter_fails(self, mocker):
         """Test that ar_make_lab returns empty string when filter_category fails."""
-        mocker.patch("src.cats_maker.mk_cats.labels_creator.filter_category", return_value=False)
+        mocker.patch("src.cats_maker.mk_cats.mknew.labels_creator.filter_category", return_value=False)
 
         result = ar_make_lab("Category:Test")
 
@@ -133,8 +139,8 @@ class TestArMakeLab:
 
     def test_returns_empty_when_no_resolver(self, mocker):
         """Test that ar_make_lab returns empty string when resolve_arabic_category_label is None."""
-        mocker.patch("src.cats_maker.mk_cats.labels_creator.filter_category", return_value=True)
-        mocker.patch("src.cats_maker.mk_cats.labels_creator.resolve_arabic_category_label", None)
+        mocker.patch("src.cats_maker.mk_cats.mknew.labels_creator.filter_category", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.mknew.labels_creator.resolve_arabic_category_label", None)
 
         result = ar_make_lab("Category:Science")
 
@@ -142,9 +148,9 @@ class TestArMakeLab:
 
     def test_returns_label_when_resolver_exists(self, mocker):
         """Test that ar_make_lab returns label when resolver exists."""
-        mocker.patch("src.cats_maker.mk_cats.labels_creator.filter_category", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.mknew.labels_creator.filter_category", return_value=True)
         mock_resolver = MagicMock(return_value="علوم")
-        mocker.patch("src.cats_maker.mk_cats.labels_creator.resolve_arabic_category_label", mock_resolver)
+        mocker.patch("src.cats_maker.mk_cats.mknew.labels_creator.resolve_arabic_category_label", mock_resolver)
 
         result = ar_make_lab("Category:Science")
 
@@ -208,7 +214,7 @@ class TestMakeAr:
         mocker.patch.object(category_manager.stats, "_scan_ar_title", return_value=True)
         mocker.patch.object(category_manager, "_check_if_artitle_exists", return_value=True)
         mocker.patch(
-            "src.cats_maker.mk_cats.mknew.get_sitelinks_from_wikidata",
+            "src.cats_maker.mk_cats.mknew.category_manager.get_sitelinks_from_wikidata",
             return_value={"sitelinks": {"arwiki": "علوم"}, "q": "Q12345"},
         )
 
@@ -294,7 +300,7 @@ class TestOneCat:
         """Test that one_cat returns False when check_en_temps fails."""
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="علوم")
-        mocker.patch("src.cats_maker.mk_cats.mknew.check_en_temps", return_value=False)
+        mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.check_en_temps", return_value=False)
 
         result = category_manager.one_cat("Category:Science", 1, 1)
 
@@ -304,7 +310,7 @@ class TestOneCat:
         """Test that one_cat returns False when no English pages are returned."""
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="علوم")
-        mocker.patch("src.cats_maker.mk_cats.mknew.check_en_temps", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.check_en_temps", return_value=True)
         mocker.patch(
             "src.cats_maker.core_cat.lists.category_resolver.CategoryResolver.list_en_pages_with_ar_links",
             return_value=[],
@@ -318,7 +324,7 @@ class TestOneCat:
         """Test that one_cat uses sugust parameter when no label is found."""
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="")
-        mocker.patch("src.cats_maker.mk_cats.mknew.check_en_temps", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.check_en_temps", return_value=True)
         mocker.patch(
             "src.cats_maker.core_cat.lists.category_resolver.CategoryResolver.list_en_pages_with_ar_links",
             return_value=["Article1"],
@@ -453,13 +459,13 @@ class TestAddToFinalList:
 
     def test_adds_tasneef_prefix_if_missing(self, mocker, category_manager):
         """Test that تصنيف: prefix is added if missing."""
-        mocker.patch("src.cats_maker.mk_cats.mknew.add_to_page", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
 
         category_manager._add_to_final_list(["صفحة1"], "علوم")
 
     def test_replaces_underscores_in_title(self, mocker, category_manager):
         """Test that underscores are replaced with spaces in title."""
-        mock_add = mocker.patch("src.cats_maker.mk_cats.mknew.add_to_page", return_value=True)
+        mock_add = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
 
         category_manager._add_to_final_list(["صفحة1"], "تصنيف:علوم_الحاسوب")
 
@@ -468,7 +474,7 @@ class TestAddToFinalList:
 
     def test_calls_add_to_page_for_each_item(self, mocker, category_manager):
         """Test that add_to_page is called for each item in list."""
-        mock_add = mocker.patch("src.cats_maker.mk_cats.mknew.add_to_page", return_value=True)
+        mock_add = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
 
         category_manager._add_to_final_list(["صفحة1", "صفحة2", "صفحة3"], "تصنيف:علوم")
 
@@ -476,7 +482,7 @@ class TestAddToFinalList:
 
     def test_calls_callback_on_success(self, mocker, category_manager):
         """Test that callback is called on successful save."""
-        mocker.patch("src.cats_maker.mk_cats.mknew.add_to_page", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
         mock_callback = mocker.MagicMock()
 
         category_manager._add_to_final_list(["صفحة1"], "تصنيف:علوم", callback=mock_callback)
@@ -485,7 +491,7 @@ class TestAddToFinalList:
 
     def test_handles_callback_exception(self, mocker, category_manager):
         """Test that callback exceptions are handled without propagating."""
-        mocker.patch("src.cats_maker.mk_cats.mknew.add_to_page", return_value=True)
+        mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.add_to_page", return_value=True)
         mock_callback = mocker.MagicMock(side_effect=Exception("Test error"))
 
         category_manager._add_to_final_list(["صفحة1"], "تصنيف:علوم", callback=mock_callback)

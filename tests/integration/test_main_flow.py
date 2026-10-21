@@ -33,7 +33,7 @@ class TestMainFlowIntegration:
         mock_wikidata.return_value = {"q": "Q12345", "sitelinks": {}}
 
         # Mock LCN (Language Code Navigator)
-        mock_lcn = mocker.patch("src.cats_maker.mk_cats.mknew.LangLinksClient.find_page_categories_informations")
+        mock_lcn = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.LangLinksClient.find_page_categories_informations")
         mock_lcn.return_value = {}
 
         # Mock CategoryResolver.list_en_pages_with_ar_links (used in CategoryManager)
@@ -54,7 +54,7 @@ class TestMainFlowIntegration:
         mock_log_wd = mocker.patch("src.cats_maker.shared.wd_clients.wd_api.to_wd.log_to_wikidata")
 
         # Mock validate_categories_for_new_cat
-        mock_validate = mocker.patch("src.cats_maker.mk_cats.mknew.validate_categories_for_new_cat")
+        mock_validate = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.validate_categories_for_new_cat")
         mock_validate.return_value = MagicMock(valid=True)
 
         # Mock CategoryResolver.resolve_members (used in CategoryManager)
@@ -77,7 +77,7 @@ class TestMainFlowIntegration:
     @pytest.fixture
     def mock_check_en_temps(self, mocker):
         """Mock check_en_temps to always return True."""
-        mock = mocker.patch("src.cats_maker.mk_cats.mknew.check_en_temps")
+        mock = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.check_en_temps")
         mock.return_value = True
         return mock
 
@@ -95,7 +95,7 @@ class TestMainFlowIntegration:
 
     def test_create_categories_from_list_calls_one_cat_for_each_item(self, mocker, mock_check_en_temps, mock_filter_en):
         """Test that create_categories_from_list iterates over all categories."""
-        mock = mocker.patch("src.cats_maker.mk_cats.mknew.ar_make_lab")
+        mock = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.ar_make_lab")
         mock.return_value = "علوم"
 
         # Mock CategoryManager.one_cat to track calls
@@ -118,7 +118,7 @@ class TestMainFlowIntegration:
         category_manager.stats.clear_processing_state()
 
         # Mock ar_make_lab to return a label
-        mocker.patch("src.cats_maker.mk_cats.mknew.ar_make_lab", return_value="")
+        mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.ar_make_lab", return_value="")
 
         # First call should process
         category_manager.one_cat("Category:Test", 1, 2)
@@ -205,7 +205,7 @@ class TestCallbackIntegration:
         callback_mock = MagicMock()
 
         # Mock all dependencies
-        mocker.patch("src.cats_maker.mk_cats.mknew.ar_make_lab", return_value="")
+        mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.ar_make_lab", return_value="")
 
         # Call with callback
         CategoryManager().create_categories_from_list(["Category:Test"], callback=callback_mock)
@@ -264,7 +264,7 @@ class TestDataFlowIntegration:
     def test_category_data_flows_from_en_to_ar(self, mocker):
         """Test that category data flows correctly from English to Arabic."""
         # Mock the translation/label generation
-        mock_label = mocker.patch("src.cats_maker.mk_cats.mknew.ar_make_lab")
+        mock_label = mocker.patch("src.cats_maker.mk_cats.mknew.category_manager.ar_make_lab")
         mock_label.return_value = "علوم الحاسوب"
 
         from src.cats_maker.mk_cats.mknew import ar_make_lab
