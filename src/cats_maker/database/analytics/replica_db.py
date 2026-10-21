@@ -11,31 +11,36 @@ import pymysql.cursors
 logger = logging.getLogger(__name__)
 
 
-def decode_value(value) -> str:
-    try:
-        value = value.decode("utf-8")  # Assuming UTF-8 encoding
-    except BaseException:
+class RowDecoder:
+    """Handles decoding of database row values and byte normalization."""
+
+    @staticmethod
+    def decode_value(value: Any) -> str:
+        """Decode a single database value to string, falling back safely."""
         try:
-            value = str(value)
+            return value.decode("utf-8")  # Assuming UTF-8 encoding
         except BaseException:
-            logger.debug("decode_value: could not decode value, returning empty string")
-            return ""
-    return value
+            try:
+                return str(value)
+            except BaseException:
+                logger.debug("decode_value: could not decode value, returning empty string")
+                return ""
 
+    @classmethod
+    def resolve_bytes(cls, rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Resolve byte values across a sequence of result rows."""
+        decoded_rows: list[dict[str, Any]] = []
 
-def resolve_bytes(rows) -> list[Any]:
-    decoded_rows: list = []
+        for row in rows:
+            decoded_row = {}
+            for key, value in row.items():
+                if isinstance(value, bytes):
+                    value = cls.decode_value(value)
+                decoded_row[key] = value
+            decoded_rows.append(decoded_row)
 
-    for row in rows:
-        decoded_row = {}
-        for key, value in row.items():
-            if isinstance(value, bytes):
-                value = decode_value(value)
-            decoded_row[key] = value
-        decoded_rows.append(decoded_row)
-
-    logger.debug("resolve_bytes: decoded %d row(s)", len(decoded_rows))
-    return decoded_rows
+        logger.debug("resolve_bytes: decoded %d row(s)", len(decoded_rows))
+        return decoded_rows
 
 
 class WikiReplicaBaseDB:
@@ -51,6 +56,7 @@ class WikiReplicaBaseDB:
         user: str,
         password: str,
         port: int = 3306,
+        row_decoder: type[RowDecoder] | None = None,
     ) -> None:
         self.dbname = dbname
         self.host = host
@@ -58,6 +64,7 @@ class WikiReplicaBaseDB:
         self.password = password
         self.port = port
         self.connection: pymysql.connections.Connection | None = None
+        self.row_decoder = row_decoder or RowDecoder
 
     def _ensure_connection(self) -> None:
         if not self.user or not self.password:
@@ -84,7 +91,7 @@ class WikiReplicaBaseDB:
                     **args,  # type: ignore
                 )  # type: ignore
             except pymysql.Error as e:
-                logger.error(f"Failed to connect to {self.host}/{self.dbname}: {e}")
+                logger.error("Failed to connect to %s/%s: %s", self.host, self.dbname, e)
                 raise
 
             logger.debug("Connection to %s/%s established", self.host, self.dbname)
@@ -94,11 +101,8 @@ class WikiReplicaBaseDB:
         query: str,
         params: Sequence[Any] | dict[str, Any] | None = None,
     ):
-        """
-        Executes query and returns all results as a list of dictionaries.
-        """
+        """Execute query and return all results as a tuple of dictionaries."""
         self._ensure_connection()
-
         assert self.connection is not None
 
         try:
@@ -106,7 +110,7 @@ class WikiReplicaBaseDB:
                 cursor.execute(query, params)
                 rows = cursor.fetchall()
         except pymysql.Error as e:
-            logger.error(f"Query failed: {e}")
+            logger.error("Query failed: %s", e)
             logger.info(query)
             raise
 
@@ -117,13 +121,11 @@ class WikiReplicaBaseDB:
         query: str,
         params: Sequence[Any] | dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
-        """
-        Executes query and returns all results as a list of dictionaries.
-        """
+        """Execute query and return all results as a list of dictionaries."""
         logger.debug("Executing query on %s/%s: %s", self.host, self.dbname, query)
 
         rows = self._select(query, params)
-        result = resolve_bytes(rows)
+        result = self.row_decoder.resolve_bytes(rows)  # pyright: ignore[reportArgumentType]
 
         logger.debug("Query returned %d row(s)", len(result))
         return result
@@ -133,9 +135,7 @@ class WikiReplicaBaseDB:
         query: str,
         params: Sequence[Any] | dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
-        """
-        Executes query and returns the first result or None.
-        """
+        """Execute query and return the first result or None."""
         results = self.select(query, params)
         logger.debug("select_one: %s row(s) returned", len(results))
         return results[0] if results else None
@@ -145,23 +145,17 @@ class WikiReplicaBaseDB:
         query: str,
         params: Sequence[Any] | dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
-        """ """
+        """Execute query safely, catching connection and execution errors."""
         results: list[dict[str, Any]] = []
         try:
             self._ensure_connection()
-        except pymysql.err.OperationalError as e:
-            logger.error(f"Failed to connect to {self.host}/{self.dbname}: {e}")
-            return results
-        except pymysql.Error as e:
-            logger.error(f"Failed to connect to {self.host}/{self.dbname}: {e}")
+        except (pymysql.err.OperationalError, pymysql.Error) as e:
+            logger.error("Failed to connect to %s/%s: %s", self.host, self.dbname, e)
             return results
 
         try:
             results = self.select(query, params)
-        except pymysql.ProgrammingError:
-            logger.exception("Query failed", exc_info=True)
-            logger.info(query)
-        except pymysql.Error as e:
+        except (pymysql.ProgrammingError, pymysql.Error):
             logger.exception("Query failed", exc_info=True)
             logger.info(query)
 
@@ -184,6 +178,5 @@ class WikiReplicaBaseDB:
 
 __all__ = [
     "WikiReplicaBaseDB",
-    "decode_value",
-    "resolve_bytes",
+    "RowDecoder",
 ]
