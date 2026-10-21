@@ -5,7 +5,7 @@ import functools
 import logging
 
 from ..core_cat.c18.domain.sorting import CategorySorter
-from ..core_cat.c18.io.json_store import DontAddStore
+from ..core_cat.c18.io.dont_add_store import DontAddStore
 from ..core_cat.c18.tools.doc_handler import add_text_to_template
 from ..shared.newapi import AllAPIS, MainPage, function_timer
 

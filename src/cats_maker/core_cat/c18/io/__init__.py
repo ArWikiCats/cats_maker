@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 """I/O helpers for c18."""
 
-from .json_store import DontAddStore, JsonStore
+from .dont_add_store import DontAddStore
+from .json_store import JsonStore
 
 __all__ = [
     "DontAddStore",
