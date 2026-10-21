@@ -29,7 +29,11 @@ from src.cats_maker.mk_cats.mknew import (
 @pytest.fixture
 def category_manager():
     """Fixture to provide a fresh CategoryManager instance."""
-    return CategoryManager()
+    category_manager = CategoryManager()
+    category_manager.stats._already_created.clear()
+    category_manager.stats._new_cat_done.clear()
+    category_manager.stats._done_d.clear()
+    return category_manager
 
 
 @pytest.fixture
@@ -60,15 +64,13 @@ class MakeArBaseDeps:
 def mock_make_ar_base_deps(mocker, category_manager: CategoryManager):
     """Fixture supplying common mocks required for make_ar execution."""
     # Reset manager state
-    category_manager.stats._already_created.clear()
-    category_manager.stats._new_cat_done.clear()
 
     settings = MagicMock()
     settings.category = MagicMock()
     settings.category.min_members = 5
 
     deps = MakeArBaseDeps(
-        scan_ar_title=mocker.patch.object(category_manager, "_scan_ar_title", return_value=True),
+        scan_ar_title=mocker.patch.object(category_manager.stats, "_scan_ar_title", return_value=True),
         check_if_artitle_exists=mocker.patch.object(category_manager, "_check_if_artitle_exists", return_value=True),
         get_sitelinks_from_wikidata=mocker.patch(
             "src.cats_maker.mk_cats.mknew.get_sitelinks_from_wikidata", return_value={"q": "Q12345"}
@@ -83,8 +85,6 @@ def mock_make_ar_base_deps(mocker, category_manager: CategoryManager):
     yield deps
 
     # Cleanup state
-    category_manager.stats._already_created.clear()
-    category_manager.stats._new_cat_done.clear()
 
 
 @dataclass
@@ -156,37 +156,26 @@ class TestScanArTitle:
 
     def test_returns_false_for_already_created(self, category_manager):
         """Test that _scan_ar_title returns False for already created titles."""
-        category_manager.stats._already_created.clear()
+
         category_manager.stats._already_created.append("تصنيف:علوم")
 
         result = category_manager.stats._scan_ar_title("تصنيف:علوم")
 
         assert result is False
 
-        category_manager.stats._already_created.clear()
-
     def test_returns_true_for_new_title(self, category_manager):
         """Test that _scan_ar_title returns True for new titles."""
-        category_manager.stats._already_created.clear()
-        category_manager.stats._new_cat_done.clear()
 
         result = category_manager.stats._scan_ar_title("تصنيف:جديد")
 
         assert result is True
 
-        category_manager.stats._already_created.clear()
-        category_manager.stats._new_cat_done.clear()
-
     def test_tracks_title_in_newcat_done(self, category_manager):
         """Test that _scan_ar_title tracks title in _new_cat_done."""
-        category_manager.stats._already_created.clear()
-        category_manager.stats._new_cat_done.clear()
 
         category_manager.stats._scan_ar_title("تصنيف:اختبار")
 
         assert "تصنيف:اختبار" in category_manager.stats._new_cat_done
-
-        category_manager.stats._new_cat_done.clear()
 
 
 class TestMakeAr:
@@ -206,24 +195,17 @@ class TestMakeAr:
 
     def test_cleans_en_page_title(self, mocker, category_manager):
         """Test that make_ar cleans the English page title."""
-        category_manager.stats._already_created.clear()
-        category_manager.stats._new_cat_done.clear()
 
-        mocker.patch.object(category_manager, "_scan_ar_title", return_value=False)
+        mocker.patch.object(category_manager.stats, "_scan_ar_title", return_value=False)
 
         result = category_manager.make_ar("[[Category:Science]]", "علوم")
 
         assert result == []
 
-        category_manager.stats._already_created.clear()
-        category_manager.stats._new_cat_done.clear()
-
     def test_returns_empty_when_ar_exists_in_wikidata(self, mocker, category_manager):
         """Test that make_ar returns empty list when Arabic link exists in Wikidata."""
-        category_manager.stats._already_created.clear()
-        category_manager.stats._new_cat_done.clear()
 
-        mocker.patch.object(category_manager, "_scan_ar_title", return_value=True)
+        mocker.patch.object(category_manager.stats, "_scan_ar_title", return_value=True)
         mocker.patch.object(category_manager, "_check_if_artitle_exists", return_value=True)
         mocker.patch(
             "src.cats_maker.mk_cats.mknew.get_sitelinks_from_wikidata",
@@ -233,9 +215,6 @@ class TestMakeAr:
         result = category_manager.make_ar("Category:Science", "علوم")
 
         assert result == []
-
-        category_manager.stats._already_created.clear()
-        category_manager.stats._new_cat_done.clear()
 
 
 class TestProcessCategories:
@@ -295,29 +274,24 @@ class TestOneCat:
 
     def test_returns_false_for_duplicate_title(self, category_manager):
         """Test that one_cat returns False for duplicate title."""
-        category_manager.stats._done_d.clear()
+
         category_manager.stats._done_d.append("Category:Duplicate")
 
         result = category_manager.one_cat("Category:Duplicate", 1, 1)
 
         assert result is False
 
-        category_manager.stats._done_d.clear()
-
     def test_returns_false_when_no_label(self, mocker, category_manager):
         """Test that one_cat returns False when no Arabic label is found."""
-        category_manager.stats._done_d.clear()
+
         mocker.patch.object(mknew, "ar_make_lab", return_value="")
 
         result = category_manager.one_cat("Category:NoLabel", 1, 1)
 
         assert result is False
 
-        category_manager.stats._done_d.clear()
-
     def test_returns_false_when_check_en_temps_fails(self, mocker, category_manager):
         """Test that one_cat returns False when check_en_temps fails."""
-        category_manager.stats._done_d.clear()
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="علوم")
         mocker.patch("src.cats_maker.mk_cats.mknew.check_en_temps", return_value=False)
@@ -326,11 +300,8 @@ class TestOneCat:
 
         assert result is False
 
-        category_manager.stats._done_d.clear()
-
     def test_returns_false_when_no_en_list(self, mocker, category_manager):
         """Test that one_cat returns False when no English pages are returned."""
-        category_manager.stats._done_d.clear()
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="علوم")
         mocker.patch("src.cats_maker.mk_cats.mknew.check_en_temps", return_value=True)
@@ -343,11 +314,8 @@ class TestOneCat:
 
         assert result is False
 
-        category_manager.stats._done_d.clear()
-
     def test_uses_sugust_when_no_label(self, mocker, category_manager):
         """Test that one_cat uses sugust parameter when no label is found."""
-        category_manager.stats._done_d.clear()
 
         mocker.patch.object(mknew, "ar_make_lab", return_value="")
         mocker.patch("src.cats_maker.mk_cats.mknew.check_en_temps", return_value=True)
@@ -362,8 +330,6 @@ class TestOneCat:
         mock_process.assert_called_once()
         args = mock_process.call_args[0]
         assert args[1] == "علوم مقترحة"
-
-        category_manager.stats._done_d.clear()
 
 
 class TestCreateCategoriesFromList:
