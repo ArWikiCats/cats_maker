@@ -6,7 +6,7 @@ from typing import Any
 from ....database import WikiReplicaDB
 from ....shared.newapi import MainPage
 from ....shared.newapi.client_wiki.all_apis import AllAPIS
-from ...new_config import C18Config
+from ..new_config import C18Config
 
 
 class SharedWrapper:

@@ -13,7 +13,6 @@ from src.cats_maker.config import (
     WikidataConfig,
     WikipediaConfig,
     WikiSiteInfo,
-    main_settings,
 )
 from src.cats_maker.config.settings import _safe_int
 
@@ -237,6 +236,9 @@ class TestSettingsEnvVars:
 
         s = Settings.load()
         assert s.debug is True
+
+
+main_settings = Settings.get_instance()
 
 
 class TestGlobalSettings:

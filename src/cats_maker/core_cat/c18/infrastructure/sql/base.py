@@ -1,7 +1,7 @@
 # infrastructure/sql/base.py
 from __future__ import annotations
 
-from ....new_config import C18Config
+from ...new_config import C18Config
 from ..wrapper import SharedWrapper
 
 

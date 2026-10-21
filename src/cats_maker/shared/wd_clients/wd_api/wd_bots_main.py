@@ -6,7 +6,7 @@
 import logging
 from typing import Any
 
-from ....config import main_settings
+from ....config import Settings
 from ...newapi import WikiLoginClient
 
 logger = logging.getLogger(__name__)
@@ -18,6 +18,8 @@ class WdAPI:
         login_bot: WikiLoginClient,
     ) -> None:
         self.login_bot = login_bot
+        main_settings = Settings.get_instance()
+
         self.lang = "test" if main_settings.wikidata.test_mode else "www"
         self.family = "wikidata"
 

@@ -16,8 +16,10 @@ logger = logging.getLogger(__name__)
 class TemplateCache:
     """Encapsulates template caching across site codes."""
 
+    _store: dict[str, dict[str, Any]] = defaultdict(dict)
+
     def __init__(self) -> None:
-        self._store: dict[str, dict[str, Any]] = defaultdict(dict)
+        pass
 
     def get(self, enlink: str, site_code: str) -> Any | None:
         site_cache = self._store[site_code]

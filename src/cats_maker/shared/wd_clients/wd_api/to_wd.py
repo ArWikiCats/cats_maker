@@ -8,7 +8,7 @@ import json
 import logging
 from typing import Any
 
-from ....config import main_settings
+from ....config import Settings
 from ...newapi import WikiLoginClient
 from .wd_bots_main import WdAPI
 
@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 @functools.lru_cache(maxsize=1024)
 def load_login_bot(lang: str = "ar", family: str = "wikipedia") -> WikiLoginClient:
+    main_settings = Settings.get_instance()
+
     username = main_settings.wikipedia.credentials.username or ""
     password = main_settings.wikipedia.credentials.password or ""
 

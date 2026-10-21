@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 
-from ...config import main_settings
+from ...config import Settings
 from ...config.constants import AR_FALSE_TEMPLATES, EN_FALSE_TEMPLATES_LOWERS
 from ...shared.newapi import AllAPIS
 from ..c18.models import ValidationResult
@@ -52,6 +52,8 @@ def _check_page_status(
                 valid=False,
                 reason=f"Langlink mismatch: {langlink} != {expected_langlink}",
             )
+
+    main_settings = Settings.get_instance()
 
     templates = info.get("templates", {})
     template_prefix = "قالب:" if is_ar else "Template:"

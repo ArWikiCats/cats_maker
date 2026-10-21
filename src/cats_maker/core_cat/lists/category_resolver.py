@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 
-from ...config import main_settings
+from ...config import Settings
 from ...config.constants import DEFAULT_MEMBER_NAMESPACES
 from ...shared import AllAPIS
 from ..c18.utils.text import normalize_category_title
@@ -31,6 +31,7 @@ class CategoryResolver:
         self.en_wiki_query_service = en_wiki_query_service or EnCategorySQL()
         self.wiki_query_service = wiki_query_service or ArCategorySQL()
         self.backend = backend
+        self.settings = Settings.get_instance()
 
     def _use_sql(self) -> bool:
         if self.backend == "sql":
@@ -38,7 +39,7 @@ class CategoryResolver:
 
         if self.backend == "api":
             return False
-        return main_settings.analytics_database.use_sql
+        return self.settings.analytics_database.use_sql
 
     def list_ar_pages_in_cat(self, ar_title: str) -> list[str]:
         """
@@ -105,9 +106,9 @@ class CategoryResolver:
         Batch-translate page titles from source wiki to Arabic via langlinks."""
         new_ar_list: list[str] = []
 
-        sito_code = main_settings.en_site.code
+        sito_code = self.settings.en_site.code
         if wiki == "fr":
-            sito_code = main_settings.fr_site.code
+            sito_code = self.settings.fr_site.code
 
         for i in range(0, len(titles), batch_size):
             batch = titles[i : i + batch_size]
@@ -162,7 +163,7 @@ class CategoryResolver:
             gent_sasa = self.wiki_api_handler.find_page_data(
                 joined,
                 prop="langlinks",
-                site_code=main_settings.en_site.code,
+                site_code=self.settings.en_site.code,
             )
             if not gent_sasa:
                 continue

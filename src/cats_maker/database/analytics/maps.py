@@ -73,7 +73,10 @@ class WikiReplicaMaps:
         cache_ttl: int | None = None,
         save_new_data: bool = True,
         settings: None | Settings = None,
+        store: None | WikiMapsStore = None,
     ) -> None:
+        self.store = store or WikiMapsStore()
+
         self.save_new_data = save_new_data
         self.file_name = file_name
         self.settings = settings or Settings.get_instance()
@@ -82,7 +85,6 @@ class WikiReplicaMaps:
             cache_ttl = self.settings.analytics_database.cache_ttl
 
         self.cache_ttl = cache_ttl
-        self.store = WikiMapsStore()
         self._wiki_map: dict[str, dict[str, str]] = {}
         self._load_wiki_map()
 

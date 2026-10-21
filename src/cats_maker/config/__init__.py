@@ -16,7 +16,6 @@ from .settings import (
     WikidataConfig,
     WikipediaConfig,
     WikiSiteInfo,
-    main_settings,
 )
 
 __all__ = [
@@ -30,5 +29,4 @@ __all__ = [
     "CategoryConfig",
     "QueryConfig",
     "SiteConfig",
-    "main_settings",
 ]

@@ -1,5 +1,4 @@
-#!/usr/bin/python3
-"""Arabic category sorting — refactored from sort_bot.py."""
+"""Arabic category sorting"""
 
 from __future__ import annotations
 

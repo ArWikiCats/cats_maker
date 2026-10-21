@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 
 from .....config.constants import EN_FALSE_TEMPLATES
-from ....new_config import C18Config
+from ...new_config import C18Config
 from ..wrapper import SharedWrapper
 from .base import ReplicaClient
 

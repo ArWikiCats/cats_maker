@@ -3,7 +3,7 @@
 import logging
 import re
 
-from ...config import main_settings
+from ...config import Settings
 from ..c18.infrastructure.sql.category_repository import CategoryRepository
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,9 @@ class CategoryComparator:
 
     def __init__(self, can_use_sql: bool | None = None) -> None:
         self.repo = CategoryRepository()
+
         if can_use_sql is None:
+            main_settings = Settings.get_instance()
             can_use_sql = main_settings.analytics_database.can_use_sql()
 
         self.can_use_sql = can_use_sql

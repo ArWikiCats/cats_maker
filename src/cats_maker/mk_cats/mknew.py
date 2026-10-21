@@ -9,7 +9,7 @@ from ..core_cat.lists.category_resolver import CategoryResolver
 
 from ..core_cat.lists.category_validator import validate_categories_for_new_cat
 
-from ..config import main_settings
+from ..config import Settings
 from ..core_cat.c18.infrastructure.network.langlinks import LangLinksClient
 from ..core_cat.lists.members_helper import collect_category_members
 from ..shared.newapi import AllAPIS
@@ -319,6 +319,8 @@ def _make_ar(en_page_title: str, ar_title: str, callback=None):  # -> list:
         logger.debug(" collect_category_members returned empty list ")
         return []
 
+    main_settings = Settings.get_instance()
+
     # Check minimum members requirement
     if len(members) < main_settings.category.min_members:
         logger.debug(
@@ -350,6 +352,8 @@ def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Cal
     logger.debug(f"*:{num}/{lenth} cat: {cat}, arlab: {arlab}")
 
     ma_table = _make_ar(cat, arlab, callback=callback)
+
+    main_settings = Settings.get_instance()
 
     for i in range(main_settings.range_limit):
         if not ma_table:

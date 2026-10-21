@@ -11,59 +11,12 @@ from datetime import datetime
 from functools import cached_property
 from pathlib import Path
 
-from ....config import main_settings
+from ....config import Settings
 from ..infrastructure.sql.ar_lists import ArCategorySQL
 
 logger = logging.getLogger(__name__)
 
-_FILENAME_JSON = main_settings.paths.dont_add_to_pages_path
 _STATGROUP = stat.S_IRWXU | stat.S_IRWXG
-
-
-def _load_json(path: Path, empty_data: str = "list") -> list | dict:
-    data: list | dict = [] if empty_data != "dict" else {}
-
-    if not path.is_file():
-        logger.warning(f"File not found: {path}")
-        try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(data, f)
-            os.chmod(path, _STATGROUP)
-        except (PermissionError, OSError):
-            logger.exception("Error save json file")
-
-    try:
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
-    except json.JSONDecodeError as e:
-        logger.warning(f"JSON decode error in {path}: {e}")
-    except (PermissionError, OSError) as e:
-        logger.warning(f"Error reading {path}: {e}")
-
-    return data
-
-
-def _save_json(data: list | dict, path: Path) -> None:
-    try:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False)
-            logger.info(f"wrote to {path}")
-    except PermissionError:
-        logger.error(f"PermissionError writing to {path}")
-        try:
-            os.remove(path)
-        except (PermissionError, OSError):
-            pass
-        try:
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(data, f)
-            os.chmod(path, _STATGROUP)
-            logger.info(f"wrote to {path}")
-        except (PermissionError, OSError) as e:
-            logger.warning(f"Error deleting/writing to {path}: {e}")
-    except (OSError, Exception) as e:
-        logger.warning(f"Error writing to {path}: {e}")
 
 
 class JsonStore:
@@ -72,11 +25,52 @@ class JsonStore:
     def __init__(self, path: Path) -> None:
         self.path = path
 
-    def load(self) -> list | dict:
-        return _load_json(self.path)
+    def load(self, empty_data="dict") -> list | dict:
+        path = self.path
+
+        data: list | dict = [] if empty_data != "dict" else {}
+
+        if not path.is_file():
+            logger.warning(f"File not found: {path}")
+            try:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump(data, f)
+                os.chmod(path, _STATGROUP)
+            except (PermissionError, OSError):
+                logger.exception("Error save json file")
+
+        try:
+            with open(path, encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError as e:
+            logger.warning(f"JSON decode error in {path}: {e}")
+        except (PermissionError, OSError) as e:
+            logger.warning(f"Error reading {path}: {e}")
+
+        return data
 
     def save(self, data: list | dict) -> None:
-        _save_json(data, self.path)
+        path = self.path
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False)
+                logger.info(f"wrote to {path}")
+        except PermissionError:
+            logger.error(f"PermissionError writing to {path}")
+            try:
+                os.remove(path)
+            except (PermissionError, OSError):
+                pass
+            try:
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump(data, f)
+                os.chmod(path, _STATGROUP)
+                logger.info(f"wrote to {path}")
+            except (PermissionError, OSError) as e:
+                logger.warning(f"Error deleting/writing to {path}: {e}")
+        except (OSError, Exception) as e:
+            logger.warning(f"Error writing to {path}: {e}")
 
     def is_stale(self, days: int = 1) -> bool:
         if not self.path.exists():
@@ -92,21 +86,24 @@ class DontAddStore:
         self,
         wiki_query_service: ArCategorySQL | None = None,
         store: JsonStore | None = None,
+        settings: Settings | None = None,
     ) -> None:
         self.wiki_query_service = wiki_query_service or ArCategorySQL()
-
         self.store: JsonStore | None = store
+        self.settings = settings or Settings.get_instance()
+
+        _FILENAME_JSON = self.settings.paths.dont_add_to_pages_path
 
         if _FILENAME_JSON and self.store is None:
             _filename_json = Path(_FILENAME_JSON)
             self.store = JsonStore(_filename_json)
 
     def should_skip(self) -> bool:
-        if main_settings.category.no_dontadd or main_settings.category.test_mode:
+        if self.settings.category.no_dontadd or self.settings.category.test_mode:
             return True
 
-        if not main_settings.category.test_add:
-            if main_settings.is_production():
+        if not self.settings.category.test_add:
+            if self.settings.is_production():
                 logger.info("dont get dontadd list in local server")
                 return True
 

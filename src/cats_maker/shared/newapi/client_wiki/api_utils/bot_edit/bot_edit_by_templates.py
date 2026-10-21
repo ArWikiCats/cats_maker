@@ -7,7 +7,7 @@ from typing import Any
 
 import wikitextparser as wtp
 
-from ......config import main_settings
+from ......config import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +22,8 @@ STOP_EDIT_TEMPLATES: dict[str, list[str]] = {
     "tempcat": ["لا لإضافة صناديق تصفح معادلة"],
     "portal": ["لا لربط البوابات المعادل", "لا لصيانة البوابات"],
 }
+
+main_settings = Settings.get_instance()
 
 BOT_USERNAME = main_settings.wikipedia.credentials.username or "Mr.Ibrahembot"
 bot_edit_cache = {}

@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from ...config import main_settings
+from ...config import Settings
 from ..c18.utils.text import normalize_category_title
 from .category_comparator import CategoryComparator
 from .category_resolver import CategoryResolver
@@ -18,16 +18,21 @@ logger = logging.getLogger(__name__)
 class MemberLister:
     """Orchestrates listing pages that should be added to a new category."""
 
-    def __init__(self, cache: dict[str, list[str]] | None = None, resolver: CategoryResolver | None = None) -> None:
+    def __init__(
+        self,
+        cache: dict[str, list[str]] | None = None,
+        resolver: CategoryResolver | None = None,
+    ) -> None:
         self.cache = cache if cache is not None else {}
         self.resolver = resolver if resolver is not None else CategoryResolver()
+        self.settings = Settings.get_instance()
 
     def extract_fan_page_titles(self, enpage_title: str) -> list[str]:
         """
         Fetch exclusive category titles from EN wiki via SQL comparator."""
         fapages: list[str] = []
 
-        if main_settings.analytics_database.use_sql:
+        if self.settings.analytics_database.use_sql:
             comparator = CategoryComparator()
             cat2 = normalize_category_title(enpage_title, lang="en")
             fapages = comparator.get_exclusive_category_titles(cat2, "") or []

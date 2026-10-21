@@ -58,6 +58,21 @@ class Paths:
 
 
 @dataclass
+class WikipediaHimeCedentials:
+    """Configuration for Wikipedia API connections."""
+
+    username: str
+    password: str
+
+    @classmethod
+    def load(cls) -> WikipediaHimeCedentials:
+        return cls(
+            username=os.getenv("WIKIPEDIA_HIMO_USERNAME") or "",
+            password=os.getenv("WIKIPEDIA_HIMO_PASSWORD") or "",
+        )
+
+
+@dataclass
 class WikipediaCedentials:
     """
     Configuration for Wikipedia API connections.
@@ -66,16 +81,16 @@ class WikipediaCedentials:
     password = os.getenv("WIKIPEDIA_BOT_PASSWORD", "")
     """
 
-    username: str | None = None
-    password: str | None = None
+    username: str
+    password: str
 
     @classmethod
     def load(cls) -> WikipediaCedentials:
         """
         Load Wikipedia configuration from environment variables."""
         return cls(
-            username=os.getenv("WIKIPEDIA_BOT_USERNAME"),
-            password=os.getenv("WIKIPEDIA_BOT_PASSWORD"),
+            username=os.getenv("WIKIPEDIA_BOT_USERNAME") or "",
+            password=os.getenv("WIKIPEDIA_BOT_PASSWORD") or "",
         )
 
 
@@ -83,13 +98,15 @@ class WikipediaCedentials:
 class WikipediaConfig:
     """Configuration for Wikipedia API connections."""
 
+    credentials: WikipediaCedentials
+    himo_credentials: WikipediaHimeCedentials
+
     ar_family: str = "wikipedia"
     ar_code: str = "ar"
     en_family: str = "wikipedia"
     en_code: str = "en"
     user_agent: str = field(default_factory=default_user_agent)
     default_timeout: int = 10
-    credentials: WikipediaCedentials = field(default_factory=WikipediaCedentials)
 
     @classmethod
     def load(cls) -> WikipediaConfig:
@@ -103,7 +120,16 @@ class WikipediaConfig:
             user_agent=os.getenv("WIKIPEDIA_USER_AGENT") or default_user_agent(),
             default_timeout=_safe_int(os.getenv("WIKIPEDIA_TIMEOUT"), 10),
             credentials=WikipediaCedentials.load(),
+            himo_credentials=WikipediaHimeCedentials.load(),
         )
+
+    def load_credentials(self, mr_or_bot: str | None = None) -> tuple[str, str]:
+        if mr_or_bot is None:
+            mr_or_bot = "mr" if "workibrahem" in sys.argv else "bot"
+
+        credentials = self.credentials if mr_or_bot == "bot" else self.himo_credentials
+
+        return credentials.username, credentials.password
 
 
 @dataclass
@@ -568,10 +594,6 @@ class Settings:
         if cls._instance is None:
             cls._instance = cls.load()
         return cls._instance
-
-
-# Global settings instance
-main_settings = Settings.load()
 
 
 __all__ = [

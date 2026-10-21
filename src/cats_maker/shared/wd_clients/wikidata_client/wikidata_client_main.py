@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 import sys
 
-from ....config import main_settings
+from ....config import Settings
 
 from ...newapi import ApiResult, AskBot, WikiLoginClient
 from ...newapi.core.result_error import ApiResultError
@@ -122,8 +122,8 @@ class WikidataClient(WPFunctions, WDFunctions):
         www="www",
         dont_do_lag_wait: bool = False,
     ) -> WikidataClient:
-        username = main_settings.wikipedia.credentials.username
-        password = main_settings.wikipedia.credentials.password
+        main_settings = Settings.get_instance()
+        username, password = main_settings.wikipedia.load_credentials("bot")
 
         login_bot = WikiLoginClient.load(
             lang=www,

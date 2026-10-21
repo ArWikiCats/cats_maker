@@ -5,53 +5,53 @@ Unit tests for src/cats_maker/core_cat/c18/io/json_store.py module.
 import json
 import os
 from datetime import datetime, timedelta
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.cats_maker.core_cat.c18.io.json_store import DontAddStore, JsonStore, _load_json, _save_json
+from src.cats_maker.core_cat.c18.io.json_store import DontAddStore, JsonStore
 
 
 class TestLoadJson:
     def test_loads_list(self, tmp_path):
         path = tmp_path / "test.json"
         path.write_text(json.dumps(["a", "b"]), encoding="utf-8")
-        result = _load_json(path)
+        result = JsonStore(path).load()
         assert result == ["a", "b"]
 
     def test_loads_dict(self, tmp_path):
         path = tmp_path / "test.json"
         path.write_text(json.dumps({"key": "val"}), encoding="utf-8")
-        result = _load_json(path, empty_data="dict")
+        result = JsonStore(path).load(empty_data="dict")
         assert result == {"key": "val"}
 
     def test_creates_missing_file_as_list(self, tmp_path):
         path = tmp_path / "missing.json"
-        result = _load_json(path)
+        result = JsonStore(path).load()
         assert result == []
 
     def test_creates_missing_file_as_dict(self, tmp_path):
         path = tmp_path / "missing.json"
-        result = _load_json(path, empty_data="dict")
+        result = JsonStore(path).load(empty_data="dict")
         assert result == {}
 
     def test_handles_invalid_json(self, tmp_path):
         path = tmp_path / "bad.json"
         path.write_text("not json", encoding="utf-8")
-        result = _load_json(path)
+        result = JsonStore(path).load()
         assert result == []
 
 
 class TestSaveJson:
     def test_saves_list(self, tmp_path):
         path = tmp_path / "test.json"
-        _save_json(["a", "b"], path)
+        JsonStore(path).save(["a", "b"])
         with open(path, encoding="utf-8") as f:
             assert json.load(f) == ["a", "b"]
 
     def test_saves_dict(self, tmp_path):
         path = tmp_path / "test.json"
-        _save_json({"key": "val"}, path)
+        JsonStore(path).save({"key": "val"})
         with open(path, encoding="utf-8") as f:
             assert json.load(f) == {"key": "val"}
 
@@ -92,10 +92,10 @@ class TestJsonStore:
 
 class TestLoadJsonEdgeCases:
     def test_creates_parent_directory(self, tmp_path):
-        """Test that _load_json creates parent directory for missing file."""
+        """Test that JsonStore.load creates parent directory for missing file."""
         path = tmp_path / "subdir" / "test.json"
         assert not path.parent.exists()
-        result = _load_json(path)
+        result = JsonStore(path).load()
         assert path.parent.exists()
         assert result == []
 
@@ -104,7 +104,7 @@ class TestLoadJsonEdgeCases:
         path = tmp_path / "test.json"
         path.write_text("[]", encoding="utf-8")
         with patch("builtins.open", side_effect=PermissionError("denied")):
-            result = _load_json(path)
+            result = JsonStore(path).load()
         # Should return empty data since the read failed
         assert result == []
 
@@ -124,7 +124,7 @@ class TestSaveJsonEdgeCases:
             return original_open(*args, **kwargs)
 
         with patch("builtins.open", side_effect=mock_open):
-            _save_json(["data"], path)
+            JsonStore(path).save(["data"])
         # The retry should have succeeded
         assert call_count >= 2
 
@@ -132,67 +132,66 @@ class TestSaveJsonEdgeCases:
         """Test that OSError during write is caught."""
         path = tmp_path / "test.json"
         with patch("builtins.open", side_effect=OSError("disk full")):
-            _save_json(["data"], path)  # Should not raise
+            JsonStore(path).save(["data"])  # Should not raise
 
 
 @pytest.fixture
-def mock_dont_add_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+def mock_settings() -> MagicMock:
     """Set default settings for DontAddStore.get_dont_add_pages tests."""
-    monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store.main_settings.category.no_dontadd", False)
-    monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store.main_settings.category.test_mode", False)
-    monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store.main_settings.category.test_add", True)
-    monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store.main_settings.is_production", lambda: True)
-    monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store._FILENAME_JSON", "/nonexistent/path.json")
+
+    settings = MagicMock()
+    settings.is_production = lambda: True
+
+    settings.category = MagicMock()
+    settings.category.no_dontadd = False
+    settings.category.test_mode = False
+    settings.category.test_add = True
+
+    settings.paths = MagicMock()
+    settings.paths.dont_add_to_pages_path = "/nonexistent/path.json"
+
+    return settings
 
 
 class TestGetDontAddPages:
     """Tests for DontAddStore.get_dont_add_pages function."""
 
-    def test_returns_empty_when_no_dontadd_enabled(
-        self, monkeypatch: pytest.MonkeyPatch, mock_dont_add_defaults: None
-    ) -> None:
+    def test_returns_empty_when_no_dontadd_enabled(self, mock_settings) -> None:
         """Test that empty list is returned when no_dontadd is True."""
-        monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store.main_settings.category.no_dontadd", True)
 
-        result = DontAddStore().get_dont_add_pages()
+        mock_settings.category.no_dontadd = True
+        result = DontAddStore(settings=mock_settings).get_dont_add_pages()
         assert result == []
 
-    def test_returns_empty_when_test_mode_enabled(
-        self, monkeypatch: pytest.MonkeyPatch, mock_dont_add_defaults: None
-    ) -> None:
+    def test_returns_empty_when_test_mode_enabled(self, mock_settings) -> None:
         """Test that empty list is returned when test_mode is True."""
-        monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store.main_settings.category.test_mode", True)
+        mock_settings.category.test_mode = True
 
-        result = DontAddStore().get_dont_add_pages()
+        result = DontAddStore(settings=mock_settings).get_dont_add_pages()
         assert result == []
 
-    def test_returns_empty_when_not_production_and_no_test_add(
-        self, monkeypatch: pytest.MonkeyPatch, mock_dont_add_defaults: None
-    ) -> None:
+    def test_returns_empty_when_not_production_and_no_test_add(self, mock_settings) -> None:
         """Test that empty list is returned in non-production without test_add."""
-        monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store.main_settings.category.test_add", False)
-        monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store.main_settings.is_production", lambda: False)
+        mock_settings.category.test_add = False
+        mock_settings.is_production = lambda: False
 
-        result = DontAddStore().get_dont_add_pages()
+        result = DontAddStore(settings=mock_settings).get_dont_add_pages()
         assert result == []
 
-    def test_returns_empty_when_filename_none(
-        self, monkeypatch: pytest.MonkeyPatch, mock_dont_add_defaults: None
-    ) -> None:
+    def test_returns_empty_when_filename_none(self, mock_settings) -> None:
         """Test that empty list is returned when _FILENAME_JSON is None."""
-        monkeypatch.setattr("src.cats_maker.core_cat.c18.io.json_store._FILENAME_JSON", None)
 
-        result = DontAddStore().get_dont_add_pages()
+        mock_settings.paths.dont_add_to_pages_path = None
+
+        result = DontAddStore(settings=mock_settings).get_dont_add_pages()
         assert result == []
 
-    def test_returns_empty_when_fetch_returns_dict(
-        self, monkeypatch: pytest.MonkeyPatch, mock_dont_add_defaults: None
-    ) -> None:
+    def test_returns_empty_when_fetch_returns_dict(self, monkeypatch: pytest.MonkeyPatch, mock_settings) -> None:
         """Test that empty list is returned when fetch returns dict instead of list."""
         monkeypatch.setattr(
             "src.cats_maker.core_cat.c18.io.json_store.ArCategorySQL.fetch_dont_add_pages",
             lambda self: {"key": "value"},
         )
 
-        result = DontAddStore().get_dont_add_pages()
+        result = DontAddStore(settings=mock_settings).get_dont_add_pages()
         assert result == []
