@@ -21,7 +21,7 @@ class JsonStore:
     def __init__(self, path: Path) -> None:
         self.path = path
 
-    def load(self, empty_data="dict") -> list | dict:
+    def load(self, empty_data="list") -> list | dict:
         path = self.path
 
         data: list | dict = [] if empty_data != "dict" else {}
@@ -34,7 +34,7 @@ class JsonStore:
                     json.dump(data, f)
                 os.chmod(path, _STATGROUP)
             except (PermissionError, OSError):
-                logger.exception("Error save json file")
+                logger.exception("Error saving JSON file")
 
         try:
             with open(path, encoding="utf-8") as f:

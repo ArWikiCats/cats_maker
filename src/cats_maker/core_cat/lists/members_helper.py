@@ -153,7 +153,6 @@ def collect_category_members(ar_title: str, en_page_title: str) -> list:
     """
     # Step 1: Gather members from SQL
     members = gather_members_from_sql(ar_title, en_page_title)
-
     main_settings = Settings.get_instance()
 
     # Step 2: Gather from API if SQL is disabled or returned empty

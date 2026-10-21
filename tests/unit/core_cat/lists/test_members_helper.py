@@ -216,8 +216,8 @@ class TestCollectCategoryMembers:
 
         result = collect_category_members("تصنيف:علوم", "Category:Science")
 
-        collect_members_deps.gather_api.assert_called_once()
         assert "ApiArticle" in result
+        collect_members_deps.gather_api.assert_called_once()
 
     def test_returns_empty_list_when_no_members(self, collect_members_deps: CollectMembersDeps):
         """Test that collect_category_members returns empty list when no members are found."""
