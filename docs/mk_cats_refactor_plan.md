@@ -11,7 +11,7 @@
 
 | Issue                                                  | Location                         | Impact                                                     |
 | ------------------------------------------------------ | -------------------------------- | ---------------------------------------------------------- |
-| Typo in public API: `process_catagories` (missing `e`) | `mknew.py:337`, `__init__.py`    | Breaking rename needed                                     |
+| Typo in public API: `process_categories` (missing `e`) | `mknew.py:337`, `__init__.py`    | Breaking rename needed                                     |
 | Typo `lenth` → `length`                                | `mknew.py:337,379`               | Cosmetic but flagrant                                      |
 | Typo `BBlcak` / `blcak_starts`                         | `utils/filter_en.py:9,17`        | Confusing naming                                           |
 | Module-level mutable state leaks between runs          | `mknew.py:49-51`                 | State pollution across tests/calls                         |
@@ -174,7 +174,7 @@ DEFAULT_RANGE_LIMIT: int = 5
 
 | Old name                        | New name                  |
 | ------------------------------- | ------------------------- |
-| `process_catagories`            | `process_categories`      |
+| `process_categories`            | `process_categories`      |
 | `lenth` (parameter)             | `length`                  |
 | `BBlcak`                        | `BLACKLIST_SUBSTRINGS`    |
 | `blcak_starts`                  | `BLACKLIST_PREFIXES`      |
@@ -253,7 +253,7 @@ Current responsibilities (all in one file):
 
 1. `create_categories_from_list` — entry point, iterates list
 2. `_one_cat` — single-category orchestrator
-3. `process_catagories` — recursive subcategory processor
+3. `process_categories` — recursive subcategory processor
 4. `_make_ar` — the big one: validate → WD check → members → create → log
 5. `ar_make_lab` — Arabic label resolution
 6. Helper functions: `_scan_ar_title`, `_check_if_artitle_exists`, `_normalize_en_page_title`, `_get_site_identifiers`, `_check_wikidata_sitelink`, `_extract_parent_categories`, `_finalize_category_creation`, `clear_processing_state`, `get_processing_state`
@@ -415,7 +415,7 @@ class CategoryResult:
 
 Tests need updating to match the refactored structure:
 
-- Replace `from src.cats_maker.mk_cats.mknew import process_catagories` → `from src.cats_maker.mk_cats.core.category_pipeline import process_categories`
+- Replace `from src.cats_maker.mk_cats.mknew import process_categories` → `from src.cats_maker.mk_cats.core.category_pipeline import process_categories`
 - Remove module-level state manipulation (`_done_d.clear()` etc.) — use `clear_state()` instead
 - Fix assertions to use new function names
 
@@ -449,7 +449,7 @@ diff before_phase_N.txt after_phase_N.txt   # must be empty
 
 | Current public symbol                  | New canonical location                                       | Shim kept?        |
 | -------------------------------------- | ------------------------------------------------------------ | ----------------- |
-| `mk_cats.process_catagories`           | `mk_cats.core.category_pipeline.process_categories`          | Yes, 1 release    |
+| `mk_cats.process_categories`           | `mk_cats.core.category_pipeline.process_categories`          | Yes, 1 release    |
 | `mk_cats.create_categories_from_list`  | `mk_cats.core.category_pipeline.create_categories_from_list` | Yes, 1 release    |
 | `mk_cats.ar_make_lab`                  | `mk_cats.tools.label_resolver.ar_make_lab`                   | Yes, 1 release    |
 | `mk_cats.make_category`                | `mk_cats.tools.page_creator.make_category`                   | Yes, 1 release    |
@@ -460,7 +460,7 @@ diff before_phase_N.txt after_phase_N.txt   # must be empty
 
 ## 7. Acceptance Criteria
 
-- [ ] `process_catagories` renamed to `process_categories`; old name works via deprecation shim
+- [ ] `process_categories` renamed to `process_categories`; old name works via deprecation shim
 - [ ] `lenth` → `length`, `BBlcak` → `BLACKLIST_SUBSTRINGS`, `blcak_starts` → `BLACKLIST_PREFIXES`
 - [ ] All hardcoded strings moved to `constants.py`
 - [ ] Module-level mutable state (`_done_d`, `_new_cat_done`, `_already_created`) encapsulated in `ProcessingState`
@@ -480,7 +480,7 @@ diff before_phase_N.txt after_phase_N.txt   # must be empty
 | Risk                                                        | Impact | Mitigation                                              |
 | ----------------------------------------------------------- | ------ | ------------------------------------------------------- |
 | Breaking imports in `src/__init__.py` or downstream callers | High   | Deprecation shims for one full release cycle            |
-| `process_catagories` rename missed somewhere                | High   | grep for `catagor` across entire codebase               |
+| `process_categories` rename missed somewhere                | High   | grep for `catagor` across entire codebase               |
 | Module state encapsulation changes test behavior            | Medium | Keep `clear_state()` as public API; update test cleanup |
 | Behavior change from function extraction                    | Medium | Integration diff test before/after each phase           |
 | JSON portal data path changes                               | Low    | Use `importlib.resources` or `__file__`-relative paths  |

@@ -1,12 +1,8 @@
-""" """
-
 import logging
 from collections.abc import Callable
 
 from ..core_cat.lists.category_resolver import CategoryResolver
-
 from ..core_cat.lists.category_validator import validate_categories_for_new_cat
-
 from ..config import Settings
 from ..core_cat.c18.infrastructure.network.langlinks import LangLinksClient
 from ..core_cat.lists.members_helper import collect_category_members
@@ -16,64 +12,17 @@ from .add_bot import add_to_page
 from .create_category_page import new_category
 from .utils import check_en_temps
 from .labels_creator import ar_make_lab
+from .mknew_state import CategoryManagerStats
 
 # TODO: move it to the settings file!
 WIKI_SITE_AR = {"family": "wikipedia", "code": "ar"}
 WIKI_SITE_EN = {"family": "wikipedia", "code": "en"}
 
+stats = CategoryManagerStats()
+
 _resolver = CategoryResolver()
 
 logger = logging.getLogger(__name__)
-
-# ------------------------------------
-# state
-# ------------------------------------
-
-# Category processing state - encapsulated in module-level variables
-# These are cleared between runs to prevent state leakage
-_done_d: list = []
-_new_cat_done: dict = {}
-_already_created: list = []
-
-
-def clear_processing_state() -> None:
-    """Clear all processing state. Call between runs to prevent state leakage."""
-    _done_d.clear()
-    _new_cat_done.clear()
-    _already_created.clear()
-
-
-def get_processing_state():
-    """Get current processing state for testing/debugging."""
-    return {
-        "done_d": list(_done_d),
-        "new_cat_done": dict(_new_cat_done),
-        "already_created": list(_already_created),
-    }
-
-
-def _scan_ar_title(title) -> bool:
-    if title in _already_created:
-        logger.debug(f'title "{title}". in _already_created')
-        return False
-
-    cat3 = str(title)
-    if cat3 in _new_cat_done.keys():
-        _new_cat_done[cat3] += 1
-        logger.debug(f'We tried {_new_cat_done[cat3]} times to/created title:"{cat3}".')
-        return False
-    else:
-        if cat3 in _new_cat_done.keys():
-            logger.debug(f'2070:new trying with cat: "{title}"')
-            _new_cat_done[cat3] += 1
-        else:
-            _new_cat_done[cat3] = 1
-    return True
-
-
-# ------------------------------------
-#
-# ------------------------------------
 
 
 def _add_to_final_list(final_list, title, callback=None) -> None:
@@ -244,7 +193,7 @@ def _make_ar(en_page_title: str, ar_title: str, callback=None):  # -> list:
         return []
 
     # Validation: Check if we've already processed this Arabic title
-    if not _scan_ar_title(ar_title):
+    if not stats._scan_ar_title(ar_title):
         logger.debug("_scan_ar_title failed.")
         return []
 
@@ -270,7 +219,7 @@ def _make_ar(en_page_title: str, ar_title: str, callback=None):  # -> list:
     en_cats_of_new_cat, cats_of_new_cat = _extract_parent_categories(en_page_title)
 
     # Mark as already created
-    _already_created.append(en_page_title)
+    stats.insert_already_created(en_page_title)
 
     # Collect category members using the helper module
     members = collect_category_members(ar_title, en_page_title)
@@ -310,18 +259,17 @@ def _make_ar(en_page_title: str, ar_title: str, callback=None):  # -> list:
 
 def _one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
     logger.debug("_________________________________________________________")
-
     logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}")
 
     if not en_title.strip():
         logger.warning("en_title is empty. return")
         return False
 
-    if en_title in _done_d:
+    if stats.check_done_d(en_title):
         logger.warning(f'en_title:"{en_title}" in _done_d ')
         return False
 
-    _done_d.append(en_title)
+    stats.insert_done_d(en_title)
     labb = ar_make_lab(en_title)
 
     logger.debug(f"{num}/{lenth} {en_title=}, {sugust=}, {labb=}")
@@ -342,10 +290,10 @@ def _one_cat(en_title, num: int, lenth, sugust: str = "", callback=None):
         logger.warning("en_list is empty. return")
         return False
 
-    return process_catagories(en_title, labb, num, lenth, callback=callback)
+    return process_categories(en_title, labb, num, lenth, callback=callback)
 
 
-def process_catagories(cat: str, arlab: str, num: int, lenth: int, callback: Callable | None = None) -> None:
+def process_categories(cat: str, arlab: str, num: int, lenth: int, callback: Callable | None = None) -> None:
     logger.debug(f"*:{num}/{lenth} cat: {cat}, arlab: {arlab}")
 
     ma_table = _make_ar(cat, arlab, callback=callback)
@@ -398,5 +346,5 @@ def create_categories_from_list(titles: list[str], callback: Callable | None = N
 
 __all__ = [
     "create_categories_from_list",
-    "process_catagories",
+    "process_categories",
 ]

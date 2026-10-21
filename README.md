@@ -79,7 +79,7 @@ Cats Maker New هو بوت ويكيبيديا متطور مصمم لأتمتة �
 │      طبقة منطق الأعمال                 │
 │      mk_cats/mknew.py                   │
 │      - create_categories_from_list()    │
-│      - _one_cat(), process_catagories()  │
+│      - _one_cat(), process_categories()  │
 │      - _make_ar(), ar_make_lab()         │
 └─────────────┬───────────────────────────┘
               │
@@ -321,14 +321,14 @@ create_categories_from_list(categories, callback=my_callback)
 ### الدوال الفردية
 
 ```python
-from src.cats_maker.mk_cats import ar_make_lab, process_catagories
+from src.cats_maker.mk_cats import ar_make_lab, process_categories
 
 # الحصول على التسمية العربية لتصنيف إنجليزي
 ar_label = ar_make_lab("Category:Science")
 print(f"Arabic label: {ar_label}")
 
 # معالجة تصنيف واحد مع تصنيفاته الفرعية
-process_catagories("Category:Science", ar_label, num=1, lenth=1)
+process_categories("Category:Science", ar_label, num=1, lenth=1)
 ```
 
 ## الإعدادات

@@ -17,7 +17,7 @@ from src.cats_maker.mk_cats.mknew import (
     _one_cat,
     _scan_ar_title,
     clear_processing_state,
-    process_catagories,
+    process_categories,
 )
 from src.cats_maker.shared.wd_clients.wd_api import wd_api_bot
 
@@ -150,15 +150,15 @@ class TestMainFlowIntegration:
         # Clean up
         mknew._done_d.clear()
 
-    def test_process_catagories_calls_make_ar(self, mocker, mock_all_external_services):
+    def test_process_categories_calls_make_ar(self, mocker, mock_all_external_services):
         """
-        Test that process_catagories calls _make_ar with correct parameters."""
+        Test that process_categories calls _make_ar with correct parameters."""
 
         # Mock _make_ar to return an empty list (no subcategories)
         mock_make_ar = mocker.patch("src.cats_maker.mk_cats.mknew._make_ar")
         mock_make_ar.return_value = []
 
-        process_catagories("Category:Science", "علوم", 1, 1)
+        process_categories("Category:Science", "علوم", 1, 1)
 
         # Verify _make_ar was called
         mock_make_ar.assert_called_once()
@@ -244,9 +244,9 @@ class TestCallbackIntegration:
         # The callback might not be called if ar_make_lab returns empty
         # but the function should not raise any errors
 
-    def test_process_catagories_passes_callback_to_make_ar(self, mocker):
+    def test_process_categories_passes_callback_to_make_ar(self, mocker):
         """
-        Test that process_catagories passes callback to _make_ar."""
+        Test that process_categories passes callback to _make_ar."""
 
         callback_mock = MagicMock()
 
@@ -254,7 +254,7 @@ class TestCallbackIntegration:
         mock_make_ar = mocker.patch("src.cats_maker.mk_cats.mknew._make_ar")
         mock_make_ar.return_value = []
 
-        process_catagories("Category:Test", "اختبار", 1, 1, callback=callback_mock)
+        process_categories("Category:Test", "اختبار", 1, 1, callback=callback_mock)
 
         # Verify callback was passed
         call_kwargs = mock_make_ar.call_args[1]

@@ -1,9 +1,9 @@
 """
-NOTE: ar_make_lab, create_categories_from_list, process_catagories
+NOTE: ar_make_lab, create_categories_from_list, process_categories
     is used by external scripts and should not be changed.
 
 from cats_maker import (
-    process_catagories,
+    process_categories,
     create_categories_from_list,
     ar_make_lab,
 )
@@ -14,7 +14,7 @@ import logging
 from .mk_cats import (
     ar_make_lab,
     create_categories_from_list,
-    process_catagories,
+    process_categories,
 )
 
 try:
@@ -33,5 +33,5 @@ except ImportError:
 __all__ = [
     "ar_make_lab",
     "create_categories_from_list",
-    "process_catagories",
+    "process_categories",
 ]

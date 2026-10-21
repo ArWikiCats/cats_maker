@@ -6,7 +6,7 @@ Tests for mknew.py - Main file for category creation
 This module tests:
 - create_categories_from_list() - Main function to create categories
 - _one_cat() - Process a single category
-- process_catagories() - Recursive category processing
+- process_categories() - Recursive category processing
 - _make_ar() - Create Arabic category
 - ar_make_lab() - Generate Arabic label
 - _scan_ar_title() - Scan Arabic titles
@@ -26,7 +26,7 @@ from src.cats_maker.mk_cats.mknew import (
     _one_cat,
     ar_make_lab,
     create_categories_from_list,
-    process_catagories,
+    process_categories,
 )
 
 
@@ -237,11 +237,11 @@ class TestMakeAr:
 
 
 class TestProcessCatagories:
-    """Tests for process_catagories function."""
+    """Tests for process_categories function."""
 
     def test_calls_make_ar_with_correct_params(self, mock_make_ar):
-        """Test that process_catagories calls _make_ar with correct parameters."""
-        process_catagories("Category:Science", "علوم", 1, 10)
+        """Test that process_categories calls _make_ar with correct parameters."""
+        process_categories("Category:Science", "علوم", 1, 10)
 
         mock_make_ar.assert_called_once()
         args = mock_make_ar.call_args[0]
@@ -249,13 +249,13 @@ class TestProcessCatagories:
         assert args[1] == "علوم"
 
     def test_handles_empty_make_ar_result(self, mock_make_ar):
-        """Test that process_catagories handles empty _make_ar result."""
-        result = process_catagories("Category:Science", "علوم", 1, 10)
+        """Test that process_categories handles empty _make_ar result."""
+        result = process_categories("Category:Science", "علوم", 1, 10)
 
         assert result is None
 
     def test_iterates_over_subcategories(self, mocker):
-        """Test that process_catagories iterates over subcategories."""
+        """Test that process_categories iterates over subcategories."""
         mock_make_ar = mocker.patch.object(mknew, "_make_ar", side_effect=[["SubCat1"], []])
         mocker.patch.object(mknew, "ar_make_lab", return_value="")
         mocker.patch(
@@ -263,14 +263,14 @@ class TestProcessCatagories:
             return_value=[],
         )
 
-        mknew.process_catagories("Category:Science", "علوم", 1, 10)
+        mknew.process_categories("Category:Science", "علوم", 1, 10)
 
         assert mock_make_ar.call_count >= 1
 
     def test_passes_callback(self, mock_make_ar):
-        """Test that process_catagories passes callback to _make_ar."""
+        """Test that process_categories passes callback to _make_ar."""
         callback = MagicMock()
-        process_catagories("Category:Science", "علوم", 1, 10, callback=callback)
+        process_categories("Category:Science", "علوم", 1, 10, callback=callback)
 
         call_kwargs = mock_make_ar.call_args[1]
         assert call_kwargs["callback"] == callback
@@ -353,7 +353,7 @@ class TestOneCat:
             "src.cats_maker.core_cat.lists.category_resolver.CategoryResolver.list_en_pages_with_ar_links",
             return_value=["Article1"],
         )
-        mock_process = mocker.patch.object(mknew, "process_catagories")
+        mock_process = mocker.patch.object(mknew, "process_categories")
 
         mknew._one_cat("Category:Science", 1, 1, sugust="علوم مقترحة")
 
