@@ -5,8 +5,9 @@ import logging
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
-from ...config import main_settings
+from ...config import Settings
 from .replica_db import WikiReplicaBaseDB
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,43 @@ logger = logging.getLogger(__name__)
 class MapsData:
     last_cache_update: float
     data: dict[str, dict[str, str]]
+
+
+class WikiMapsStore:
+    def load_local_wikimap(self, file_name) -> MapsData:
+        try:
+            with open(file_name, encoding="utf-8") as f:
+                data = json.load(f)
+            return MapsData(
+                last_cache_update=data["last_cache_update"],
+                data=data["data"],
+            )
+        except FileNotFoundError:
+            logger.info(f"Local wiki map file {file_name} not found. A new one will be created.")
+        except Exception as e:
+            logger.error(f"Failed to load {file_name}: {e}")
+        return MapsData(
+            last_cache_update=0,
+            data={},
+        )
+
+    def save_wikimap(
+        self,
+        file_name: str,
+        data: dict[str, Any],
+    ) -> None:
+        try:
+            # Create the directory
+            Path(file_name).parent.mkdir(parents=True, exist_ok=True)
+        except Exception as e:
+            logger.error(f"Failed to create directory for {file_name}: {e}")
+
+        try:
+            with open(file_name, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
+            logger.info("Saved wiki map to %s (%d entries)", file_name, len(data.get("data") or []))
+        except Exception as e:
+            logger.error(f"Failed to save {file_name}: {e}")
 
 
 class WikiReplicaMaps:
@@ -34,19 +72,22 @@ class WikiReplicaMaps:
         file_name: str = "wikimap.json",
         cache_ttl: int | None = None,
         save_new_data: bool = True,
+        settings: None | Settings = None,
     ) -> None:
         self.save_new_data = save_new_data
         self.file_name = file_name
+        self.settings = settings or Settings.get_instance()
 
         if cache_ttl is None:
-            cache_ttl = main_settings.analytics_database.cache_ttl
+            cache_ttl = self.settings.analytics_database.cache_ttl
 
         self.cache_ttl = cache_ttl
+        self.store = WikiMapsStore()
         self._wiki_map: dict[str, dict[str, str]] = {}
         self._load_wiki_map()
 
     def _load_wiki_map(self) -> None:
-        maps = self.load_local_wikimap()
+        maps = self.store.load_local_wikimap(self.file_name)
 
         now = time.time()
         if maps.data and self.is_cache_valid(maps.last_cache_update, now):
@@ -60,7 +101,12 @@ class WikiReplicaMaps:
 
         logger.info("Loaded %d wiki entries from meta_p", len(self._wiki_map))
 
-        self.save_wikimap(now)
+        if self.save_new_data:
+            data = {
+                "last_cache_update": now,
+                "data": self._wiki_map,
+            }
+            self.store.save_wikimap(self.file_name, data)
 
     def is_cache_valid(self, last_cache_update: float, now: float) -> bool:
         # 0 means never expire
@@ -79,7 +125,7 @@ class WikiReplicaMaps:
         """
         new_map = {}
 
-        if not main_settings.analytics_database.can_use_sql():
+        if not self.settings.analytics_database.can_use_sql():
             logger.warning("No credentials for DB, skipping wiki map load")
             return new_map
 
@@ -87,8 +133,8 @@ class WikiReplicaMaps:
             agent = WikiReplicaBaseDB(
                 dbname="meta_p",
                 host="s7.analytics.db.svc.wikimedia.cloud",
-                user=main_settings.analytics_database.user,
-                password=main_settings.analytics_database.password,
+                user=self.settings.analytics_database.user,
+                password=self.settings.analytics_database.password,
             )
 
             with agent as meta_db:
@@ -124,43 +170,6 @@ class WikiReplicaMaps:
 
         logger.debug("resolve_wiki: no match for '%s'", identifier)
         return None
-
-    def load_local_wikimap(self) -> MapsData:
-        try:
-            with open(self.file_name, encoding="utf-8") as f:
-                data = json.load(f)
-            return MapsData(
-                last_cache_update=data["last_cache_update"],
-                data=data["data"],
-            )
-        except FileNotFoundError:
-            logger.info(f"Local wiki map file {self.file_name} not found. A new one will be created.")
-        except Exception as e:
-            logger.error(f"Failed to load {self.file_name}: {e}")
-        return MapsData(
-            last_cache_update=0,
-            data={},
-        )
-
-    def save_wikimap(self, now) -> None:
-        if not self.save_new_data:
-            return
-        data = {
-            "last_cache_update": now,
-            "data": self._wiki_map,
-        }
-        try:
-            # Create the directory
-            Path(self.file_name).parent.mkdir(parents=True, exist_ok=True)
-        except Exception as e:
-            logger.error(f"Failed to create directory for {self.file_name}: {e}")
-
-        try:
-            with open(self.file_name, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
-            logger.info("Saved wiki map to %s (%d entries)", self.file_name, len(self._wiki_map))
-        except Exception as e:
-            logger.error(f"Failed to save {self.file_name}: {e}")
 
 
 __all__ = [
