@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 from typing import Any
@@ -105,7 +106,15 @@ class HttpClient:
         **kwargs: Any,
     ) -> requests.Response:
         """Perform an HTTP GET request."""
-        return self._send("GET", url, headers, timeout, params=params, auth=auth, **kwargs)
+        return self._send(
+            "GET",
+            url,
+            headers,
+            timeout,
+            params=params,
+            auth=auth,
+            **kwargs,
+        )
 
     def post(
         self,
@@ -219,6 +228,26 @@ class HttpClient:
 
         result["output"] = response.text
         return result
+
+    def get_url_json(self, url: str) -> dict | None:
+        """Fetch URL content and parse as JSON.
+
+        Args:
+            url: URL to fetch
+            timeout: Request timeout in seconds
+
+        Returns:
+            Parsed JSON as dictionary, None on error
+        """
+        try:
+            response = self.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            logger.debug(f"Request Error: {e}\n{url}")
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.debug(f"JSON Decode Error: {e}\n{url}")
+        return None
 
 
 __all__ = [
